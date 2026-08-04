@@ -1,0 +1,56 @@
+---
+/* Lucide, inlined at build time so glyphs inherit currentColor and the page ships
+   no icon JavaScript. The design system pins lucide 0.474.0; lucide-static has no
+   0.474 release (it goes 0.473 → 0.477), so this is 0.473.0.
+   IC v1.0: 24px master, 2px stroke, round caps and joins. */
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+
+interface Props {
+  name: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | number;
+  color?: string;
+  class?: string;
+}
+
+const { name, size = 'md', color, class: className } = Astro.props;
+
+const SIZES = { sm: 16, md: 20, lg: 24, xl: 32 } as const;
+const px = typeof size === 'number' ? size : SIZES[size];
+
+const require = createRequire(import.meta.url);
+let svg = '';
+try {
+  const file = require.resolve(`lucide-static/icons/${name}.svg`);
+  svg = readFileSync(file, 'utf8');
+} catch {
+  throw new Error(
+    `Icon "${name}" does not exist in Lucide. Check the spelling at https://lucide.dev/icons`
+  );
+}
+
+/* Retarget the glyph to our size and let it inherit colour from the parent. */
+svg = svg
+  .replace(/width="24"/, `width="${px}"`)
+  .replace(/height="24"/, `height="${px}"`)
+  .replace(/stroke="currentColor"/, 'stroke="currentColor"')
+  .replace('<svg', `<svg aria-hidden="true" focusable="false"`);
+---
+
+<span
+  class:list={['atc-icon', className]}
+  style={color ? `color:${color}` : undefined}
+  set:html={svg}
+/>
+
+<style>
+  .atc-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+  }
+  .atc-icon :global(svg) {
+    display: block;
+  }
+</style>

@@ -1,0 +1,63 @@
+---
+/* LG v2.0 — the official mark. Path is the exact geometry from
+   assets/logo/atc-mark-currentcolor.svg. viewBox 220.64 × 180, ratio 1.2258:1 LOCKED.
+   The counter is deliberately open at the bottom and the legs are 1.19° apart —
+   both are in the original artwork. Never redraw, never scale non-uniformly.
+   Measured floor: 24px bare. Below that, use an app icon tile. */
+
+interface Props {
+  size?: number;
+  color?: string;
+  showWordmark?: boolean;
+  class?: string;
+}
+
+const { size = 36, color = 'var(--atc-purple-600)', showWordmark = true, class: className } =
+  Astro.props;
+
+const MARK_PATH =
+  'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.89 121.04 L 101.29 120.89 L 69.49 179.21 L 108.07 179.31 L 121.08 155.45 L 220.64 155.69 Z';
+const MARK_RATIO = 220.64 / 180;
+
+if (size < 24) {
+  throw new Error(
+    `<Logo size={${size}}> is below the measured 24px floor — the counter closes and the mark fuses into a solid triangle. Use an app icon tile from /logo/ instead.`
+  );
+}
+---
+
+<span class:list={['atc-logo', className]} style={`color:${color}`}>
+  <svg
+    viewBox="0 0 220.64 180"
+    height={size}
+    width={Math.round(size * MARK_RATIO)}
+    aria-hidden="true"
+    class="atc-logo__mark"
+  >
+    <path d={MARK_PATH} fill="currentColor" />
+  </svg>
+  {showWordmark && <span class="atc-logo__word" style={`font-size:${Math.round(size * 0.58)}px`}>AdelTechTalks</span>}
+</span>
+
+<style>
+  .atc-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-3);
+    text-decoration: none;
+  }
+  .atc-logo__mark {
+    display: block;
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+  /* Latin standing alone → Montserrat (TY v1.2) */
+  .atc-logo__word {
+    font-family: var(--atc-font-latin-disp);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--atc-text-primary);
+    white-space: nowrap;
+  }
+</style>

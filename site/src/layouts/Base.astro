@@ -1,0 +1,79 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../site.config';
+import '../styles/tokens.css';
+import '../styles/app.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /* Set false on pages that carry their own full-bleed hero */
+  padded?: boolean;
+}
+
+const { title, description = site.description, padded = true } = Astro.props;
+
+const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/logo/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Social sharing -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- TY v1.2 — the four families, no fifth. Loaded from Google Fonts;
+         see README "Substitutions" for the self-hosting caveat. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&family=JetBrains+Mono:wght@100..800&family=Montserrat:wght@100..900&family=Readex+Pro:wght@160..700&display=swap"
+    />
+  </head>
+
+  <body>
+    <a href="#main" class="skip">Skip to content</a>
+    <Header />
+    <main id="main" class:list={[padded && 'main--padded']}>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .skip {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 999;
+    padding: 12px 20px;
+    background: var(--atc-surface-raised);
+    border-radius: var(--atc-radius-control);
+  }
+  .skip:focus {
+    left: var(--atc-space-4);
+    top: var(--atc-space-4);
+  }
+  .main--padded {
+    padding-top: var(--atc-space-8);
+  }
+</style>

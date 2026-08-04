@@ -1,0 +1,268 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '../components/Button.astro';
+import Card from '../components/Card.astro';
+import Chip from '../components/Chip.astro';
+import Icon from '../components/Icon.astro';
+import OriginFrame from '../components/OriginFrame.astro';
+import VideoCard from '../components/VideoCard.astro';
+import NewsletterForm from '../components/NewsletterForm.astro';
+import { hero, pillars, videos, playground } from '../site.config';
+import { getCollection } from 'astro:content';
+
+const guides = (await getCollection('guides'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+
+/* CS-05 — exactly ONE Spark element on this page: the hero's primary CTA.
+   Everything else on the page is secondary or ghost. */
+---
+
+<Base padded={false}>
+  <!-- ================= HERO ================= -->
+  <section class="container hero">
+    <div class="hero__copy">
+      <span class="overline">{hero.overline}</span>
+      <h1 class="h-display">{hero.title}</h1>
+      <p class="lede">{hero.body}</p>
+      <div class="row">
+        <Button variant="primary" size="lg" href={hero.primaryCta.href} iconLeft="play">
+          {hero.primaryCta.label}
+        </Button>
+        <Button variant="ghost" size="lg" href={hero.secondaryCta.href}>
+          {hero.secondaryCta.label}
+        </Button>
+      </div>
+    </div>
+
+    <!-- SH-04: the Origin Corner. ONE per composition, on a signature surface. -->
+    <OriginFrame shorterSide={360} class="hero__frame">
+      <div class="hero__panel">
+        <div class="row">
+          <span class="hero__glyph"><Icon name="sparkles" size="lg" color="var(--atc-purple-600)" /></span>
+          <div class="hero__panelHead">
+            <strong>Where is the AI?</strong>
+            <span class="muted">The question behind every video</span>
+          </div>
+        </div>
+        <p class="hero__panelBody">
+          Every product claims intelligence. I open it, test it for a working week, and report
+          what the AI actually does — and what it does not.
+        </p>
+        <div class="row">
+          {pillars.slice(0, 3).map((p) => <Chip pillar={p.id as any}>{p.name}</Chip>)}
+        </div>
+      </div>
+    </OriginFrame>
+  </section>
+
+  <!-- ================= PILLARS ================= -->
+  <section class="container section">
+    <div class="stack">
+      <h2 class="h-section">What I cover</h2>
+      <div class="grid grid--5">
+        {pillars.map((p) => (
+          <Card>
+            <Icon name={p.icon} size="xl" color={`var(--atc-category-${p.id}-graphic)`} />
+            <strong class="h-card">{p.name}</strong>
+            <span class="muted pillar__body">{p.body}</span>
+          </Card>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= VIDEOS ================= -->
+  <section class="container section" id="videos">
+    <div class="stack">
+      <div class="sec__head">
+        <h2 class="h-section">Latest videos</h2>
+        <span class="muted">Tested, not unboxed.</span>
+      </div>
+      <div class="grid grid--3">
+        {videos.map((v) => (
+          <VideoCard id={v.id} title={v.title} pillar={v.pillar as any} meta={v.meta} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= GUIDES ================= -->
+  {guides.length > 0 && (
+    <section class="container section">
+      <div class="stack">
+        <div class="sec__head">
+          <h2 class="h-section">Guides</h2>
+          <a class="sec__more" href="/guides">All guides →</a>
+        </div>
+        <div class="grid grid--3">
+          {guides.map((g) => (
+            <Card href={`/guides/${g.id}/`}>
+              <Chip pillar={g.data.pillar as any}>{g.data.pillar}</Chip>
+              <strong class="h-card">{g.data.title}</strong>
+              <span class="muted">{g.data.description}</span>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ================= PLAYGROUND TEASER ================= -->
+  <section class="container section">
+    <Card elevation={2} padding="var(--atc-space-8)">
+      <div class="pg">
+        <div class="stack">
+          <span class="overline">The Playground</span>
+          <h2 class="h-section">Learn it by running it yourself</h2>
+          <p class="lede">{playground.intro}</p>
+          <div class="row">
+            <Button variant="secondary" size="md" href="/playground" iconRight="arrow-right">
+              Open the Playground
+            </Button>
+          </div>
+        </div>
+        <div class="pg__badges">
+          {playground.tracks.map((t) => (
+            <div class="pg__badge">
+              <span class="pg__badgeIcon"><Icon name="award" size="lg" color="var(--atc-purple-600)" /></span>
+              <div>
+                <strong>{t.badge}</strong>
+                <span class="muted">{t.minutes} min</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Card>
+  </section>
+
+  <!-- ================= NEWSLETTER ================= -->
+  <section class="container section">
+    <Card elevation={1} padding="var(--atc-space-8)">
+      <div class="stack">
+        <h2 class="h-section">One email a week</h2>
+        <p class="lede">
+          What I tested, what was worth it, and what I would skip. No hype, no affiliate dumps.
+        </p>
+        <NewsletterForm />
+      </div>
+    </Card>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-block-start: 96px;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 64px;
+    align-items: center;
+  }
+  .hero__copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-6);
+  }
+  .hero__frame {
+    height: 360px;
+    display: grid;
+    place-items: center;
+    padding: var(--atc-space-8);
+    box-sizing: border-box;
+  }
+  .hero__panel {
+    width: 100%;
+    background: var(--atc-white);
+    border-radius: var(--atc-radius-card);
+    box-shadow: var(--atc-elevation-3);
+    padding: var(--atc-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-4);
+  }
+  .hero__glyph {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--atc-radius-sm);
+    background: var(--atc-purple-50);
+    display: grid;
+    place-items: center;
+  }
+  .hero__panelHead {
+    display: flex;
+    flex-direction: column;
+  }
+  .hero__panelHead span {
+    font-size: var(--atc-body-small-size);
+  }
+  .hero__panelBody {
+    margin: 0;
+    font-size: var(--atc-body-small-size);
+    line-height: var(--atc-body-small-line);
+    color: var(--atc-ink-700);
+  }
+
+  .sec__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--atc-space-4);
+    flex-wrap: wrap;
+  }
+  .sec__more {
+    font-size: var(--atc-body-small-size);
+    color: var(--atc-purple-700);
+    text-decoration: none;
+  }
+  .sec__more:hover { text-decoration: underline; }
+
+  .pillar__body {
+    font-size: var(--atc-body-small-size);
+    line-height: var(--atc-body-small-line);
+  }
+
+  .pg {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .pg__badges {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-3);
+  }
+  .pg__badge {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-4);
+    padding: var(--atc-space-4);
+    border: var(--atc-stroke-hairline) solid var(--atc-ink-100);
+    border-radius: var(--atc-radius-control);
+    background: var(--atc-surface-canvas);
+  }
+  .pg__badge div {
+    display: flex;
+    flex-direction: column;
+  }
+  .pg__badge span { font-size: var(--atc-body-small-size); }
+  .pg__badgeIcon {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--atc-radius-circle);
+    background: var(--atc-purple-50);
+    flex: 0 0 auto;
+  }
+
+  @media (max-width: 1023px) {
+    .hero {
+      grid-template-columns: 1fr;
+      gap: 48px;
+      padding-block-start: 64px;
+    }
+    .pg { grid-template-columns: 1fr; gap: var(--atc-space-8); }
+  }
+</style>

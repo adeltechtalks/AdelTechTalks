@@ -1,0 +1,121 @@
+/* Playground runtime — Google sign-in and badge progress.
+   This file runs in the browser. It is only loaded on Playground pages, and only
+   when Supabase keys are present in site.config.ts.
+
+   The anon key is designed to be public — it is safe in the browser. What protects
+   your data is Row Level Security, which the SQL in supabase/schema.sql switches on:
+   every row is readable and writable only by the signed-in user who owns it. */
+
+import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js';
+
+export type Track = {
+  slug: string;
+  name: string;
+  badge: string;
+  steps: string[];
+};
+
+let client: SupabaseClient | null = null;
+
+export function getClient(url: string, anonKey: string): SupabaseClient {
+  if (!client) {
+    client = createClient(url, anonKey, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+    });
+  }
+  return client;
+}
+
+export async function currentUser(sb: SupabaseClient): Promise<User | null> {
+  const { data } = await sb.auth.getUser();
+  return data.user ?? null;
+}
+
+export async function signInWithGoogle(sb: SupabaseClient) {
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href },
+  });
+  if (error) throw error;
+}
+
+export async function signOut(sb: SupabaseClient) {
+  await sb.auth.signOut();
+  window.location.reload();
+}
+
+/* ---- progress ------------------------------------------------------------ */
+
+export type Progress = Record<string, number[]>; // track slug → completed step indexes
+
+export async function loadProgress(sb: SupabaseClient, userId: string): Promise<Progress> {
+  const { data, error } = await sb
+    .from('progress')
+    .select('track_slug, step_index')
+    .eq('user_id', userId);
+
+  if (error) {
+    console.error('[playground] could not load progress:', error.message);
+    return {};
+  }
+
+  const out: Progress = {};
+  for (const row of data ?? []) {
+    (out[row.track_slug] ??= []).push(row.step_index);
+  }
+  return out;
+}
+
+export async function setStep(
+  sb: SupabaseClient,
+  userId: string,
+  trackSlug: string,
+  stepIndex: number,
+  done: boolean
+) {
+  if (done) {
+    const { error } = await sb
+      .from('progress')
+      .upsert(
+        { user_id: userId, track_slug: trackSlug, step_index: stepIndex },
+        { onConflict: 'user_id,track_slug,step_index' }
+      );
+    if (error) throw error;
+  } else {
+    const { error } = await sb
+      .from('progress')
+      .delete()
+      .eq('user_id', userId)
+      .eq('track_slug', trackSlug)
+      .eq('step_index', stepIndex);
+    if (error) throw error;
+  }
+}
+
+/* A badge is earned when every step in a track is complete. Awarding is idempotent. */
+export async function syncBadge(
+  sb: SupabaseClient,
+  userId: string,
+  track: Track,
+  completed: number[]
+): Promise<boolean> {
+  const earned = completed.length >= track.steps.length;
+  if (earned) {
+    const { error } = await sb
+      .from('badges')
+      .upsert({ user_id: userId, track_slug: track.slug }, { onConflict: 'user_id,track_slug' });
+    if (error) console.error('[playground] could not award badge:', error.message);
+  } else {
+    await sb.from('badges').delete().eq('user_id', userId).eq('track_slug', track.slug);
+  }
+  return earned;
+}
+
+export async function loadBadges(sb: SupabaseClient, userId: string): Promise<string[]> {
+  const { data, error } = await sb.from('badges').select('track_slug').eq('user_id', userId);
+  if (error) {
+    console.error('[playground] could not load badges:', error.message);
+    return [];
+  }
+  return (data ?? []).map((r) => r.track_slug);
+}

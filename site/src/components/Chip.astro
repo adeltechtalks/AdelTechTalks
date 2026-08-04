@@ -1,0 +1,56 @@
+---
+/* Chip — values verbatim from components/content/Chip.jsx.
+   Chips filter; they don't list. Max 3 chips, 3 words each (slot ceilings). */
+
+import Icon from './Icon.astro';
+
+interface Props {
+  pillar?: 'ai' | 'gadgets' | 'automation' | 'enterprise' | 'creator';
+  icon?: string;
+  selected?: boolean;
+  class?: string;
+}
+
+const { pillar, icon, selected = false, class: className } = Astro.props;
+
+const PILLARS = {
+  ai: { graphic: 'var(--atc-category-ai-graphic)', text: 'var(--atc-category-ai-text)', tint: 'var(--atc-purple-50)', icon: 'sparkles' },
+  gadgets: { graphic: 'var(--atc-category-gadgets-graphic)', text: 'var(--atc-category-gadgets-text)', tint: 'var(--atc-blue-50)', icon: 'smartphone' },
+  automation: { graphic: 'var(--atc-category-automation-graphic)', text: 'var(--atc-category-automation-text)', tint: '#FDEDF6', icon: 'workflow' },
+  enterprise: { graphic: 'var(--atc-category-enterprise-graphic)', text: 'var(--atc-category-enterprise-text)', tint: '#E6F5F3', icon: 'building-2' },
+  creator: { graphic: 'var(--atc-category-creator-graphic)', text: 'var(--atc-category-creator-text)', tint: '#FBF1E4', icon: 'clapperboard' },
+} as const;
+
+const p = pillar ? PILLARS[pillar] : null;
+const glyph = icon || p?.icon;
+
+const fg = selected ? 'var(--atc-white)' : p ? p.text : 'var(--atc-ink-700)';
+const bg = selected ? (p ? p.graphic : 'var(--atc-purple-600)') : p ? p.tint : 'var(--atc-white)';
+const bd = selected ? 'transparent' : p ? p.graphic : 'var(--atc-ink-200)';
+---
+
+<span
+  class:list={['atc-chip', className]}
+  style={`background:${bg};color:${fg};border-color:${bd}`}
+>
+  {glyph && <Icon name={glyph} size="sm" />}
+  <slot />
+</span>
+
+<style>
+  .atc-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    height: var(--atc-control-sm);
+    padding: 0 var(--atc-space-3);
+    box-sizing: border-box;
+    border: var(--atc-stroke-hairline) solid;
+    border-radius: var(--atc-radius-chip);
+    font-family: var(--atc-font-text);
+    font-size: var(--atc-body-small-size);
+    line-height: var(--atc-body-small-line);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+</style>

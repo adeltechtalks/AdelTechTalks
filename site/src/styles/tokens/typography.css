@@ -1,0 +1,58 @@
+/* TY v1.2 — Typography. Four faces; see tokens/fonts.css for the standalone-vs-inline rule. */
+:root {
+  /* Latin scale — size / line-height / weight */
+  --atc-display1-size: 56px; --atc-display1-line: 64px; --atc-display1-weight: 700;
+  --atc-display2-size: 44px; --atc-display2-line: 52px; --atc-display2-weight: 700;
+  --atc-heading1-size: 36px; --atc-heading1-line: 44px; --atc-heading1-weight: 700;
+  --atc-heading2-size: 28px; --atc-heading2-line: 36px; --atc-heading2-weight: 600;
+  --atc-heading3-size: 22px; --atc-heading3-line: 30px; --atc-heading3-weight: 600;
+  --atc-heading4-size: 18px; --atc-heading4-line: 26px; --atc-heading4-weight: 600;
+  --atc-body-large-size: 18px; --atc-body-large-line: 30px;
+  --atc-body-base-size: 16px;  --atc-body-base-line: 26px;
+  --atc-body-small-size: 14px; --atc-body-small-line: 22px;
+  --atc-label-size: 14px;   --atc-label-line: 20px;   --atc-label-weight: 500;
+  --atc-caption-size: 12px; --atc-caption-line: 18px;
+  --atc-overline-size: 12px; --atc-overline-line: 16px; --atc-overline-weight: 600;
+  --atc-overline-tracking: 0.08em; /* @kind other */ /* LATIN ONLY — no uppercase concept in Arabic */
+
+  /* Display tier — Cairo, >= 32px only */
+  --atc-cover1-size: 80px; --atc-cover1-weight: 900;
+  --atc-cover2-size: 48px; --atc-cover2-weight: 800;
+  --atc-poster-size: 96px; --atc-poster-weight: 1000;
+
+  /* TY-04 · Arabic */
+  --atc-arabic-size-multiplier: 1.08; /* @kind other */
+  --atc-arabic-line-increase: 0.15; /* @kind other */
+  --atc-arabic-min-body: 16px; /* @kind font */
+
+  /* Measure */
+  --atc-measure-latin: 68ch; /* @kind other */
+  --atc-measure-arabic: 58ch; /* @kind other */
+
+  /* TY v1.2 · Social type scale — AUTHORED IN ARABIC.
+     Latin equivalents step DOWN: size / 1.08, line-height - 0.15. This inverts the usual
+     adaptation rule, correctly, because Arabic is the default script on social. */
+  --atc-social-cover-size: 112px;  --atc-social-cover-line: 123px;  --atc-social-cover-weight: 900;
+  --atc-social-title-size: 76px;   --atc-social-title-line: 94px;   --atc-social-title-weight: 700;
+  --atc-social-sub-size: 54px;     --atc-social-sub-line: 71px;     --atc-social-sub-weight: 600;
+  --atc-social-body-size: 36px;    --atc-social-body-line: 58px;    --atc-social-body-weight: 400;
+  --atc-social-support-size: 30px; --atc-social-support-line: 48px; --atc-social-support-weight: 400;
+  --atc-social-label-size: 26px;   --atc-social-label-line: 32px;   --atc-social-label-weight: 500;
+  --atc-social-spec-size: 34px;    --atc-social-spec-line: 40px;    --atc-social-spec-weight: 500;
+  --atc-social-index-size: 150px;  --atc-social-index-line: 135px;  --atc-social-index-weight: 800;
+  /* cover = Cairo · title/sub/body/support/label = Readex · spec = Mono tabular · index = Montserrat */
+  --atc-latin-stepdown-size: 1.08; /* @kind other */
+  --atc-latin-stepdown-line: 0.15; /* @kind other */
+
+  /* BA v1.0 · descriptor lockup */
+  --atc-descriptor-tracking: 0.06em; /* @kind other */
+  --atc-descriptor-weight: 500; /* @kind font */
+}
+
+/* TY-04/TY-05 — Arabic runs. Applied by [lang="ar"] or [dir="rtl"]. */
+[lang="ar"], [dir="rtl"] {
+  font-size: calc(1em * var(--atc-arabic-size-multiplier));
+  line-height: calc(1.5em + var(--atc-arabic-line-increase) * 1em);
+  letter-spacing: 0; /* never letter-space Arabic — it severs the connected script */
+  text-transform: none;
+}

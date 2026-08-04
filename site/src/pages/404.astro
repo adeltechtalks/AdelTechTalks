@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '../components/Button.astro';
+---
+
+<Base title="Page not found" description="That page does not exist.">
+  <section class="container nf">
+    <div class="stack">
+      <span class="overline">404</span>
+      <h1 class="h-display">That page does not exist</h1>
+      <p class="lede">
+        It may have moved, or the link may be wrong. The guides and the Playground are both
+        one click away.
+      </p>
+      <div class="row">
+        <Button variant="secondary" size="md" href="/">Back to home</Button>
+        <Button variant="ghost" size="md" href="/guides">Browse guides</Button>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    max-width: 640px;
+    padding-block: 96px;
+  }
+</style>

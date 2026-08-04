@@ -1,0 +1,39 @@
+/* LG v2.0 · mark geometry, and SH v1.0 social grid + slot ceilings. */
+:root {
+  /* ---- LG v2.0 · the mark ---- */
+  --atc-mark-ratio: 1.2258; /* @kind other */ /* 220.64 : 180 — LOCKED, never scale non-uniformly */
+  /* Clear space = width of the left foot = 40.87 units at height 180 = 23% of mark HEIGHT. */
+  --atc-mark-clearspace-ratio: 0.23; /* @kind other */
+  /* Measured, not estimated: at 20px the gap between the lower legs falls to 1px and the mark
+     fuses into a solid triangle. Below 24px use an app icon tile instead of the bare mark. */
+  --atc-mark-min-size: 24px; /* @kind spacing */
+  --atc-mark-min-gradient-size: 40px; /* @kind spacing */
+  --atc-mark-min-print: 9mm; /* @kind spacing */
+  --atc-mark-min-embroidery: 26mm; /* @kind spacing */ /* one colour only */
+
+  /* ---- Social canvases ---- */
+  --atc-social-feed-w: 1080px;  --atc-social-feed-h: 1350px;  /* 4:5 */
+  --atc-social-square-w: 1080px;--atc-social-square-h: 1080px;/* 1:1 */
+  --atc-social-reel-w: 1080px;  --atc-social-reel-h: 1920px;  /* 9:16 */
+  --atc-social-thumb-w: 1280px; --atc-social-thumb-h: 720px;  /* 16:9 */
+
+  /* Margins, reserves, columns — per canvas */
+  --atc-social-feed-margin: 72px;   --atc-social-feed-top: 96px;   --atc-social-feed-bottom: 168px;
+  --atc-social-feed-cols: 6; /* @kind other */        --atc-social-feed-gutter: 24px; /* @kind other */
+  --atc-social-square-margin: 72px; --atc-social-square-top: 96px; --atc-social-square-bottom: 168px;
+  --atc-social-square-cols: 6; /* @kind other */      --atc-social-square-gutter: 24px; /* @kind other */
+  --atc-social-reel-margin: 72px;   --atc-social-reel-top: 260px;  --atc-social-reel-bottom: 420px;
+  --atc-social-reel-cols: 4; /* @kind other */        --atc-social-reel-gutter: 32px; /* @kind other */
+  --atc-social-thumb-margin: 64px;  --atc-social-thumb-top: 0px;   --atc-social-thumb-bottom: 0px;
+  --atc-social-thumb-cols: 8; /* @kind other */       --atc-social-thumb-gutter: 24px; /* @kind other */
+
+  /* ---- Slot ceilings — ENFORCED, not advisory. Counted in Arabic words.
+     On breach the remedy is always fewer words, NEVER smaller type. ---- */
+  --atc-slot-cover-headline: 5; /* @kind other */ /* breach -> cut */
+  --atc-slot-slide-title: 6;    /* @kind other */ /* breach -> split into two slides */
+  --atc-slot-body: 18;          /* @kind other */ /* one sentence; rest moves to the caption */
+  --atc-slot-support: 8;        /* @kind other */ /* breach -> delete, usually the weakest line */
+  --atc-slot-spec-tokens: 3;    /* @kind other */ /* a fourth belongs on a spec slide */
+  --atc-slot-chip-words: 3;     /* @kind other */
+  --atc-slot-chip-count: 3;     /* @kind other */ /* chips filter; they don't list */
+}

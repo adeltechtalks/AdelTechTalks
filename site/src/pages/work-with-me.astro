@@ -1,0 +1,119 @@
+---
+import Base from '../layouts/Base.astro';
+import Card from '../components/Card.astro';
+import Button from '../components/Button.astro';
+import Icon from '../components/Icon.astro';
+import { packages, partnershipNote, pillars } from '../site.config';
+
+/* CS-05 — the single Spark element on this page is the "Start an enquiry" button. */
+---
+
+<Base
+  title="Work with me"
+  description="Partnership packages for brands — deliverables, timelines and usage rights."
+>
+  <section class="container">
+    <div class="stack wwm__head">
+      <span class="overline">For brands</span>
+      <h1 class="h-display">Work with me</h1>
+      <p class="lede">
+        I test AI and technology products for a US audience that buys what it learns about.
+        Below is what a partnership includes. I quote per deal — tell me the product and the
+        outcome you need.
+      </p>
+      <div class="row">
+        <Button variant="primary" size="lg" href="/contact" iconRight="arrow-right">
+          Start an enquiry
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <section class="container section">
+    <div class="stack">
+      <h2 class="h-section">What I cover</h2>
+      <div class="grid grid--5">
+        {pillars.map((p) => (
+          <Card>
+            <Icon name={p.icon} size="lg" color={`var(--atc-category-${p.id}-graphic)`} />
+            <strong class="h-card">{p.name}</strong>
+          </Card>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container section" id="packages">
+    <div class="stack">
+      <div class="sec__head">
+        <h2 class="h-section">Packages</h2>
+        <span class="muted">Deliverables and terms. Pricing quoted per deal.</span>
+      </div>
+      <div class="grid grid--3">
+        {packages.map((pkg) => (
+          <Card>
+            <strong class="h-card">{pkg.name}</strong>
+            <span class="muted pkg__for">{pkg.bestFor}</span>
+            <ul class="pkg__list">
+              {pkg.deliverables.map((d) => (
+                <li>
+                  <Icon name="check" size="sm" color="var(--atc-purple-600)" />
+                  <span>{d}</span>
+                </li>
+              ))}
+            </ul>
+            <span class="pkg__time">Timeline · {pkg.timeline}</span>
+          </Card>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container section">
+    <Card elevation={2} padding="var(--atc-space-8)">
+      <div class="stack">
+        <h2 class="h-section">How I work with brands</h2>
+        <p class="lede">{partnershipNote}</p>
+      </div>
+    </Card>
+  </section>
+</Base>
+
+<style>
+  .wwm__head { max-width: 720px; }
+  .sec__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--atc-space-4);
+    flex-wrap: wrap;
+  }
+  .pkg__for {
+    font-size: var(--atc-body-small-size);
+    line-height: var(--atc-body-small-line);
+  }
+  .pkg__list {
+    list-style: none;
+    margin: var(--atc-space-2) 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-2);
+  }
+  .pkg__list li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--atc-space-2);
+    font-size: var(--atc-body-small-size);
+    line-height: var(--atc-body-small-line);
+  }
+  .pkg__time {
+    margin-top: auto;
+    padding-top: var(--atc-space-3);
+    border-top: var(--atc-stroke-hairline) solid var(--atc-ink-100);
+    font-family: var(--atc-font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--atc-ink-500);
+  }
+</style>

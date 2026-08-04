@@ -1,0 +1,170 @@
+---
+/* Button — values copied verbatim from components/actions/Button.jsx.
+   CS v1.1 Model 2: action.primary hovers LIGHTER and presses DARKER.
+   Pressed also carries a non-colour signal (2px block displacement + elevation
+   drop, MS v1.1) because a colour change alone does not read as commitment.
+   Labels wrap, never truncate. */
+
+import Icon from './Icon.astro';
+
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+  type?: 'button' | 'submit';
+  iconLeft?: string;
+  iconRight?: string;
+  full?: boolean;
+  disabled?: boolean;
+  class?: string;
+  [key: string]: any;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  iconLeft,
+  iconRight,
+  full = false,
+  disabled = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+const iconSize = size === 'lg' ? 'lg' : 'md';
+---
+
+<Tag
+  class:list={['atc-btn', `atc-btn--${variant}`, `atc-btn--${size}`, full && 'atc-btn--full', className]}
+  href={href}
+  type={href ? undefined : type}
+  aria-disabled={disabled ? 'true' : undefined}
+  {...rest}
+>
+  {iconLeft && <Icon name={iconLeft} size={iconSize} />}
+  <slot />
+  {iconRight && <Icon name={iconRight} size={iconSize} />}
+</Tag>
+
+<style>
+  .atc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    font-family: var(--atc-font-text);
+    font-weight: var(--atc-label-weight);
+    border-radius: var(--atc-radius-control);
+    cursor: pointer;
+    text-decoration: none;
+    /* interactive labels wrap, never truncate */
+    white-space: normal;
+    transition:
+      background-color var(--atc-duration-micro) var(--atc-ease-move),
+      box-shadow var(--atc-duration-micro) var(--atc-ease-move),
+      transform var(--atc-duration-micro) var(--atc-ease-move);
+  }
+  .atc-btn--full {
+    display: flex;
+    width: 100%;
+  }
+
+  /* ---- sizes: height invariant 32 / 40 / 48 ---- */
+  .atc-btn--sm {
+    height: var(--atc-control-sm);
+    min-height: var(--atc-control-sm);
+    padding: 0 var(--atc-space-3);
+    font-size: var(--atc-body-small-size);
+    line-height: var(--atc-body-small-line);
+    gap: var(--atc-space-2);
+  }
+  .atc-btn--md {
+    height: var(--atc-control-md);
+    min-height: var(--atc-control-md);
+    padding: 0 var(--atc-space-4);
+    font-size: var(--atc-label-size);
+    line-height: var(--atc-label-line);
+    gap: var(--atc-space-2);
+  }
+  .atc-btn--lg {
+    height: var(--atc-control-lg);
+    min-height: var(--atc-control-lg);
+    padding: 0 var(--atc-space-5);
+    font-size: var(--atc-body-base-size);
+    line-height: var(--atc-body-base-line);
+    gap: var(--atc-space-3);
+  }
+
+  /* ---- primary — the Spark moment. Max one per surface. ---- */
+  .atc-btn--primary {
+    background: var(--atc-action-primary-bg);
+    color: var(--atc-action-primary-fg);
+    border: var(--atc-stroke-hairline) solid var(--atc-spark-700);
+    box-shadow: var(--atc-elevation-1);
+  }
+  .atc-btn--primary:hover {
+    background: var(--atc-action-primary-bg-hover);
+    box-shadow: var(--atc-elevation-2);
+  }
+  .atc-btn--primary:active {
+    background: var(--atc-action-primary-bg-pressed);
+    box-shadow: var(--atc-elevation-1);
+    transform: translateY(var(--atc-pressed-translate-block));
+  }
+
+  /* ---- secondary ---- */
+  .atc-btn--secondary {
+    background: var(--atc-action-secondary-bg);
+    color: var(--atc-action-secondary-fg);
+    border: var(--atc-stroke-brand) solid var(--atc-stroke-brand-color);
+    box-shadow: none;
+  }
+  .atc-btn--secondary:hover {
+    background: var(--atc-action-secondary-bg-hover);
+    box-shadow: var(--atc-elevation-1);
+  }
+  .atc-btn--secondary:active {
+    background: var(--atc-action-secondary-bg-pressed);
+    box-shadow: none;
+    transform: translateY(var(--atc-pressed-translate-block));
+  }
+
+  /* ---- ghost ---- */
+  .atc-btn--ghost {
+    background: transparent;
+    color: var(--atc-purple-700);
+    border: var(--atc-stroke-hairline) solid transparent;
+    box-shadow: none;
+  }
+  .atc-btn--ghost:hover {
+    background: var(--atc-purple-50);
+  }
+  .atc-btn--ghost:active {
+    background: var(--atc-purple-100);
+    transform: translateY(var(--atc-pressed-translate-block));
+  }
+
+  /* ---- disabled: never opacity alone ---- */
+  .atc-btn[aria-disabled='true'] {
+    background: var(--atc-action-primary-bg-disabled);
+    color: var(--atc-action-primary-fg-disabled);
+    border: var(--atc-stroke-hairline) solid var(--atc-ink-200);
+    box-shadow: none;
+    transform: none;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* prefers-reduced-motion is a full replacement, never a faster version */
+  @media (prefers-reduced-motion: reduce) {
+    .atc-btn {
+      transition: none;
+    }
+    .atc-btn:active {
+      transform: none;
+    }
+  }
+</style>

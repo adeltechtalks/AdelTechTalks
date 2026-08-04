@@ -1,0 +1,136 @@
+---
+/* YouTube video card — facade pattern. We render the thumbnail and only load
+   YouTube's player when someone clicks, so the page stays fast and no tracking
+   scripts run on load.
+   IL/BA: no textures, no scrims. Contrast is solved by placement. */
+
+import Chip from './Chip.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  id: string;
+  title: string;
+  pillar?: 'ai' | 'gadgets' | 'automation' | 'enterprise' | 'creator';
+  meta?: string;
+}
+
+const { id, title, pillar, meta } = Astro.props;
+
+const PILLAR_LABEL = {
+  ai: 'AI Tools',
+  gadgets: 'Products',
+  automation: 'Automation',
+  enterprise: 'Enterprise',
+  creator: 'Creator Tech',
+} as const;
+
+const thumb = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+const watch = `https://www.youtube.com/watch?v=${id}`;
+---
+
+<article class="vid">
+  <div class="vid__frame" data-video-id={id}>
+    <button class="vid__play" type="button" aria-label={`Play: ${title}`}>
+      <img class="vid__thumb" src={thumb} alt="" loading="lazy" width="480" height="360" />
+      <span class="vid__badge"><Icon name="play" size="lg" /></span>
+    </button>
+  </div>
+  <div class="vid__body">
+    <div class="row">
+      {pillar && <Chip pillar={pillar}>{PILLAR_LABEL[pillar]}</Chip>}
+      {meta && <span class="vid__meta">{meta}</span>}
+    </div>
+    <h3 class="h-card"><a class="vid__title" href={watch} target="_blank" rel="noopener">{title}</a></h3>
+  </div>
+</article>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.vid__frame').forEach((frame) => {
+    frame.querySelector('.vid__play')?.addEventListener('click', () => {
+      const id = frame.dataset.videoId;
+      if (!id) return;
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+      iframe.title = 'YouTube video player';
+      iframe.allow =
+        'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.className = 'vid__iframe';
+      frame.replaceChildren(iframe);
+    });
+  });
+</script>
+
+<style>
+  .vid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-3);
+  }
+  .vid__frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    /* full-bleed media is exempt from the zero-radius prohibition, but a card
+       radius reads better in the grid */
+    border-radius: var(--atc-radius-card);
+    background: var(--atc-surface-depth);
+  }
+  .vid__play {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .vid__thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .vid__badge {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--atc-radius-circle);
+    background: var(--atc-surface-glass-fill);
+    backdrop-filter: blur(var(--atc-surface-glass-blur));
+    -webkit-backdrop-filter: blur(var(--atc-surface-glass-blur));
+    border: var(--atc-stroke-hairline) solid var(--atc-surface-glass-border);
+    box-shadow: var(--atc-elevation-2);
+    color: var(--atc-purple-700);
+  }
+  .vid__play:hover .vid__badge {
+    box-shadow: var(--atc-elevation-3);
+  }
+  .vid__iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+  .vid__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-2);
+  }
+  .vid__meta {
+    font-size: var(--atc-body-small-size);
+    color: var(--atc-ink-500);
+  }
+  .vid__title {
+    color: inherit;
+    text-decoration: none;
+  }
+  .vid__title:hover {
+    color: var(--atc-purple-700);
+    text-decoration: underline;
+  }
+</style>

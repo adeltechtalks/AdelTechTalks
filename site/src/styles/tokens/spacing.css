@@ -1,0 +1,50 @@
+/* SH v1.0–v1.1 — Shape, Space, Grid. 4px base, 8px rhythm. */
+:root {
+  --atc-space-0: 0px;  --atc-space-1: 4px;  --atc-space-2: 8px;  --atc-space-3: 12px;
+  --atc-space-4: 16px; --atc-space-5: 20px; --atc-space-6: 24px; --atc-space-8: 32px;
+  --atc-space-10: 40px; --atc-space-12: 48px; --atc-space-16: 64px; --atc-space-20: 80px;
+  --atc-space-24: 96px; --atc-space-32: 128px;
+
+  /* Radius primitives */
+  --atc-radius-xs: 6px; --atc-radius-sm: 10px; --atc-radius-md: 14px;
+  --atc-radius-lg: 18px; --atc-radius-xl: 24px; --atc-radius-2xl: 32px;
+  --atc-radius-pill: 999px; --atc-radius-circle: 50%;
+  /* Radius semantic roles */
+  --atc-radius-inline: var(--atc-radius-xs); /* @kind radius */
+  --atc-radius-control: var(--atc-radius-sm); /* @kind radius */
+  --atc-radius-card: var(--atc-radius-md); /* @kind radius */
+  --atc-radius-panel: var(--atc-radius-lg); /* @kind radius */
+  --atc-radius-hero: var(--atc-radius-xl); /* @kind radius */
+  --atc-radius-signature: var(--atc-radius-2xl); /* @kind radius */
+  --atc-radius-chip: var(--atc-radius-pill); /* @kind radius */
+  --atc-radius-badge: var(--atc-radius-circle); /* @kind radius */
+
+  /* SH-05 · stroke */
+  --atc-stroke-hairline: 1px; --atc-stroke-default: 1px;
+  --atc-stroke-strong: 1.5px; --atc-stroke-brand: 2px;
+  --atc-stroke-hairline-color: var(--atc-ink-100); /* @kind color */
+  --atc-stroke-default-color: var(--atc-ink-200); /* @kind color */
+  --atc-stroke-strong-color: var(--atc-ink-300); /* @kind color */
+  --atc-stroke-brand-color: var(--atc-purple-600); /* @kind color */
+
+  /* CS v1.2 · focus geometry */
+  --atc-focus-band: 2px; /* @kind spacing */
+  --atc-focus-offset: 2px; /* @kind spacing */
+  --atc-focus-protected-space: var(--atc-space-2); /* @kind spacing */
+
+  /* Control heights (invariant 1) + icon sizes (invariant 6) */
+  --atc-control-sm: 32px; --atc-control-md: 40px; --atc-control-lg: 48px;
+  --atc-icon-sm: 16px; --atc-icon-md: 20px; --atc-icon-lg: 24px; --atc-icon-xl: 32px;
+  --atc-touch-target: 44px; /* @kind spacing */
+
+  /* SH-04 · Origin Corner — ratio, not measurement. Base 8%, origin 16%. */
+  --atc-origin-base-ratio: 0.08; /* @kind other */
+  --atc-origin-corner-ratio: 0.16; /* @kind other */
+  --atc-origin-min-size: 56px; /* @kind spacing */
+
+  /* SH-07 · grid */
+  --atc-bp-sm: 360px; --atc-bp-md: 768px; --atc-bp-lg: 1024px; --atc-bp-xl: 1440px;
+  --atc-container-md: 720px; --atc-container-lg: 960px; --atc-container-xl: 1200px;
+  --atc-gutter-md: 24px; --atc-gutter-lg: 24px; --atc-gutter-xl: 32px;
+  --atc-margin-sm: 20px; --atc-margin-md: 32px; --atc-margin-lg: 40px; --atc-margin-xl: 64px;
+}

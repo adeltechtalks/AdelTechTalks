@@ -1,0 +1,110 @@
+---
+/* Newsletter signup.
+   Until services.newsletterAction is filled in (see LAUNCH.md), this renders a
+   disabled state that says so plainly rather than a form that silently fails. */
+
+import Button from './Button.astro';
+import { services } from '../site.config';
+
+interface Props {
+  /* Set true only on a surface where nothing else is the Spark moment. */
+  spark?: boolean;
+  compact?: boolean;
+}
+
+const { spark = false, compact = false } = Astro.props;
+const ready = Boolean(services.newsletterAction);
+---
+
+<div class:list={['nl', compact && 'nl--compact']}>
+  {ready ? (
+    <form class="nl__form" action={services.newsletterAction} method="post" target="_blank">
+      <label class="nl__label" for="nl-email">Email address</label>
+      <div class="nl__row">
+        <input
+          class="nl__input"
+          id="nl-email"
+          type="email"
+          name="email"
+          required
+          autocomplete="email"
+          placeholder="you@example.com"
+        />
+        <Button variant={spark ? 'primary' : 'secondary'} size="md" type="submit">
+          Subscribe
+        </Button>
+      </div>
+      <p class="nl__note">One email a week. Unsubscribe any time.</p>
+    </form>
+  ) : (
+    <div class="nl__pending">
+      <p class="nl__pendingTitle">Newsletter not connected yet</p>
+      <p class="nl__note">
+        Add your provider's form URL to <code>newsletterAction</code> in
+        <code>src/site.config.ts</code> — step 6 in LAUNCH.md.
+      </p>
+    </div>
+  )}
+</div>
+
+<style>
+  .nl__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-2);
+  }
+  .nl__label {
+    /* A placeholder is never a label — but the label may be visually hidden
+       where the context already names the field. */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .nl__row {
+    display: flex;
+    gap: var(--atc-space-3);
+    flex-wrap: wrap;
+  }
+  .nl__input {
+    flex: 1 1 260px;
+    height: var(--atc-control-md);
+    padding: 0 var(--atc-space-4);
+    box-sizing: border-box;
+    font-family: var(--atc-font-text);
+    font-size: var(--atc-body-base-size);
+    color: var(--atc-text-primary);
+    background: var(--atc-surface-raised);
+    border: var(--atc-stroke-default) solid var(--atc-ink-200);
+    border-radius: var(--atc-radius-control);
+  }
+  .nl__input::placeholder {
+    color: var(--atc-text-placeholder);
+  }
+  .nl__input:hover {
+    border-color: var(--atc-ink-300);
+  }
+  .nl__note {
+    margin: 0;
+    font-size: var(--atc-body-small-size);
+    color: var(--atc-ink-500);
+  }
+  .nl__pending {
+    padding: var(--atc-space-4);
+    border: var(--atc-stroke-default) dashed var(--atc-ink-200);
+    border-radius: var(--atc-radius-control);
+    background: var(--atc-surface-raised);
+  }
+  .nl__pendingTitle {
+    margin: 0 0 var(--atc-space-2);
+    font-weight: 600;
+    font-size: var(--atc-body-small-size);
+  }
+  .nl__pending code {
+    font-size: 12px;
+    background: var(--atc-purple-50);
+    padding: 1px 5px;
+    border-radius: var(--atc-radius-inline);
+  }
+</style>

@@ -1,0 +1,25 @@
+/* Base surface behaviour. Light is the default — not a theme option. */
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--atc-surface-canvas);
+  color: var(--atc-text-primary);
+  font-family: var(--atc-font-text);
+  font-size: var(--atc-body-base-size);
+  line-height: var(--atc-body-base-line);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  text-wrap: pretty;
+}
+a { color: var(--atc-text-link); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { color: var(--atc-blue-800); }
+code, pre, kbd, samp { font-family: var(--atc-font-mono); font-variant-numeric: tabular-nums; }
+
+/* CS v1.2 — universal two-band exterior focus indicator.
+   A real CSS outline is mandatory (forced-colours resilience); box-shadow is the second band only. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: var(--atc-focus-band) solid var(--atc-focus-strong);
+  outline-offset: var(--atc-focus-offset);
+  box-shadow: 0 0 0 calc(var(--atc-focus-offset) + var(--atc-focus-band) * 2) var(--atc-focus-inverse);
+  transition: none; /* focus is instant, never animated */
+}

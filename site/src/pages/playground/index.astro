@@ -1,0 +1,206 @@
+---
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/Card.astro';
+import Chip from '../../components/Chip.astro';
+import Button from '../../components/Button.astro';
+import Icon from '../../components/Icon.astro';
+import NewsletterForm from '../../components/NewsletterForm.astro';
+import { playground, services } from '../../site.config';
+
+const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
+---
+
+<Base
+  title="Playground"
+  description="Short hands-on tracks. Run the thing yourself and keep the badge."
+>
+  <section class="container">
+    <div class="stack pg__head">
+      <span class="overline">The Playground</span>
+      <h1 class="h-display">Learn it by running it</h1>
+      <p class="lede">{playground.intro}</p>
+
+      {live ? (
+        <div class="row" id="auth-row" data-live="true">
+          <span class="pg__authPending muted">Checking your session…</span>
+        </div>
+      ) : (
+        <div class="pg__soon">
+          <strong>Sign-in is not switched on yet.</strong>
+          <span class="muted">
+            The tracks below are live to read. Progress saving and badges turn on once Supabase
+            is connected — step 7 in LAUNCH.md.
+          </span>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="container section">
+    <div class="grid grid--3">
+      {playground.tracks.map((t) => (
+        <Card href={`/playground/${t.slug}/`} data-track={t.slug}>
+          <div class="row">
+            <Chip pillar={t.pillar as any}>{t.pillar}</Chip>
+            <span class="pg__mins">{t.minutes} min</span>
+          </div>
+          <strong class="h-card">{t.name}</strong>
+          <span class="muted pg__body">{t.body}</span>
+          <div class="pg__badgeRow">
+            <span class="pg__badgeIcon" data-badge-icon><Icon name="award" size="md" /></span>
+            <span class="pg__badgeName">{t.badge}</span>
+            <span class="pg__state" data-track-state></span>
+          </div>
+        </Card>
+      ))}
+    </div>
+  </section>
+
+  <section class="container section">
+    <Card elevation={1} padding="var(--atc-space-8)">
+      <div class="stack">
+        <h2 class="h-section">New track with every product</h2>
+        <p class="lede">
+          Every time I publish a product or an AI tool, a track lands here. Get told when it does.
+        </p>
+        <NewsletterForm />
+      </div>
+    </Card>
+  </section>
+</Base>
+
+{live && (
+  <script define:vars={{ cfg: services, tracks: playground.tracks }}>
+    import('../../lib/playground.ts').then(async (pg) => {
+      const sb = pg.getClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+      const user = await pg.currentUser(sb);
+      const row = document.getElementById('auth-row');
+      if (!row) return;
+      row.innerHTML = '';
+
+      if (!user) {
+        const btn = document.createElement('button');
+        btn.className = 'pg__google';
+        btn.type = 'button';
+        btn.textContent = 'Sign in with Google to save your progress';
+        btn.addEventListener('click', () => pg.signInWithGoogle(sb).catch((e) => alert(e.message)));
+        row.appendChild(btn);
+        return;
+      }
+
+      const badges = await pg.loadBadges(sb, user.id);
+      const name = user.user_metadata?.full_name || user.email;
+      const hi = document.createElement('span');
+      hi.className = 'pg__hi';
+      hi.textContent = `Signed in as ${name} · ${badges.length} badge${badges.length === 1 ? '' : 's'}`;
+      row.appendChild(hi);
+
+      const out = document.createElement('button');
+      out.className = 'pg__signout';
+      out.type = 'button';
+      out.textContent = 'Sign out';
+      out.addEventListener('click', () => pg.signOut(sb));
+      row.appendChild(out);
+
+      const progress = await pg.loadProgress(sb, user.id);
+      for (const t of tracks) {
+        const card = document.querySelector(`[data-track="${t.slug}"]`);
+        if (!card) continue;
+        const state = card.querySelector('[data-track-state]');
+        const done = (progress[t.slug] ?? []).length;
+        if (badges.includes(t.slug)) {
+          card.querySelector('[data-badge-icon]')?.classList.add('is-earned');
+          if (state) state.textContent = 'Earned';
+        } else if (done > 0) {
+          if (state) state.textContent = `${done} / ${t.steps.length}`;
+        }
+      }
+    });
+  </script>
+)}
+
+<style>
+  .pg__head { max-width: 720px; }
+  .pg__mins {
+    font-family: var(--atc-font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--atc-ink-500);
+  }
+  .pg__body {
+    font-size: var(--atc-body-small-size);
+    line-height: var(--atc-body-small-line);
+  }
+  .pg__badgeRow {
+    margin-top: auto;
+    padding-top: var(--atc-space-4);
+    border-top: var(--atc-stroke-hairline) solid var(--atc-ink-100);
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+  }
+  .pg__badgeIcon {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--atc-radius-circle);
+    background: var(--atc-ink-50);
+    color: var(--atc-ink-300);
+  }
+  /* Filled + brand colour carries meaning: earned. Survives greyscale. */
+  .pg__badgeIcon.is-earned {
+    background: var(--atc-purple-50);
+    color: var(--atc-purple-600);
+  }
+  .pg__badgeName {
+    font-size: var(--atc-body-small-size);
+    font-weight: 500;
+    color: var(--atc-ink-700);
+  }
+  .pg__state {
+    margin-inline-start: auto;
+    font-family: var(--atc-font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--atc-purple-700);
+  }
+
+  .pg__soon {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-2);
+    padding: var(--atc-space-5);
+    border: var(--atc-stroke-default) dashed var(--atc-ink-200);
+    border-radius: var(--atc-radius-panel);
+    background: var(--atc-surface-raised);
+    font-size: var(--atc-body-small-size);
+  }
+
+  :global(.pg__google) {
+    display: inline-flex;
+    align-items: center;
+    height: var(--atc-control-lg);
+    padding: 0 var(--atc-space-5);
+    font-family: var(--atc-font-text);
+    font-size: var(--atc-body-base-size);
+    font-weight: var(--atc-label-weight);
+    color: var(--atc-action-secondary-fg);
+    background: var(--atc-action-secondary-bg);
+    border: var(--atc-stroke-brand) solid var(--atc-stroke-brand-color);
+    border-radius: var(--atc-radius-control);
+    cursor: pointer;
+  }
+  :global(.pg__google:hover) { background: var(--atc-action-secondary-bg-hover); }
+  :global(.pg__hi) { font-size: var(--atc-body-small-size); color: var(--atc-ink-700); }
+  :global(.pg__signout) {
+    background: none;
+    border: 0;
+    padding: 4px 8px;
+    font: inherit;
+    font-size: var(--atc-body-small-size);
+    color: var(--atc-purple-700);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+</style>

@@ -1,0 +1,54 @@
+/* Motion Charter v1.0 / MS v1.0–v1.1 */
+:root {
+  --atc-duration-instant: 0ms; /* @kind other */
+  --atc-duration-micro: 80ms; /* @kind other */
+  --atc-duration-fast: 120ms; /* @kind other */
+  --atc-duration-base: 200ms; /* @kind other */
+  --atc-duration-moderate: 300ms; /* @kind other */
+  --atc-duration-slow: 450ms; /* @kind other */
+  --atc-duration-deliberate: 600ms; /* @kind other */
+  --atc-duration-ceiling: 800ms; /* @kind other */
+  --atc-sequence-product-max: 600ms; /* @kind other */
+  --atc-sequence-marketing-max: 1200ms; /* @kind other */
+
+  --atc-ease-enter: cubic-bezier(0.16, 0.84, 0.44, 1); /* @kind other */
+  --atc-ease-exit: cubic-bezier(0.4, 0, 1, 1); /* @kind other */
+  --atc-ease-move: cubic-bezier(0.4, 0, 0.2, 1); /* @kind other */
+  --atc-ease-loop: linear; /* @kind other */ /* restricted to the sync icon */
+
+  --atc-distance-1: 4px; /* @kind spacing */
+  --atc-distance-2: 8px; /* @kind spacing */
+  --atc-distance-3: 16px; /* @kind spacing */
+  --atc-distance-4: 24px; /* @kind spacing */
+  --atc-distance-marketing: 80px; /* @kind spacing */
+
+  --atc-opacity-hidden: 0; /* @kind other */
+  --atc-opacity-visible: 1; /* @kind other */
+  --atc-opacity-floor: 0.4; /* @kind other */
+  --atc-scale-enter: 0.96; /* @kind other */
+  --atc-scale-rest: 1; /* @kind other */
+  --atc-scale-overshoot: 1.03; /* @kind other */
+
+  --atc-stagger-product: 40ms; /* @kind other */
+  --atc-stagger-marketing: 70ms; /* @kind other */
+  --atc-loop-sync: 1000ms; /* @kind other */
+  --atc-loop-indeterminate: 1400ms; /* @kind other */
+  --atc-threshold-loader: 400ms; /* @kind other */
+  --atc-exit-ratio: 0.75; /* @kind other */
+
+  /* MS v1.1 — prototype-approved, not frozen */
+  --atc-pressed-translate-block: 2px; /* @kind spacing */
+}
+
+@keyframes atc-sync { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+/* Indeterminate loading is an OPACITY PULSE. Shimmer is prohibited system-wide. */
+@keyframes atc-indeterminate { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+@media (prefers-reduced-motion: reduce) {
+  /* Full replacement, never a degradation. */
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

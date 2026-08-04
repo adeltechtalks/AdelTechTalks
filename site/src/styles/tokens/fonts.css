@@ -1,0 +1,26 @@
+/* The Google Fonts request is issued as a <link> from src/layouts/Base.astro so it
+   does not create a render-blocking CSS import chain. Same four families, same
+   weights, same subsets — see TY v1.2 below. */
+
+/* TY v1.2 — FOUR families, four jobs, no overlap. No fifth font.
+   Supersedes TY v1.1, which retired Montserrat as a "Legacy Bridge" with no token.
+   Montserrat is reinstated as a first-class face with its own token and its own job.
+
+   THE OPERATIVE RULE
+   Montserrat when Latin STANDS ALONE — wordmarks, standalone labels, numerals, index figures.
+   Readex Pro the moment Latin sits INSIDE an Arabic sentence.
+   Mixing font metrics mid-sentence is the exact failure that made Readex Pro the original
+   choice; setting an inline Latin word in Montserrat re-introduces it.
+
+   Webfonts come from the Google Fonts CDN (all four are SIL OFL 1.1 / Apache-2.0).
+   Arabic + Latin subsets are requested together, never Latin-first. */
+:root {
+  /* Arabic body, and any Latin inside an Arabic run. 300–700. */
+  --atc-font-text: "Readex Pro", "Segoe UI", Tahoma, "Noto Sans Arabic", sans-serif;
+  /* Arabic display. 800/900. >= 32px ONLY — below that, or in UI, is a defect. */
+  --atc-font-disp: "Cairo", "Readex Pro", Tahoma, sans-serif;
+  /* Latin display, standalone only. 700/800. */
+  --atc-font-latin-disp: "Montserrat", "Readex Pro", "Segoe UI", sans-serif;
+  /* Technical: specs, prices, model numbers, code, page indicators. 400/500. */
+  --atc-font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}

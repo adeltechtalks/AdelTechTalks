@@ -1,0 +1,231 @@
+---
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/Card.astro';
+import Chip from '../../components/Chip.astro';
+import Icon from '../../components/Icon.astro';
+import { playground, services } from '../../site.config';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = () =>
+  playground.tracks.map((track) => ({ params: { slug: track.slug }, props: { track } }));
+
+const { track } = Astro.props;
+const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
+---
+
+<Base title={track.name} description={track.body}>
+  <section class="container tr">
+    <div class="stack">
+      <div class="row">
+        <Chip pillar={track.pillar as any}>{track.pillar}</Chip>
+        <span class="tr__mins">{track.minutes} min</span>
+      </div>
+      <h1 class="h-display">{track.name}</h1>
+      <p class="lede">{track.body}</p>
+    </div>
+
+    <Card elevation={2} padding="var(--atc-space-8)" class="tr__card">
+      <div class="tr__cardHead">
+        <div>
+          <strong class="h-card">Steps</strong>
+          <span class="muted tr__hint">
+            {live
+              ? 'Tick each step as you finish it. Complete all of them to earn the badge.'
+              : 'Progress saving turns on once Supabase is connected.'}
+          </span>
+        </div>
+        <div class="tr__badge" data-badge>
+          <span class="tr__badgeIcon" data-badge-icon><Icon name="award" size="lg" /></span>
+          <span class="tr__badgeName">{track.badge}</span>
+        </div>
+      </div>
+
+      <ol class="tr__steps">
+        {track.steps.map((step, i) => (
+          <li class="tr__step">
+            <label>
+              <input
+                type="checkbox"
+                data-step={i}
+                disabled={!live}
+              />
+              <span class="tr__stepNum">{i + 1}</span>
+              <span class="tr__stepText">{step}</span>
+            </label>
+          </li>
+        ))}
+      </ol>
+
+      <p class="tr__status" data-status role="status" aria-live="polite"></p>
+    </Card>
+
+    <a class="tr__back" href="/playground">← All tracks</a>
+  </section>
+</Base>
+
+{live && (
+  <script define:vars={{ cfg: services, track }}>
+    import('../../lib/playground.ts').then(async (pg) => {
+      const sb = pg.getClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+      const status = document.querySelector('[data-status]');
+      const boxes = Array.from(document.querySelectorAll('input[data-step]'));
+      const badgeIcon = document.querySelector('[data-badge-icon]');
+
+      const user = await pg.currentUser(sb);
+      if (!user) {
+        boxes.forEach((b) => (b.disabled = true));
+        if (status) {
+          status.innerHTML = '';
+          const btn = document.createElement('button');
+          btn.className = 'pg__google';
+          btn.type = 'button';
+          btn.textContent = 'Sign in with Google to save your progress';
+          btn.addEventListener('click', () => pg.signInWithGoogle(sb).catch((e) => alert(e.message)));
+          status.appendChild(btn);
+        }
+        return;
+      }
+
+      const progress = await pg.loadProgress(sb, user.id);
+      let done = new Set(progress[track.slug] ?? []);
+
+      const paint = (earned) => {
+        boxes.forEach((b, i) => (b.checked = done.has(i)));
+        badgeIcon?.classList.toggle('is-earned', earned);
+        if (status) {
+          status.textContent = earned
+            ? `Badge earned — ${track.badge}.`
+            : `${done.size} of ${track.steps.length} steps complete.`;
+        }
+      };
+
+      paint(done.size >= track.steps.length);
+
+      boxes.forEach((box, i) => {
+        box.addEventListener('change', async () => {
+          const want = box.checked;
+          box.disabled = true;
+          try {
+            await pg.setStep(sb, user.id, track.slug, i, want);
+            want ? done.add(i) : done.delete(i);
+            const earned = await pg.syncBadge(sb, user.id, track, [...done]);
+            paint(earned);
+          } catch (e) {
+            box.checked = !want;
+            if (status) status.textContent = `Could not save that step: ${e.message}`;
+          } finally {
+            box.disabled = false;
+          }
+        });
+      });
+    });
+  </script>
+)}
+
+<style>
+  .tr { max-width: 860px; }
+  .tr__mins {
+    font-family: var(--atc-font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--atc-ink-500);
+  }
+  .tr__card { margin-top: 48px; }
+  .tr__cardHead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--atc-space-6);
+    flex-wrap: wrap;
+    padding-bottom: var(--atc-space-5);
+    border-bottom: var(--atc-stroke-hairline) solid var(--atc-ink-100);
+  }
+  .tr__cardHead > div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-1);
+  }
+  .tr__hint { font-size: var(--atc-body-small-size); }
+  .tr__badge {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-3);
+  }
+  .tr__badgeIcon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--atc-radius-circle);
+    background: var(--atc-ink-50);
+    color: var(--atc-ink-300);
+    transition: background var(--atc-duration-fast) var(--atc-ease-enter),
+                color var(--atc-duration-fast) var(--atc-ease-enter);
+  }
+  .tr__badgeIcon.is-earned {
+    background: var(--atc-purple-50);
+    color: var(--atc-purple-600);
+  }
+  .tr__badgeName {
+    font-weight: 600;
+    font-size: var(--atc-body-small-size);
+  }
+
+  .tr__steps {
+    list-style: none;
+    margin: var(--atc-space-5) 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-2);
+    counter-reset: step;
+  }
+  .tr__step label {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-4);
+    padding: var(--atc-space-4);
+    border: var(--atc-stroke-hairline) solid var(--atc-ink-100);
+    border-radius: var(--atc-radius-control);
+    cursor: pointer;
+  }
+  .tr__step label:hover { background: var(--atc-purple-50); }
+  .tr__step input {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--atc-purple-600);
+    flex: 0 0 auto;
+    cursor: pointer;
+  }
+  .tr__step input:disabled { cursor: not-allowed; }
+  .tr__stepNum {
+    font-family: var(--atc-font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--atc-ink-500);
+    width: 1.5em;
+  }
+  .tr__stepText { font-size: var(--atc-body-base-size); }
+  .tr__step input:checked ~ .tr__stepText {
+    color: var(--atc-ink-500);
+    text-decoration: line-through;
+  }
+
+  .tr__status {
+    margin: var(--atc-space-5) 0 0;
+    font-size: var(--atc-body-small-size);
+    color: var(--atc-ink-700);
+  }
+  .tr__back {
+    display: inline-block;
+    margin-top: var(--atc-space-6);
+    font-size: var(--atc-body-small-size);
+    color: var(--atc-purple-700);
+    text-decoration: none;
+  }
+  .tr__back:hover { text-decoration: underline; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tr__badgeIcon { transition: none; }
+  }
+</style>

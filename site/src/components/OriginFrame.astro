@@ -1,0 +1,45 @@
+---
+/* OriginFrame — SH-04, the Origin Corner. A ratio, not a measurement:
+   base radius 8% of the shorter side, origin corner 16%. Locked at 1:2.
+   RTL is the DEFAULT orientation (top-right); LTR mirrors to top-left.
+
+   Signature Brand Surfaces only. ONE per composition. Nesting prohibited.
+   Never on cards, nav, buttons, inputs, modals or repeated list items. */
+
+interface Props {
+  shorterSide?: number;
+  rtl?: boolean;
+  background?: string;
+  class?: string;
+  [key: string]: any;
+}
+
+const {
+  shorterSide = 320,
+  rtl = false,
+  background = 'var(--atc-surface-depth)',
+  class: className,
+  ...rest
+} = Astro.props;
+
+const base = Math.round(shorterSide * 0.08);
+const origin = Math.round(shorterSide * 0.16);
+const radius = rtl
+  ? `${base}px ${origin}px ${base}px ${base}px`
+  : `${origin}px ${base}px ${base}px ${base}px`;
+---
+
+<div
+  class:list={['atc-origin-frame', className]}
+  style={`border-radius:${radius};background:${background}`}
+  {...rest}
+>
+  <slot />
+</div>
+
+<style>
+  .atc-origin-frame {
+    overflow: hidden;
+    position: relative;
+  }
+</style>

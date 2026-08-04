@@ -1,0 +1,103 @@
+/* Layout helpers shared across pages.
+   SH v1.0 air rule: section padding never below 48px; no two content groups
+   closer than 24px. When crowded, remove content — never space. */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-inline: var(--atc-space-8);
+}
+
+.section {
+  padding-block-start: 96px;
+}
+.section--tight {
+  padding-block-start: 64px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--atc-space-6);
+}
+
+/* ---- headings. Latin standing alone → Montserrat (TY v1.2) ---- */
+h1,
+h2,
+h3 {
+  font-family: var(--atc-font-latin-disp);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  margin: 0;
+}
+
+.h-display {
+  font-size: 56px;
+  line-height: 64px;
+  font-weight: 700;
+}
+.h-section {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 600;
+}
+.h-card {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+  font-family: var(--atc-font-text);
+}
+
+.overline {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  /* overline is the ONLY uppercase style, and it is Latin-only */
+  text-transform: uppercase;
+  color: var(--atc-purple-700);
+}
+
+.lede {
+  font-size: 18px;
+  line-height: 30px;
+  color: var(--atc-ink-500);
+  /* Latin measure 60–75 characters */
+  max-width: 66ch;
+  margin: 0;
+}
+
+.muted {
+  color: var(--atc-ink-500);
+}
+
+.grid {
+  display: grid;
+  gap: var(--atc-space-6);
+}
+.grid--2 { grid-template-columns: repeat(2, 1fr); }
+.grid--3 { grid-template-columns: repeat(3, 1fr); }
+.grid--4 { grid-template-columns: repeat(4, 1fr); }
+.grid--5 { grid-template-columns: repeat(5, 1fr); }
+
+.row {
+  display: flex;
+  gap: var(--atc-space-3);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ---- responsive: grid 4 / 8 / 12 / 12 at 360 / 768 / 1024 / 1440 ---- */
+@media (max-width: 1023px) {
+  .container { padding-inline: var(--atc-space-5); }
+  .section { padding-block-start: 64px; }
+  .grid--5, .grid--4 { grid-template-columns: repeat(2, 1fr); }
+  .grid--3 { grid-template-columns: repeat(2, 1fr); }
+  .h-display { font-size: 40px; line-height: 48px; }
+}
+
+@media (max-width: 767px) {
+  .grid--2, .grid--3, .grid--4, .grid--5 { grid-template-columns: 1fr; }
+  .section { padding-block-start: 48px; }
+  .h-display { font-size: 32px; line-height: 40px; }
+  .h-section { font-size: 24px; line-height: 32px; }
+}

@@ -1,0 +1,171 @@
+---
+/* Sticky glass header. BP v1.0: glass is ONE layer deep, only at elevation 2+.
+   This is the only glass surface on any page.
+   Header actions are deliberately SECONDARY — the header persists across every
+   route and would otherwise duplicate each page's single Spark moment. */
+
+import Logo from './Logo.astro';
+import Button from './Button.astro';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+const NAV = [
+  { href: '/guides', label: 'Guides' },
+  { href: '/playground', label: 'Playground' },
+  { href: '/about', label: 'About' },
+  { href: '/work-with-me', label: 'Work with me' },
+];
+
+const isActive = (href: string) => path === href || path.startsWith(href + '/');
+---
+
+<header class="hdr">
+  <div class="hdr__inner">
+    <a href="/" class="hdr__logo" aria-label="AdelTechTalks — home">
+      <Logo size={32} />
+    </a>
+
+    <nav class="hdr__nav" aria-label="Main">
+      {NAV.map((item) => (
+        <a
+          href={item.href}
+          class:list={['hdr__link', isActive(item.href) && 'hdr__link--active']}
+          aria-current={isActive(item.href) ? 'page' : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="hdr__actions">
+      <Button variant="secondary" size="md" href="/work-with-me" iconRight="arrow-right">
+        Work with me
+      </Button>
+    </div>
+
+    <button class="hdr__burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <nav class="hdr__mobile" id="mobile-nav" aria-label="Main" hidden>
+    {NAV.map((item) => (
+      <a href={item.href} class:list={['hdr__link', isActive(item.href) && 'hdr__link--active']}>
+        {item.label}
+      </a>
+    ))}
+  </nav>
+</header>
+
+<script>
+  const burger = document.querySelector<HTMLButtonElement>('.hdr__burger');
+  const menu = document.querySelector<HTMLElement>('.hdr__mobile');
+  burger?.addEventListener('click', () => {
+    const open = burger.getAttribute('aria-expanded') === 'true';
+    burger.setAttribute('aria-expanded', String(!open));
+    burger.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+    if (menu) menu.hidden = open;
+  });
+</script>
+
+<style>
+  .hdr {
+    position: sticky;
+    top: 0;
+    z-index: var(--atc-z-3);
+    background: var(--atc-surface-glass-fill);
+    backdrop-filter: blur(var(--atc-surface-glass-blur));
+    -webkit-backdrop-filter: blur(var(--atc-surface-glass-blur));
+    border-bottom: var(--atc-stroke-hairline) solid var(--atc-ink-100);
+  }
+  .hdr__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--atc-space-8);
+    height: 72px;
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-8);
+  }
+  .hdr__logo {
+    display: flex;
+    text-decoration: none;
+  }
+  .hdr__nav {
+    display: flex;
+    gap: var(--atc-space-1);
+    margin-inline-start: auto;
+  }
+  .hdr__link {
+    padding: 8px 14px;
+    border-radius: var(--atc-radius-control);
+    text-decoration: none;
+    font-size: var(--atc-body-small-size);
+    font-weight: 500;
+    color: var(--atc-ink-700);
+    white-space: nowrap;
+  }
+  .hdr__link:hover {
+    background: var(--atc-purple-50);
+    color: var(--atc-purple-700);
+  }
+  .hdr__link--active {
+    color: var(--atc-purple-700);
+    background: var(--atc-purple-50);
+  }
+  .hdr__actions {
+    display: flex;
+    gap: var(--atc-space-3);
+    align-items: center;
+  }
+
+  /* ---- burger, hidden on desktop ---- */
+  .hdr__burger {
+    display: none;
+    margin-inline-start: auto;
+    width: 44px; /* touch target 44×44 regardless of visual height */
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    background: transparent;
+    border: var(--atc-stroke-hairline) solid var(--atc-ink-200);
+    border-radius: var(--atc-radius-control);
+    cursor: pointer;
+  }
+  .hdr__burger span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--atc-ink-700);
+  }
+  .hdr__mobile {
+    display: none;
+    flex-direction: column;
+    gap: var(--atc-space-1);
+    padding: var(--atc-space-4) var(--atc-space-5) var(--atc-space-5);
+    border-top: var(--atc-stroke-hairline) solid var(--atc-ink-100);
+  }
+  .hdr__mobile .hdr__link {
+    padding: 12px 14px;
+  }
+
+  @media (max-width: 1023px) {
+    .hdr__inner {
+      padding: 0 var(--atc-space-5);
+      gap: var(--atc-space-4);
+    }
+    .hdr__nav,
+    .hdr__actions {
+      display: none;
+    }
+    .hdr__burger {
+      display: flex;
+    }
+    .hdr__mobile:not([hidden]) {
+      display: flex;
+    }
+  }
+</style>

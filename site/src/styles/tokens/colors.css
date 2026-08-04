@@ -1,0 +1,124 @@
+/* CS v1.0–v1.2 — Colour System.
+   Tier 1 primitives are never consumed by a component. Tier 2 semantics are. */
+:root {
+  /* ---- Tier 1 · Brand Purple ---- */
+  --atc-purple-50: #F5F3FF; --atc-purple-100: #EBE6FE; --atc-purple-200: #D9D0FD;
+  --atc-purple-300: #BFAEFB; --atc-purple-400: #A186F7; --atc-purple-500: #855FF2;
+  --atc-purple-600: #6C41E4; --atc-purple-700: #5A32C4; --atc-purple-800: #48299C;
+  --atc-purple-900: #331C6E;
+
+  /* ---- Tier 1 · Signal Blue ---- */
+  --atc-blue-50: #EFF5FF; --atc-blue-100: #DDE9FF; --atc-blue-200: #C0D6FF;
+  --atc-blue-300: #94BAFE; --atc-blue-400: #6499FB; --atc-blue-500: #3E7BFA;
+  --atc-blue-600: #2860E8; --atc-blue-700: #1F4BC0; --atc-blue-800: #1B3D95;
+  --atc-blue-900: #17306E;
+
+  /* ---- Tier 1 · Spark Coral — the accent moment. Max 1% of any surface. ---- */
+  --atc-spark-100: #FFE9E4; --atc-spark-300: #FFB4A3;
+  --atc-spark-500: #FF6B57; --atc-spark-700: #CE3A24;
+
+  /* ---- Tier 1 · Lavender atmosphere — the signature ---- */
+  --atc-mist: #F8F6FF; --atc-veil: #F1EDFE; --atc-haze: #E6DFFC;
+
+  /* ---- Tier 1 · Tinted neutrals. Violet-tinted, never pure grey. ---- */
+  --atc-ink-50: #F4F3F9; --atc-ink-100: #E7E4F0; --atc-ink-200: #CFCADF;
+  --atc-ink-300: #A9A3C4; --atc-ink-500: #6B6390; --atc-ink-700: #3D3663;
+  --atc-ink-900: #1A1633; /* TEXT ONLY — never a background */
+  --atc-white: #FFFFFF;
+
+  /* ---- Tier 1 · pillar hues ---- */
+  --atc-teal-500: #0E9384; --atc-teal-700: #0B7468;
+  --atc-pink-500: #DB4A9B; --atc-pink-700: #B2317C;
+  --atc-gold-500: #C8802E; --atc-gold-700: #9E5E17;
+
+  /* ---- Tier 2 · brand ---- */
+  --atc-brand-primary: var(--atc-purple-600);
+  --atc-brand-secondary: var(--atc-blue-500);
+  --atc-brand-accent: var(--atc-spark-500);
+
+  /* ---- Tier 2 · surface ---- */
+  --atc-surface-canvas: var(--atc-mist);
+  --atc-surface-raised: var(--atc-white);
+  --atc-surface-sunken: var(--atc-veil);
+  --atc-surface-depth: var(--atc-haze);
+  --atc-surface-inverse: var(--atc-ink-900);
+  --atc-surface-glass-fill: rgba(255,255,255,0.68);
+  --atc-surface-glass-border: rgba(255,255,255,0.60);
+  --atc-surface-glass-blur: 20px;
+
+  /* ---- Tier 2 · text ---- */
+  --atc-text-primary: var(--atc-ink-900);
+  --atc-text-secondary: var(--atc-ink-500);
+  --atc-text-tertiary: var(--atc-ink-300);
+  --atc-text-placeholder: var(--atc-ink-300);
+  --atc-text-disabled: var(--atc-ink-300);
+  --atc-text-on-brand: var(--atc-white);
+  --atc-text-on-spark: var(--atc-ink-900);
+  --atc-text-link: var(--atc-blue-700);
+
+  /* ---- Tier 2 · action.primary — CS v1.1, Model 2 (lighter hover, darker pressed) ---- */
+  --atc-action-primary-bg: #FF6B57;
+  --atc-action-primary-bg-hover: #FF8775;
+  --atc-action-primary-bg-pressed: #EF5C49;
+  --atc-action-primary-bg-disabled: var(--atc-ink-100);
+  --atc-action-primary-fg: var(--atc-ink-900);
+  --atc-action-primary-fg-disabled: var(--atc-ink-300);
+  /* action.secondary / danger / ghost / subtle: state direction UNVERIFIED in CS.
+     Secondary below is provisional and marked as such in readme.md. */
+  --atc-action-secondary-bg: var(--atc-white);
+  --atc-action-secondary-bg-hover: var(--atc-purple-50);
+  --atc-action-secondary-bg-pressed: var(--atc-purple-100);
+  --atc-action-secondary-fg: var(--atc-purple-700);
+  --atc-action-secondary-border: var(--atc-purple-600);
+
+  /* ---- Tier 2 · focus — CS v1.2, two-band exterior indicator ---- */
+  --atc-focus-strong: var(--atc-ink-900);
+  --atc-focus-inverse: var(--atc-white);
+
+  /* ---- Tier 2 · status ---- */
+  --atc-status-success: #17A96A;
+  --atc-status-warning: #E08A0B;
+  --atc-status-error: #DB3A3F;
+  --atc-status-info: var(--atc-blue-700);
+
+  /* ---- Tier 2 · category (content pillars). Never in the same component as status.* ---- */
+  --atc-category-ai-graphic: #6C41E4;        --atc-category-ai-text: #6C41E4;
+  --atc-category-gadgets-graphic: #3E7BFA;   --atc-category-gadgets-text: #1F4BC0;
+  --atc-category-automation-graphic: #DB4A9B;--atc-category-automation-text: #B2317C;
+  --atc-category-enterprise-graphic: #0E9384;--atc-category-enterprise-text: #0B7468;
+  --atc-category-creator-graphic: #C8802E;   --atc-category-creator-text: #9E5E17;
+
+  /* ---- Tier 2 · illustration tone pairs (IL-02) ---- */
+  --atc-ill-primary-face: #D9D0FD;   --atc-ill-primary-offset: #A186F7;
+  --atc-ill-secondary-face: #C0D6FF; --atc-ill-secondary-offset: #6499FB;
+  --atc-ill-neutral-face: #E7E4F0;   --atc-ill-neutral-offset: #A9A3C4;
+  --atc-ill-screen-face: #FFFFFF;    --atc-ill-screen-offset: #A9A3C4;
+  --atc-ill-spark-face: #FFB4A3;     --atc-ill-spark-offset: #FF6B57;
+  --atc-ill-human-face: #BFAEFB;     --atc-ill-human-offset: #6C41E4;
+  --atc-ill-warning-face: #F5C271;   --atc-ill-warning-offset: #E08A0B;
+  --atc-ill-contact-shadow: rgba(58,43,122,0.08);
+
+  /* ---- Dark Impact Mode — the second official production mode ----
+     Video covers, reel covers, major launches, AI warnings, breaking news, gaming.
+     ⚠️ APPROVED BUT NOT FULLY SPECIFIED: surface ladder, glass rules and contrast ramp
+     are undefined. Anything beyond these five tokens is not decided — do not invent it. */
+  --atc-impact-navy: #0B0918;
+  --atc-impact-charcoal: #17151F;
+  --atc-impact-blue: #2B6CFF;   /* 4.48:1 on white — FAILS. Dark grounds only. */
+  --atc-impact-purple: #7A3BE8;
+  --atc-impact-magenta: #D63BC9;
+
+  /* ---- LG v2.0 · mark colour roles ---- */
+  --atc-mark-primary: var(--atc-purple-600);  /* Light Knowledge Mode — the default */
+  --atc-mark-ink: var(--atc-ink-900);         /* print, documents, cheat sheets */
+  --atc-mark-reversed: var(--atc-white);      /* dark or photographic grounds; never tinted grey */
+
+  /* ---- Gradients — max two stops, adjacent hues only (CS-06) ---- */
+  --atc-gradient-aurora: linear-gradient(135deg, #A186F7 0%, #6C41E4 100%); /* @kind color */
+  --atc-gradient-dawn: linear-gradient(135deg, #C0D6FF 0%, #EBE6FE 100%); /* @kind color */
+  --atc-gradient-spark: linear-gradient(135deg, #FF8A6B 0%, #FF6B57 100%); /* @kind color */
+  /* The three-stop brand gradient is NOT an exception to CS-06 — it sits outside its scope.
+     CS-06 governs Light Knowledge Mode; this is a Dark Impact asset under that mode's rules.
+     Never below 40px, never on a light ground, never off its 45deg axis. */
+  --atc-gradient-impact: linear-gradient(45deg, #2B6CFF 0%, #7A3BE8 52%, #D63BC9 100%); /* @kind color */
+}

@@ -1,0 +1,145 @@
+---
+import Base from '../layouts/Base.astro';
+import Card from '../components/Card.astro';
+import Button from '../components/Button.astro';
+import { services, site } from '../site.config';
+
+const ready = Boolean(services.formspreeId);
+const action = ready ? `https://formspree.io/f/${services.formspreeId}` : undefined;
+
+const PACKAGE_HINT = [
+  'AI Discovery', 'AI Experience', 'AI Launch', 'AI Tested', 'Buying Guide',
+  'UGC', 'AI Education', 'Enterprise AI', 'Brand Ambassador', 'Not sure yet',
+];
+---
+
+<Base title="Contact" description="Brand enquiries and partnership requests.">
+  <section class="container ct">
+    <div class="stack ct__head">
+      <span class="overline">Contact</span>
+      <h1 class="h-display">Tell me about the product</h1>
+      <p class="lede">
+        The more specific you are, the faster I can tell you whether it is a fit. If it is not,
+        I will say so — that saves us both a month.
+      </p>
+    </div>
+
+    <Card elevation={2} padding="var(--atc-space-8)">
+      {ready ? (
+        <form class="ct__form" action={action} method="POST">
+          <div class="ct__field">
+            <label for="name">Your name</label>
+            <input id="name" name="name" type="text" required autocomplete="name" />
+          </div>
+
+          <div class="ct__field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required autocomplete="email" />
+          </div>
+
+          <div class="ct__field">
+            <label for="company">Company or brand</label>
+            <input id="company" name="company" type="text" />
+          </div>
+
+          <div class="ct__field">
+            <label for="package">Package you have in mind</label>
+            <select id="package" name="package">
+              {PACKAGE_HINT.map((p) => <option value={p}>{p}</option>)}
+            </select>
+          </div>
+
+          <div class="ct__field ct__field--wide">
+            <label for="message">What is the product, and what outcome do you need?</label>
+            <textarea id="message" name="message" rows="6" required></textarea>
+          </div>
+
+          <div class="ct__actions">
+            <Button variant="primary" size="lg" type="submit">Send enquiry</Button>
+            <span class="muted ct__note">I reply to every serious enquiry within a week.</span>
+          </div>
+        </form>
+      ) : (
+        <div class="stack">
+          <strong class="h-card">Contact form not connected yet</strong>
+          <p class="muted">
+            Add your Formspree form ID to <code>formspreeId</code> in
+            <code>src/site.config.ts</code> — step 5 in LAUNCH.md. Until then, the address below works.
+          </p>
+          <div class="row">
+            <Button variant="secondary" size="md" href={`mailto:${site.email}`} iconLeft="mail">
+              {site.email}
+            </Button>
+          </div>
+        </div>
+      )}
+    </Card>
+  </section>
+</Base>
+
+<style>
+  .ct { max-width: 860px; }
+  .ct__head { margin-bottom: 48px; }
+
+  .ct__form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--atc-space-5);
+  }
+  .ct__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-2);
+  }
+  .ct__field--wide,
+  .ct__actions {
+    grid-column: 1 / -1;
+  }
+  /* A placeholder is never a label — every field carries a real one. */
+  .ct__field label {
+    font-size: var(--atc-label-size);
+    font-weight: var(--atc-label-weight);
+    color: var(--atc-ink-700);
+  }
+  .ct__field input,
+  .ct__field select,
+  .ct__field textarea {
+    font-family: var(--atc-font-text);
+    font-size: var(--atc-body-base-size);
+    color: var(--atc-text-primary);
+    background: var(--atc-surface-raised);
+    border: var(--atc-stroke-default) solid var(--atc-ink-200);
+    border-radius: var(--atc-radius-control);
+    padding: 0 var(--atc-space-4);
+    height: var(--atc-control-md);
+    box-sizing: border-box;
+  }
+  .ct__field textarea {
+    height: auto;
+    padding: var(--atc-space-4);
+    line-height: var(--atc-body-base-line);
+    resize: vertical;
+  }
+  .ct__field input:hover,
+  .ct__field select:hover,
+  .ct__field textarea:hover {
+    border-color: var(--atc-ink-300);
+  }
+  .ct__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-5);
+    flex-wrap: wrap;
+  }
+  .ct__note { font-size: var(--atc-body-small-size); }
+  code {
+    background: var(--atc-purple-50);
+    padding: 1px 5px;
+    border-radius: var(--atc-radius-inline);
+    font-size: 12px;
+  }
+
+  @media (max-width: 767px) {
+    .ct__form { grid-template-columns: 1fr; }
+  }
+</style>
