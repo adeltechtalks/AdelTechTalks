@@ -1,0 +1,354 @@
+---
+/* The account page: who you are, your Tech Passport, and the badge links you
+   can post. Replaces the standalone /playground/passport page.
+
+   Passport visuals come from ui_kits/playground/Passport.jsx — earned vs
+   unearned is carried by FORM (solid pillar disc vs dashed outline), not colour
+   alone, so it survives greyscale and colour-vision deficiency (IC v1.0).
+
+   ONE Origin Corner on this page: the passport card. No Spark element — this
+   page records what has happened; nothing here is advancing. */
+
+import Base from '../layouts/Base.astro';
+import Card from '../components/Card.astro';
+import Icon from '../components/Icon.astro';
+import OriginFrame from '../components/OriginFrame.astro';
+import Button from '../components/Button.astro';
+import { playground, services } from '../site.config';
+
+const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
+
+const PILLAR_ICON = {
+  ai: 'sparkles', gadgets: 'smartphone', automation: 'workflow',
+  enterprise: 'building-2', creator: 'clapperboard',
+} as const;
+
+const stamps = playground.tracks.map((t) => ({
+  slug: t.slug,
+  label: t.badge,
+  pillar: t.pillar,
+  icon: PILLAR_ICON[t.pillar as keyof typeof PILLAR_ICON] ?? 'award',
+}));
+---
+
+<Base title="Your profile" description="Your Tech Passport, badges and share links.">
+  <section class="container pf">
+    <!-- Shown until we know who they are, so nothing flashes wrongly. -->
+    <div class="pf__loading" data-loading>
+      <span class="muted">Loading your profile…</span>
+    </div>
+
+    <!-- Signed out -->
+    <div class="pf__out" data-signed-out hidden>
+      <Card elevation={2} padding="var(--atc-space-8)">
+        <div class="stack">
+          <h1 class="h-section">You are not signed in</h1>
+          <p class="lede">Sign in to see your Tech Passport, your badges and your share links.</p>
+          <div class="row">
+            <Button variant="secondary" size="lg" href="/login/?next=/profile/" iconRight="arrow-right">
+              Sign in
+            </Button>
+          </div>
+        </div>
+      </Card>
+    </div>
+
+    <!-- Signed in -->
+    <div data-signed-in hidden>
+      <div class="pf__head">
+        <div class="pf__id">
+          <span class="pf__avatar" data-avatar>A</span>
+          <div class="pf__idText">
+            <h1 class="h-section" data-name>—</h1>
+            <span class="muted" data-email>—</span>
+          </div>
+        </div>
+        <button class="pf__signout" type="button" data-signout>Sign out</button>
+      </div>
+
+      <div class="pf__grid">
+        <Card elevation={1} padding="var(--atc-space-6)">
+          <div class="pf__stampsHead">
+            <strong class="pf__stampsTitle">Tech Passport</strong>
+            <span class="pf__count" data-count>—</span>
+          </div>
+          <p class="muted pf__sub">A record of what you have run — not what you have watched.</p>
+          <div class="pf__stamps">
+            {stamps.map((s) => (
+              <div class="pf__stamp" data-stamp={s.slug}>
+                <span class="pf__disc" style={`--pillar: var(--atc-category-${s.pillar}-graphic)`}>
+                  <Icon name={s.icon} size="lg" />
+                </span>
+                <span class="pf__label">{s.label}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <div class="pf__side">
+          <!-- SH-04: the single Origin Corner on this page -->
+          <OriginFrame shorterSide={200} background="var(--atc-gradient-aurora)" class="pf__card">
+            <div class="pf__cardInner">
+              <span class="pf__cardLabel">Passport No.</span>
+              <strong class="pf__cardNo" data-passport-no>ATT-————</strong>
+              <span class="pf__cardIssued" data-issued>—</span>
+            </div>
+          </OriginFrame>
+
+          <Card elevation={1} padding="var(--atc-space-6)">
+            <div class="pf__next">
+              <div class="pf__progHead">
+                <span class="pf__progLabel">Collection</span>
+                <span class="pf__progVal" data-pct>0%</span>
+              </div>
+              <div class="pf__track"><span class="pf__fill" data-fill style="width:0%"></span></div>
+              <span class="muted pf__nextText" data-next-text>—</span>
+              <Button variant="secondary" size="md" href="/playground/" iconRight="arrow-right">
+                Play a game
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      <!-- Share links for badges already published -->
+      <Card elevation={1} padding="var(--atc-space-6)" class="pf__shares">
+        <strong class="h-card">Your share links</strong>
+        <p class="muted pf__sub">Post these anywhere. Each one invites people to play the same game.</p>
+        <div class="pf__shareList" data-shares>
+          <span class="muted">No badges yet — play a game and you will get a link to post.</span>
+        </div>
+      </Card>
+    </div>
+  </section>
+</Base>
+
+<div
+  id="pg-data"
+  hidden
+  data-supabase-url={services.supabaseUrl}
+  data-supabase-key={services.supabaseAnonKey}
+  data-tracks={JSON.stringify(playground.tracks)}
+></div>
+
+<script>
+  const el = document.getElementById('pg-data');
+  const url = el?.dataset.supabaseUrl;
+  const key = el?.dataset.supabaseKey;
+
+  const $ = <T extends HTMLElement>(s: string) => document.querySelector<T>(s);
+  const loading = $('[data-loading]');
+  const outEl = $('[data-signed-out]');
+  const inEl = $('[data-signed-in]');
+
+  if (!el || !url || !key) {
+    if (loading) loading.hidden = true;
+    if (outEl) outEl.hidden = false;
+  } else {
+    const tracks = JSON.parse(el.dataset.tracks ?? '[]');
+    const pg = await import('../lib/playground');
+
+    (async () => {
+      const sb = pg.getClient(url, key);
+      const user = await pg.currentUser(sb);
+      if (loading) loading.hidden = true;
+
+      if (!user) {
+        if (outEl) outEl.hidden = false;
+        return;
+      }
+      if (inEl) inEl.hidden = false;
+
+      const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'You';
+      const set = (sel: string, text: string) => {
+        const n = $(sel);
+        if (n) n.textContent = text;
+      };
+      set('[data-name]', name);
+      set('[data-email]', user.email ?? '');
+      set('[data-avatar]', (name[0] || 'A').toUpperCase());
+
+      const digits = (user.id.replace(/\D/g, '') + '0000').slice(0, 4);
+      set('[data-passport-no]', `ATT-${digits}`);
+      if (user.created_at) {
+        set(
+          '[data-issued]',
+          'Member since ' +
+            new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+        );
+      }
+
+      $('[data-signout]')?.addEventListener('click', () => pg.signOut(sb));
+
+      /* ---- stamps ---- */
+      const badges = await pg.loadBadges(sb, user.id);
+      for (const slug of badges) {
+        document.querySelector(`[data-stamp="${slug}"]`)?.classList.add('is-earned');
+      }
+      set('[data-count]', `${badges.length} of ${tracks.length} earned`);
+
+      const pct = tracks.length ? Math.round((badges.length / tracks.length) * 100) : 0;
+      set('[data-pct]', `${pct}%`);
+      const fill = $('[data-fill]');
+      if (fill) fill.style.width = `${pct}%`;
+
+      const remaining = tracks.filter((t: any) => !badges.includes(t.slug));
+      set(
+        '[data-next-text]',
+        remaining.length
+          ? `Next up: “${remaining[0].name}” — ${remaining[0].rounds.length} rounds.`
+          : 'Every badge collected. New games land with each product I publish.'
+      );
+
+      /* ---- share links ---- */
+      const { data: shares } = await sb
+        .from('shares')
+        .select('id, track_slug, earned_at')
+        .eq('user_id', user.id)
+        .order('earned_at', { ascending: false });
+
+      const list = $('[data-shares]');
+      if (list && shares?.length) {
+        list.replaceChildren();
+        for (const s of shares) {
+          const t = tracks.find((x: any) => x.slug === s.track_slug);
+          const row = document.createElement('div');
+          row.className = 'pf__shareRow';
+
+          const label = document.createElement('span');
+          label.className = 'pf__shareName';
+          label.textContent = t?.badge ?? s.track_slug;
+          row.appendChild(label);
+
+          const view = document.createElement('a');
+          view.className = 'pf__shareBtn';
+          view.href = `/badge/${s.id}/`;
+          view.textContent = 'Open';
+          row.appendChild(view);
+
+          const copy = document.createElement('button');
+          copy.className = 'pf__shareBtn';
+          copy.type = 'button';
+          copy.textContent = 'Copy link';
+          copy.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(new URL(`/badge/${s.id}/`, location.origin).href);
+              copy.textContent = 'Copied';
+              setTimeout(() => (copy.textContent = 'Copy link'), 2000);
+            } catch {
+              copy.textContent = 'Press ⌘C';
+            }
+          });
+          row.appendChild(copy);
+
+          list.appendChild(row);
+        }
+      }
+    })();
+  }
+</script>
+
+<style>
+  .pf { max-width: 1000px; }
+  .pf__loading { padding: var(--atc-space-8) 0; }
+
+  .pf__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--atc-space-6);
+    flex-wrap: wrap;
+    margin-bottom: var(--atc-space-7);
+  }
+  .pf__id { display: flex; align-items: center; gap: var(--atc-space-4); }
+  .pf__avatar {
+    width: 56px; height: 56px; flex: 0 0 auto;
+    border-radius: var(--atc-radius-circle);
+    background: var(--atc-purple-600); color: var(--atc-white);
+    display: grid; place-items: center;
+    font-family: var(--atc-font-latin-disp);
+    font-size: 22px; font-weight: 800;
+  }
+  .pf__idText { display: flex; flex-direction: column; gap: 2px; }
+  .pf__idText span { font-size: var(--atc-body-small-size); }
+  .pf__signout {
+    background: none; border: 0; padding: 4px 8px; font: inherit;
+    font-size: var(--atc-body-small-size); color: var(--atc-purple-700);
+    text-decoration: underline; cursor: pointer;
+  }
+
+  .pf__grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: var(--atc-space-6);
+    align-items: start;
+  }
+  .pf__sub { font-size: var(--atc-body-small-size); margin: 0; }
+  .pf__stampsHead { display: flex; justify-content: space-between; align-items: baseline; }
+  .pf__stampsTitle { font-size: 22px; font-family: var(--atc-font-latin-disp); font-weight: 700; }
+  .pf__count {
+    font-family: var(--atc-font-mono); font-variant-numeric: tabular-nums;
+    font-size: var(--atc-body-small-size); color: var(--atc-ink-500);
+  }
+  .pf__stamps {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: var(--atc-space-5); margin-top: var(--atc-space-4);
+  }
+  .pf__stamp { display: flex; flex-direction: column; align-items: center; gap: var(--atc-space-2); text-align: center; }
+  /* UNEARNED — dashed outline. The form carries the state, not the colour. */
+  .pf__disc {
+    width: 64px; height: 64px; border-radius: var(--atc-radius-circle);
+    display: grid; place-items: center;
+    background: var(--atc-ink-50);
+    border: 1.5px dashed var(--atc-ink-200);
+    color: var(--atc-ink-300);
+  }
+  .pf__stamp.is-earned .pf__disc {
+    background: var(--pillar); border: none; color: var(--atc-white);
+  }
+  .pf__label { font-size: 12px; line-height: 18px; color: var(--atc-ink-300); }
+  .pf__stamp.is-earned .pf__label { color: var(--atc-ink-900); font-weight: 500; }
+
+  .pf__side { display: flex; flex-direction: column; gap: var(--atc-space-4); }
+  .pf__card { height: 200px; display: grid; place-items: center; padding: var(--atc-space-6); box-sizing: border-box; }
+  .pf__cardInner { text-align: center; color: var(--atc-white); display: flex; flex-direction: column; gap: 6px; }
+  .pf__cardLabel { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.8; }
+  .pf__cardNo { font-size: 28px; font-variant-numeric: tabular-nums; font-family: var(--atc-font-mono); }
+  .pf__cardIssued { font-size: 13px; opacity: 0.85; }
+
+  .pf__next { display: flex; flex-direction: column; gap: var(--atc-space-3); }
+  .pf__progHead { display: flex; justify-content: space-between; align-items: baseline; }
+  .pf__progLabel { font-size: var(--atc-label-size); font-weight: var(--atc-label-weight); }
+  .pf__progVal { font-family: var(--atc-font-mono); font-variant-numeric: tabular-nums; font-size: 12px; color: var(--atc-ink-500); }
+  .pf__track { height: 8px; border-radius: var(--atc-radius-chip); background: var(--atc-ink-100); overflow: hidden; }
+  .pf__fill { display: block; height: 100%; background: var(--atc-purple-600); transition: width var(--atc-duration-slow) var(--atc-ease-enter); }
+  .pf__nextText { font-size: var(--atc-body-small-size); line-height: var(--atc-body-small-line); }
+
+  .pf__shares { margin-top: var(--atc-space-6); }
+  .pf__shareList { display: flex; flex-direction: column; gap: var(--atc-space-3); margin-top: var(--atc-space-3); }
+  .pf__shareRow {
+    display: flex; align-items: center; gap: var(--atc-space-3);
+    padding: var(--atc-space-3) var(--atc-space-4);
+    border: var(--atc-stroke-hairline) solid var(--atc-ink-100);
+    border-radius: var(--atc-radius-control);
+    background: var(--atc-surface-canvas);
+  }
+  .pf__shareName { flex: 1; font-weight: 500; font-size: var(--atc-body-small-size); }
+  .pf__shareBtn {
+    height: var(--atc-control-sm); padding: 0 var(--atc-space-3);
+    display: inline-flex; align-items: center;
+    font: inherit; font-size: var(--atc-body-small-size); font-weight: 500;
+    color: var(--atc-ink-700); background: var(--atc-surface-raised);
+    border: var(--atc-stroke-hairline) solid var(--atc-ink-200);
+    border-radius: var(--atc-radius-control);
+    text-decoration: none; cursor: pointer;
+  }
+  .pf__shareBtn:hover { border-color: var(--atc-purple-600); color: var(--atc-purple-700); }
+
+  @media (prefers-reduced-motion: reduce) { .pf__fill { transition: none; } }
+  @media (max-width: 1023px) {
+    .pf__grid { grid-template-columns: 1fr; }
+    .pf__stamps { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 600px) { .pf__stamps { grid-template-columns: repeat(2, 1fr); } }
+</style>

@@ -6,6 +6,7 @@
 
 import Logo from './Logo.astro';
 import Button from './Button.astro';
+import AuthNav from './AuthNav.astro';
 
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 
@@ -38,6 +39,7 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
     </nav>
 
     <div class="hdr__actions">
+      <AuthNav />
       <Button variant="secondary" size="md" href="/work-with-me" iconRight="arrow-right">
         Work with me
       </Button>
@@ -54,12 +56,29 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
         {item.label}
       </a>
     ))}
+    <a href="/login/" class="hdr__link hdr__link--account" data-m-auth-out>Sign in</a>
+    <a href="/profile/" class="hdr__link hdr__link--account" data-m-auth-in hidden>Your profile</a>
   </nav>
 </header>
 
 <script>
   const burger = document.querySelector<HTMLButtonElement>('.hdr__burger');
   const menu = document.querySelector<HTMLElement>('.hdr__mobile');
+  /* Mirror the header's account state into the mobile menu. Same cheap
+     localStorage read as AuthNav — no SDK. */
+  const authEl = document.querySelector<HTMLElement>('[data-auth]');
+  const ref = authEl?.dataset.ref;
+  if (ref) {
+    try {
+      const raw = localStorage.getItem(`sb-${ref}-auth-token`);
+      const session = raw ? JSON.parse(raw) : null;
+      if (session && (!session.expires_at || session.expires_at * 1000 > Date.now())) {
+        document.querySelector<HTMLElement>('[data-m-auth-out]')?.setAttribute('hidden', '');
+        document.querySelector<HTMLElement>('[data-m-auth-in]')?.removeAttribute('hidden');
+      }
+    } catch {}
+  }
+
   burger?.addEventListener('click', () => {
     const open = burger.getAttribute('aria-expanded') === 'true';
     burger.setAttribute('aria-expanded', String(!open));
@@ -150,6 +169,12 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
   }
   .hdr__mobile .hdr__link {
     padding: 12px 14px;
+  }
+  .hdr__link--account {
+    margin-top: var(--atc-space-2);
+    border-top: var(--atc-stroke-hairline) solid var(--atc-ink-100);
+    padding-top: var(--atc-space-4) !important;
+    color: var(--atc-purple-700);
   }
 
   @media (max-width: 1023px) {

@@ -1,0 +1,100 @@
+---
+/* The header's account control.
+ *
+ * Deliberately does NOT import supabase-js. That bundle is ~217KB and this only
+ * needs to answer one question: is someone signed in? Supabase stores its
+ * session in localStorage under `sb-<project-ref>-auth-token`, so a few lines
+ * read it directly. The SDK still loads on pages that actually talk to the
+ * database — this just decides which control to show.
+ *
+ * Renders signed-out by default so the markup is correct for crawlers and for
+ * anyone with JavaScript off.
+ */
+import { services } from '../site.config';
+
+const ref = services.supabaseUrl
+  ? new URL(services.supabaseUrl).hostname.split('.')[0]
+  : '';
+const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
+---
+
+{live && (
+  <div class="auth" data-auth data-ref={ref}>
+    <a class="auth__signin" href="/login/" data-auth-out>Sign in</a>
+    <a class="auth__profile" href="/profile/" data-auth-in hidden>
+      <span class="auth__avatar" data-auth-initial>A</span>
+      <span class="auth__label">Profile</span>
+    </a>
+  </div>
+)}
+
+<script>
+  const el = document.querySelector<HTMLElement>('[data-auth]');
+  const ref = el?.dataset.ref;
+  if (el && ref) {
+    try {
+      const raw = localStorage.getItem(`sb-${ref}-auth-token`);
+      if (raw) {
+        const session = JSON.parse(raw);
+        // Treat an expired token as signed out rather than showing a stale name.
+        const stillValid = !session.expires_at || session.expires_at * 1000 > Date.now();
+        if (stillValid) {
+          const name =
+            session.user?.user_metadata?.full_name || session.user?.email || 'You';
+          const out = el.querySelector<HTMLElement>('[data-auth-out]');
+          const inEl = el.querySelector<HTMLElement>('[data-auth-in]');
+          const initial = el.querySelector<HTMLElement>('[data-auth-initial]');
+          if (initial) initial.textContent = (name[0] || 'A').toUpperCase();
+          if (out) out.hidden = true;
+          if (inEl) inEl.hidden = false;
+        }
+      }
+    } catch {
+      /* malformed or unavailable storage — stay signed out, which is safe */
+    }
+  }
+</script>
+
+<style>
+  .auth { display: flex; align-items: center; }
+  .auth__signin {
+    display: inline-flex;
+    align-items: center;
+    height: var(--atc-control-md);
+    padding: 0 var(--atc-space-4);
+    border-radius: var(--atc-radius-control);
+    font-size: var(--atc-body-small-size);
+    font-weight: 500;
+    color: var(--atc-ink-700);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .auth__signin:hover { background: var(--atc-purple-50); color: var(--atc-purple-700); }
+
+  .auth__profile {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    height: var(--atc-control-md);
+    padding: 0 var(--atc-space-3) 0 4px;
+    border-radius: var(--atc-radius-chip);
+    border: var(--atc-stroke-hairline) solid var(--atc-ink-200);
+    background: var(--atc-surface-raised);
+    text-decoration: none;
+    color: var(--atc-ink-700);
+  }
+  .auth__profile:hover { border-color: var(--atc-purple-600); color: var(--atc-purple-700); }
+  .auth__avatar {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 auto;
+    border-radius: var(--atc-radius-circle);
+    background: var(--atc-purple-600);
+    color: var(--atc-white);
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .auth__label { font-size: var(--atc-body-small-size); font-weight: 500; }
+</style>
