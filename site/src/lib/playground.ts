@@ -26,9 +26,16 @@ export function getClient(url: string, anonKey: string): SupabaseClient {
   return client;
 }
 
+/* Never throws. A network failure or a bad URL must still leave the page usable
+   — the caller renders the sign-in button when this returns null. */
 export async function currentUser(sb: SupabaseClient): Promise<User | null> {
-  const { data } = await sb.auth.getUser();
-  return data.user ?? null;
+  try {
+    const { data } = await sb.auth.getUser();
+    return data.user ?? null;
+  } catch (err) {
+    console.error('[playground] could not reach Supabase:', err);
+    return null;
+  }
 }
 
 export async function signInWithGoogle(sb: SupabaseClient) {

@@ -69,22 +69,52 @@ const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
   </section>
 </Base>
 
-{live && (
-  <script define:vars={{ cfg: services, tracks: playground.tracks }}>
-    import('../../lib/playground.ts').then(async (pg) => {
-      const sb = pg.getClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
-      const user = await pg.currentUser(sb);
+<!-- Config is handed to the browser as data attributes, NOT via define:vars.
+     define:vars forces a script inline, which stops Astro bundling it — so the
+     module import below would never be compiled. -->
+<div
+  id="pg-data"
+  hidden
+  data-supabase-url={services.supabaseUrl}
+  data-supabase-key={services.supabaseAnonKey}
+  data-tracks={JSON.stringify(playground.tracks)}
+></div>
+
+<script>
+  const el = document.getElementById('pg-data');
+  const url = el?.dataset.supabaseUrl;
+  const key = el?.dataset.supabaseKey;
+
+  if (el && url && key) {
+    const tracks = JSON.parse(el.dataset.tracks ?? '[]');
+    // Dynamic import: supabase-js is code-split into its own chunk and only
+    // fetched when the Playground is actually switched on.
+    const pg = await import('../../lib/playground');
+    const cfg = { supabaseUrl: url, supabaseAnonKey: key };
+
+    const showSignIn = (row: HTMLElement, sb: any) => {
+      const btn = document.createElement('button');
+      btn.className = 'pg__google';
+      btn.type = 'button';
+      btn.textContent = 'Sign in with Google to save your progress';
+      btn.addEventListener('click', () => pg.signInWithGoogle(sb).catch((e) => alert(e.message)));
+      row.replaceChildren(btn);
+    };
+
+    (async () => {
       const row = document.getElementById('auth-row');
       if (!row) return;
+      const sb = pg.getClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+      let user = null;
+      try {
+        user = await pg.currentUser(sb);
+      } catch {
+        /* fall through to the sign-in button rather than leaving "Checking…" */
+      }
       row.innerHTML = '';
 
       if (!user) {
-        const btn = document.createElement('button');
-        btn.className = 'pg__google';
-        btn.type = 'button';
-        btn.textContent = 'Sign in with Google to save your progress';
-        btn.addEventListener('click', () => pg.signInWithGoogle(sb).catch((e) => alert(e.message)));
-        row.appendChild(btn);
+        showSignIn(row, sb);
         return;
       }
 
@@ -115,9 +145,9 @@ const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
           if (state) state.textContent = `${done} / ${t.steps.length}`;
         }
       }
-    });
-  </script>
-)}
+    })();
+  }
+</script>
 
 <style>
   .pg__head { max-width: 720px; }

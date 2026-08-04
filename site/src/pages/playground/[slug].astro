@@ -63,10 +63,27 @@ const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
   </section>
 </Base>
 
-{live && (
-  <script define:vars={{ cfg: services, track }}>
-    import('../../lib/playground.ts').then(async (pg) => {
-      const sb = pg.getClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+<!-- Config passed as data attributes so Astro bundles the script below.
+     define:vars would force it inline and the module import would never compile. -->
+<div
+  id="pg-data"
+  hidden
+  data-supabase-url={services.supabaseUrl}
+  data-supabase-key={services.supabaseAnonKey}
+  data-track={JSON.stringify(track)}
+></div>
+
+<script>
+  const el = document.getElementById('pg-data');
+  const url = el?.dataset.supabaseUrl;
+  const key = el?.dataset.supabaseKey;
+
+  if (el && url && key) {
+    const track = JSON.parse(el.dataset.track ?? '{}');
+    const pg = await import('../../lib/playground');
+
+    (async () => {
+      const sb = pg.getClient(url, key);
       const status = document.querySelector('[data-status]');
       const boxes = Array.from(document.querySelectorAll('input[data-step]'));
       const badgeIcon = document.querySelector('[data-badge-icon]');
@@ -118,9 +135,9 @@ const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
           }
         });
       });
-    });
-  </script>
-)}
+    })();
+  }
+</script>
 
 <style>
   .tr { max-width: 860px; }

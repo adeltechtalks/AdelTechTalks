@@ -13,5 +13,8 @@
     "@supabase/supabase-js": "^2.112.0",
     "astro": "^5.18.2",
     "lucide-static": "^0.473.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1"
   }
 }

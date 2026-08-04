@@ -195,6 +195,6 @@ export const services = {
   /* Your newsletter provider's form action URL (Kit, Beehiiv, Buttondown…) */
   newsletterAction: '',
   /* Supabase — Google sign-in and badges. Both come from your Supabase project. */
-  supabaseUrl: '',
-  supabaseAnonKey: '',
+  supabaseUrl: 'https://esdpzznuatlouxjekqoj.supabase.co',
+  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZHB6em51YXRsb3V4amVrcW9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNjY3NjYsImV4cCI6MjEwMDc0Mjc2Nn0.l2AiL81uWgWg8t_322Qmaij_zzAPB4LnF6JI9B0_Pkg',
 };
