@@ -1,0 +1,241 @@
+---
+/* A public badge. This is the page that gets pasted into LinkedIn.
+ *
+ * SERVER-RENDERED ON PURPOSE. LinkedIn, Facebook and X fetch the URL and read
+ * the <meta> tags out of the raw HTML — they do not run JavaScript. If this page
+ * were static, every badge would share one generic preview card. The visitor's
+ * name has to be in the HTML by the time the crawler sees it.
+ */
+export const prerender = false;
+
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/Card.astro';
+import Icon from '../../components/Icon.astro';
+import Button from '../../components/Button.astro';
+import { playground, services, site } from '../../site.config';
+import { createClient } from '@supabase/supabase-js';
+
+const { id } = Astro.params;
+
+const PILLAR_ICON = {
+  ai: 'sparkles',
+  gadgets: 'smartphone',
+  automation: 'workflow',
+  enterprise: 'building-2',
+  creator: 'clapperboard',
+} as const;
+
+let share: { display_name: string; track_slug: string; earned_at: string } | null = null;
+
+if (services.supabaseUrl && services.supabaseAnonKey && id) {
+  try {
+    const sb = createClient(services.supabaseUrl, services.supabaseAnonKey, {
+      auth: { persistSession: false },
+    });
+    const { data } = await sb
+      .from('shares')
+      .select('display_name, track_slug, earned_at')
+      .eq('id', id)
+      .maybeSingle();
+    share = data ?? null;
+  } catch (err) {
+    console.error('[badge] lookup failed:', err);
+  }
+}
+
+const track = share ? playground.tracks.find((t) => t.slug === share!.track_slug) : undefined;
+
+if (!share || !track) {
+  return new Response(null, { status: 404, statusText: 'Badge not found' });
+}
+
+const name = share.display_name;
+const earned = new Date(share.earned_at).toLocaleDateString('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
+const product = (track as any).product ?? track.name;
+
+/* These two strings are what LinkedIn actually displays on the card. */
+const ogTitle = `${name} earned the ${track.badge} badge`;
+const ogDescription = `${name} passed the ${track.name} challenge on ${site.name} — ${product}. Think you know it better?`;
+
+const pageUrl = new URL(`/badge/${id}/`, site.url).href;
+const shareText = `I just earned the ${track.badge} badge on ${site.name} — ${track.name}.`;
+
+const linkedIn = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`;
+const facebook = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`;
+const x = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(pageUrl)}`;
+
+const isNew = Astro.url.searchParams.get('new') === '1';
+const icon = PILLAR_ICON[track.pillar as keyof typeof PILLAR_ICON] ?? 'award';
+---
+
+<Base title={ogTitle} description={ogDescription}>
+  <Fragment slot="head">
+    <meta property="og:image" content={new URL(`/og/${track.slug}.png`, site.url).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+  </Fragment>
+
+  <section class="container bd">
+    {isNew && (
+      <p class="bd__new">
+        <Icon name="party-popper" size="md" /> Badge earned. Post it and send people your way.
+      </p>
+    )}
+
+    <Card elevation={3} padding="var(--atc-space-8)" class="bd__card">
+      <span class="bd__disc" style={`--pillar: var(--atc-category-${track.pillar}-graphic)`}>
+        <Icon name={icon} size="xl" />
+      </span>
+
+      <span class="overline">{site.name} · Tech Passport</span>
+      <h1 class="bd__badge">{track.badge}</h1>
+      <p class="bd__who"><strong>{name}</strong> earned this on {earned}</p>
+      <p class="bd__what">{track.name} — {product}</p>
+
+      <div class="bd__shareRow">
+        <span class="bd__shareLabel">Share it</span>
+        <div class="row">
+          <a class="bd__share" href={linkedIn} target="_blank" rel="noopener">
+            <Icon name="linkedin" size="md" /> LinkedIn
+          </a>
+          <a class="bd__share" href={facebook} target="_blank" rel="noopener">
+            <Icon name="facebook" size="md" /> Facebook
+          </a>
+          <a class="bd__share" href={x} target="_blank" rel="noopener">
+            <Icon name="twitter" size="md" /> X
+          </a>
+          <button class="bd__share" type="button" data-copy={pageUrl}>
+            <Icon name="link" size="md" /> <span data-copy-label>Copy link</span>
+          </button>
+        </div>
+        <span class="muted bd__igNote">
+          For Instagram, screenshot this card — Instagram does not show link previews.
+        </span>
+      </div>
+    </Card>
+
+    <!-- The whole point of the page: turn a viewer into a player. -->
+    <Card elevation={1} padding="var(--atc-space-8)" class="bd__cta">
+      <div class="stack">
+        <h2 class="h-section">Think you know it better?</h2>
+        <p class="lede">
+          Answer {track.questions.length} questions about {product} and earn the same badge.
+          Takes about {track.minutes} minutes.
+        </p>
+        <div class="row">
+          <Button variant="primary" size="lg" href={`/playground/${track.slug}/`} iconRight="arrow-right">
+            Play it yourself
+          </Button>
+        </div>
+      </div>
+    </Card>
+  </section>
+</Base>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const label = btn.querySelector('[data-copy-label]');
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy ?? '');
+        if (label) label.textContent = 'Copied';
+        setTimeout(() => label && (label.textContent = 'Copy link'), 2000);
+      } catch {
+        if (label) label.textContent = 'Press ⌘C';
+      }
+    });
+  });
+</script>
+
+<style>
+  .bd { max-width: 640px; }
+  .bd__new {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    margin: 0 0 var(--atc-space-5);
+    padding: var(--atc-space-4) var(--atc-space-5);
+    background: var(--atc-purple-50);
+    border-radius: var(--atc-radius-control);
+    font-size: var(--atc-body-small-size);
+    font-weight: 500;
+    color: var(--atc-purple-700);
+  }
+  .bd__card {
+    align-items: center;
+    text-align: center;
+    gap: var(--atc-space-3);
+  }
+  .bd__disc {
+    width: 104px;
+    height: 104px;
+    border-radius: var(--atc-radius-circle);
+    display: grid;
+    place-items: center;
+    background: var(--pillar);
+    color: var(--atc-white);
+    margin-bottom: var(--atc-space-2);
+  }
+  .bd__badge {
+    font-family: var(--atc-font-latin-disp);
+    font-size: 40px;
+    line-height: 48px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .bd__who { margin: 0; font-size: var(--atc-body-base-size); }
+  .bd__what {
+    margin: 0;
+    font-size: var(--atc-body-small-size);
+    color: var(--atc-ink-500);
+  }
+
+  .bd__shareRow {
+    width: 100%;
+    margin-top: var(--atc-space-5);
+    padding-top: var(--atc-space-5);
+    border-top: var(--atc-stroke-hairline) solid var(--atc-ink-100);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--atc-space-3);
+  }
+  .bd__shareLabel {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--atc-ink-500);
+  }
+  .bd__shareRow .row { justify-content: center; }
+  .bd__share {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    height: var(--atc-control-md);
+    padding: 0 var(--atc-space-4);
+    box-sizing: border-box;
+    font-family: var(--atc-font-text);
+    font-size: var(--atc-body-small-size);
+    font-weight: 500;
+    color: var(--atc-ink-700);
+    background: var(--atc-surface-raised);
+    border: var(--atc-stroke-hairline) solid var(--atc-ink-200);
+    border-radius: var(--atc-radius-control);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .bd__share:hover {
+    background: var(--atc-purple-50);
+    border-color: var(--atc-purple-600);
+    color: var(--atc-purple-700);
+  }
+  .bd__igNote { font-size: 12px; }
+
+  .bd__cta { margin-top: var(--atc-space-6); }
+</style>

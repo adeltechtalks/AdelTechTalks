@@ -91,7 +91,7 @@ const stamps = playground.tracks.map((t) => ({
         <Card elevation={1} padding="var(--atc-space-6)">
           <div class="pp__next">
             <div class="pp__progHead">
-              <span class="pp__progLabel">Next stamp</span>
+              <span class="pp__progLabel">Collection</span>
               <span class="pp__progVal" data-next-pct>0%</span>
             </div>
             <!-- brand tone, not Spark — nothing on this page is a call to action -->
@@ -176,29 +176,18 @@ const stamps = playground.tracks.map((t) => ({
       const countEl = $('[data-count]');
       if (countEl) countEl.textContent = `${badges.length} of ${tracks.length} earned`;
 
-      /* ---- next stamp: the unearned track you are furthest through ---- */
-      const progress = await pg.loadProgress(sb, user.id);
-      let best = { track: null as any, pct: -1, left: 0 };
-      for (const t of tracks) {
-        if (badges.includes(t.slug)) continue;
-        const done = (progress[t.slug] ?? []).length;
-        const pct = Math.round((done / t.steps.length) * 100);
-        if (pct > best.pct) best = { track: t, pct, left: t.steps.length - done };
-      }
-
+      /* ---- collection progress: badges are all-or-nothing per game ---- */
+      const pct = Math.round((badges.length / tracks.length) * 100);
       const pctEl = $('[data-next-pct]');
       const fillEl = $('[data-next-fill]');
-      if (!best.track) {
-        if (pctEl) pctEl.textContent = '100%';
-        if (fillEl) fillEl.style.width = '100%';
-        if (nextText) nextText.textContent = 'Every stamp earned. New tracks land with each product I publish.';
-      } else {
-        if (pctEl) pctEl.textContent = `${best.pct}%`;
-        if (fillEl) fillEl.style.width = `${best.pct}%`;
-        if (nextText) {
-          const s = best.left === 1 ? 'step' : 'steps';
-          nextText.textContent = `${best.left} ${s} left in “${best.track.name}”.`;
-        }
+      if (pctEl) pctEl.textContent = `${pct}%`;
+      if (fillEl) fillEl.style.width = `${pct}%`;
+
+      const remaining = tracks.filter((t: any) => !badges.includes(t.slug));
+      if (nextText) {
+        nextText.textContent = remaining.length
+          ? `Next up: “${remaining[0].name}” — ${remaining[0].questions.length} questions.`
+          : 'Every badge collected. New games land with each product I publish.';
       }
     })();
   }

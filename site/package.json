@@ -5,16 +5,18 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview"
+    "build": "astro build && node scripts/postbuild.mjs",
+    "preview": "astro preview",
+    "og": "node scripts/build-og.mjs"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^12.6.10",
     "@astrojs/sitemap": "^3.7.3",
     "@supabase/supabase-js": "^2.112.0",
     "astro": "^5.18.2",
     "lucide-static": "^0.473.0"
   },
   "devDependencies": {
-    "playwright": "^1.62.1"
+    "wrangler": "^4.118.0"
   }
 }

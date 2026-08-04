@@ -118,6 +118,57 @@ export async function syncBadge(
   return earned;
 }
 
+/* Award a badge outright — used when someone passes the quiz. Idempotent. */
+export async function awardBadge(sb: SupabaseClient, userId: string, trackSlug: string) {
+  const { error } = await sb
+    .from('badges')
+    .upsert({ user_id: userId, track_slug: trackSlug }, { onConflict: 'user_id,track_slug' });
+  if (error) throw error;
+}
+
+export type Share = { id: string; track_slug: string; display_name: string; earned_at: string };
+
+/* Publish a badge so it has a public link. Returns the existing share if there
+   already is one, so re-taking a quiz never orphans an already-posted link. */
+export async function publishShare(
+  sb: SupabaseClient,
+  userId: string,
+  trackSlug: string,
+  displayName: string
+): Promise<Share> {
+  const existing = await sb
+    .from('shares')
+    .select('id, track_slug, display_name, earned_at')
+    .eq('user_id', userId)
+    .eq('track_slug', trackSlug)
+    .maybeSingle();
+
+  if (existing.data) return existing.data as Share;
+
+  const { data, error } = await sb
+    .from('shares')
+    .insert({ user_id: userId, track_slug: trackSlug, display_name: displayName })
+    .select('id, track_slug, display_name, earned_at')
+    .single();
+
+  if (error) throw error;
+  return data as Share;
+}
+
+/* Read a public badge. Works signed out — that is the point. */
+export async function loadShare(sb: SupabaseClient, id: string): Promise<Share | null> {
+  const { data, error } = await sb
+    .from('shares')
+    .select('id, track_slug, display_name, earned_at')
+    .eq('id', id)
+    .maybeSingle();
+  if (error) {
+    console.error('[playground] could not load badge:', error.message);
+    return null;
+  }
+  return (data as Share) ?? null;
+}
+
 export async function loadBadges(sb: SupabaseClient, userId: string): Promise<string[]> {
   const { data, error } = await sb.from('badges').select('track_slug').eq('user_id', userId);
   if (error) {

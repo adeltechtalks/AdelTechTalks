@@ -137,17 +137,15 @@ const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
       out.addEventListener('click', () => pg.signOut(sb));
       row.appendChild(out);
 
-      const progress = await pg.loadProgress(sb, user.id);
       for (const t of tracks) {
         const card = document.querySelector(`[data-track="${t.slug}"]`);
         if (!card) continue;
         const state = card.querySelector('[data-track-state]');
-        const done = (progress[t.slug] ?? []).length;
         if (badges.includes(t.slug)) {
           card.querySelector('[data-badge-icon]')?.classList.add('is-earned');
           if (state) state.textContent = 'Earned';
-        } else if (done > 0) {
-          if (state) state.textContent = `${done} / ${t.steps.length}`;
+        } else if (state) {
+          state.textContent = `${t.questions.length} questions`;
         }
       }
     })();

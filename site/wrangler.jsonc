@@ -1,0 +1,28 @@
+{
+  // Deployment config for Cloudflare Workers.
+  //
+  // This file used to be generated on the fly: Cloudflare's build ran
+  // `astro add cloudflare` on every deploy, which rewrote astro.config.mjs and
+  // invented a wrangler config from whatever adapter version was current that
+  // day. The deployed setup was therefore decided at build time rather than by
+  // anything in this repository. Declaring both explicitly makes every deploy
+  // identical and reviewable.
+  //
+  // "name" must match the Worker in the Cloudflare dashboard.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "adeltechtalks-sites",
+  "compatibility_date": "2026-08-04",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+
+  // The server entry Astro emits. Only /badge/* actually reaches it —
+  // every other route is a static file served straight from the CDN
+  // (see dist/_routes.json after a build).
+  "main": "dist/_worker.js/index.js",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "dist"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

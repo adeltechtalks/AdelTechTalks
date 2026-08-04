@@ -38,6 +38,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- Pages can add their own head tags — the badge pages use this for og:image -->
+    <slot name="head" />
 
     <!-- TY v1.2 — the four families, no fifth. Loaded from Google Fonts;
          see README "Substitutions" for the self-hosting caveat. -->

@@ -148,39 +148,95 @@ export const partnershipNote =
   'Every partnership is disclosed. I test before I talk, and I keep editorial control of the verdict — a paid placement buys the coverage, never the conclusion. If the product does not hold up, I will tell you before it goes out and we agree what happens next.';
 
 /* -----------------------------------------------------------------------------
-   PLAYGROUND — the learn-and-earn-badges section
-   Each entry becomes a lesson people can complete to earn a badge.
+   PLAYGROUND — the learn-and-earn-badges game
+   ===========================================
+
+   THIS IS THE BIT YOU AUTHOR FOR EVERY VIDEO.
+
+   The loop: you post a video → you say "play the game at adeltechtalks.com" →
+   people answer a few questions about what they just learned → they earn a
+   badge with their name on it → they post it to LinkedIn → their network
+   arrives at your site.
+
+   TO ADD A NEW GAME, copy one block below and change the text. The fields:
+
+     slug     the web address, e.g. 'osmo-pocket-4-ai' → /playground/osmo-pocket-4-ai
+              lowercase, dashes, no spaces. Never change it once you have shared it.
+     name     what people see as the title
+     product  the thing it is about — appears on the shared badge
+     pillar   sets the colour. One of: ai gadgets automation enterprise creator
+     badge    the badge name people earn and post. Keep it short and boastable.
+     minutes  roughly how long it takes
+     body     one line describing it
+     video    the YouTube ID of the video this game belongs to (optional)
+     pass     how many correct answers are needed. 3 of 4 is a good default.
+     questions each has `q`, a list of `options`, and `answer` = the position of
+              the correct one starting at 0 (so 0 = first option, 2 = third).
+              `why` is shown after they answer — this is where the teaching
+              actually happens, so make it worth reading.
+
+   ⚠️ Only write questions you know the real answer to. A wrong "correct"
+   answer in a quiz about a product is worse than no quiz.
    -------------------------------------------------------------------------- */
 export const playground = {
   intro:
-    'Every time I publish a product or an AI tool, I add a short hands-on track here. Work through it, run the thing yourself, and keep the badge.',
+    'Every video gets a short game here. Answer a few questions about what you just watched, and keep a badge you can post.',
   tracks: [
     {
-      slug: 'first-workflow',
-      name: 'Build your first workflow',
-      pillar: 'automation',
-      badge: 'Automator',
-      minutes: 20,
-      body: 'Connect two apps and have something running before the explanation ends.',
-      steps: ['Create your account', 'Connect the trigger', 'Add the action', 'Run it once', 'Ship it'],
-    },
-    {
-      slug: 'prompting-for-work',
-      name: 'Prompting for real work',
-      pillar: 'ai',
-      badge: 'Prompt Crafter',
-      minutes: 15,
-      body: 'Five prompts I actually use, and why each one is shaped that way.',
-      steps: ['Set the role', 'Give it the material', 'Ask for the shape', 'Push back once', 'Save the good one'],
-    },
-    {
-      slug: 'test-like-a-reviewer',
-      name: 'Test a product like a reviewer',
+      slug: 'ai-in-your-camera',
+      name: 'The AI inside your camera',
+      product: 'Camera AI features',
       pillar: 'gadgets',
       badge: 'Field Tester',
-      minutes: 25,
-      body: 'The method I use for every review, so you can judge a product yourself.',
-      steps: ['Define the job', 'Set the conditions', 'Run the week', 'Log what broke', 'Write the verdict'],
+      minutes: 3,
+      body: 'What the AI in a modern camera is actually doing when it tracks, focuses and stabilises.',
+      video: '',
+      pass: 3,
+      /* ⚠️ EXAMPLE QUESTIONS — these are about general camera-AI concepts, which
+         are safely true. Replace them with questions about YOUR product and the
+         specific things you showed in YOUR video. */
+      questions: [
+        {
+          q: 'What is subject tracking actually doing between frames?',
+          options: [
+            'Zooming the lens in and out automatically',
+            'Predicting where the subject will be next and moving the focus point there',
+            'Increasing the shutter speed until the subject is sharp',
+          ],
+          answer: 1,
+          why: 'Tracking is prediction. The camera detects the subject, estimates where it is heading, and moves the focus point ahead of it — which is why it holds on faces that move toward the lens but loses things that change direction suddenly.',
+        },
+        {
+          q: 'Why does scene detection sometimes make a photo look worse?',
+          options: [
+            'It applies a preset for the scene it thinks it sees, and it can guess wrong',
+            'It lowers the resolution to process faster',
+            'It disables the lens stabiliser',
+          ],
+          answer: 0,
+          why: 'Scene detection classifies what it sees and applies a matching treatment — more saturation for "food", cooler tones for "snow". When it misreads the scene you get the wrong treatment, which is why the results look off in exactly the situations that confuse it.',
+        },
+        {
+          q: 'What does electronic stabilisation cost you that optical stabilisation does not?',
+          options: [
+            'Battery life only',
+            'Some of the frame — it crops in to have room to correct',
+            'Nothing, they work identically',
+          ],
+          answer: 1,
+          why: 'Electronic stabilisation shifts the image inside a larger sensor readout, so it needs spare frame to move within. That is why your field of view narrows the moment you turn it on, and why it is a real trade rather than a free win.',
+        },
+        {
+          q: 'What is the most honest way to test any of this?',
+          options: [
+            'Compare the spec sheets',
+            'Shoot the same scene twice, once with the feature on and once off',
+            'Read three reviews and average them',
+          ],
+          answer: 1,
+          why: 'A controlled A/B is the only test that tells you what the feature does for you rather than what the marketing says. Same scene, same light, one variable. That is the method behind every review on this channel.',
+        },
+      ],
     },
   ],
 };

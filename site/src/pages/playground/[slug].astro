@@ -1,8 +1,15 @@
 ---
+/* A game: a few questions about what the video just showed, then a badge.
+   Questions and answers are rendered into the page, so a determined visitor can
+   read the answers in the source. That is a deliberate trade — this is a
+   learning prompt that earns a shareable badge, not an exam. Keeping it fully
+   client-side means it stays a fast static page with no server round-trip. */
+
 import Base from '../../layouts/Base.astro';
 import Card from '../../components/Card.astro';
 import Chip from '../../components/Chip.astro';
 import Icon from '../../components/Icon.astro';
+import Button from '../../components/Button.astro';
 import { playground, services } from '../../site.config';
 import type { GetStaticPaths } from 'astro';
 
@@ -11,238 +18,479 @@ export const getStaticPaths: GetStaticPaths = () =>
 
 const { track } = Astro.props;
 const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
+const total = track.questions.length;
 ---
 
 <Base title={track.name} description={track.body}>
-  <section class="container tr">
-    <div class="stack">
+  <section class="container qz">
+    <div class="stack qz__head">
       <div class="row">
         <Chip pillar={track.pillar as any}>{track.pillar}</Chip>
-        <span class="tr__mins">{track.minutes} min</span>
+        <span class="qz__meta">{total} questions · {track.minutes} min</span>
       </div>
       <h1 class="h-display">{track.name}</h1>
       <p class="lede">{track.body}</p>
     </div>
 
-    <Card elevation={2} padding="var(--atc-space-8)" class="tr__card">
-      <div class="tr__cardHead">
-        <div>
-          <strong class="h-card">Steps</strong>
-          <span class="muted tr__hint">
-            {live
-              ? 'Tick each step as you finish it. Complete all of them to earn the badge.'
-              : 'Progress saving turns on once Supabase is connected.'}
-          </span>
-        </div>
-        <div class="tr__badge" data-badge>
-          <span class="tr__badgeIcon" data-badge-icon><Icon name="award" size="lg" /></span>
-          <span class="tr__badgeName">{track.badge}</span>
-        </div>
+    {track.video && (
+      <Card elevation={1} padding="var(--atc-space-6)" class="qz__video">
+        <strong class="h-card">Watch this first</strong>
+        <span class="muted">The answers are all in the video.</span>
+        <a class="qz__videoLink" href={`https://www.youtube.com/watch?v=${track.video}`} target="_blank" rel="noopener">
+          <Icon name="play" size="md" /> Open the video
+        </a>
+      </Card>
+    )}
+
+    <!-- ---------- the quiz ---------- -->
+    <Card elevation={2} padding="var(--atc-space-8)" class="qz__card">
+      <div class="qz__progress">
+        <span class="qz__step" data-step-label>Question 1 of {total}</span>
+        <span class="qz__score" data-score>0 correct</span>
+      </div>
+      <div class="qz__bar"><span class="qz__fill" data-bar style="width:0%"></span></div>
+
+      <div data-questions>
+        {track.questions.map((question, qi) => (
+          <div class="qz__q" data-q={qi} hidden={qi !== 0}>
+            <h2 class="qz__qText">{question.q}</h2>
+            <div class="qz__options">
+              {question.options.map((opt, oi) => (
+                <button class="qz__opt" type="button" data-opt={oi} data-correct={oi === question.answer ? 'true' : 'false'}>
+                  <span class="qz__optMark" aria-hidden="true"></span>
+                  <span>{opt}</span>
+                </button>
+              ))}
+            </div>
+            <div class="qz__why" data-why hidden>
+              <strong data-why-verdict>—</strong>
+              <p>{question.why}</p>
+              <button class="qz__next" type="button" data-next>
+                {qi === total - 1 ? 'See your result' : 'Next question'}
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
-      <ol class="tr__steps">
-        {track.steps.map((step, i) => (
-          <li class="tr__step">
-            <label>
-              <input
-                type="checkbox"
-                data-step={i}
-                disabled={!live}
-              />
-              <span class="tr__stepNum">{i + 1}</span>
-              <span class="tr__stepText">{step}</span>
-            </label>
-          </li>
-        ))}
-      </ol>
+      <!-- ---------- result ---------- -->
+      <div class="qz__result" data-result hidden>
+        <span class="qz__resultDisc" data-result-disc style={`--pillar: var(--atc-category-${track.pillar}-graphic)`}>
+          <Icon name="award" size="xl" />
+        </span>
+        <h2 class="h-section" data-result-title>—</h2>
+        <p class="lede" data-result-body>—</p>
 
-      <p class="tr__status" data-status role="status" aria-live="polite"></p>
+        <div class="qz__actions" data-earned-actions hidden>
+          {live ? (
+            <div class="qz__share" data-share-area>
+              <span class="muted" data-share-hint>Sign in to claim this badge and get a link you can post.</span>
+            </div>
+          ) : (
+            <span class="muted">Badges are not switched on yet.</span>
+          )}
+        </div>
+
+        <button class="qz__retry" type="button" data-retry hidden>Try again</button>
+      </div>
     </Card>
 
-    <a class="tr__back" href="/playground">← All tracks</a>
+    <a class="qz__back" href="/playground">← All games</a>
   </section>
 </Base>
 
-<!-- Config passed as data attributes so Astro bundles the script below.
-     define:vars would force it inline and the module import would never compile. -->
 <div
   id="pg-data"
   hidden
   data-supabase-url={services.supabaseUrl}
   data-supabase-key={services.supabaseAnonKey}
-  data-track={JSON.stringify(track)}
+  data-track={JSON.stringify({
+    slug: track.slug,
+    name: track.name,
+    badge: track.badge,
+    product: track.product ?? track.name,
+    pass: track.pass,
+    total,
+  })}
 ></div>
 
 <script>
-  const el = document.getElementById('pg-data');
-  const url = el?.dataset.supabaseUrl;
-  const key = el?.dataset.supabaseKey;
+  const data = document.getElementById('pg-data');
+  const track = JSON.parse(data?.dataset.track ?? '{}');
+  const url = data?.dataset.supabaseUrl;
+  const key = data?.dataset.supabaseKey;
 
-  if (el && url && key) {
-    const track = JSON.parse(el.dataset.track ?? '{}');
-    const pg = await import('../../lib/playground');
+  const $ = <T extends HTMLElement>(s: string) => document.querySelector<T>(s);
+  const questions = Array.from(document.querySelectorAll<HTMLElement>('[data-q]'));
+  const result = $('[data-result]');
 
-    (async () => {
-      const sb = pg.getClient(url, key);
-      const status = document.querySelector('[data-status]');
-      const boxes = Array.from(document.querySelectorAll('input[data-step]'));
-      const badgeIcon = document.querySelector('[data-badge-icon]');
+  let current = 0;
+  let correct = 0;
 
-      const user = await pg.currentUser(sb);
-      if (!user) {
-        boxes.forEach((b) => (b.disabled = true));
-        if (status) {
-          status.innerHTML = '';
-          const btn = document.createElement('button');
-          btn.className = 'pg__google';
-          btn.type = 'button';
-          btn.textContent = 'Sign in with Google to save your progress';
-          btn.addEventListener('click', () => pg.signInWithGoogle(sb).catch((e) => alert(e.message)));
-          status.appendChild(btn);
-        }
-        return;
-      }
+  const paint = () => {
+    const label = $('[data-step-label]');
+    if (label) label.textContent = `Question ${Math.min(current + 1, track.total)} of ${track.total}`;
+    const score = $('[data-score]');
+    if (score) score.textContent = `${correct} correct`;
+    const bar = $('[data-bar]');
+    if (bar) bar.style.width = `${(current / track.total) * 100}%`;
+  };
+  paint();
 
-      const progress = await pg.loadProgress(sb, user.id);
-      let done = new Set(progress[track.slug] ?? []);
+  questions.forEach((qEl, qi) => {
+    const why = qEl.querySelector<HTMLElement>('[data-why]');
+    const verdict = qEl.querySelector<HTMLElement>('[data-why-verdict]');
 
-      const paint = (earned) => {
-        boxes.forEach((b, i) => (b.checked = done.has(i)));
-        badgeIcon?.classList.toggle('is-earned', earned);
-        if (status) {
-          status.textContent = earned
-            ? `Badge earned — ${track.badge}.`
-            : `${done.size} of ${track.steps.length} steps complete.`;
-        }
-      };
+    qEl.querySelectorAll<HTMLButtonElement>('[data-opt]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (qEl.dataset.answered) return;
+        qEl.dataset.answered = 'yes';
 
-      paint(done.size >= track.steps.length);
+        const right = btn.dataset.correct === 'true';
+        if (right) correct++;
 
-      boxes.forEach((box, i) => {
-        box.addEventListener('change', async () => {
-          const want = box.checked;
-          box.disabled = true;
-          try {
-            await pg.setStep(sb, user.id, track.slug, i, want);
-            want ? done.add(i) : done.delete(i);
-            const earned = await pg.syncBadge(sb, user.id, track, [...done]);
-            paint(earned);
-          } catch (e) {
-            box.checked = !want;
-            if (status) status.textContent = `Could not save that step: ${e.message}`;
-          } finally {
-            box.disabled = false;
-          }
+        // Mark every option so the correct one is always visible afterwards.
+        qEl.querySelectorAll<HTMLButtonElement>('[data-opt]').forEach((b) => {
+          b.disabled = true;
+          if (b.dataset.correct === 'true') b.classList.add('is-correct');
+          else if (b === btn) b.classList.add('is-wrong');
         });
+
+        if (verdict) verdict.textContent = right ? 'Correct' : 'Not quite';
+        if (why) why.hidden = false;
+        paint();
       });
-    })();
+    });
+
+    qEl.querySelector<HTMLButtonElement>('[data-next]')?.addEventListener('click', () => {
+      qEl.hidden = true;
+      current++;
+      if (current < questions.length) {
+        questions[current].hidden = false;
+        paint();
+        questions[current].scrollIntoView({ block: 'nearest' });
+      } else {
+        finish();
+      }
+    });
+  });
+
+  function finish() {
+    const bar = $('[data-bar]');
+    if (bar) bar.style.width = '100%';
+    const label = $('[data-step-label]');
+    if (label) label.textContent = 'Done';
+
+    const passed = correct >= track.pass;
+    if (result) result.hidden = false;
+
+    const title = $('[data-result-title]');
+    const body = $('[data-result-body]');
+    const disc = $('[data-result-disc]');
+    const actions = $('[data-earned-actions]');
+    const retry = $('[data-retry]');
+
+    if (passed) {
+      disc?.classList.add('is-earned');
+      if (title) title.textContent = `You earned ${track.badge}`;
+      if (body) body.textContent = `${correct} of ${track.total} correct. This badge is yours to post.`;
+      if (actions) actions.hidden = false;
+      claim();
+    } else {
+      if (title) title.textContent = 'Close, but not yet';
+      if (body)
+        body.textContent = `${correct} of ${track.total} correct — you need ${track.pass}. Rewatch the bits you missed and go again.`;
+      if (retry) retry.hidden = false;
+    }
+    result?.scrollIntoView({ block: 'nearest' });
   }
+
+  $('[data-retry]')?.addEventListener('click', () => window.location.reload());
+
+  /* ---- claiming the badge: only runs after a pass ---- */
+  async function claim() {
+    if (!url || !key) return;
+    const area = $('[data-share-area]');
+    const hint = $('[data-share-hint]');
+    if (!area) return;
+
+    const pg = await import('../../lib/playground');
+    const sb = pg.getClient(url, key);
+    const user = await pg.currentUser(sb);
+
+    if (!user) {
+      if (hint) {
+        hint.textContent = '';
+        const btn = document.createElement('button');
+        btn.className = 'pg__google';
+        btn.type = 'button';
+        btn.textContent = 'Sign in with Google to claim it';
+        btn.addEventListener('click', () => {
+          try {
+            sessionStorage.setItem('atc-claim', track.slug);
+          } catch {}
+          pg.signInWithGoogle(sb).catch((e) => alert(e.message));
+        });
+        hint.appendChild(btn);
+      }
+      return;
+    }
+
+    if (hint) hint.textContent = 'Saving your badge…';
+    try {
+      await pg.awardBadge(sb, user.id, track.slug);
+      const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'A tech explorer';
+      const share = await pg.publishShare(sb, user.id, track.slug, name);
+      window.location.href = `/badge/${share.id}/?new=1`;
+    } catch (e: any) {
+      if (hint) hint.textContent = `Could not save the badge: ${e.message}`;
+    }
+  }
+
+  /* Coming back from Google mid-quiz: go straight to the badge. */
+  (async () => {
+    if (!url || !key) return;
+    let pending: string | null = null;
+    try {
+      pending = sessionStorage.getItem('atc-claim');
+    } catch {}
+    if (pending !== track.slug) return;
+    try {
+      sessionStorage.removeItem('atc-claim');
+    } catch {}
+
+    const pg = await import('../../lib/playground');
+    const sb = pg.getClient(url, key);
+    const user = await pg.currentUser(sb);
+    if (!user) return;
+    try {
+      await pg.awardBadge(sb, user.id, track.slug);
+      const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'A tech explorer';
+      const share = await pg.publishShare(sb, user.id, track.slug, name);
+      window.location.href = `/badge/${share.id}/?new=1`;
+    } catch {
+      /* leave them on the quiz */
+    }
+  })();
 </script>
 
 <style>
-  .tr { max-width: 860px; }
-  .tr__mins {
+  .qz { max-width: 780px; }
+  .qz__head { margin-bottom: var(--atc-space-6); }
+  .qz__meta {
     font-family: var(--atc-font-mono);
     font-variant-numeric: tabular-nums;
     font-size: 12px;
     color: var(--atc-ink-500);
   }
-  .tr__card { margin-top: 48px; }
-  .tr__cardHead {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--atc-space-6);
-    flex-wrap: wrap;
-    padding-bottom: var(--atc-space-5);
-    border-bottom: var(--atc-stroke-hairline) solid var(--atc-ink-100);
-  }
-  .tr__cardHead > div:first-child {
-    display: flex;
-    flex-direction: column;
-    gap: var(--atc-space-1);
-  }
-  .tr__hint { font-size: var(--atc-body-small-size); }
-  .tr__badge {
-    display: flex;
+  .qz__video { margin-bottom: var(--atc-space-5); }
+  .qz__videoLink {
+    display: inline-flex;
     align-items: center;
-    gap: var(--atc-space-3);
-  }
-  .tr__badgeIcon {
-    display: grid;
-    place-items: center;
-    width: 48px;
-    height: 48px;
-    border-radius: var(--atc-radius-circle);
-    background: var(--atc-ink-50);
-    color: var(--atc-ink-300);
-    transition: background var(--atc-duration-fast) var(--atc-ease-enter),
-                color var(--atc-duration-fast) var(--atc-ease-enter);
-  }
-  .tr__badgeIcon.is-earned {
-    background: var(--atc-purple-50);
-    color: var(--atc-purple-600);
-  }
-  .tr__badgeName {
-    font-weight: 600;
+    gap: var(--atc-space-2);
+    color: var(--atc-purple-700);
+    text-decoration: none;
+    font-weight: 500;
     font-size: var(--atc-body-small-size);
   }
+  .qz__videoLink:hover { text-decoration: underline; }
 
-  .tr__steps {
-    list-style: none;
-    margin: var(--atc-space-5) 0 0;
-    padding: 0;
+  .qz__progress {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: var(--atc-space-3);
+  }
+  .qz__step { font-size: var(--atc-label-size); font-weight: var(--atc-label-weight); }
+  .qz__score {
+    font-family: var(--atc-font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--atc-ink-500);
+  }
+  .qz__bar {
+    height: 8px;
+    border-radius: var(--atc-radius-chip);
+    background: var(--atc-ink-100);
+    overflow: hidden;
+    margin-bottom: var(--atc-space-7);
+  }
+  .qz__fill {
+    display: block;
+    height: 100%;
+    background: var(--atc-purple-600);
+    transition: width var(--atc-duration-slow) var(--atc-ease-enter);
+  }
+
+  .qz__qText {
+    font-family: var(--atc-font-latin-disp);
+    font-size: 22px;
+    line-height: 30px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--atc-space-5);
+  }
+  .qz__options {
     display: flex;
     flex-direction: column;
-    gap: var(--atc-space-2);
-    counter-reset: step;
+    gap: var(--atc-space-3);
   }
-  .tr__step label {
+  .qz__opt {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--atc-space-4);
-    padding: var(--atc-space-4);
-    border: var(--atc-stroke-hairline) solid var(--atc-ink-100);
+    width: 100%;
+    padding: var(--atc-space-4) var(--atc-space-5);
+    box-sizing: border-box;
+    text-align: start;
+    font: inherit;
+    font-size: var(--atc-body-base-size);
+    line-height: var(--atc-body-base-line);
+    color: var(--atc-text-primary);
+    background: var(--atc-surface-raised);
+    border: var(--atc-stroke-default) solid var(--atc-ink-200);
+    border-radius: var(--atc-radius-control);
+    cursor: pointer;
+    transition: background-color var(--atc-duration-micro) var(--atc-ease-move),
+                border-color var(--atc-duration-micro) var(--atc-ease-move);
+  }
+  .qz__opt:hover:not(:disabled) {
+    background: var(--atc-purple-50);
+    border-color: var(--atc-purple-600);
+  }
+  .qz__opt:disabled { cursor: default; }
+  .qz__optMark {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+    margin-top: 2px;
+    border-radius: var(--atc-radius-circle);
+    border: var(--atc-stroke-strong) solid var(--atc-ink-300);
+  }
+  /* Right and wrong carry a SHAPE as well as a colour — a tick and a bar —
+     so the outcome survives colour-vision deficiency. */
+  .qz__opt.is-correct {
+    border-color: var(--atc-teal-500);
+    background: #E6F5F3;
+  }
+  .qz__opt.is-correct .qz__optMark {
+    border-color: var(--atc-teal-700);
+    background: var(--atc-teal-500);
+    position: relative;
+  }
+  .qz__opt.is-correct .qz__optMark::after {
+    content: '';
+    position: absolute;
+    left: 6px; top: 2px;
+    width: 4px; height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .qz__opt.is-wrong {
+    border-color: var(--atc-spark-700);
+    background: var(--atc-spark-100);
+  }
+  .qz__opt.is-wrong .qz__optMark {
+    border-color: var(--atc-spark-700);
+    background: var(--atc-spark-500);
+    position: relative;
+  }
+  .qz__opt.is-wrong .qz__optMark::after {
+    content: '';
+    position: absolute;
+    left: 4px; top: 8px;
+    width: 9px; height: 2px;
+    background: #fff;
+  }
+
+  .qz__why {
+    margin-top: var(--atc-space-5);
+    padding: var(--atc-space-5);
+    background: var(--atc-surface-sunken);
+    border-radius: var(--atc-radius-panel);
+  }
+  .qz__why strong { display: block; margin-bottom: var(--atc-space-2); }
+  .qz__why p {
+    margin: 0 0 var(--atc-space-4);
+    font-size: var(--atc-body-small-size);
+    line-height: var(--atc-body-small-line);
+    color: var(--atc-ink-700);
+  }
+  .qz__next {
+    height: var(--atc-control-md);
+    padding: 0 var(--atc-space-4);
+    font: inherit;
+    font-size: var(--atc-label-size);
+    font-weight: var(--atc-label-weight);
+    color: var(--atc-action-secondary-fg);
+    background: var(--atc-action-secondary-bg);
+    border: var(--atc-stroke-brand) solid var(--atc-stroke-brand-color);
     border-radius: var(--atc-radius-control);
     cursor: pointer;
   }
-  .tr__step label:hover { background: var(--atc-purple-50); }
-  .tr__step input {
-    width: 20px;
-    height: 20px;
-    accent-color: var(--atc-purple-600);
-    flex: 0 0 auto;
+  .qz__next:hover { background: var(--atc-action-secondary-bg-hover); }
+
+  .qz__result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--atc-space-4);
+    padding-top: var(--atc-space-4);
+  }
+  .qz__resultDisc {
+    width: 88px;
+    height: 88px;
+    border-radius: var(--atc-radius-circle);
+    display: grid;
+    place-items: center;
+    background: var(--atc-ink-50);
+    border: 1.5px dashed var(--atc-ink-200);
+    color: var(--atc-ink-300);
+  }
+  .qz__resultDisc.is-earned {
+    background: var(--pillar);
+    border: none;
+    color: var(--atc-white);
+  }
+  .qz__actions { width: 100%; }
+  .qz__retry {
+    background: none;
+    border: 0;
+    font: inherit;
+    font-size: var(--atc-body-small-size);
+    color: var(--atc-purple-700);
+    text-decoration: underline;
     cursor: pointer;
   }
-  .tr__step input:disabled { cursor: not-allowed; }
-  .tr__stepNum {
-    font-family: var(--atc-font-mono);
-    font-variant-numeric: tabular-nums;
-    font-size: 12px;
-    color: var(--atc-ink-500);
-    width: 1.5em;
-  }
-  .tr__stepText { font-size: var(--atc-body-base-size); }
-  .tr__step input:checked ~ .tr__stepText {
-    color: var(--atc-ink-500);
-    text-decoration: line-through;
-  }
 
-  .tr__status {
-    margin: var(--atc-space-5) 0 0;
-    font-size: var(--atc-body-small-size);
-    color: var(--atc-ink-700);
-  }
-  .tr__back {
+  .qz__back {
     display: inline-block;
     margin-top: var(--atc-space-6);
     font-size: var(--atc-body-small-size);
     color: var(--atc-purple-700);
     text-decoration: none;
   }
-  .tr__back:hover { text-decoration: underline; }
+  .qz__back:hover { text-decoration: underline; }
+
+  :global(.pg__google) {
+    display: inline-flex;
+    align-items: center;
+    height: var(--atc-control-md);
+    padding: 0 var(--atc-space-4);
+    font-family: var(--atc-font-text);
+    font-size: var(--atc-label-size);
+    font-weight: var(--atc-label-weight);
+    color: var(--atc-action-secondary-fg);
+    background: var(--atc-action-secondary-bg);
+    border: var(--atc-stroke-brand) solid var(--atc-stroke-brand-color);
+    border-radius: var(--atc-radius-control);
+    cursor: pointer;
+  }
+  :global(.pg__google:hover) { background: var(--atc-action-secondary-bg-hover); }
 
   @media (prefers-reduced-motion: reduce) {
-    .tr__badgeIcon { transition: none; }
+    .qz__fill, .qz__opt { transition: none; }
   }
 </style>
