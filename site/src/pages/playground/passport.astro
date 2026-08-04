@@ -186,7 +186,7 @@ const stamps = playground.tracks.map((t) => ({
       const remaining = tracks.filter((t: any) => !badges.includes(t.slug));
       if (nextText) {
         nextText.textContent = remaining.length
-          ? `Next up: “${remaining[0].name}” — ${remaining[0].questions.length} questions.`
+          ? `Next up: “${remaining[0].name}” — ${remaining[0].rounds.length} rounds.`
           : 'Every badge collected. New games land with each product I publish.';
       }
     })();

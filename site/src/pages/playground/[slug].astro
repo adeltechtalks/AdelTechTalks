@@ -1,9 +1,14 @@
 ---
-/* A game: a few questions about what the video just showed, then a badge.
-   Questions and answers are rendered into the page, so a determined visitor can
-   read the answers in the source. That is a deliberate trade — this is a
-   learning prompt that earns a shareable badge, not an exam. Keeping it fully
-   client-side means it stays a fast static page with no server round-trip. */
+/* The game. A track is a list of rounds, each a different interaction:
+ *   sequence — tap the steps into the right order
+ *   estimate — drag a slider to a number, then see the real one
+ *   hotspot  — tap the place on an image where something happens
+ *   choice   — pick the right option
+ *
+ * All client-side, so the page stays static and instant. A determined visitor
+ * can read the answers in the source — a deliberate trade. This is a learning
+ * prompt that earns a shareable badge, not an exam.
+ */
 
 import Base from '../../layouts/Base.astro';
 import Card from '../../components/Card.astro';
@@ -18,84 +23,135 @@ export const getStaticPaths: GetStaticPaths = () =>
 
 const { track } = Astro.props;
 const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
-const total = track.questions.length;
+const rounds = (track as any).rounds ?? [];
+const total = rounds.length;
+
+const TYPE_LABEL: Record<string, string> = {
+  sequence: 'Put it in order',
+  estimate: 'Make a call',
+  hotspot: 'Find it',
+  choice: 'Pick one',
+};
 ---
 
 <Base title={track.name} description={track.body}>
-  <section class="container qz">
-    <div class="stack qz__head">
+  <section class="container gm">
+    <div class="stack gm__head">
       <div class="row">
         <Chip pillar={track.pillar as any}>{track.pillar}</Chip>
-        <span class="qz__meta">{total} questions · {track.minutes} min</span>
+        <span class="gm__meta">{total} rounds · {track.minutes} min</span>
       </div>
       <h1 class="h-display">{track.name}</h1>
       <p class="lede">{track.body}</p>
     </div>
 
     {track.video && (
-      <Card elevation={1} padding="var(--atc-space-6)" class="qz__video">
+      <Card elevation={1} padding="var(--atc-space-6)" class="gm__video">
         <strong class="h-card">Watch this first</strong>
-        <span class="muted">The answers are all in the video.</span>
-        <a class="qz__videoLink" href={`https://www.youtube.com/watch?v=${track.video}`} target="_blank" rel="noopener">
+        <span class="muted">Everything you need is in the video.</span>
+        <a class="gm__videoLink" href={`https://www.youtube.com/watch?v=${track.video}`} target="_blank" rel="noopener">
           <Icon name="play" size="md" /> Open the video
         </a>
       </Card>
     )}
 
-    <!-- ---------- the quiz ---------- -->
-    <Card elevation={2} padding="var(--atc-space-8)" class="qz__card">
-      <div class="qz__progress">
-        <span class="qz__step" data-step-label>Question 1 of {total}</span>
-        <span class="qz__score" data-score>0 correct</span>
+    <Card elevation={2} padding="var(--atc-space-8)" class="gm__card">
+      <div class="gm__progress">
+        <span class="gm__step" data-step-label>Round 1 of {total}</span>
+        <span class="gm__score" data-score>0 / {total}</span>
       </div>
-      <div class="qz__bar"><span class="qz__fill" data-bar style="width:0%"></span></div>
+      <div class="gm__bar"><span class="gm__fill" data-bar style="width:0%"></span></div>
 
-      <div data-questions>
-        {track.questions.map((question, qi) => (
-          <div class="qz__q" data-q={qi} hidden={qi !== 0}>
-            <h2 class="qz__qText">{question.q}</h2>
-            <div class="qz__options">
-              {question.options.map((opt, oi) => (
-                <button class="qz__opt" type="button" data-opt={oi} data-correct={oi === question.answer ? 'true' : 'false'}>
-                  <span class="qz__optMark" aria-hidden="true"></span>
+      {rounds.map((r: any, ri: number) => (
+        <div class="gm__round" data-round={ri} data-type={r.type} hidden={ri !== 0}>
+          <span class="gm__kind">{TYPE_LABEL[r.type] ?? 'Round'}</span>
+          <h2 class="gm__q">{r.q}</h2>
+
+          {/* ---------------- SEQUENCE ---------------- */}
+          {r.type === 'sequence' && (
+            <div class="seq" data-seq={JSON.stringify(r.items)}>
+              <ol class="seq__picked" data-seq-picked aria-label="Your order"></ol>
+              <div class="seq__pool" data-seq-pool></div>
+              <button class="gm__reset" type="button" data-seq-reset hidden>Start over</button>
+            </div>
+          )}
+
+          {/* ---------------- ESTIMATE ---------------- */}
+          {r.type === 'estimate' && (
+            <div class="est" data-est={JSON.stringify({ min: r.min, max: r.max, answer: r.answer, tolerance: r.tolerance, unit: r.unit })}>
+              <output class="est__value" data-est-value>{Math.round((r.min + r.max) / 2)}{r.unit}</output>
+              <input class="est__slider" type="range" min={r.min} max={r.max} value={Math.round((r.min + r.max) / 2)} step="1" data-est-slider aria-label={r.q} />
+              <div class="est__scale">
+                <span>{r.min}{r.unit}</span>
+                <span>{r.max}{r.unit}</span>
+              </div>
+              <div class="est__truth" data-est-truth hidden>
+                <span class="est__truthLabel">Actual</span>
+                <strong data-est-actual></strong>
+              </div>
+              <button class="gm__go" type="button" data-est-lock>Lock it in</button>
+            </div>
+          )}
+
+          {/* ---------------- HOTSPOT ---------------- */}
+          {r.type === 'hotspot' && (
+            <div class="hot" data-hot={JSON.stringify(r.target)}>
+              <div class="hot__frame" data-hot-frame class:list={[!r.image && 'hot__frame--noimg']}>
+                {r.image ? (
+                  <img src={r.image} alt="" class="hot__img" />
+                ) : (
+                  <div class="hot__grid" aria-hidden="true">
+                    {Array.from({ length: 12 }).map(() => <span></span>)}
+                    <span class="hot__gridNote">Frame</span>
+                  </div>
+                )}
+                <span class="hot__pin" data-hot-you hidden><Icon name="crosshair" size="lg" /></span>
+                <span class="hot__pin hot__pin--target" data-hot-target hidden><Icon name="check" size="lg" /></span>
+              </div>
+              {r.hint && <span class="hot__hint muted">{r.hint}</span>}
+            </div>
+          )}
+
+          {/* ---------------- CHOICE ---------------- */}
+          {r.type === 'choice' && (
+            <div class="ch">
+              {r.options.map((opt: string, oi: number) => (
+                <button class="ch__opt" type="button" data-choice={oi} data-correct={oi === r.answer ? 'true' : 'false'}>
+                  <span class="ch__mark" aria-hidden="true"></span>
                   <span>{opt}</span>
                 </button>
               ))}
             </div>
-            <div class="qz__why" data-why hidden>
-              <strong data-why-verdict>—</strong>
-              <p>{question.why}</p>
-              <button class="qz__next" type="button" data-next>
-                {qi === total - 1 ? 'See your result' : 'Next question'}
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          )}
 
-      <!-- ---------- result ---------- -->
-      <div class="qz__result" data-result hidden>
-        <span class="qz__resultDisc" data-result-disc style={`--pillar: var(--atc-category-${track.pillar}-graphic)`}>
+          <div class="gm__why" data-why hidden>
+            <strong data-why-verdict>—</strong>
+            <p>{r.why}</p>
+            <button class="gm__go" type="button" data-next>
+              {ri === total - 1 ? 'See your result' : 'Next round'}
+            </button>
+          </div>
+        </div>
+      ))}
+
+      <div class="gm__result" data-result hidden>
+        <span class="gm__resultDisc" data-result-disc style={`--pillar: var(--atc-category-${track.pillar}-graphic)`}>
           <Icon name="award" size="xl" />
         </span>
         <h2 class="h-section" data-result-title>—</h2>
         <p class="lede" data-result-body>—</p>
-
-        <div class="qz__actions" data-earned-actions hidden>
+        <div class="gm__actions" data-earned-actions hidden>
           {live ? (
-            <div class="qz__share" data-share-area>
-              <span class="muted" data-share-hint>Sign in to claim this badge and get a link you can post.</span>
-            </div>
+            <div data-share-area><span class="muted" data-share-hint>Sign in to claim this badge.</span></div>
           ) : (
             <span class="muted">Badges are not switched on yet.</span>
           )}
         </div>
-
-        <button class="qz__retry" type="button" data-retry hidden>Try again</button>
+        <button class="gm__retry" type="button" data-retry hidden>Play again</button>
       </div>
     </Card>
 
-    <a class="qz__back" href="/playground">← All games</a>
+    <a class="gm__back" href="/playground">← All games</a>
   </section>
 </Base>
 
@@ -105,12 +161,8 @@ const total = track.questions.length;
   data-supabase-url={services.supabaseUrl}
   data-supabase-key={services.supabaseAnonKey}
   data-track={JSON.stringify({
-    slug: track.slug,
-    name: track.name,
-    badge: track.badge,
-    product: track.product ?? track.name,
-    pass: track.pass,
-    total,
+    slug: track.slug, name: track.name, badge: track.badge,
+    product: (track as any).product ?? track.name, pass: track.pass, total,
   })}
 ></div>
 
@@ -120,100 +172,221 @@ const total = track.questions.length;
   const url = data?.dataset.supabaseUrl;
   const key = data?.dataset.supabaseKey;
 
-  const $ = <T extends HTMLElement>(s: string) => document.querySelector<T>(s);
-  const questions = Array.from(document.querySelectorAll<HTMLElement>('[data-q]'));
-  const result = $('[data-result]');
+  const $ = <T extends HTMLElement>(s: string, r: ParentNode = document) => r.querySelector<T>(s);
+  const roundEls = Array.from(document.querySelectorAll<HTMLElement>('[data-round]'));
 
   let current = 0;
-  let correct = 0;
+  let score = 0;
 
   const paint = () => {
-    const label = $('[data-step-label]');
-    if (label) label.textContent = `Question ${Math.min(current + 1, track.total)} of ${track.total}`;
-    const score = $('[data-score]');
-    if (score) score.textContent = `${correct} correct`;
-    const bar = $('[data-bar]');
-    if (bar) bar.style.width = `${(current / track.total) * 100}%`;
+    const l = $('[data-step-label]');
+    if (l) l.textContent = `Round ${Math.min(current + 1, track.total)} of ${track.total}`;
+    const s = $('[data-score]');
+    if (s) s.textContent = `${score} / ${track.total}`;
+    const b = $('[data-bar]');
+    if (b) b.style.width = `${(current / track.total) * 100}%`;
   };
-  paint();
 
-  questions.forEach((qEl, qi) => {
-    const why = qEl.querySelector<HTMLElement>('[data-why]');
-    const verdict = qEl.querySelector<HTMLElement>('[data-why-verdict]');
+  /* Called by every round type when the player commits to an answer. */
+  function settle(roundEl: HTMLElement, right: boolean) {
+    if (roundEl.dataset.done) return;
+    roundEl.dataset.done = 'yes';
+    if (right) score++;
+    const why = $('[data-why]', roundEl);
+    const verdict = $('[data-why-verdict]', roundEl);
+    if (verdict) verdict.textContent = right ? 'Correct' : 'Not quite';
+    if (why) why.hidden = false;
+    paint();
+    why?.scrollIntoView({ block: 'nearest' });
+  }
 
-    qEl.querySelectorAll<HTMLButtonElement>('[data-opt]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        if (qEl.dataset.answered) return;
-        qEl.dataset.answered = 'yes';
+  roundEls.forEach((roundEl) => {
+    const type = roundEl.dataset.type;
 
-        const right = btn.dataset.correct === 'true';
-        if (right) correct++;
-
-        // Mark every option so the correct one is always visible afterwards.
-        qEl.querySelectorAll<HTMLButtonElement>('[data-opt]').forEach((b) => {
-          b.disabled = true;
-          if (b.dataset.correct === 'true') b.classList.add('is-correct');
-          else if (b === btn) b.classList.add('is-wrong');
+    /* ---------------- CHOICE ---------------- */
+    if (type === 'choice') {
+      roundEl.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (roundEl.dataset.done) return;
+          const right = btn.dataset.correct === 'true';
+          roundEl.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach((b) => {
+            b.disabled = true;
+            if (b.dataset.correct === 'true') b.classList.add('is-correct');
+            else if (b === btn) b.classList.add('is-wrong');
+          });
+          settle(roundEl, right);
         });
-
-        if (verdict) verdict.textContent = right ? 'Correct' : 'Not quite';
-        if (why) why.hidden = false;
-        paint();
       });
-    });
+    }
 
-    qEl.querySelector<HTMLButtonElement>('[data-next]')?.addEventListener('click', () => {
-      qEl.hidden = true;
-      current++;
-      if (current < questions.length) {
-        questions[current].hidden = false;
-        paint();
-        questions[current].scrollIntoView({ block: 'nearest' });
-      } else {
-        finish();
+    /* ---------------- SEQUENCE ---------------- */
+    if (type === 'sequence') {
+      const wrap = $<HTMLElement>('[data-seq]', roundEl)!;
+      const correct: string[] = JSON.parse(wrap.dataset.seq ?? '[]');
+      const pool = $<HTMLElement>('[data-seq-pool]', roundEl)!;
+      const picked = $<HTMLElement>('[data-seq-picked]', roundEl)!;
+      const reset = $<HTMLButtonElement>('[data-seq-reset]', roundEl)!;
+      let chosen: string[] = [];
+
+      // Shuffle deterministically enough — order must differ from the answer.
+      const shuffled = [...correct];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
+
+      const render = () => {
+        pool.replaceChildren();
+        picked.replaceChildren();
+        chosen.forEach((item, i) => {
+          const li = document.createElement('li');
+          li.className = 'seq__item seq__item--picked';
+          li.innerHTML = `<span class="seq__num">${i + 1}</span>`;
+          li.append(document.createTextNode(item));
+          picked.appendChild(li);
+        });
+        shuffled
+          .filter((s) => !chosen.includes(s))
+          .forEach((item) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'seq__item seq__item--pool';
+            btn.textContent = item;
+            btn.addEventListener('click', () => {
+              if (roundEl.dataset.done) return;
+              chosen.push(item);
+              render();
+              if (chosen.length === correct.length) {
+                const right = chosen.every((v, i) => v === correct[i]);
+                // Show the true order alongside theirs when they get it wrong.
+                if (!right) {
+                  picked.querySelectorAll('.seq__item').forEach((li, i) => {
+                    li.classList.add(chosen[i] === correct[i] ? 'is-correct' : 'is-wrong');
+                  });
+                }
+                settle(roundEl, right);
+              }
+            });
+            pool.appendChild(btn);
+          });
+        reset.hidden = chosen.length === 0 || Boolean(roundEl.dataset.done);
+      };
+
+      reset.addEventListener('click', () => {
+        if (roundEl.dataset.done) return;
+        chosen = [];
+        render();
+      });
+      render();
+    }
+
+    /* ---------------- ESTIMATE ---------------- */
+    if (type === 'estimate') {
+      const wrap = $<HTMLElement>('[data-est]', roundEl)!;
+      const cfg = JSON.parse(wrap.dataset.est ?? '{}');
+      const slider = $<HTMLInputElement>('[data-est-slider]', roundEl)!;
+      const value = $<HTMLElement>('[data-est-value]', roundEl)!;
+      const lock = $<HTMLButtonElement>('[data-est-lock]', roundEl)!;
+
+      slider.addEventListener('input', () => {
+        value.textContent = `${slider.value}${cfg.unit}`;
+      });
+
+      lock.addEventListener('click', () => {
+        if (roundEl.dataset.done) return;
+        const guess = Number(slider.value);
+        const right = Math.abs(guess - cfg.answer) <= cfg.tolerance;
+        slider.disabled = true;
+        lock.hidden = true;
+
+        const truth = $<HTMLElement>('[data-est-truth]', roundEl)!;
+        const actual = $<HTMLElement>('[data-est-actual]', roundEl)!;
+        actual.textContent = `${cfg.answer}${cfg.unit}`;
+        // Put the marker where the real answer sits on the scale.
+        const pct = ((cfg.answer - cfg.min) / (cfg.max - cfg.min)) * 100;
+        truth.style.setProperty('--at', `${pct}%`);
+        truth.hidden = false;
+        value.classList.add(right ? 'is-correct' : 'is-wrong');
+        settle(roundEl, right);
+      });
+    }
+
+    /* ---------------- HOTSPOT ---------------- */
+    if (type === 'hotspot') {
+      const wrap = $<HTMLElement>('[data-hot]', roundEl)!;
+      const target = JSON.parse(wrap.dataset.hot ?? '{}');
+      const frame = $<HTMLElement>('[data-hot-frame]', roundEl)!;
+      const you = $<HTMLElement>('[data-hot-you]', roundEl)!;
+      const tgt = $<HTMLElement>('[data-hot-target]', roundEl)!;
+
+      frame.addEventListener('click', (ev) => {
+        if (roundEl.dataset.done) return;
+        const box = frame.getBoundingClientRect();
+        const x = ((ev.clientX - box.left) / box.width) * 100;
+        const y = ((ev.clientY - box.top) / box.height) * 100;
+
+        you.style.left = `${x}%`;
+        you.style.top = `${y}%`;
+        you.hidden = false;
+
+        tgt.style.left = `${target.x}%`;
+        tgt.style.top = `${target.y}%`;
+        tgt.hidden = false;
+
+        const dist = Math.hypot(x - target.x, y - target.y);
+        const right = dist <= target.r;
+        you.classList.add(right ? 'is-correct' : 'is-wrong');
+        settle(roundEl, right);
+      });
+    }
+
+    /* next */
+    $<HTMLButtonElement>('[data-next]', roundEl)?.addEventListener('click', () => {
+      roundEl.hidden = true;
+      current++;
+      if (current < roundEls.length) {
+        roundEls[current].hidden = false;
+        paint();
+        roundEls[current].scrollIntoView({ block: 'nearest' });
+      } else finish();
     });
   });
 
+  paint();
+
   function finish() {
-    const bar = $('[data-bar]');
-    if (bar) bar.style.width = '100%';
-    const label = $('[data-step-label]');
-    if (label) label.textContent = 'Done';
+    const b = $('[data-bar]');
+    if (b) b.style.width = '100%';
+    const l = $('[data-step-label]');
+    if (l) l.textContent = 'Done';
 
-    const passed = correct >= track.pass;
+    const passed = score >= track.pass;
+    const result = $('[data-result]');
     if (result) result.hidden = false;
-
     const title = $('[data-result-title]');
     const body = $('[data-result-body]');
-    const disc = $('[data-result-disc]');
-    const actions = $('[data-earned-actions]');
-    const retry = $('[data-retry]');
 
     if (passed) {
-      disc?.classList.add('is-earned');
+      $('[data-result-disc]')?.classList.add('is-earned');
       if (title) title.textContent = `You earned ${track.badge}`;
-      if (body) body.textContent = `${correct} of ${track.total} correct. This badge is yours to post.`;
-      if (actions) actions.hidden = false;
+      if (body) body.textContent = `${score} of ${track.total}. This badge is yours to post.`;
+      const a = $('[data-earned-actions]');
+      if (a) a.hidden = false;
       claim();
     } else {
       if (title) title.textContent = 'Close, but not yet';
-      if (body)
-        body.textContent = `${correct} of ${track.total} correct — you need ${track.pass}. Rewatch the bits you missed and go again.`;
-      if (retry) retry.hidden = false;
+      if (body) body.textContent = `${score} of ${track.total} — you need ${track.pass}. Rewatch the bits you missed and go again.`;
+      const r = $('[data-retry]');
+      if (r) r.hidden = false;
     }
     result?.scrollIntoView({ block: 'nearest' });
   }
 
   $('[data-retry]')?.addEventListener('click', () => window.location.reload());
 
-  /* ---- claiming the badge: only runs after a pass ---- */
   async function claim() {
     if (!url || !key) return;
-    const area = $('[data-share-area]');
     const hint = $('[data-share-hint]');
-    if (!area) return;
-
     const pg = await import('../../lib/playground');
     const sb = pg.getClient(url, key);
     const user = await pg.currentUser(sb);
@@ -226,16 +399,17 @@ const total = track.questions.length;
         btn.type = 'button';
         btn.textContent = 'Sign in with Google to claim it';
         btn.addEventListener('click', () => {
-          try {
-            sessionStorage.setItem('atc-claim', track.slug);
-          } catch {}
+          try { sessionStorage.setItem('atc-claim', track.slug); } catch {}
           pg.signInWithGoogle(sb).catch((e) => alert(e.message));
         });
         hint.appendChild(btn);
       }
       return;
     }
+    await award(pg, sb, user, hint);
+  }
 
+  async function award(pg: any, sb: any, user: any, hint: HTMLElement | null) {
     if (hint) hint.textContent = 'Saving your badge…';
     try {
       await pg.awardBadge(sb, user.id, track.slug);
@@ -247,250 +421,206 @@ const total = track.questions.length;
     }
   }
 
-  /* Coming back from Google mid-quiz: go straight to the badge. */
+  /* Returning from Google mid-game — hand them the badge they already won. */
   (async () => {
     if (!url || !key) return;
     let pending: string | null = null;
-    try {
-      pending = sessionStorage.getItem('atc-claim');
-    } catch {}
+    try { pending = sessionStorage.getItem('atc-claim'); } catch {}
     if (pending !== track.slug) return;
-    try {
-      sessionStorage.removeItem('atc-claim');
-    } catch {}
-
+    try { sessionStorage.removeItem('atc-claim'); } catch {}
     const pg = await import('../../lib/playground');
     const sb = pg.getClient(url, key);
     const user = await pg.currentUser(sb);
-    if (!user) return;
-    try {
-      await pg.awardBadge(sb, user.id, track.slug);
-      const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'A tech explorer';
-      const share = await pg.publishShare(sb, user.id, track.slug, name);
-      window.location.href = `/badge/${share.id}/?new=1`;
-    } catch {
-      /* leave them on the quiz */
-    }
+    if (user) await award(pg, sb, user, null);
   })();
 </script>
 
 <style>
-  .qz { max-width: 780px; }
-  .qz__head { margin-bottom: var(--atc-space-6); }
-  .qz__meta {
+  .gm { max-width: 780px; }
+  .gm__head { margin-bottom: var(--atc-space-6); }
+  .gm__meta, .gm__score {
     font-family: var(--atc-font-mono);
     font-variant-numeric: tabular-nums;
     font-size: 12px;
     color: var(--atc-ink-500);
   }
-  .qz__video { margin-bottom: var(--atc-space-5); }
-  .qz__videoLink {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--atc-space-2);
-    color: var(--atc-purple-700);
-    text-decoration: none;
-    font-weight: 500;
+  .gm__video { margin-bottom: var(--atc-space-5); }
+  .gm__videoLink {
+    display: inline-flex; align-items: center; gap: var(--atc-space-2);
+    color: var(--atc-purple-700); text-decoration: none; font-weight: 500;
     font-size: var(--atc-body-small-size);
   }
-  .qz__videoLink:hover { text-decoration: underline; }
+  .gm__progress { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--atc-space-3); }
+  .gm__step { font-size: var(--atc-label-size); font-weight: var(--atc-label-weight); }
+  .gm__bar { height: 8px; border-radius: var(--atc-radius-chip); background: var(--atc-ink-100); overflow: hidden; margin-bottom: var(--atc-space-7); }
+  .gm__fill { display: block; height: 100%; background: var(--atc-purple-600); transition: width var(--atc-duration-slow) var(--atc-ease-enter); }
 
-  .qz__progress {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: var(--atc-space-3);
+  .gm__kind {
+    display: inline-block; margin-bottom: var(--atc-space-2);
+    font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--atc-purple-700);
   }
-  .qz__step { font-size: var(--atc-label-size); font-weight: var(--atc-label-weight); }
-  .qz__score {
-    font-family: var(--atc-font-mono);
-    font-variant-numeric: tabular-nums;
-    font-size: 12px;
-    color: var(--atc-ink-500);
-  }
-  .qz__bar {
-    height: 8px;
-    border-radius: var(--atc-radius-chip);
-    background: var(--atc-ink-100);
-    overflow: hidden;
-    margin-bottom: var(--atc-space-7);
-  }
-  .qz__fill {
-    display: block;
-    height: 100%;
-    background: var(--atc-purple-600);
-    transition: width var(--atc-duration-slow) var(--atc-ease-enter);
+  .gm__q {
+    font-family: var(--atc-font-latin-disp); font-size: 22px; line-height: 30px;
+    font-weight: 600; letter-spacing: -0.02em; margin: 0 0 var(--atc-space-5);
   }
 
-  .qz__qText {
-    font-family: var(--atc-font-latin-disp);
-    font-size: 22px;
-    line-height: 30px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    margin: 0 0 var(--atc-space-5);
+  .gm__go, .gm__reset, .gm__retry {
+    height: var(--atc-control-md); padding: 0 var(--atc-space-4);
+    font: inherit; font-size: var(--atc-label-size); font-weight: var(--atc-label-weight);
+    color: var(--atc-action-secondary-fg); background: var(--atc-action-secondary-bg);
+    border: var(--atc-stroke-brand) solid var(--atc-stroke-brand-color);
+    border-radius: var(--atc-radius-control); cursor: pointer;
   }
-  .qz__options {
-    display: flex;
-    flex-direction: column;
-    gap: var(--atc-space-3);
+  .gm__go:hover, .gm__reset:hover { background: var(--atc-action-secondary-bg-hover); }
+  .gm__reset { border: none; background: none; color: var(--atc-purple-700); text-decoration: underline; padding: 0; height: auto; margin-top: var(--atc-space-3); }
+  .gm__retry { border: none; background: none; color: var(--atc-purple-700); text-decoration: underline; }
+
+  /* ---------------- sequence ---------------- */
+  .seq__picked { list-style: none; margin: 0 0 var(--atc-space-4); padding: 0; display: flex; flex-direction: column; gap: var(--atc-space-2); }
+  .seq__pool { display: flex; flex-direction: column; gap: var(--atc-space-2); }
+  .seq__item {
+    display: flex; align-items: center; gap: var(--atc-space-3); width: 100%;
+    padding: var(--atc-space-4) var(--atc-space-5); box-sizing: border-box;
+    text-align: start; font: inherit; font-size: var(--atc-body-base-size);
+    line-height: var(--atc-body-base-line); color: var(--atc-text-primary);
+    border-radius: var(--atc-radius-control);
   }
-  .qz__opt {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--atc-space-4);
-    width: 100%;
-    padding: var(--atc-space-4) var(--atc-space-5);
-    box-sizing: border-box;
-    text-align: start;
-    font: inherit;
-    font-size: var(--atc-body-base-size);
-    line-height: var(--atc-body-base-line);
-    color: var(--atc-text-primary);
+  .seq__item--pool {
     background: var(--atc-surface-raised);
     border: var(--atc-stroke-default) solid var(--atc-ink-200);
-    border-radius: var(--atc-radius-control);
     cursor: pointer;
-    transition: background-color var(--atc-duration-micro) var(--atc-ease-move),
-                border-color var(--atc-duration-micro) var(--atc-ease-move);
   }
-  .qz__opt:hover:not(:disabled) {
-    background: var(--atc-purple-50);
-    border-color: var(--atc-purple-600);
+  .seq__item--pool:hover { background: var(--atc-purple-50); border-color: var(--atc-purple-600); }
+  .seq__item--picked { background: var(--atc-surface-sunken); border: var(--atc-stroke-default) solid transparent; }
+  .seq__num {
+    flex: 0 0 auto; width: 24px; height: 24px; display: grid; place-items: center;
+    border-radius: var(--atc-radius-circle); background: var(--atc-purple-600);
+    color: var(--atc-white); font-family: var(--atc-font-mono); font-size: 12px;
   }
-  .qz__opt:disabled { cursor: default; }
-  .qz__optMark {
-    width: 20px;
-    height: 20px;
-    flex: 0 0 auto;
-    margin-top: 2px;
+  .seq__item.is-correct { border-color: var(--atc-teal-500); background: #E6F5F3; }
+  .seq__item.is-wrong { border-color: var(--atc-spark-700); background: var(--atc-spark-100); }
+
+  /* ---------------- estimate ---------------- */
+  .est { display: flex; flex-direction: column; gap: var(--atc-space-3); }
+  .est__value {
+    font-family: var(--atc-font-mono); font-variant-numeric: tabular-nums;
+    font-size: 44px; font-weight: 500; color: var(--atc-ink-900); align-self: center;
+  }
+  .est__value.is-correct { color: var(--atc-teal-700); }
+  .est__value.is-wrong { color: var(--atc-spark-700); }
+  .est__slider { width: 100%; accent-color: var(--atc-purple-600); height: 32px; }
+  .est__scale {
+    display: flex; justify-content: space-between;
+    font-family: var(--atc-font-mono); font-size: 12px; color: var(--atc-ink-500);
+  }
+  .est__truth {
+    position: relative; padding: var(--atc-space-4);
+    background: var(--atc-surface-sunken); border-radius: var(--atc-radius-panel);
+    display: flex; align-items: center; gap: var(--atc-space-3);
+  }
+  .est__truth::before {
+    content: ''; position: absolute; top: -6px; left: var(--at, 50%);
+    width: 2px; height: 6px; background: var(--atc-ink-700);
+  }
+  .est__truthLabel { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--atc-ink-500); }
+  .est__truth strong { font-family: var(--atc-font-mono); font-size: 20px; }
+  .est__slider:disabled { opacity: 1; }
+
+  /* ---------------- hotspot ---------------- */
+  .hot__frame {
+    position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden;
+    border-radius: var(--atc-radius-card); background: var(--atc-surface-depth);
+    cursor: crosshair;
+  }
+  .hot__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .hot__grid {
+    position: absolute; inset: 0; display: grid;
+    grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr);
+  }
+  .hot__grid span { border: 1px dashed var(--atc-ink-200); }
+  .hot__gridNote {
+    position: absolute; inset: 0; display: grid; place-items: center; border: none;
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--atc-ink-300);
+  }
+  .hot__pin {
+    position: absolute; transform: translate(-50%, -50%);
+    width: 44px; height: 44px; display: grid; place-items: center;
+    border-radius: var(--atc-radius-circle); pointer-events: none;
+    background: var(--atc-surface-glass-fill);
+    backdrop-filter: blur(var(--atc-surface-glass-blur));
+    border: var(--atc-stroke-strong) solid var(--atc-ink-700);
+    color: var(--atc-ink-700); box-shadow: var(--atc-elevation-2);
+  }
+  .hot__pin.is-correct { border-color: var(--atc-teal-700); color: var(--atc-teal-700); }
+  .hot__pin.is-wrong { border-color: var(--atc-spark-700); color: var(--atc-spark-700); }
+  .hot__pin--target { border-color: var(--atc-teal-700); color: var(--atc-teal-700); border-style: dashed; }
+  .hot__hint { display: block; margin-top: var(--atc-space-3); font-size: var(--atc-body-small-size); }
+
+  /* ---------------- choice ---------------- */
+  .ch { display: flex; flex-direction: column; gap: var(--atc-space-3); }
+  .ch__opt {
+    display: flex; align-items: flex-start; gap: var(--atc-space-4); width: 100%;
+    padding: var(--atc-space-4) var(--atc-space-5); box-sizing: border-box;
+    text-align: start; font: inherit; font-size: var(--atc-body-base-size);
+    line-height: var(--atc-body-base-line); color: var(--atc-text-primary);
+    background: var(--atc-surface-raised);
+    border: var(--atc-stroke-default) solid var(--atc-ink-200);
+    border-radius: var(--atc-radius-control); cursor: pointer;
+  }
+  .ch__opt:hover:not(:disabled) { background: var(--atc-purple-50); border-color: var(--atc-purple-600); }
+  .ch__opt:disabled { cursor: default; }
+  .ch__mark {
+    width: 20px; height: 20px; flex: 0 0 auto; margin-top: 2px;
     border-radius: var(--atc-radius-circle);
-    border: var(--atc-stroke-strong) solid var(--atc-ink-300);
+    border: var(--atc-stroke-strong) solid var(--atc-ink-300); position: relative;
   }
-  /* Right and wrong carry a SHAPE as well as a colour — a tick and a bar —
-     so the outcome survives colour-vision deficiency. */
-  .qz__opt.is-correct {
-    border-color: var(--atc-teal-500);
-    background: #E6F5F3;
+  /* Right and wrong carry a SHAPE as well as a colour — tick and bar — so the
+     outcome survives colour-vision deficiency and greyscale. */
+  .ch__opt.is-correct { border-color: var(--atc-teal-500); background: #E6F5F3; }
+  .ch__opt.is-correct .ch__mark { border-color: var(--atc-teal-700); background: var(--atc-teal-500); }
+  .ch__opt.is-correct .ch__mark::after {
+    content: ''; position: absolute; left: 6px; top: 2px; width: 4px; height: 9px;
+    border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
   }
-  .qz__opt.is-correct .qz__optMark {
-    border-color: var(--atc-teal-700);
-    background: var(--atc-teal-500);
-    position: relative;
-  }
-  .qz__opt.is-correct .qz__optMark::after {
-    content: '';
-    position: absolute;
-    left: 6px; top: 2px;
-    width: 4px; height: 9px;
-    border: solid #fff;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-  }
-  .qz__opt.is-wrong {
-    border-color: var(--atc-spark-700);
-    background: var(--atc-spark-100);
-  }
-  .qz__opt.is-wrong .qz__optMark {
-    border-color: var(--atc-spark-700);
-    background: var(--atc-spark-500);
-    position: relative;
-  }
-  .qz__opt.is-wrong .qz__optMark::after {
-    content: '';
-    position: absolute;
-    left: 4px; top: 8px;
-    width: 9px; height: 2px;
-    background: #fff;
+  .ch__opt.is-wrong { border-color: var(--atc-spark-700); background: var(--atc-spark-100); }
+  .ch__opt.is-wrong .ch__mark { border-color: var(--atc-spark-700); background: var(--atc-spark-500); }
+  .ch__opt.is-wrong .ch__mark::after {
+    content: ''; position: absolute; left: 4px; top: 8px; width: 9px; height: 2px; background: #fff;
   }
 
-  .qz__why {
-    margin-top: var(--atc-space-5);
-    padding: var(--atc-space-5);
-    background: var(--atc-surface-sunken);
-    border-radius: var(--atc-radius-panel);
+  /* ---------------- why + result ---------------- */
+  .gm__why {
+    margin-top: var(--atc-space-5); padding: var(--atc-space-5);
+    background: var(--atc-surface-sunken); border-radius: var(--atc-radius-panel);
   }
-  .qz__why strong { display: block; margin-bottom: var(--atc-space-2); }
-  .qz__why p {
-    margin: 0 0 var(--atc-space-4);
-    font-size: var(--atc-body-small-size);
-    line-height: var(--atc-body-small-line);
-    color: var(--atc-ink-700);
-  }
-  .qz__next {
-    height: var(--atc-control-md);
-    padding: 0 var(--atc-space-4);
-    font: inherit;
-    font-size: var(--atc-label-size);
-    font-weight: var(--atc-label-weight);
-    color: var(--atc-action-secondary-fg);
-    background: var(--atc-action-secondary-bg);
-    border: var(--atc-stroke-brand) solid var(--atc-stroke-brand-color);
-    border-radius: var(--atc-radius-control);
-    cursor: pointer;
-  }
-  .qz__next:hover { background: var(--atc-action-secondary-bg-hover); }
-
-  .qz__result {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: var(--atc-space-4);
-    padding-top: var(--atc-space-4);
-  }
-  .qz__resultDisc {
-    width: 88px;
-    height: 88px;
-    border-radius: var(--atc-radius-circle);
-    display: grid;
-    place-items: center;
-    background: var(--atc-ink-50);
-    border: 1.5px dashed var(--atc-ink-200);
-    color: var(--atc-ink-300);
-  }
-  .qz__resultDisc.is-earned {
-    background: var(--pillar);
-    border: none;
-    color: var(--atc-white);
-  }
-  .qz__actions { width: 100%; }
-  .qz__retry {
-    background: none;
-    border: 0;
-    font: inherit;
-    font-size: var(--atc-body-small-size);
-    color: var(--atc-purple-700);
-    text-decoration: underline;
-    cursor: pointer;
+  .gm__why strong { display: block; margin-bottom: var(--atc-space-2); }
+  .gm__why p {
+    margin: 0 0 var(--atc-space-4); font-size: var(--atc-body-small-size);
+    line-height: var(--atc-body-small-line); color: var(--atc-ink-700);
   }
 
-  .qz__back {
-    display: inline-block;
-    margin-top: var(--atc-space-6);
-    font-size: var(--atc-body-small-size);
-    color: var(--atc-purple-700);
-    text-decoration: none;
+  .gm__result { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--atc-space-4); padding-top: var(--atc-space-4); }
+  .gm__resultDisc {
+    width: 88px; height: 88px; border-radius: var(--atc-radius-circle);
+    display: grid; place-items: center; background: var(--atc-ink-50);
+    border: 1.5px dashed var(--atc-ink-200); color: var(--atc-ink-300);
   }
-  .qz__back:hover { text-decoration: underline; }
+  .gm__resultDisc.is-earned { background: var(--pillar); border: none; color: var(--atc-white); }
+  .gm__actions { width: 100%; }
+
+  .gm__back { display: inline-block; margin-top: var(--atc-space-6); font-size: var(--atc-body-small-size); color: var(--atc-purple-700); text-decoration: none; }
+  .gm__back:hover { text-decoration: underline; }
 
   :global(.pg__google) {
-    display: inline-flex;
-    align-items: center;
-    height: var(--atc-control-md);
-    padding: 0 var(--atc-space-4);
-    font-family: var(--atc-font-text);
-    font-size: var(--atc-label-size);
-    font-weight: var(--atc-label-weight);
-    color: var(--atc-action-secondary-fg);
-    background: var(--atc-action-secondary-bg);
+    display: inline-flex; align-items: center; height: var(--atc-control-md);
+    padding: 0 var(--atc-space-4); font-family: var(--atc-font-text);
+    font-size: var(--atc-label-size); font-weight: var(--atc-label-weight);
+    color: var(--atc-action-secondary-fg); background: var(--atc-action-secondary-bg);
     border: var(--atc-stroke-brand) solid var(--atc-stroke-brand-color);
-    border-radius: var(--atc-radius-control);
-    cursor: pointer;
+    border-radius: var(--atc-radius-control); cursor: pointer;
   }
   :global(.pg__google:hover) { background: var(--atc-action-secondary-bg-hover); }
 
-  @media (prefers-reduced-motion: reduce) {
-    .qz__fill, .qz__opt { transition: none; }
-  }
+  @media (prefers-reduced-motion: reduce) { .gm__fill { transition: none; } }
 </style>

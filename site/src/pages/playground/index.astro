@@ -145,7 +145,7 @@ const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
           card.querySelector('[data-badge-icon]')?.classList.add('is-earned');
           if (state) state.textContent = 'Earned';
         } else if (state) {
-          state.textContent = `${t.questions.length} questions`;
+          state.textContent = `${t.rounds.length} rounds`;
         }
       }
     })();

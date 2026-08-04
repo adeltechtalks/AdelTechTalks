@@ -1,3 +1,11 @@
+/* Any element given `display:` in CSS will override the browser's default
+   [hidden] { display: none }, so `hidden` silently stops working. That has bitten
+   this codebase twice — an empty account row on the Passport, and the result
+   panel leaking into a game mid-round. Fix it once, here, for everything. */
+[hidden] {
+  display: none !important;
+}
+
 /* Layout helpers shared across pages.
    SH v1.0 air rule: section padding never below 48px; no two content groups
    closer than 24px. When crowded, remove content — never space. */

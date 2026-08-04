@@ -148,39 +148,45 @@ export const partnershipNote =
   'Every partnership is disclosed. I test before I talk, and I keep editorial control of the verdict — a paid placement buys the coverage, never the conclusion. If the product does not hold up, I will tell you before it goes out and we agree what happens next.';
 
 /* -----------------------------------------------------------------------------
-   PLAYGROUND — the learn-and-earn-badges game
-   ===========================================
+   PLAYGROUND — the interactive game
+   =================================
 
-   THIS IS THE BIT YOU AUTHOR FOR EVERY VIDEO.
+   THIS IS WHAT YOU AUTHOR FOR EVERY VIDEO.
 
-   The loop: you post a video → you say "play the game at adeltechtalks.com" →
-   people answer a few questions about what they just learned → they earn a
-   badge with their name on it → they post it to LinkedIn → their network
-   arrives at your site.
+   A game is a list of ROUNDS. Each round is a different kind of interaction,
+   so it plays like a game rather than a form. Mix them up.
 
-   TO ADD A NEW GAME, copy one block below and change the text. The fields:
+   ── ROUND TYPES ──────────────────────────────────────────────────────────
 
-     slug     the web address, e.g. 'osmo-pocket-4-ai' → /playground/osmo-pocket-4-ai
-              lowercase, dashes, no spaces. Never change it once you have shared it.
-     name     what people see as the title
-     product  the thing it is about — appears on the shared badge
-     pillar   sets the colour. One of: ai gadgets automation enterprise creator
-     badge    the badge name people earn and post. Keep it short and boastable.
-     minutes  roughly how long it takes
-     body     one line describing it
-     video    the YouTube ID of the video this game belongs to (optional)
-     pass     how many correct answers are needed. 3 of 4 is a good default.
-     questions each has `q`, a list of `options`, and `answer` = the position of
-              the correct one starting at 0 (so 0 = first option, 2 = third).
-              `why` is shown after they answer — this is where the teaching
-              actually happens, so make it worth reading.
+   { type: 'sequence' }   Tap the steps in the right order.
+       q      the instruction
+       items  the steps IN THE CORRECT ORDER (shown shuffled to the player)
+       why    what they learn
 
-   ⚠️ Only write questions you know the real answer to. A wrong "correct"
-   answer in a quiz about a product is worse than no quiz.
+   { type: 'estimate' }   Drag a slider to guess a number, then see the truth.
+       q         the question
+       min, max  slider range
+       unit      '%', 'mm', 'fps' …
+       answer    the real value
+       tolerance how close counts as right
+       why       the explanation — put the real number in context here
+
+   { type: 'hotspot' }    Tap the place on an image where something happens.
+       q       the instruction
+       image   put the file in public/games/ and write '/games/your-shot.jpg'
+       target  { x, y, r } as PERCENTAGES of the image, r = radius
+       why     what they learn
+       (no image yet? the round still works — it shows a labelled grid instead)
+
+   { type: 'choice' }     Classic question with options.
+       q, options, answer (position of the correct one, starting at 0), why
+
+   ⚠️ Only write rounds you know the real answer to. A wrong "correct" answer
+   about a product is worse than no game.
    -------------------------------------------------------------------------- */
 export const playground = {
   intro:
-    'Every video gets a short game here. Answer a few questions about what you just watched, and keep a badge you can post.',
+    'Every video gets a short game here. Play it, prove you picked it up, and keep a badge you can post.',
   tracks: [
     {
       slug: 'ai-in-your-camera',
@@ -192,21 +198,40 @@ export const playground = {
       body: 'What the AI in a modern camera is actually doing when it tracks, focuses and stabilises.',
       video: '',
       pass: 3,
-      /* ⚠️ EXAMPLE QUESTIONS — these are about general camera-AI concepts, which
-         are safely true. Replace them with questions about YOUR product and the
-         specific things you showed in YOUR video. */
-      questions: [
+      /* ⚠️ EXAMPLE ROUNDS — these cover general camera-AI behaviour, which is
+         safely true. Replace them with rounds about YOUR product from YOUR video. */
+      rounds: [
         {
-          q: 'What is subject tracking actually doing between frames?',
-          options: [
-            'Zooming the lens in and out automatically',
-            'Predicting where the subject will be next and moving the focus point there',
-            'Increasing the shutter speed until the subject is sharp',
+          type: 'sequence',
+          q: 'Tap these in the order the camera actually does them when it tracks a subject.',
+          items: [
+            'Detect — find candidate subjects in the frame',
+            'Choose — pick which one to lock onto',
+            'Predict — estimate where it will be next',
+            'Move — shift the focus point ahead of it',
           ],
-          answer: 1,
-          why: 'Tracking is prediction. The camera detects the subject, estimates where it is heading, and moves the focus point ahead of it — which is why it holds on faces that move toward the lens but loses things that change direction suddenly.',
+          why: 'Tracking is a loop, and prediction is the part people miss. The camera is not following the subject, it is guessing ahead of it — which is why it holds on something moving steadily toward you and loses something that changes direction sharply.',
         },
         {
+          type: 'estimate',
+          q: 'Turning on electronic stabilisation crops into the frame. Roughly how much of the width do you lose?',
+          min: 0,
+          max: 40,
+          unit: '%',
+          answer: 10,
+          tolerance: 6,
+          why: 'Around 10% is typical. Electronic stabilisation shifts the image inside a larger sensor readout, so it needs spare frame to move within. That is the trade: steadier footage, narrower shot. It is why your wide angle stops feeling wide the moment you switch it on.',
+        },
+        {
+          type: 'hotspot',
+          q: 'Tap where the camera places its focus point on a moving subject.',
+          image: '',
+          target: { x: 50, y: 38, r: 18 },
+          hint: 'Think about where the subject is going, not where it is.',
+          why: 'It leads the subject rather than sitting on it. The focus point sits slightly ahead along the direction of travel, because by the time the frame is captured the subject has already moved.',
+        },
+        {
+          type: 'choice',
           q: 'Why does scene detection sometimes make a photo look worse?',
           options: [
             'It applies a preset for the scene it thinks it sees, and it can guess wrong',
@@ -214,20 +239,11 @@ export const playground = {
             'It disables the lens stabiliser',
           ],
           answer: 0,
-          why: 'Scene detection classifies what it sees and applies a matching treatment — more saturation for "food", cooler tones for "snow". When it misreads the scene you get the wrong treatment, which is why the results look off in exactly the situations that confuse it.',
+          why: 'Scene detection classifies what it sees and applies a matching treatment — more saturation for "food", cooler tones for "snow". When it misreads the scene you get the wrong treatment, which is exactly why results look off in the situations that confuse it.',
         },
         {
-          q: 'What does electronic stabilisation cost you that optical stabilisation does not?',
-          options: [
-            'Battery life only',
-            'Some of the frame — it crops in to have room to correct',
-            'Nothing, they work identically',
-          ],
-          answer: 1,
-          why: 'Electronic stabilisation shifts the image inside a larger sensor readout, so it needs spare frame to move within. That is why your field of view narrows the moment you turn it on, and why it is a real trade rather than a free win.',
-        },
-        {
-          q: 'What is the most honest way to test any of this?',
+          type: 'choice',
+          q: 'What is the only honest way to test any of this for yourself?',
           options: [
             'Compare the spec sheets',
             'Shoot the same scene twice, once with the feature on and once off',
