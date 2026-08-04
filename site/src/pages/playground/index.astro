@@ -21,8 +21,13 @@ const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
       <p class="lede">{playground.intro}</p>
 
       {live ? (
-        <div class="row" id="auth-row" data-live="true">
-          <span class="pg__authPending muted">Checking your session…</span>
+        <div class="stack">
+          <div class="row" id="auth-row" data-live="true">
+            <span class="pg__authPending muted">Checking your session…</span>
+          </div>
+          <a class="pg__passportLink" href="/playground/passport">
+            Your Tech Passport — stamps and progress →
+          </a>
         </div>
       ) : (
         <div class="pg__soon">
@@ -195,6 +200,15 @@ const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
     font-size: 12px;
     color: var(--atc-purple-700);
   }
+
+  .pg__passportLink {
+    align-self: flex-start;
+    font-size: var(--atc-body-small-size);
+    font-weight: 500;
+    color: var(--atc-purple-700);
+    text-decoration: none;
+  }
+  .pg__passportLink:hover { text-decoration: underline; }
 
   .pg__soon {
     display: flex;
