@@ -1,0 +1,84 @@
+---
+/* Guides index (§18). Filterable by topic without JavaScript: each filter is a
+   link to /topics/<id>, which is a real page with a real URL that Google can
+   index — a client-side filter would be neither. */
+
+import Base from '../../layouts/Base.astro';
+import EntryList from '../editorial/EntryList.astro';
+import SectionIntro from '../editorial/SectionIntro.astro';
+import NewsletterCTA from '../editorial/NewsletterCTA.astro';
+import Rich from '../Rich.astro';
+import { topics } from '../../site.config';
+import { getGuides } from '../../lib/content';
+import { useCopy } from '../../copy';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+const guides = await getGuides(lang);
+const used = new Set(guides.map((g) => g.topic).filter(Boolean));
+---
+
+<Base lang={lang} title={c.guides.title} description={c.guides.indexIntro}>
+  <div class="container">
+    <SectionIntro overline={c.guides.title} title={c.guides.indexTitle} intro={c.guides.indexIntro} level={1} />
+
+    {used.size > 0 && (
+      <nav class="gi__filters" aria-label={c.topics.title}>
+        {topics
+          .filter((t) => used.has(t.id))
+          .map((t) => (
+            <a class="gi__filter" href={localizePath(`/topics/${t.id}`, lang)}>
+              <Rich text={t[lang].name} />
+            </a>
+          ))}
+      </nav>
+    )}
+
+    {guides.length > 0 ? (
+      <EntryList entries={guides} lang={lang} showKind={false} headingLevel={2} class="gi__list" />
+    ) : (
+      <p class="gi__empty">{c.guides.empty}</p>
+    )}
+
+    <div class="gi__cta">
+      <NewsletterCTA lang={lang} placement="guides" />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .gi__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-2);
+    margin: var(--atc-space-8) 0 var(--atc-space-6);
+  }
+  .gi__filter {
+    padding: 6px 14px;
+    border-radius: var(--adel-radius-pill);
+    border: 1px solid var(--adel-border-hairline);
+    font-size: var(--adel-text-sm);
+    color: var(--adel-text-secondary);
+    text-decoration: none;
+  }
+  .gi__filter:hover {
+    border-color: var(--adel-border-brand);
+    color: var(--adel-text-link);
+    background: var(--adel-surface-tint);
+  }
+  .gi__list { margin-top: var(--atc-space-4); }
+  .gi__empty {
+    margin: var(--atc-space-10) 0 0;
+    padding: var(--atc-space-10);
+    border: 1px dashed var(--adel-border-strong);
+    border-radius: var(--adel-radius-panel);
+    text-align: center;
+    color: var(--adel-text-secondary);
+  }
+  .gi__cta { margin-top: var(--atc-space-20); }
+</style>

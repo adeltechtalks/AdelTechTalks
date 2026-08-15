@@ -4,14 +4,26 @@
    the quotes, commas and brackets exactly where they are.
    ============================================================================= */
 
+/* -----------------------------------------------------------------------------
+   BRAND ARCHITECTURE (§5)
+   -----------------------------------------------------------------------------
+   Adel          the person, and the identity of this website
+   AdelTechTalks the content / show identity — the channel, the socials, the
+                 Playground badges. Still visible, no longer dominant.
+   GearNest      a separate business. Linked from here, never merged into here.
+   -------------------------------------------------------------------------- */
 export const site = {
-  name: 'AdelTechTalks',
+  /* The primary brand. This is a personal website. */
+  name: 'Adel',
+  /* The content identity. Used where the CHANNEL is being named, not the person. */
+  showName: 'AdelTechTalks',
   /* Shown in the browser tab and in Google results */
-  tagline: 'Discover the AI Behind Everything',
-  /* One or two sentences. Used on the homepage and for social sharing. */
+  tagline: 'Product Manager · AI Enthusiast · Builder',
+  /* One or two sentences. Used for social sharing when a page has none. */
   description:
-    'Adel is an AI and technology explorer based in the United States, discovering and testing the intelligence behind the products, tools and innovations shaping our world.',
-  /* CHANGE ME once your domain is connected */
+    'Adel is a Product Manager and AI enthusiast. He learns it, tests it, builds with it, and shares what actually worked.',
+  descriptionAr:
+    'عادل — Product Manager ومهتم بالـAI. يتعلّمها، يجرّبها، يبني بها، ويشارك ما نفع فعلاً.',
   url: 'https://adeltechtalks.com',
   email: 'hello@adeltechtalks.com',
   /* Delete any line you do not use */
@@ -25,24 +37,129 @@ export const site = {
 };
 
 /* -----------------------------------------------------------------------------
-   HOMEPAGE HERO
+   NAVIGATION (§24)
+   -----------------------------------------------------------------------------
+   Data-driven on purpose. Adding Podcast, Services, Resume or the Prompt
+   Library later is one line here plus a route — no redesign, no component edit.
+   `phase: 1` shows in the header. Anything higher is defined but not rendered,
+   so the shape of the future navigation is already decided and visible.
    -------------------------------------------------------------------------- */
-export const hero = {
-  overline: 'AI & Technology Explorer',
-  /* Keep this short — it is the biggest text on the page */
-  title: 'Discover the AI Behind Everything',
-  body:
-    "I test the AI inside real products — phones, cameras, cars, homes, tools — and show you what actually works. Not demos. Not spec sheets. Real weeks of real use.",
-  /* The one coral button on the page. Your design system allows exactly one. */
-  primaryCta: { label: 'Watch the latest', href: '#videos' },
-  secondaryCta: { label: 'Read the guides', href: '/guides' },
+export const nav: Array<{ key: string; path: string; phase: number }> = [
+  { key: 'guides', path: '/guides', phase: 1 },
+  { key: 'topics', path: '/topics', phase: 1 },
+  { key: 'about', path: '/about', phase: 1 },
+  { key: 'newsletter', path: '/newsletter', phase: 1 },
+  { key: 'playground', path: '/playground', phase: 1 },
+  /* ---- prepared, not yet routed (§22, §24) ---- */
+  { key: 'prompts', path: '/prompts', phase: 2 },
+  { key: 'projects', path: '/projects', phase: 2 },
+  { key: 'podcast', path: '/podcast', phase: 3 },
+  { key: 'services', path: '/services', phase: 3 },
+  { key: 'resume', path: '/resume', phase: 3 },
+];
+
+/* -----------------------------------------------------------------------------
+   TOPICS (§14 "What I Explore")
+   -----------------------------------------------------------------------------
+   The six threads. `id` is the URL segment and the value a guide puts in its
+   `topic:` field, so renaming one means adding a redirect — rename with care.
+   `icon` is any Lucide icon name: https://lucide.dev/icons
+   -------------------------------------------------------------------------- */
+export const topics = [
+  {
+    id: 'ai',
+    icon: 'sparkles',
+    en: { name: 'AI', body: 'Models, agents and the tools built on them — tested on real work, not demos.' },
+    ar: { name: 'الـ[[AI]]', body: 'النماذج والـ[[agents]] والأدوات المبنية عليها — مُجرَّبة على عمل حقيقي لا على عروض.' },
+  },
+  {
+    id: 'automation',
+    icon: 'workflow',
+    en: { name: 'Automation', body: 'Workflows that remove real work, built end to end and handed over.' },
+    ar: { name: '[[Automation]]', body: '[[workflows]] تزيل عملاً حقيقياً، مبنية من أولها إلى آخرها.' },
+  },
+  {
+    id: 'product',
+    icon: 'compass',
+    en: { name: 'Product', body: 'How things get decided, prioritised and shipped when it is your name on it.' },
+    ar: { name: '[[Product]]', body: 'كيف تُتَّخذ القرارات وتُرتَّب الأولويات ويُشحن المنتج حين يكون اسمك عليه.' },
+  },
+  {
+    id: 'tech',
+    icon: 'cpu',
+    en: { name: 'Tech', body: 'The hardware and software I actually live with, and what survives a working month.' },
+    ar: { name: 'الـ[[Tech]]', body: 'العتاد والبرمجيات التي أعيش معها فعلاً، وما يصمد منها بعد شهر عمل.' },
+  },
+  {
+    id: 'building',
+    icon: 'hammer',
+    en: { name: 'Building', body: 'Making the thing. The parts that worked, and the parts I had to throw away.' },
+    ar: { name: 'البناء', body: 'صناعة الشيء نفسه. ما نجح منه، وما اضطررت إلى رميه.' },
+  },
+  {
+    id: 'creator-tech',
+    icon: 'clapperboard',
+    en: { name: 'Creator Technology', body: 'Cameras, audio, lighting and the workflow behind everything published here.' },
+    ar: { name: '[[Creator Technology]]', body: 'الكاميرات والصوت والإضاءة وسير العمل خلف كل ما يُنشر هنا.' },
+  },
+];
+
+export type TopicId = (typeof topics)[number]['id'];
+
+/* -----------------------------------------------------------------------------
+   WHAT I'M BUILDING (§14)
+   -----------------------------------------------------------------------------
+   A list, not a GearNest special case — add a second project and the section
+   grows on its own. `separate: true` marks a project with its own brand, which
+   is rendered with visible distance from Adel's identity (§5).
+   -------------------------------------------------------------------------- */
+export const projects = [
+  {
+    id: 'gearnest',
+    url: 'https://gearnest.com',
+    separate: true,
+    status: 'building' as 'building' | 'live' | 'exploring',
+    en: {
+      name: 'GearNest',
+      body: 'A separate brand and business of its own — its own product, voice and roadmap.',
+    },
+    ar: {
+      name: '[[GearNest]]',
+      body: 'علامة ومشروع مستقل بذاته — بمنتجه وصوته وخارطة طريقه.',
+    },
+  },
+];
+
+/* -----------------------------------------------------------------------------
+   PHOTOGRAPHY (§15)
+   -----------------------------------------------------------------------------
+   Real photographs of Adel only. Drop the files into site/public/photos/ and
+   put the filename here. Leave a value EMPTY and the site renders the designed
+   placeholder instead — that is intentional, and it is far better than a
+   generated or stock image standing in for a real person.
+   -------------------------------------------------------------------------- */
+export const photography = {
+  /* Portrait for the homepage hero. Portrait crop, ideally 3:4, at least 1200px tall. */
+  heroPortrait: '',
+  heroPortraitMobile: '', /* optional square/4:5 crop; falls back to heroPortrait */
+  /* Wider environmental shot for the About page. 3:2 or 16:9. */
+  aboutPhoto: '',
+  /* Adel's real handwritten signature as an SVG or transparent PNG. */
+  signature: '',
 };
 
 /* -----------------------------------------------------------------------------
-   CONTENT PILLARS — the kinds of content you make
-   `icon` must be a Lucide icon name: https://lucide.dev/icons
-   `pillar` sets the colour and must be one of:
-   ai · gadgets · automation · enterprise · creator
+   HOMEPAGE HERO — the words live in src/copy.ts (English and Arabic together).
+   The portrait lives in `photography` above.
+   -------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+   LEGACY · ATT CONTENT PILLARS (§7, §25 "ATT Legacy")
+   -----------------------------------------------------------------------------
+   The five AdelTechTalks pillars. Superseded on the personal site by `topics`
+   above, and KEPT because the Playground tracks and the published guide
+   frontmatter still reference them, and because they remain the correct
+   taxonomy for AdelTechTalks content.
    -------------------------------------------------------------------------- */
 export const pillars = [
   { id: 'ai', name: 'AI Tools', icon: 'sparkles', body: 'The tools I actually use, tested on real work — not demos.' },
@@ -56,30 +173,62 @@ export const pillars = [
    FEATURED VIDEOS
    To add one: copy a YouTube video's ID from its link.
    https://www.youtube.com/watch?v=dQw4w9WgXcQ  →  id: 'dQw4w9WgXcQ'
+   `topic` must be one of the ids in `topics` above.
    -------------------------------------------------------------------------- */
-export const videos = [
-  { id: 'dQw4w9WgXcQ', title: 'Replace this with a real video', pillar: 'ai', meta: 'PLACEHOLDER' },
-  { id: 'dQw4w9WgXcQ', title: 'Replace this with a real video', pillar: 'gadgets', meta: 'PLACEHOLDER' },
-  { id: 'dQw4w9WgXcQ', title: 'Replace this with a real video', pillar: 'automation', meta: 'PLACEHOLDER' },
+export const videos: Array<{ id: string; title: string; topic: string; meta: string; date?: string }> = [
+  /* ⚠️ PLACEHOLDERS — three real YouTube IDs replace these. Until then the
+     homepage renders the designed empty state rather than three dead embeds. */
 ];
 
 /* -----------------------------------------------------------------------------
    ABOUT PAGE
+   -----------------------------------------------------------------------------
+   ⚠️ The paragraphs marked PLACEHOLDER are the only invented text on the site.
+   They are Adel's own story and cannot be written for him. Replace them and the
+   page is finished — nothing else about it needs to change.
    -------------------------------------------------------------------------- */
 export const about = {
-  title: 'I am on a journey to discover the AI behind everything.',
-  /* Each line in the list below becomes its own paragraph */
-  body: [
-    'PLACEHOLDER — replace with your own story. Who you are, where you are based, and why you started AdelTechTalks.',
-    'PLACEHOLDER — what you test, how you test it, and what makes your reviews different. The brand voice is: state the benefit, then the honest limit.',
-    'PLACEHOLDER — where you are going next.',
-  ],
-  values: [
-    { title: 'Curious', body: 'I open the thing and find out, rather than reading the spec sheet.' },
-    { title: 'Honest', body: 'A claim, then the cost of the claim. If it is not worth it, I say so.' },
-    { title: 'Practical', body: 'Every video should let you do something, not only read about it.' },
-    { title: 'Explorer', body: 'I go to the airport, the store, the car, the factory. Tech lives out there.' },
-  ],
+  en: {
+    title: 'I learn it, I test it, I build with it, and I share it.',
+    /* Each line below becomes its own paragraph */
+    body: [
+      'PLACEHOLDER — who you are and where you are based, in your own words. Two or three sentences is plenty.',
+      'PLACEHOLDER — how you got into product and into AI, and what keeps you there.',
+      'PLACEHOLDER — what you are working on now, and where you are going next.',
+    ],
+    values: [
+      { title: 'Curious first', body: 'I open the thing and find out, rather than reading the spec sheet.' },
+      { title: 'Honest about limits', body: 'A claim, then the cost of the claim. If it is not worth it, I say so.' },
+      { title: 'Practical', body: 'Everything I publish should let you do something, not only read about it.' },
+      { title: 'Still learning', body: 'I would rather be corrected than be consistent. Being wrong in public is the fastest way to learn.' },
+    ],
+    /* §13 — professional context, used as credibility. Not an employee profile,
+       and not an endorsement. Leave `employer` empty to hide this entirely. */
+    context: {
+      role: 'Product Manager',
+      employer: 'Amazon',
+      note: 'Professional context only. Everything on this site is written in a personal capacity and represents my own views, not my employer’s.',
+    },
+  },
+  ar: {
+    title: 'أتعلّمها، أجرّبها، أبني بها، وأشاركها.',
+    body: [
+      'PLACEHOLDER — من أنت وأين تقيم، بكلماتك أنت. جملتان أو ثلاث تكفي.',
+      'PLACEHOLDER — كيف دخلت مجال الـProduct والـAI، وما الذي يبقيك فيه.',
+      'PLACEHOLDER — على ماذا تعمل الآن، وإلى أين تتجه.',
+    ],
+    values: [
+      { title: 'الفضول أولاً', body: 'أفتح الشيء وأكتشفه بنفسي بدل أن أقرأ ورقة المواصفات.' },
+      { title: 'صريح في الحدود', body: 'الميزة، ثم ثمنها. وإن لم تكن تستحق، أقولها.' },
+      { title: 'عملي', body: 'كل ما أنشره يجب أن يمكّنك من فعل شيء، لا أن تقرأ عنه فقط.' },
+      { title: 'ما زلت أتعلّم', body: 'أفضّل أن يُصحَّح لي على أن أبقى متسقاً. الخطأ أمام الناس أسرع طريق للتعلّم.' },
+    ],
+    context: {
+      role: '[[Product Manager]]',
+      employer: '[[Amazon]]',
+      note: 'سياق مهني فقط. كل ما في هذا الموقع مكتوب بصفة شخصية ويمثّل رأيي وحدي، لا رأي جهة عملي.',
+    },
+  },
 };
 
 /* -----------------------------------------------------------------------------

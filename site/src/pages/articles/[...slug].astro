@@ -1,0 +1,16 @@
+---
+import EntryPage from '../../components/pages/EntryPage.astro';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const items = await getCollection('articles', ({ data }) => !data.draft && data.lang === 'en');
+  return items.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+};
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+<EntryPage lang="en" kind="article" data={entry.data}>
+  <Content />
+</EntryPage>

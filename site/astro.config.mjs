@@ -17,6 +17,21 @@ export default defineConfig({
   // on the fly and rewrote this file at build time, which meant the deployed
   // configuration was decided by whatever version happened to be current.
   adapter: cloudflare({ imageService: 'compile' }),
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      // §26 — declare the English/Arabic pairs so Google indexes both rather
+      // than treating /ar/* as near-duplicates and picking one. English keeps
+      // the bare paths; every live URL stays exactly where it was.
+      i18n: {
+        defaultLocale: 'en',
+        locales: { en: 'en', ar: 'ar' },
+      },
+      // Pages that should never appear in search results. Account pages hold
+      // nothing public, and /playground/passport is a 301 kept only so links
+      // shared before the move still land somewhere sensible.
+      filter: (page) =>
+        !/\/(login|profile|playground\/passport)\/$/.test(page),
+    }),
+  ],
   build: { inlineStylesheets: 'auto' },
 });

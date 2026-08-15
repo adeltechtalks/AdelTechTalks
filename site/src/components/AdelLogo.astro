@@ -1,0 +1,96 @@
+---
+/* =============================================================================
+   Adel — the primary identity (§8)
+   =============================================================================
+   Colour roles, exactly as approved:
+
+     default   Graphite   #171A1F   the everyday mark
+     brand     Signature Blue       the brand alternative
+     reverse   White                on dark grounds and photography
+
+   Fresh Mint is never a logo colour, and the ATT purple mark is no longer the
+   personal site's identity. Both rules are enforced below rather than trusted.
+
+   ── THE A MARK ──────────────────────────────────────────────────────────────
+   The approved default is "graphite geometric A mark and Adel lockup". The mark
+   artwork itself is not in this repository, and drawing a brand mark from a
+   written description is how you end up with a mark that is nearly right —
+   which is worse than none. So:
+
+     • Drop the real file at  src/assets/brand/adel-a-mark.svg
+     • It is picked up automatically at build time and rendered here
+     • The SVG must use `fill="currentColor"` so the three colour roles work
+
+   Until then this renders the Adel wordmark alone, which is a legitimate
+   lockup state and reads correctly at every size. Nothing else needs changing
+   when the file arrives.
+   ========================================================================== */
+
+interface Props {
+  size?: number;
+  tone?: 'default' | 'brand' | 'reverse';
+  /* Hide the word and show the mark alone — only valid once the mark exists. */
+  markOnly?: boolean;
+  class?: string;
+}
+
+const { size = 32, tone = 'default', markOnly = false, class: className } = Astro.props;
+
+const TONE = {
+  default: 'var(--adel-graphite)',
+  brand: 'var(--adel-signature-blue)',
+  reverse: 'var(--adel-white)',
+} as const;
+
+/* eager+raw so the SVG is inlined into the HTML — no extra request, and the
+   `currentColor` fill inherits the tone. An empty object means no asset yet. */
+const marks = import.meta.glob('../assets/brand/adel-a-mark.svg', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>;
+
+const markSvg = Object.values(marks)[0] ?? null;
+const showWord = !markOnly || !markSvg;
+---
+
+<span class:list={['adel-logo', className]} style={`color:${TONE[tone]}`}>
+  {markSvg && (
+    <span class="adel-logo__mark" style={`width:${size}px;height:${size}px`} set:html={markSvg} />
+  )}
+  {showWord && (
+    <span class="adel-logo__word" style={`font-size:${Math.round(size * 0.72)}px`}>Adel</span>
+  )}
+</span>
+
+<style>
+  .adel-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--adel-space-gap, 10px);
+    text-decoration: none;
+    /* The lockup is a fixed object: it never mirrors, in either direction. */
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+  .adel-logo__mark {
+    display: block;
+    flex: 0 0 auto;
+  }
+  .adel-logo__mark :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  /* Latin standing alone → Montserrat. The wordmark is always Latin, on the
+     Arabic site too: a personal name is not translated, it is transliterated,
+     and Adel's is already Latin. */
+  .adel-logo__word {
+    font-family: var(--adel-font-display);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: currentColor;
+    white-space: nowrap;
+  }
+</style>

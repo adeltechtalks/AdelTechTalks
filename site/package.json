@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "build": "astro build && node scripts/postbuild.mjs",
     "preview": "astro preview",
-    "og": "node scripts/build-og.mjs"
+    "og": "node scripts/build-og-adel.mjs && node scripts/build-og.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.10",

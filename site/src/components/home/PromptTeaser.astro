@@ -1,0 +1,128 @@
+---
+/* Prompt Library teaser (§22)
+   -----------------------------------------------------------------------------
+   §22: "Do not overbuild it during this migration… ensure the architecture does
+   not make it difficult to add later."
+
+   So this is a teaser and nothing else. There is NO /prompts route, because
+   §22 also says not to "expose unfinished product routes publicly" — a link to
+   an empty product is worse than no link. The interest signal goes to the
+   newsletter, which is the surface that already exists to carry it.
+
+   The route is already reserved in `nav` (phase 2) in site.config.ts. Turning
+   it on later is: build the page, change its phase to 1. */
+
+import Icon from '../Icon.astro';
+import Rich from '../Rich.astro';
+import Button from '../Button.astro';
+import { useCopy } from '../../copy';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+---
+
+<section class="container section">
+  <div class="pt">
+    <div class="pt__text">
+      <span class="pt__badge">
+        <span class="pt__dot" aria-hidden="true"></span>
+        {c.common.comingSoon}
+      </span>
+      <Rich text={c.prompts.title} as="h2" class="pt__title" />
+      <Rich text={c.prompts.intro} as="p" class="pt__body" />
+      <div class="pt__action">
+        <Button variant="secondary" size="md" href={localizePath('/newsletter', lang)}>
+          {c.prompts.cta}
+        </Button>
+      </div>
+    </div>
+    <div class="pt__mark" aria-hidden="true">
+      <Icon name="library" size="xl" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .pt {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--atc-space-8);
+    align-items: center;
+    padding: var(--atc-space-10);
+    border: 1px solid var(--adel-border-hairline);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-raised);
+  }
+  .pt__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-3);
+    max-width: 56ch;
+  }
+  /* The one Fresh Mint moment on the homepage. Mint marks the thing that is
+     genuinely new (§6, ~3% ceiling) — a dot and a word, nothing more. */
+  .pt__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    align-self: flex-start;
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    color: var(--adel-text-secondary);
+  }
+  [lang='ar'] .pt__badge {
+    text-transform: none;
+    letter-spacing: normal;
+  }
+  .pt__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--adel-accent);
+    /* The state is carried by the word as well as the colour — the dot alone
+       would be meaningless in greyscale. */
+    flex: 0 0 auto;
+  }
+  .pt__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(24px, 3vw, 30px);
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-text-primary);
+  }
+  [lang='ar'] .pt__title { letter-spacing: normal; line-height: 1.45; }
+  .pt__body {
+    margin: 0;
+    font-size: var(--adel-text-base);
+    line-height: 1.65;
+    color: var(--adel-text-secondary);
+  }
+  .pt__action { margin-top: var(--atc-space-2); }
+  .pt__mark {
+    display: grid;
+    place-items: center;
+    width: 96px;
+    height: 96px;
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-tint);
+    color: var(--adel-signature-blue);
+    flex: 0 0 auto;
+  }
+
+  @media (max-width: 767px) {
+    .pt {
+      grid-template-columns: 1fr;
+      padding: var(--atc-space-6);
+    }
+    .pt__mark { display: none; }
+  }
+</style>

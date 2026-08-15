@@ -1,0 +1,47 @@
+---
+/* "Guides" on the homepage (§14) — featured educational resources.
+   Covers matter here, so this is the one place EntryCard is used. */
+
+import SectionIntro from '../editorial/SectionIntro.astro';
+import EntryCard from '../editorial/EntryCard.astro';
+import { useCopy } from '../../copy';
+import { localizePath, type Lang } from '../../i18n';
+import type { Entry } from '../../lib/content';
+
+interface Props {
+  lang: Lang;
+  guides: Entry[];
+}
+
+const { lang, guides } = Astro.props;
+const c = useCopy(lang);
+---
+
+{guides.length > 0 && (
+  <section class="container section" aria-labelledby="guides-title">
+    <SectionIntro
+      title={c.guides.title}
+      intro={c.guides.intro}
+      linkHref={localizePath('/guides', lang)}
+      linkLabel={c.common.allGuides}
+    />
+    <div class="gs__grid">
+      {guides.map((g) => <EntryCard entry={g} lang={lang} />)}
+    </div>
+  </section>
+)}
+
+<style>
+  .gs__grid {
+    margin-top: var(--atc-space-10);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--atc-space-8);
+  }
+  @media (max-width: 1023px) {
+    .gs__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 599px) {
+    .gs__grid { grid-template-columns: 1fr; gap: var(--atc-space-10); }
+  }
+</style>

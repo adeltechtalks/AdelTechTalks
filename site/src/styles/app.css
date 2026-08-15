@@ -1,14 +1,38 @@
-/* Any element given `display:` in CSS will override the browser's default
-   [hidden] { display: none }, so `hidden` silently stops working. That has bitten
-   this codebase twice — an empty account row on the Passport, and the result
-   panel leaking into a game mid-round. Fix it once, here, for everything. */
+/* =============================================================================
+   Layout helpers shared across pages.
+   =============================================================================
+   Air rule: section spacing never below 48px; no two content groups closer
+   than 24px. When a page feels crowded the remedy is less content, never less
+   space.
+
+   Everything here uses LOGICAL properties (inline-start/end, margin-inline).
+   That is what makes the Arabic site work without a second stylesheet — there
+   is no `left` or `right` in this file, so nothing needs mirroring.
+   ========================================================================== */
+
+/* Any element given `display:` in CSS overrides the browser's default
+   [hidden] { display: none }, so `hidden` silently stops working. That has
+   bitten this codebase twice — an empty account row on the Passport, and the
+   result panel leaking into a game mid-round. Fix it once, here, for
+   everything. */
 [hidden] {
   display: none !important;
 }
 
-/* Layout helpers shared across pages.
-   SH v1.0 air rule: section padding never below 48px; no two content groups
-   closer than 24px. When crowded, remove content — never space. */
+/* Visible to a screen reader, invisible on screen. Used for the word "love"
+   inside the I ❤️ Tech lockup, and for headings that structure a region
+   without needing to be seen. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
 
 .container {
   max-width: 1200px;
@@ -17,10 +41,10 @@
 }
 
 .section {
-  padding-block-start: 96px;
+  padding-block-start: var(--atc-space-24);
 }
 .section--tight {
-  padding-block-start: 64px;
+  padding-block-start: var(--atc-space-16);
 }
 
 .stack {
@@ -29,53 +53,61 @@
   gap: var(--atc-space-6);
 }
 
-/* ---- headings. Latin standing alone → Montserrat (TY v1.2) ---- */
+/* ---- headings ------------------------------------------------------------
+   Latin standing alone → Montserrat. On an Arabic page the display token
+   resolves to the Arabic display face instead (tokens/adel-type.css), so the
+   same rule serves both scripts. */
 h1,
 h2,
 h3 {
-  font-family: var(--atc-font-latin-disp);
-  letter-spacing: -0.02em;
+  font-family: var(--adel-font-display);
+  letter-spacing: var(--adel-tracking-tight);
   text-wrap: balance;
   margin: 0;
 }
+[lang='ar'] h1,
+[lang='ar'] h2,
+[lang='ar'] h3 {
+  letter-spacing: normal;
+}
 
 .h-display {
-  font-size: 56px;
-  line-height: 64px;
-  font-weight: 700;
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 1.12;
+  font-weight: 800;
 }
 .h-section {
-  font-size: 28px;
-  line-height: 36px;
-  font-weight: 600;
+  font-size: clamp(24px, 3vw, 30px);
+  line-height: 1.25;
+  font-weight: 700;
 }
 .h-card {
-  font-size: 16px;
-  line-height: 24px;
+  font-size: var(--adel-text-base);
+  line-height: 1.5;
   font-weight: 600;
-  font-family: var(--atc-font-text);
+  font-family: var(--adel-font-text);
 }
 
 .overline {
-  font-size: 12px;
+  font-size: var(--adel-text-xs);
   font-weight: 600;
-  letter-spacing: 0.08em;
-  /* overline is the ONLY uppercase style, and it is Latin-only */
+  letter-spacing: var(--adel-tracking-wide);
+  /* The only uppercase style on the site, and it is Latin-only — Arabic has no
+     uppercase, so tokens/adel-type.css turns this off under [lang="ar"]. */
   text-transform: uppercase;
-  color: var(--atc-purple-700);
+  color: var(--adel-signature-blue);
 }
 
 .lede {
-  font-size: 18px;
-  line-height: 30px;
-  color: var(--atc-ink-500);
-  /* Latin measure 60–75 characters */
+  font-size: var(--adel-text-lg);
+  line-height: 1.65;
+  color: var(--adel-text-secondary);
   max-width: 66ch;
   margin: 0;
 }
 
 .muted {
-  color: var(--atc-ink-500);
+  color: var(--adel-text-secondary);
 }
 
 .grid {
@@ -94,18 +126,28 @@ h3 {
   flex-wrap: wrap;
 }
 
-/* ---- responsive: grid 4 / 8 / 12 / 12 at 360 / 768 / 1024 / 1440 ---- */
+/* ---- RTL: the small set of things that genuinely must mirror (§29) --------
+   Chevrons and arrows point the way the language reads. Play triangles,
+   external-link marks, logos, media controls, numbers and code do NOT — they
+   are not directional affordances, and mirroring them is a defect. Each
+   exception is handled at its own component. */
+[dir='rtl'] .icon-chevron-right,
+[dir='rtl'] .icon-chevron-left,
+[dir='rtl'] .icon-arrow-right,
+[dir='rtl'] .icon-arrow-left {
+  transform: scaleX(-1);
+}
+
+/* ---- responsive: 4 / 8 / 12 / 12 columns at 360 / 768 / 1024 / 1440 ---- */
 @media (max-width: 1023px) {
   .container { padding-inline: var(--atc-space-5); }
-  .section { padding-block-start: 64px; }
+  .section { padding-block-start: var(--atc-space-16); }
+  .section--tight { padding-block-start: var(--atc-space-12); }
   .grid--5, .grid--4 { grid-template-columns: repeat(2, 1fr); }
   .grid--3 { grid-template-columns: repeat(2, 1fr); }
-  .h-display { font-size: 40px; line-height: 48px; }
 }
 
 @media (max-width: 767px) {
   .grid--2, .grid--3, .grid--4, .grid--5 { grid-template-columns: 1fr; }
-  .section { padding-block-start: 48px; }
-  .h-display { font-size: 32px; line-height: 40px; }
-  .h-section { font-size: 24px; line-height: 32px; }
+  .section { padding-block-start: var(--atc-space-12); }
 }

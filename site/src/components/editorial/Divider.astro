@@ -1,0 +1,83 @@
+---
+/* Divider — a hairline, and the only thing between most sections.
+   §16's "Fewer Cards": where the old system reached for a card to separate two
+   ideas, the editorial system reaches for a rule and some air.
+
+   `label` puts a word in the rule — used for section breaks inside long-form
+   text, never for navigation. */
+
+interface Props {
+  label?: string;
+  /* `soft` is a rule; `space` is air with no rule at all. */
+  variant?: 'rule' | 'soft' | 'space';
+  class?: string;
+}
+
+const { label, variant = 'rule', class: className } = Astro.props;
+---
+
+{
+  label ? (
+    <div class:list={['dv dv--label', className]} role="separator">
+      <span class="dv__line" aria-hidden="true"></span>
+      <span class="dv__label">{label}</span>
+      <span class="dv__line" aria-hidden="true"></span>
+    </div>
+  ) : (
+    <hr class:list={['dv', `dv--${variant}`, className]} />
+  )
+}
+
+<style>
+  /* No margin here on purpose. A Divider takes its spacing from the element
+     that wraps it — a `class` passed in from a parent has the same specificity
+     as this rule, so which one wins would depend on component order. Wrap it:
+       <div class="my-spacing"><Divider /></div>  */
+  .dv {
+    border: 0;
+    margin: 0;
+    width: 100%;
+  }
+  .dv--rule {
+    height: 1px;
+    background: var(--adel-border-hairline);
+  }
+  .dv--soft {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--adel-border-hairline) 15%,
+      var(--adel-border-hairline) 85%,
+      transparent
+    );
+  }
+  .dv--space {
+    height: 0;
+    background: none;
+  }
+
+  .dv--label {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-4);
+  }
+  .dv__line {
+    flex: 1;
+    height: 1px;
+    background: var(--adel-border-hairline);
+  }
+  .dv__label {
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    color: var(--adel-text-secondary);
+    white-space: nowrap;
+  }
+  /* Arabic has no uppercase and no letter-spacing. */
+  [lang='ar'] .dv__label {
+    text-transform: none;
+    letter-spacing: normal;
+  }
+</style>

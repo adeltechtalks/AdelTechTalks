@@ -1,0 +1,275 @@
+---
+/* =============================================================================
+   Guide detail and Article (§18)
+   =============================================================================
+   One template, two content types. §18: "If some of these are represented as
+   shared templates rather than individual routes, preserve the approved
+   architecture." A Guide is an Article that may also hand you a file, so the
+   only structural difference is the download panel.
+
+   The rendered Markdown arrives through the default slot, because rendering it
+   needs the collection entry and that lives in the route file.
+   ========================================================================== */
+
+import Base from '../../layouts/Base.astro';
+import Prose from '../editorial/Prose.astro';
+import PhotoFigure from '../editorial/PhotoFigure.astro';
+import Divider from '../editorial/Divider.astro';
+import NewsletterCTA from '../editorial/NewsletterCTA.astro';
+import EntryList from '../editorial/EntryList.astro';
+import Button from '../Button.astro';
+import Rich from '../Rich.astro';
+import Icon from '../Icon.astro';
+import { getRelated, findTopic } from '../../lib/content';
+import { PILLAR_TO_TOPIC } from '../../lib/topics';
+import { useCopy } from '../../copy';
+import { formatDate, localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+  kind: 'guide' | 'article';
+  data: {
+    title: string;
+    description: string;
+    date: Date;
+    updated?: Date;
+    topic?: string;
+    pillar?: string;
+    tags: string[];
+    cover?: string;
+    coverAlt?: string;
+    preview?: string;
+    minutes?: number;
+    related: string[];
+    download?: { label?: string; href: string; meta?: string; gated?: boolean };
+  };
+}
+
+const { lang, kind, data } = Astro.props;
+const c = useCopy(lang);
+
+const topicId =
+  data.topic ?? (data.pillar ? PILLAR_TO_TOPIC[data.pillar as keyof typeof PILLAR_TO_TOPIC] : undefined);
+const topic = findTopic(topicId);
+const related = await getRelated(lang, data.related);
+
+const isoDate = data.date.toISOString();
+const isoUpdated = data.updated?.toISOString();
+---
+
+<Base
+  lang={lang}
+  title={data.title}
+  description={data.description}
+  ogType="article"
+  ogImage={data.cover}
+  publishedTime={isoDate}
+  modifiedTime={isoUpdated}
+>
+  <article class="container ep">
+    <header class="ep__head">
+      <nav class="ep__crumbs" aria-label="Breadcrumb">
+        <a href={localizePath(kind === 'guide' ? '/guides' : '/topics', lang)}>
+          {kind === 'guide' ? c.guides.title : c.topics.title}
+        </a>
+        {topic && (
+          <>
+            <span class="ep__sep" aria-hidden="true">/</span>
+            <a href={localizePath(`/topics/${topic.id}`, lang)}>
+              <Rich text={topic[lang].name} />
+            </a>
+          </>
+        )}
+      </nav>
+
+      <h1 class="ep__title">{data.title}</h1>
+      <p class="ep__desc">{data.description}</p>
+
+      <div class="ep__meta">
+        <time class="nums" datetime={isoDate.slice(0, 10)}>
+          {c.common.published} {formatDate(data.date, lang, true)}
+        </time>
+        {data.updated && (
+          <>
+            <span class="ep__dot" aria-hidden="true">·</span>
+            <time class="nums" datetime={isoUpdated!.slice(0, 10)}>
+              {c.common.updated} {formatDate(data.updated, lang, true)}
+            </time>
+          </>
+        )}
+        {data.minutes && (
+          <>
+            <span class="ep__dot" aria-hidden="true">·</span>
+            <span class="nums">{c.common.minutes(data.minutes)}</span>
+          </>
+        )}
+      </div>
+    </header>
+
+    {data.cover && (
+      <PhotoFigure
+        src={data.cover}
+        alt={data.coverAlt ?? ''}
+        ratio="16 / 9"
+        ratioMobile="4 / 3"
+        priority
+        class="ep__cover"
+      />
+    )}
+
+    {data.preview && (
+      <p class="ep__preview">{data.preview}</p>
+    )}
+
+    <Prose class="ep__prose">
+      <slot />
+    </Prose>
+
+    {data.download && (
+      <aside class="ep__download" aria-labelledby="dl-title">
+        <span class="ep__dlIcon" aria-hidden="true"><Icon name="download" size="lg" /></span>
+        <div class="ep__dlText">
+          <strong class="ep__dlTitle" id="dl-title">
+            {data.download.label ?? c.guides.downloadLabel}
+          </strong>
+          {data.download.meta && <span class="ep__dlMeta nums">{data.download.meta}</span>}
+        </div>
+        <Button variant="primary" size="md" href={data.download.href}>
+          {c.guides.downloadLabel}
+        </Button>
+      </aside>
+    )}
+
+    {data.tags.length > 0 && (
+      <ul class="ep__tags">
+        {data.tags.map((tag) => <li class="ep__tag">{tag}</li>)}
+      </ul>
+    )}
+
+    {related.length > 0 && (
+      <section class="ep__related" aria-labelledby="related-title">
+        <div class="ep__relDiv"><Divider label={c.guides.relatedTitle} /></div>
+        <h2 class="sr-only" id="related-title">{c.guides.relatedTitle}</h2>
+        <EntryList entries={related} lang={lang} />
+      </section>
+    )}
+
+    <div class="ep__cta">
+      <NewsletterCTA lang={lang} placement={kind} variant="plain" />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .ep {
+    max-width: 760px;
+    padding-block-end: var(--atc-space-16);
+  }
+  .ep__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-4);
+    margin-bottom: var(--atc-space-10);
+  }
+  .ep__crumbs {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-sm);
+    color: var(--adel-text-secondary);
+  }
+  .ep__crumbs a {
+    color: var(--adel-text-secondary);
+    text-decoration: none;
+  }
+  .ep__crumbs a:hover { color: var(--adel-text-link); text-decoration: underline; }
+  .ep__sep { color: var(--adel-text-tertiary); }
+
+  .ep__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(30px, 4.5vw, 46px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+    text-wrap: balance;
+  }
+  [lang='ar'] .ep__title { letter-spacing: normal; line-height: 1.35; }
+
+  .ep__desc {
+    margin: 0;
+    font-size: var(--adel-text-lg);
+    line-height: 1.6;
+    color: var(--adel-text-secondary);
+  }
+  .ep__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    flex-wrap: wrap;
+    font-family: var(--adel-font-mono);
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-tertiary);
+  }
+  .ep__dot { opacity: 0.6; }
+
+  .ep__cover { margin-bottom: var(--atc-space-10); }
+
+  .ep__preview {
+    margin: 0 0 var(--atc-space-8);
+    padding-inline-start: var(--atc-space-5);
+    border-inline-start: 3px solid var(--adel-signature-blue);
+    font-size: var(--adel-text-lg);
+    line-height: 1.65;
+    color: var(--adel-text-primary);
+    font-weight: 500;
+  }
+
+  /* ---- download ---- */
+  .ep__download {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-5);
+    margin-top: var(--atc-space-12);
+    padding: var(--atc-space-6);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-tint);
+    color: var(--adel-text-on-tint);
+    flex-wrap: wrap;
+  }
+  .ep__dlIcon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    flex: 0 0 auto;
+    border-radius: var(--adel-radius-control);
+    background: var(--adel-white);
+    color: var(--adel-signature-blue);
+  }
+  .ep__dlText { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 180px; }
+  .ep__dlTitle { font-size: var(--adel-text-base); font-weight: 600; }
+  .ep__dlMeta { font-family: var(--adel-font-mono); font-size: var(--adel-text-xs); opacity: 0.8; }
+
+  /* ---- tags ---- */
+  .ep__tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-2);
+    margin: var(--atc-space-10) 0 0;
+    padding: 0;
+  }
+  .ep__tag {
+    padding: 4px 10px;
+    border-radius: var(--adel-radius-pill);
+    background: var(--adel-surface-sunken);
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-secondary);
+  }
+
+  .ep__related { margin-top: var(--atc-space-16); }
+  .ep__relDiv { margin-bottom: var(--atc-space-6); }
+  .ep__cta { margin-top: var(--atc-space-16); }
+</style>

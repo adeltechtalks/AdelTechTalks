@@ -1,0 +1,132 @@
+/* =============================================================================
+   Adel Personal Brand — Colour System v2.0
+   =============================================================================
+   The primary colour system for adeltechtalks.com as Adel's personal site.
+   Replaces the ATT purple/lavender-led system as the DEFAULT.
+
+   The ATT palette is not deleted — it is namespaced under
+   `Legacy · ATT Content System` in legacy-att.css and is opt-in only.
+
+   Components must consume the Tier 2 semantic tokens below, never the raw
+   hexes. That is what makes a future palette change one file instead of a
+   hundred.
+   ============================================================================= */
+
+:root {
+  /* ---- Tier 1 · the approved v2.0 palette ---------------------------------
+     These nine values are the brand. Do not add a tenth without approval. */
+
+  --adel-signature-blue: #2563EB; /* primary brand */
+  --adel-deep-blue:      #1746A2; /* pressed states, depth, headings on tint */
+  --adel-ice-blue:       #DCEBFF; /* tinted surfaces, quiet emphasis */
+  --adel-fresh-mint:     #2DD4A8; /* ACCENT ONLY — see the budget below */
+
+  --adel-graphite:       #171A1F; /* primary text, the default logo colour */
+  --adel-slate:          #667085; /* secondary text */
+  --adel-warm-white:     #FAFAF8; /* the page canvas — not pure white */
+  --adel-white:          #FFFFFF; /* raised surfaces */
+  --adel-soft-gray:      #E6E8EC; /* hairlines, dividers, rules */
+
+  /* ---- Fresh Mint budget --------------------------------------------------
+     Mint is capped at ~3% of any surface. It marks one thing that is new,
+     live or worth noticing — never a background, never a large fill, and
+     never the logo (§8). If nothing on a surface is genuinely new, Mint does
+     not appear. Use --adel-accent, which exists to make the intent legible at
+     the call site. */
+  --adel-accent: var(--adel-fresh-mint);
+
+  /* ---- Derived neutrals -----------------------------------------------------
+     NOT new brand colours. Three interpolations the UI genuinely needs and the
+     nine-value palette does not supply: a sunken band between Warm White and
+     Soft Gray, an input border darker than a hairline, and a muted tone for
+     disabled controls. Each sits on the Warm White → Graphite ramp and carries
+     no hue of its own. If the design system later publishes official values
+     for these three roles, replace them here and nowhere else. */
+  --adel-neutral-sunken:   #F2F3F5; /* between Warm White and Soft Gray */
+  --adel-neutral-border:   #CBD2DA; /* between Soft Gray and Slate */
+  /* ⚠️ NOT A TEXT COLOUR. 2.46:1 on Warm White. Disabled controls, icon
+     strokes and decorative rules only — never a word a visitor has to read. */
+  --adel-neutral-muted:    #98A2B3;
+
+  /* ---- Tier 2 · semantic surface ---- */
+  --adel-surface-canvas:  var(--adel-warm-white);
+  --adel-surface-raised:  var(--adel-white);
+  --adel-surface-sunken:  var(--adel-neutral-sunken);
+  --adel-surface-tint:    var(--adel-ice-blue);
+  --adel-surface-inverse: var(--adel-graphite);
+
+  /* ---- Tier 2 · semantic text ---- */
+  --adel-text-primary:    var(--adel-graphite);
+  --adel-text-secondary:  var(--adel-slate);
+  --adel-text-inverse:    var(--adel-white);
+  /* There is no legible third text tier on Warm White: Slate clears 4.5:1 at
+     4.75, and anything lighter falls under it within a couple of luminance
+     points. So the third tier is separated by SIZE and WEIGHT, not by a
+     paler colour. Dates, counts and captions use this and stay readable.
+     (§30 — "Do not compromise accessibility to achieve visual fidelity.") */
+  --adel-text-tertiary:   var(--adel-slate);
+  --adel-text-link:       var(--adel-signature-blue);
+  --adel-text-link-hover: var(--adel-deep-blue);
+  /* On Ice Blue, body text needs the darker blue to clear 4.5:1 */
+  --adel-text-on-tint:    var(--adel-deep-blue);
+
+  /* ---- Tier 2 · line and edge ---- */
+  --adel-border-hairline: var(--adel-soft-gray);
+  --adel-border-strong:   var(--adel-neutral-border);
+  --adel-border-brand:    var(--adel-signature-blue);
+
+  /* ---- Tier 2 · actions ----------------------------------------------------
+     Primary action is Signature Blue; pressed goes to Deep Blue. Mint is NOT
+     an action colour — it marks state, not intent. */
+  --adel-action-primary-bg:         var(--adel-signature-blue);
+  --adel-action-primary-bg-hover:   #1D5AD8; /* one step of the same hue */
+  --adel-action-primary-bg-pressed: var(--adel-deep-blue);
+  --adel-action-primary-fg:         var(--adel-white);
+  --adel-action-primary-border:     var(--adel-deep-blue);
+
+  --adel-action-secondary-bg:         transparent;
+  --adel-action-secondary-bg-hover:   var(--adel-ice-blue);
+  --adel-action-secondary-bg-pressed: #C7DDFA;
+  --adel-action-secondary-fg:         var(--adel-signature-blue);
+
+  --adel-action-quiet-fg:       var(--adel-slate);
+  --adel-action-quiet-bg-hover: var(--adel-soft-gray);
+
+  --adel-action-disabled-bg: var(--adel-soft-gray);
+  --adel-action-disabled-fg: var(--adel-neutral-muted);
+
+  /* ---- Tier 2 · status. Functional, not brand. Kept distinct from the blue
+     family precisely so "correct", "error" and "brand" never read alike. ---- */
+  --adel-status-success: #0B7468;
+  --adel-status-success-bg: #E6F5F3;
+  --adel-status-warning: #E08A0B;
+  --adel-status-error: #CE3A24;
+  --adel-status-error-bg: #FFE9E4;
+  --adel-status-info: var(--adel-deep-blue);
+
+  /* ---- focus: a real outline so it survives forced-colours mode ---- */
+  --adel-focus-ring:   var(--adel-signature-blue);
+  --adel-focus-offset: 2px;
+  --adel-focus-width:  2px;
+
+  /* ---- elevation: neutral-cool shadows, not the ATT violet ---- */
+  --adel-elevation-1: 0 1px 2px rgba(23, 26, 31, 0.06);
+  --adel-elevation-2: 0 4px 12px rgba(23, 26, 31, 0.08);
+  --adel-elevation-3: 0 12px 32px rgba(23, 26, 31, 0.10);
+
+  /* ---- Liquid Glass (§17) -------------------------------------------------
+     BUDGET: the site header is the only glass surface. Do not add another
+     glass container without an explicit design decision. */
+  --adel-glass-fill:   rgba(250, 250, 248, 0.72);
+  --adel-glass-border: rgba(255, 255, 255, 0.60);
+  --adel-glass-blur:   20px;
+
+  /* ---- geometry ---- */
+  --adel-radius-inline:  6px;
+  --adel-radius-control: 10px;
+  --adel-radius-card:    14px;
+  --adel-radius-panel:   18px;
+  --adel-radius-media:   20px;
+  --adel-radius-pill:    999px;
+  --adel-radius-circle:  50%;
+}

@@ -1,0 +1,42 @@
+---
+/* Renders a copy string, turning [[English term]] into a properly isolated
+   LTR run (§11).
+
+   Why a marker convention instead of raw HTML in the copy file: the copy file
+   is meant to be edited by a non-developer, and raw HTML there would be both
+   easy to break and an injection surface. Every part below is interpolated by
+   Astro, which escapes it — so `[[<script>]]` renders as literal text.
+
+   Nothing is done to the string on English pages either: an English term
+   inside English copy is already an LTR run, and `.term` only adds
+   `white-space: nowrap`, which is correct for an acronym in any language. */
+
+interface Props {
+  text: string;
+  /* Element to render into. Inline by default so it can sit inside a heading. */
+  as?: string;
+  /* Long phrases (three words or more) are allowed to wrap. */
+  wrap?: boolean;
+  class?: string;
+}
+
+const { text, as: Tag = 'span', wrap = false, class: className } = Astro.props;
+
+/* Split on [[...]] keeping the delimiters, so odd indices are the terms. */
+const parts = text.split(/\[\[(.+?)\]\]/g);
+---
+
+<Tag class={className}>
+  {parts.map((part, i) =>
+    i % 2 === 1 ? (
+      <span class:list={['term', (wrap || part.trim().split(/\s+/).length > 2) && 'term--wrap']}>{part}</span>
+    ) : (
+      part
+    )
+  )}
+</Tag>
+
+<style is:global>
+  /* .term itself is defined in tokens/adel-type.css — it is a type rule, not a
+     component rule, and Arabic articles authored in Markdown need it too. */
+</style>

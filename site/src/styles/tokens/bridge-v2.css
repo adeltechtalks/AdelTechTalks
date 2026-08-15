@@ -1,0 +1,238 @@
+/* =============================================================================
+   ATT → Adel v2.0 · Token Bridge
+   =============================================================================
+   §6 says to replace the purple/lavender-led system "using the exact approved
+   token mappings in the design system rather than hard-coding colors
+   throughout components."
+
+   This file is that mapping. Every `--atc-*` COLOUR token is re-pointed at an
+   Adel v2.0 value. Because custom properties are last-declaration-wins, and
+   this file is imported after tokens/colors.css, the whole site adopts the new
+   palette without a single component being edited or a single hex being
+   inlined.
+
+   WHY A BRIDGE INSTEAD OF A FIND-AND-REPLACE
+   ------------------------------------------
+   Three reasons, all of them about safety on a live site:
+     1. It is one file to revert. Delete the import and production is exactly
+        as it was.
+     2. Nothing can be missed. A rename across ~20 files leaves stragglers;
+        a redefinition cannot.
+     3. Components keep consuming SEMANTIC names, which is the property §6 is
+        actually protecting.
+
+   New components author against `--adel-*` directly. `--atc-*` is now a
+   compatibility surface for the pre-v2.0 code, not a system to build on.
+
+   NOT REMAPPED, DELIBERATELY
+   --------------------------
+   * spacing, radii, motion, z-index, control heights — geometry, not identity.
+   * status colours — "correct" and "error" must never read as brand blue.
+   * the Dark Impact tokens and social-canvas tokens — ATT content surfaces,
+     which legacy-att.css owns.
+   ============================================================================= */
+
+:root {
+  /* ===========================================================================
+     BRAND RAMPS → BLUE
+     The purple ramp carried the brand. It now resolves to the two approved
+     blues plus Ice Blue for washes. Intermediate steps collapse onto the
+     nearest approved value rather than inventing tints.
+     ======================================================================== */
+  --atc-purple-50:  var(--adel-ice-blue);
+  --atc-purple-100: var(--adel-ice-blue);
+  --atc-purple-200: var(--adel-ice-blue);
+  --atc-purple-300: var(--adel-signature-blue);
+  --atc-purple-400: var(--adel-signature-blue);
+  --atc-purple-500: var(--adel-signature-blue);
+  --atc-purple-600: var(--adel-signature-blue);
+  --atc-purple-700: var(--adel-deep-blue);
+  --atc-purple-800: var(--adel-deep-blue);
+  --atc-purple-900: var(--adel-deep-blue);
+
+  /* The signal-blue ramp folds into the same two blues — v2.0 has one blue
+     identity, not two competing ones. */
+  --atc-blue-50:  var(--adel-ice-blue);
+  --atc-blue-100: var(--adel-ice-blue);
+  --atc-blue-200: var(--adel-ice-blue);
+  --atc-blue-300: var(--adel-signature-blue);
+  --atc-blue-400: var(--adel-signature-blue);
+  --atc-blue-500: var(--adel-signature-blue);
+  --atc-blue-600: var(--adel-signature-blue);
+  --atc-blue-700: var(--adel-deep-blue);
+  --atc-blue-800: var(--adel-deep-blue);
+  --atc-blue-900: var(--adel-deep-blue);
+
+  /* ===========================================================================
+     SPARK CORAL → ERROR
+     Coral was two things at once: the primary CTA and the "wrong answer"
+     colour in the Playground. v2.0 splits them. The CTA becomes Signature Blue
+     (see action.primary below); the ramp keeps only its warning job, which is
+     what a red-orange should have been doing all along.
+     ======================================================================== */
+  --atc-spark-100: var(--adel-status-error-bg);
+  --atc-spark-300: var(--adel-status-error);
+  --atc-spark-500: var(--adel-status-error);
+  --atc-spark-700: var(--adel-status-error);
+  --atc-brand-accent: var(--adel-accent); /* Fresh Mint, ~3% ceiling */
+
+  /* ===========================================================================
+     LAVENDER ATMOSPHERE → WARM WHITE + ICE BLUE
+     The lavender wash was the single most recognisable ATT signature. It is
+     also the thing that has to go for the site to stop reading as ATT.
+     ======================================================================== */
+  --atc-mist: var(--adel-warm-white);
+  --atc-veil: var(--adel-neutral-sunken);
+  --atc-haze: var(--adel-ice-blue);
+
+  /* ===========================================================================
+     VIOLET-TINTED NEUTRALS → TRUE NEUTRALS
+     ATT neutrals carried a violet cast on purpose. v2.0 neutrals are hueless:
+     Graphite → Slate → Soft Gray → Warm White, with three derived steps.
+     ======================================================================== */
+  --atc-ink-900: var(--adel-graphite);
+  --atc-ink-700: var(--adel-graphite);
+  --atc-ink-500: var(--adel-slate);
+  --atc-ink-300: var(--adel-neutral-muted);
+  --atc-ink-200: var(--adel-neutral-border);
+  --atc-ink-100: var(--adel-soft-gray);
+  --atc-ink-50:  var(--adel-warm-white);
+  --atc-white:   var(--adel-white);
+
+  /* ===========================================================================
+     PILLAR HUES
+     The teal / pink / gold pillar hues belonged to a five-colour category
+     system. v2.0 does not approve a rainbow, and §16's "Fewer Cards" points
+     the other way, so topics are differentiated by their LABEL, not by hue.
+     Teal keeps one job: it is the Playground's "correct" colour, which is a
+     status signal and must stay green.
+     ======================================================================== */
+  --atc-teal-500: var(--adel-status-success);
+  --atc-teal-700: var(--adel-status-success);
+  --atc-pink-500: var(--adel-signature-blue);
+  --atc-pink-700: var(--adel-deep-blue);
+  --atc-gold-500: var(--adel-signature-blue);
+  --atc-gold-700: var(--adel-deep-blue);
+
+  /* ---- brand ---- */
+  --atc-brand-primary:   var(--adel-signature-blue);
+  --atc-brand-secondary: var(--adel-deep-blue);
+
+  /* ---- surfaces ---- */
+  --atc-surface-canvas:  var(--adel-surface-canvas);
+  --atc-surface-raised:  var(--adel-surface-raised);
+  --atc-surface-sunken:  var(--adel-surface-sunken);
+  --atc-surface-depth:   var(--adel-surface-tint);
+  --atc-surface-inverse: var(--adel-surface-inverse);
+  /* §17 — the header remains the one glass surface. */
+  --atc-surface-glass-fill:   var(--adel-glass-fill);
+  --atc-surface-glass-border: var(--adel-glass-border);
+  --atc-surface-glass-blur:   var(--adel-glass-blur);
+
+  /* ---- text ---- */
+  --atc-text-primary:     var(--adel-text-primary);
+  --atc-text-secondary:   var(--adel-text-secondary);
+  --atc-text-tertiary:    var(--adel-text-tertiary);
+  --atc-text-placeholder: var(--adel-text-tertiary);
+  --atc-text-disabled:    var(--adel-text-tertiary);
+  --atc-text-on-brand:    var(--adel-text-inverse);
+  --atc-text-on-spark:    var(--adel-white);
+  --atc-text-link:        var(--adel-text-link);
+
+  /* ===========================================================================
+     ACTIONS
+     Primary was coral-on-graphite. It is now Signature Blue with white text —
+     7.0:1, and the same colour the rest of the identity is built from.
+     ======================================================================== */
+  --atc-action-primary-bg:          var(--adel-action-primary-bg);
+  --atc-action-primary-bg-hover:    var(--adel-action-primary-bg-hover);
+  --atc-action-primary-bg-pressed:  var(--adel-action-primary-bg-pressed);
+  --atc-action-primary-bg-disabled: var(--adel-action-disabled-bg);
+  --atc-action-primary-fg:          var(--adel-action-primary-fg);
+  --atc-action-primary-fg-disabled: var(--adel-action-disabled-fg);
+  /* New: the primary button's border used to be hard-wired to Spark 700. */
+  --atc-action-primary-border:      var(--adel-action-primary-border);
+
+  --atc-action-secondary-bg:         var(--adel-surface-raised);
+  --atc-action-secondary-bg-hover:   var(--adel-action-secondary-bg-hover);
+  --atc-action-secondary-bg-pressed: var(--adel-action-secondary-bg-pressed);
+  --atc-action-secondary-fg:         var(--adel-action-secondary-fg);
+  --atc-action-secondary-border:     var(--adel-border-brand);
+
+  /* ---- focus: exterior two-band indicator, now graphite-on-white ---- */
+  --atc-focus-strong:  var(--adel-graphite);
+  --atc-focus-inverse: var(--adel-white);
+
+  /* ---- strokes ---- */
+  --atc-stroke-hairline-color: var(--adel-border-hairline);
+  --atc-stroke-default-color:  var(--adel-border-strong);
+  --atc-stroke-strong-color:   var(--adel-text-tertiary);
+  --atc-stroke-brand-color:    var(--adel-border-brand);
+
+  /* ---- status ---- */
+  --atc-status-success: var(--adel-status-success);
+  --atc-status-warning: var(--adel-status-warning);
+  --atc-status-error:   var(--adel-status-error);
+  --atc-status-info:    var(--adel-status-info);
+
+  /* ===========================================================================
+     CATEGORY TOKENS
+     All five resolve to the one blue family. Topic identity comes from the
+     word, not the hue. Kept as five distinct token names so that if the design
+     system ever does publish per-topic colour, it lands here in one edit.
+     ======================================================================== */
+  --atc-category-ai-graphic: var(--adel-signature-blue);
+  --atc-category-ai-text: var(--adel-deep-blue);
+  --atc-category-gadgets-graphic: var(--adel-signature-blue);
+  --atc-category-gadgets-text: var(--adel-deep-blue);
+  --atc-category-automation-graphic: var(--adel-signature-blue);
+  --atc-category-automation-text: var(--adel-deep-blue);
+  --atc-category-enterprise-graphic: var(--adel-signature-blue);
+  --atc-category-enterprise-text: var(--adel-deep-blue);
+  --atc-category-creator-graphic: var(--adel-signature-blue);
+  --atc-category-creator-text: var(--adel-deep-blue);
+
+  /* ---- illustration tone pairs ---- */
+  --atc-ill-primary-face: var(--adel-ice-blue);
+  --atc-ill-primary-offset: var(--adel-signature-blue);
+  --atc-ill-secondary-face: var(--adel-ice-blue);
+  --atc-ill-secondary-offset: var(--adel-deep-blue);
+  --atc-ill-neutral-face: var(--adel-soft-gray);
+  --atc-ill-neutral-offset: var(--adel-neutral-muted);
+  --atc-ill-screen-face: var(--adel-white);
+  --atc-ill-screen-offset: var(--adel-neutral-muted);
+  --atc-ill-spark-face: var(--adel-status-error-bg);
+  --atc-ill-spark-offset: var(--adel-status-error);
+  --atc-ill-human-face: var(--adel-ice-blue);
+  --atc-ill-human-offset: var(--adel-signature-blue);
+  --atc-ill-contact-shadow: rgba(23, 26, 31, 0.08);
+
+  /* ===========================================================================
+     ELEVATION → neutral-cool
+     ATT shadows were violet by rule ("depth without darkness"). A violet
+     shadow under a blue-and-graphite palette reads as a colour cast, so the
+     ladder moves to the Graphite tint at the same opacities.
+     ======================================================================== */
+  --atc-elevation-1: var(--adel-elevation-1);
+  --atc-elevation-2: var(--adel-elevation-2);
+  --atc-elevation-3: var(--adel-elevation-3);
+  --atc-elevation-4: 0 24px 56px rgba(23, 26, 31, 0.14);
+
+  /* ===========================================================================
+     LOGO COLOUR ROLES (§8)
+     Default is Graphite — NOT the purple mark, and never Fresh Mint.
+     ======================================================================== */
+  --atc-mark-primary:  var(--adel-graphite);
+  --atc-mark-ink:      var(--adel-graphite);
+  --atc-mark-reversed: var(--adel-white);
+
+  /* ===========================================================================
+     GRADIENTS
+     v2.0 approves no gradient. These are neutralised rather than deleted so
+     that any surface still referencing one degrades to a flat approved value
+     instead of falling back to purple. Do not use them in new work.
+     ======================================================================== */
+  --atc-gradient-aurora: linear-gradient(135deg, var(--adel-ice-blue) 0%, var(--adel-signature-blue) 100%);
+  --atc-gradient-dawn: linear-gradient(135deg, var(--adel-ice-blue) 0%, var(--adel-warm-white) 100%);
+  --atc-gradient-spark: linear-gradient(135deg, var(--adel-signature-blue) 0%, var(--adel-deep-blue) 100%);
+}

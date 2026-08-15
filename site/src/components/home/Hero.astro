@@ -1,0 +1,249 @@
+---
+/* =============================================================================
+   Homepage hero (§14)
+   =============================================================================
+   "Adel's digital home — not a conventional blog homepage."
+
+   Five things, in this order: who he is, the expression, the positioning, the
+   pattern, one main action. Plus the photograph, which is half the composition
+   rather than an illustration beside it.
+
+   "I ❤️ Tech" is a brand expression and stays in Latin on the Arabic page too —
+   the same way a wordmark does. The Arabic gloss underneath carries the
+   meaning. It is isolated as an LTR run so the bidi algorithm cannot reorder
+   it when Arabic text sits beside it.
+   ========================================================================== */
+
+import Button from '../Button.astro';
+import Rich from '../Rich.astro';
+import PhotoFigure from '../editorial/PhotoFigure.astro';
+import { photography } from '../../site.config';
+import { LOVE_TECH, useCopy } from '../../copy';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+
+/* "I ❤️ Tech" → ['I', 'Tech'] so the heart can be drawn rather than typed. */
+const [beforeHeart, afterHeart] = LOVE_TECH.split('❤️');
+---
+
+<section class="hero">
+  <div class="container hero__grid">
+    <div class="hero__copy">
+      <p class="hero__identity">{c.hero.identity}</p>
+
+      <h1 class="hero__love" lang="en" dir="ltr">
+        <span>{beforeHeart.trim()}</span>
+        <span class="hero__heart" aria-hidden="true">
+          <svg viewBox="0 0 24 24" role="presentation">
+            <path
+              d="M12 21s-7.5-4.7-9.6-9.1C.7 8.5 2.4 5 5.9 5c2 0 3.4 1.1 4.1 2.2C10.7 6.1 12.1 5 14.1 5c3.5 0 5.2 3.5 3.5 6.9C19.5 16.3 12 21 12 21z"
+              fill="currentColor"
+            />
+          </svg>
+        </span>
+        <span class="sr-only">love</span>
+        <span>{afterHeart.trim()}</span>
+      </h1>
+
+      {c.hero.loveTechGloss && <p class="hero__gloss">{c.hero.loveTechGloss}</p>}
+
+      <Rich text={c.hero.positioning} as="p" class="hero__positioning" />
+
+      {/* The four-line pattern (§12). A list, because it is one — and reading
+          it aloud as four items is exactly how it should sound. */}
+      <ul class="hero__pattern">
+        {c.hero.pattern.map((line) => (
+          <li class="hero__patternItem">{line}</li>
+        ))}
+      </ul>
+
+      <Rich text={c.hero.body} as="p" class="hero__body" />
+
+      {/* Exactly one primary action on this page. Everything below is
+          secondary, ghost or a plain link. */}
+      <div class="hero__actions">
+        <Button variant="primary" size="lg" href={localizePath('/guides', lang)}>
+          {c.hero.primaryCta}
+        </Button>
+        <Button variant="ghost" size="lg" href={localizePath('/about', lang)}>
+          {c.hero.secondaryCta}
+        </Button>
+      </div>
+    </div>
+
+    <div class="hero__photo">
+      <PhotoFigure
+        src={photography.heroPortrait}
+        srcMobile={photography.heroPortraitMobile}
+        alt={c.hero.portraitAlt}
+        ratio="3 / 4"
+        ratioMobile="4 / 5"
+        priority
+        slotNote="A real portrait of Adel goes here — portrait crop, at least 1200px tall. Add it to public/photos/ and set photography.heroPortrait."
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block-start: var(--atc-space-16);
+  }
+  .hero__grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: var(--atc-space-16);
+    align-items: center;
+  }
+  .hero__copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-5);
+    /* The copy column has its own measure regardless of the grid. */
+    max-width: 34rem;
+  }
+
+  .hero__identity {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    color: var(--adel-signature-blue);
+  }
+  [lang='ar'] .hero__identity {
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: var(--adel-text-lg);
+  }
+
+  /* ---- the expression ---- */
+  .hero__love {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.22em;
+    flex-wrap: wrap;
+    font-family: var(--adel-font-display);
+    font-size: clamp(48px, 8vw, 88px);
+    line-height: 1.02;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    color: var(--adel-text-primary);
+    /* A fixed Latin lockup: it does not mirror, and it does not reorder. */
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+  .hero__heart {
+    display: inline-flex;
+    width: 0.86em;
+    height: 0.86em;
+    /* The heart is the one warm thing in a blue-and-graphite palette, and it
+       is the expression's whole point. It is not a brand colour and it is not
+       Fresh Mint — it is a heart, so it is red. */
+    color: #E0342A;
+  }
+  .hero__heart svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .hero__gloss {
+    margin: 0;
+    font-size: var(--adel-text-lg);
+    line-height: 1.6;
+    color: var(--adel-text-secondary);
+  }
+
+  .hero__positioning {
+    margin: 0;
+    font-size: var(--adel-text-base);
+    font-weight: 500;
+    line-height: 1.6;
+    color: var(--adel-text-primary);
+  }
+
+  /* ---- I learn it. I test it. I build with it. I share it. ---- */
+  .hero__pattern {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-2);
+    list-style: none;
+    margin: var(--atc-space-1) 0 0;
+    padding: 0;
+  }
+  .hero__patternItem {
+    padding: 6px 12px;
+    border-radius: var(--adel-radius-pill);
+    background: var(--adel-surface-tint);
+    color: var(--adel-text-on-tint);
+    font-size: var(--adel-text-sm);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .hero__body {
+    margin: 0;
+    font-size: var(--adel-text-base);
+    line-height: var(--adel-leading-body);
+    color: var(--adel-text-secondary);
+    max-width: 46ch;
+  }
+
+  .hero__actions {
+    display: flex;
+    gap: var(--atc-space-3);
+    flex-wrap: wrap;
+    margin-top: var(--atc-space-2);
+  }
+
+  .hero__photo {
+    max-width: 460px;
+    width: 100%;
+    justify-self: end;
+  }
+  [dir='rtl'] .hero__photo {
+    justify-self: start;
+  }
+
+  @media (max-width: 1023px) {
+    .hero {
+      padding-block-start: var(--atc-space-10);
+    }
+    .hero__grid {
+      grid-template-columns: 1fr;
+      gap: var(--atc-space-10);
+    }
+    /* The photograph leads on mobile — most arrivals are from social, and the
+       first thing they should see is a person (§28). */
+    .hero__photo {
+      order: -1;
+      max-width: 100%;
+      justify-self: stretch;
+    }
+    .hero__copy {
+      max-width: none;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .hero__love {
+      font-size: clamp(40px, 13vw, 56px);
+    }
+    .hero__pattern {
+      gap: 6px;
+    }
+    .hero__patternItem {
+      font-size: var(--adel-text-xs);
+      padding: 5px 10px;
+    }
+  }
+</style>

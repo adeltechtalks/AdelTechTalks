@@ -1,0 +1,94 @@
+/* =============================================================================
+   Legacy · ATT Content System
+   =============================================================================
+   The AdelTechTalks visual system. NOT deleted, NOT the default (§7).
+
+   AdelTechTalks is now the content/show identity, not the personal website
+   identity. These values remain available for AdelTechTalks-branded content —
+   social templates, video covers, the ATT carousel and Content OS templates —
+   and for any surface explicitly marked as ATT.
+
+   ── HOW TO USE ──────────────────────────────────────────────────────────────
+   These tokens do NOT apply globally. Opt in by putting the scope class on a
+   container:
+
+       <div class="att-legacy"> … ATT-branded content … </div>
+
+   Inside that container the ATT palette, gradients and Origin Corner are
+   available. Outside it they do not exist.
+
+   ⚠️ Do not reference --att-* tokens from Adel personal-brand components. If
+   one appears in an Adel surface, that is a defect: the two systems are meant
+   to stay visually distinct.
+
+   The `--atc-*` aliases at the bottom are DEPRECATED compatibility shims kept
+   so ATT template files continue to build. New code must not use them.
+   ============================================================================= */
+
+.att-legacy {
+  /* ---- ATT brand purple ---- */
+  --att-purple-50: #F5F3FF;
+  --att-purple-100: #EBE6FE;
+  --att-purple-600: #6C41E4;
+  --att-purple-700: #5A32C4;
+
+  /* ---- ATT signal blue ---- */
+  --att-blue-500: #3E7BFA;
+
+  /* ---- ATT Spark Coral — the old accent moment ---- */
+  --att-spark-100: #FFE9E4;
+  --att-spark-500: #FF6B57;
+  --att-spark-700: #CE3A24;
+
+  /* ---- ATT magenta / pink ---- */
+  --att-pink-500: #DB4A9B;
+
+  /* ---- ATT lavender atmosphere ---- */
+  --att-mist: #F8F6FF;
+  --att-veil: #F1EDFE;
+  --att-haze: #E6DFFC;
+
+  /* ---- ATT violet-tinted neutrals ---- */
+  --att-ink-50: #F4F3F9;
+  --att-ink-100: #E7E4F0;
+  --att-ink-200: #CFCADF;
+  --att-ink-300: #A9A3C4;
+  --att-ink-500: #6B6390;
+  --att-ink-700: #3D3663;
+  --att-ink-900: #1A1633;
+
+  /* ---- ATT gradients (Light Knowledge Mode: two adjacent stops only) ---- */
+  --att-gradient-aurora: linear-gradient(135deg, #A186F7 0%, #6C41E4 100%);
+  --att-gradient-dawn: linear-gradient(135deg, #C0D6FF 0%, #EBE6FE 100%);
+
+  /* ---- Dark Impact Mode — video covers and launches only ---- */
+  --att-impact-navy: #0B0918;
+  --att-impact-blue: #2B6CFF;
+  --att-impact-purple: #7A3BE8;
+  --att-impact-magenta: #D63BC9;
+  /* The three-stop Impact gradient. Never below 40px, never on a light
+     ground, never off its 45° axis. */
+  --att-gradient-impact: linear-gradient(45deg, #2B6CFF 0%, #7A3BE8 52%, #D63BC9 100%);
+
+  /* ---- violet shadow ladder ---- */
+  --att-elevation-1: 0 1px 2px rgba(58, 43, 122, 0.06);
+  --att-elevation-2: 0 4px 12px rgba(58, 43, 122, 0.08);
+  --att-elevation-3: 0 12px 32px rgba(58, 43, 122, 0.10);
+
+  /* ---- Origin Corner ratio (SH-04) — allowed on ATT signature surfaces ---- */
+  --att-origin-base-ratio: 0.08;
+  --att-origin-lead-ratio: 0.16;
+
+  /* =========================================================================
+     DEPRECATED ALIASES — kept for compatibility only (§7).
+     ATT template files (templates/, the Content OS, the carousel) reference
+     --atc-* names. These keep them building. Do not use in new code.
+     ========================================================================= */
+  --atc-purple-600: var(--att-purple-600);
+  --atc-purple-700: var(--att-purple-700);
+  --atc-spark-500: var(--att-spark-500);
+  --atc-ink-900: var(--att-ink-900);
+  --atc-ink-500: var(--att-ink-500);
+  --atc-ink-100: var(--att-ink-100);
+  --atc-mist: var(--att-mist);
+}

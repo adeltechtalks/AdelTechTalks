@@ -1,8 +1,25 @@
 ---
-import Logo from './Logo.astro';
-import Icon from './Icon.astro';
-import { site } from '../site.config';
+/* =============================================================================
+   Footer — where the brand architecture is stated plainly (§5)
+   =============================================================================
+   Adel is the site. AdelTechTalks is named as the channel, in the place where
+   you name a channel — next to its social links, not next to the identity.
+   GearNest is a link out, in its own row, with visible distance from both.
+   ========================================================================== */
 
+import AdelLogo from './AdelLogo.astro';
+import Icon from './Icon.astro';
+import Rich from './Rich.astro';
+import { site, nav, projects } from '../site.config';
+import { useCopy } from '../copy';
+import { DEFAULT_LANG, localizePath, type Lang } from '../i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = DEFAULT_LANG } = Astro.props;
+const c = useCopy(lang);
 const year = new Date().getFullYear();
 
 const SOCIAL: Array<[keyof typeof site.social, string, string]> = [
@@ -12,60 +29,93 @@ const SOCIAL: Array<[keyof typeof site.social, string, string]> = [
   ['linkedin', 'linkedin', 'LinkedIn'],
   ['x', 'twitter', 'X'],
 ];
-
 const links = SOCIAL.filter(([key]) => site.social[key]);
 
-const COLUMNS = [
-  { title: 'Explore', items: [['Guides', '/guides'], ['Playground', '/playground'], ['About', '/about']] },
-  { title: 'For brands', items: [['Work with me', '/work-with-me'], ['Packages', '/work-with-me#packages'], ['Contact', '/contact']] },
-];
+const exploreKeys = ['guides', 'topics', 'playground', 'newsletter'];
+const explore = nav
+  .filter((item) => item.phase === 1 && exploreKeys.includes(item.key))
+  .map((item) => ({
+    href: localizePath(item.path, lang),
+    label: (c.nav as Record<string, string>)[item.key] ?? item.key,
+  }));
+
+const separate = projects.filter((p) => p.separate);
 ---
 
 <footer class="ftr">
   <div class="ftr__inner">
     <div class="ftr__brand">
-      <Logo size={32} />
-      <p class="ftr__blurb">{site.description}</p>
+      <AdelLogo size={26} tone="default" />
+      <Rich text={c.footer.blurb} as="p" class="ftr__blurb" />
+    </div>
+
+    <div class="ftr__col">
+      <span class="ftr__title">{c.footer.explore}</span>
+      {explore.map((item) => (
+        <a href={item.href} class="ftr__link">{item.label}</a>
+      ))}
+      <a href={localizePath('/about', lang)} class="ftr__link">{c.nav.about}</a>
+    </div>
+
+    <div class="ftr__col">
+      <span class="ftr__title">{c.footer.brands}</span>
+      <a href={localizePath('/work-with-me', lang)} class="ftr__link">{c.nav.work}</a>
+      <a href={`mailto:${site.email}`} class="ftr__link">{site.email}</a>
+    </div>
+
+    {/* The channel is named HERE, beside its own links — not beside the
+        personal identity above. That separation is the whole of §5. */}
+    <div class="ftr__col">
+      <span class="ftr__title">{site.showName}</span>
       {links.length > 0 && (
         <div class="ftr__social">
           {links.map(([key, icon, label]) => (
-            <a href={site.social[key]} class="ftr__soc" aria-label={label} rel="me noopener" target="_blank">
+            <a
+              href={site.social[key]}
+              class="ftr__soc"
+              aria-label={`${site.showName} on ${label}`}
+              rel="me noopener"
+              target="_blank"
+            >
               <Icon name={icon} size="md" />
             </a>
           ))}
         </div>
       )}
     </div>
-
-    {COLUMNS.map((col) => (
-      <div class="ftr__col">
-        <span class="ftr__title">{col.title}</span>
-        {col.items.map(([label, href]) => (
-          <a href={href} class="ftr__link">{label}</a>
-        ))}
-      </div>
-    ))}
   </div>
 
+  {separate.length > 0 && (
+    <div class="ftr__separate">
+      {separate.map((p) => (
+        <a class="ftr__sepLink" href={p.url} rel="noopener" target="_blank">
+          <Rich text={p[lang].name} class="ftr__sepName" />
+          <span class="ftr__sepArrow" aria-hidden="true">↗</span>
+        </a>
+      ))}
+    </div>
+  )}
+
   <div class="ftr__base">
-    <span>© {year} {site.name}</span>
-    <!-- The editorial signature sits in the credit position, never the identity position. -->
-    <span class="ftr__sig">Curated by Adel.</span>
+    <span>© {year} {c.footer.rights}</span>
+    {/* The editorial signature sits in the credit position, never the identity
+        position (§8 — the signature is a sign-off, not the brand mark). */}
+    <span class="ftr__sig">{c.footer.signature}</span>
   </div>
 </footer>
 
 <style>
   .ftr {
-    background: var(--atc-surface-sunken);
-    border-top: var(--atc-stroke-hairline) solid var(--atc-ink-100);
-    margin-top: 96px;
+    background: var(--adel-surface-canvas);
+    border-top: 1px solid var(--adel-border-hairline);
+    margin-top: 120px;
   }
   .ftr__inner {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 64px var(--atc-space-8) 48px;
+    padding: 64px var(--atc-space-8) 40px;
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 1.7fr 1fr 1.1fr 1.2fr;
     gap: 48px;
   }
   .ftr__brand {
@@ -75,72 +125,120 @@ const COLUMNS = [
   }
   .ftr__blurb {
     margin: 0;
-    font-size: var(--atc-body-small-size);
-    line-height: var(--atc-body-small-line);
-    color: var(--atc-ink-500);
-    max-width: 40ch;
+    font-size: var(--adel-text-sm);
+    line-height: 1.6;
+    color: var(--adel-text-secondary);
+    max-width: 38ch;
+  }
+  .ftr__col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-3);
+    align-items: flex-start;
+  }
+  .ftr__title {
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+  }
+  .ftr__link {
+    font-size: var(--adel-text-sm);
+    color: var(--adel-text-secondary);
+    text-decoration: none;
+  }
+  .ftr__link:hover {
+    color: var(--adel-text-link);
+    text-decoration: underline;
   }
   .ftr__social {
     display: flex;
-    gap: var(--atc-space-2);
-    margin-top: var(--atc-space-2);
+    gap: 2px;
+    flex-wrap: wrap;
+    /* pull the 44px targets back into line with the text above them */
+    margin-inline-start: -10px;
   }
   .ftr__soc {
     width: 44px;
     height: 44px;
     display: grid;
     place-items: center;
-    border-radius: var(--atc-radius-control);
-    color: var(--atc-ink-700);
+    border-radius: var(--adel-radius-control);
+    color: var(--adel-text-secondary);
     text-decoration: none;
   }
   .ftr__soc:hover {
-    background: var(--atc-purple-50);
-    color: var(--atc-purple-600);
+    background: var(--adel-surface-tint);
+    color: var(--adel-text-on-tint);
   }
-  .ftr__col {
+
+  /* ---- separate brands: a row of their own, with air above and below ---- */
+  .ftr__separate {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--atc-space-6) var(--atc-space-8);
+    border-top: 1px solid var(--adel-border-hairline);
     display: flex;
-    flex-direction: column;
-    gap: var(--atc-space-3);
+    gap: var(--atc-space-6);
+    flex-wrap: wrap;
   }
-  .ftr__title {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--atc-ink-500);
-  }
-  .ftr__link {
-    font-size: var(--atc-body-small-size);
-    color: var(--atc-ink-700);
+  .ftr__sepLink {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-sm);
+    color: var(--adel-text-secondary);
     text-decoration: none;
   }
-  .ftr__link:hover {
-    color: var(--atc-purple-700);
-    text-decoration: underline;
+  .ftr__sepName {
+    font-weight: 600;
+    color: var(--adel-text-primary);
   }
+  .ftr__sepLink:hover .ftr__sepName {
+    color: var(--adel-text-link);
+  }
+  /* ↗ points away from the reading direction on both sides. */
+  [dir='rtl'] .ftr__sepArrow {
+    display: inline-block;
+    transform: scaleX(-1);
+  }
+
   .ftr__base {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 var(--atc-space-8) 40px;
+    padding: var(--atc-space-6) var(--atc-space-8) 40px;
+    border-top: 1px solid var(--adel-border-hairline);
     display: flex;
     justify-content: space-between;
     gap: var(--atc-space-4);
-    font-size: 12px;
-    color: var(--atc-ink-500);
-  }
-  .ftr__sig {
-    font-style: italic;
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-tertiary);
   }
 
+  @media (max-width: 1023px) {
+    .ftr__inner {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--atc-space-10);
+    }
+    .ftr__brand {
+      grid-column: 1 / -1;
+    }
+  }
   @media (max-width: 767px) {
+    .ftr {
+      margin-top: 80px;
+    }
     .ftr__inner {
       grid-template-columns: 1fr;
       gap: var(--atc-space-8);
       padding: 48px var(--atc-space-5) 32px;
     }
+    .ftr__separate,
     .ftr__base {
-      padding: 0 var(--atc-space-5) 32px;
+      padding-inline: var(--atc-space-5);
+    }
+    .ftr__base {
       flex-direction: column;
       gap: var(--atc-space-2);
     }

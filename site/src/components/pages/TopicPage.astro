@@ -1,0 +1,65 @@
+---
+/* Topic detail (§18) — everything published under one thread. */
+
+import Base from '../../layouts/Base.astro';
+import SectionIntro from '../editorial/SectionIntro.astro';
+import EntryList from '../editorial/EntryList.astro';
+import NewsletterCTA from '../editorial/NewsletterCTA.astro';
+import { getByTopic } from '../../lib/content';
+import { useCopy } from '../../copy';
+import { localizePath, type Lang } from '../../i18n';
+import type { topics } from '../../site.config';
+
+interface Props {
+  lang: Lang;
+  topic: (typeof topics)[number];
+}
+
+const { lang, topic } = Astro.props;
+const c = useCopy(lang);
+const entries = await getByTopic(lang, topic.id);
+
+/* The topic name may carry [[term]] markers; the <title> and meta description
+   are plain text, so strip them there. */
+const plain = (s: string) => s.replace(/\[\[(.+?)\]\]/g, '$1');
+---
+
+<Base
+  lang={lang}
+  title={plain(topic[lang].name)}
+  description={plain(topic[lang].body)}
+>
+  <div class="container">
+    <SectionIntro
+      overline={c.topics.title}
+      title={topic[lang].name}
+      intro={topic[lang].body}
+      level={1}
+      linkHref={localizePath('/topics', lang)}
+      linkLabel={c.common.allTopics}
+    />
+
+    {entries.length > 0 ? (
+      <EntryList entries={entries} lang={lang} headingLevel={2} class="tpd__list" />
+    ) : (
+      <p class="tpd__empty">{c.topics.empty}</p>
+    )}
+
+    <div class="tpd__cta">
+      <NewsletterCTA lang={lang} placement={`topic-${topic.id}`} variant="plain" />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .tpd__list { margin-top: var(--atc-space-10); }
+  .tpd__empty {
+    margin: var(--atc-space-10) 0 0;
+    padding: var(--atc-space-10);
+    border: 1px dashed var(--adel-border-strong);
+    border-radius: var(--adel-radius-panel);
+    text-align: center;
+    color: var(--adel-text-secondary);
+  }
+  .tpd__cta { margin-top: var(--atc-space-20); }
+</style>

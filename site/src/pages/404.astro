@@ -1,28 +1,94 @@
 ---
+/* 404 (§18 "404 / Empty states").
+   Cloudflare serves one 404 document for the whole site, so this page cannot
+   know which language the visitor was browsing. It answers in both rather than
+   guessing — the English block first because English is the default locale,
+   with the Arabic block directly beneath it and correctly marked up so a
+   screen reader switches voice for it. */
+
 import Base from '../layouts/Base.astro';
 import Button from '../components/Button.astro';
+import Divider from '../components/editorial/Divider.astro';
+import { COPY } from '../copy';
+import { localizePath } from '../i18n';
+
+const en = COPY.en;
+const ar = COPY.ar;
 ---
 
-<Base title="Page not found" description="That page does not exist.">
-  <section class="container nf">
-    <div class="stack">
-      <span class="overline">404</span>
-      <h1 class="h-display">That page does not exist</h1>
-      <p class="lede">
-        It may have moved, or the link may be wrong. The guides and the Playground are both
-        one click away.
-      </p>
-      <div class="row">
-        <Button variant="secondary" size="md" href="/">Back to home</Button>
-        <Button variant="ghost" size="md" href="/guides">Browse guides</Button>
+<Base lang="en" title={en.notFound.title} description={en.notFound.body} noindex>
+  <div class="container nf">
+    <span class="nf__code nums" aria-hidden="true">404</span>
+
+    <section class="nf__block" lang="en" dir="ltr">
+      <h1 class="nf__title">{en.notFound.title}</h1>
+      <p class="nf__body">{en.notFound.body}</p>
+      <div class="nf__actions">
+        <Button variant="secondary" size="md" href="/">{en.common.backHome}</Button>
+        <Button variant="ghost" size="md" href="/guides/">{en.notFound.guidesCta}</Button>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <div class="nf__rule"><Divider /></div>
+
+    <section class="nf__block" lang="ar" dir="rtl">
+      <h2 class="nf__title nf__title--ar">{ar.notFound.title}</h2>
+      <p class="nf__body">{ar.notFound.body}</p>
+      <div class="nf__actions">
+        <Button variant="secondary" size="md" href={localizePath('/', 'ar')}>
+          {ar.common.backHome}
+        </Button>
+        <Button variant="ghost" size="md" href={localizePath('/guides', 'ar')}>
+          {ar.notFound.guidesCta}
+        </Button>
+      </div>
+    </section>
+  </div>
 </Base>
 
 <style>
   .nf {
     max-width: 640px;
-    padding-block: 96px;
+    padding-block: var(--atc-space-16) var(--atc-space-24);
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-6);
   }
+  .nf__code {
+    font-family: var(--adel-font-mono);
+    font-size: var(--adel-text-sm);
+    letter-spacing: 0.12em;
+    color: var(--adel-text-tertiary);
+  }
+  .nf__block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-4);
+    align-items: flex-start;
+  }
+  .nf__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+  }
+  .nf__title--ar {
+    letter-spacing: normal;
+    line-height: 1.4;
+  }
+  .nf__body {
+    margin: 0;
+    font-size: var(--adel-text-lg);
+    line-height: 1.65;
+    color: var(--adel-text-secondary);
+  }
+  .nf__actions {
+    display: flex;
+    gap: var(--atc-space-3);
+    flex-wrap: wrap;
+  }
+  .nf__rule { margin-block: var(--atc-space-6); width: 100%; }
 </style>

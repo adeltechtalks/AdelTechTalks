@@ -1,0 +1,189 @@
+---
+/* Prose — the long-form reading container.
+
+   Every rule here is about reading rather than styling: one measure, one
+   rhythm, and headings that are clearly subordinate to the page title. Markdown
+   bodies render inside it, so the selectors are :global.
+
+   RTL is handled by logical properties throughout — there is no `left` or
+   `right` anywhere in this file, which is what makes the Arabic article work
+   without a second stylesheet. */
+
+interface Props {
+  /* `wide` relaxes the measure for pages that mix text with media. */
+  width?: 'reading' | 'wide';
+  class?: string;
+}
+
+const { width = 'reading', class: className } = Astro.props;
+---
+
+<div class:list={['prose', `prose--${width}`, className]}>
+  <slot />
+</div>
+
+<style>
+  .prose {
+    font-size: var(--adel-text-base);
+    line-height: var(--adel-leading-body);
+    color: var(--adel-text-primary);
+  }
+  .prose--reading {
+    max-width: var(--adel-measure);
+  }
+  .prose--wide {
+    max-width: 82ch;
+  }
+
+  /* ---- headings ---- */
+  .prose :global(h2) {
+    font-family: var(--adel-font-display);
+    font-size: clamp(24px, 2.8vw, 30px);
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-text-primary);
+    margin: var(--atc-space-12) 0 var(--atc-space-4);
+    text-wrap: balance;
+  }
+  .prose :global(h3) {
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-xl);
+    line-height: 1.35;
+    font-weight: 600;
+    margin: var(--atc-space-10) 0 var(--atc-space-3);
+  }
+  .prose :global(h4) {
+    font-size: var(--adel-text-lg);
+    font-weight: 600;
+    margin: var(--atc-space-8) 0 var(--atc-space-2);
+  }
+  .prose :global(h2:first-child),
+  .prose :global(h3:first-child) {
+    margin-block-start: 0;
+  }
+
+  /* ---- body ---- */
+  .prose :global(p) {
+    margin: 0 0 var(--atc-space-6);
+  }
+  .prose :global(a) {
+    color: var(--adel-text-link);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .prose :global(a:hover) {
+    color: var(--adel-text-link-hover);
+  }
+  .prose :global(strong) {
+    font-weight: 600;
+  }
+
+  /* ---- lists: logical padding so RTL indents from the correct edge ---- */
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 0 0 var(--atc-space-6);
+    padding-inline-start: var(--atc-space-6);
+    padding-inline-end: 0;
+  }
+  .prose :global(li) {
+    margin-bottom: var(--atc-space-2);
+  }
+  .prose :global(li::marker) {
+    color: var(--adel-text-tertiary);
+  }
+
+  /* ---- quotes ---- */
+  .prose :global(blockquote) {
+    margin: var(--atc-space-8) 0;
+    padding: var(--atc-space-2) 0 var(--atc-space-2) var(--atc-space-6);
+    padding-inline-start: var(--atc-space-6);
+    padding-inline-end: 0;
+    border-inline-start: 3px solid var(--adel-signature-blue);
+    color: var(--adel-text-secondary);
+    font-size: var(--adel-text-lg);
+  }
+  .prose :global(blockquote p:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* ---- code: always an LTR run, in either language ---- */
+  .prose :global(code) {
+    font-family: var(--adel-font-mono);
+    font-size: 0.88em;
+    background: var(--adel-surface-sunken);
+    padding: 2px 6px;
+    border-radius: var(--adel-radius-inline);
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+  .prose :global(pre) {
+    background: var(--adel-surface-inverse);
+    color: var(--adel-text-inverse);
+    padding: var(--atc-space-5);
+    border-radius: var(--adel-radius-panel);
+    overflow-x: auto;
+    margin: 0 0 var(--atc-space-6);
+    direction: ltr;
+    text-align: start;
+    font-size: var(--adel-text-sm);
+    line-height: 1.6;
+  }
+  .prose :global(pre code) {
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
+
+  /* ---- media ---- */
+  .prose :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--adel-radius-media);
+    margin: var(--atc-space-8) 0;
+  }
+  .prose :global(figure) {
+    margin: var(--atc-space-8) 0;
+  }
+  .prose :global(figcaption) {
+    font-size: var(--adel-text-sm);
+    color: var(--adel-text-secondary);
+    margin-top: var(--atc-space-2);
+  }
+  .prose :global(hr) {
+    border: 0;
+    height: 1px;
+    background: var(--adel-border-hairline);
+    margin: var(--atc-space-12) 0;
+  }
+
+  /* ---- tables scroll rather than break the measure ---- */
+  .prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 var(--atc-space-6);
+    font-size: var(--adel-text-sm);
+  }
+  .prose :global(th),
+  .prose :global(td) {
+    text-align: start;
+    padding: var(--atc-space-3);
+    border-bottom: 1px solid var(--adel-border-hairline);
+  }
+  .prose :global(th) {
+    font-weight: 600;
+    color: var(--adel-text-primary);
+  }
+
+  /* ---- Arabic long-form ---- */
+  [lang='ar'] .prose,
+  .prose:lang(ar) {
+    line-height: 1.9;
+  }
+  [lang='ar'] .prose :global(h2),
+  [lang='ar'] .prose :global(h3) {
+    letter-spacing: normal;
+    line-height: 1.5;
+  }
+</style>

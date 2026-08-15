@@ -1,0 +1,91 @@
+---
+/* Topics index (§18). The same six threads as the homepage, with counts. */
+
+import Base from '../../layouts/Base.astro';
+import SectionIntro from '../editorial/SectionIntro.astro';
+import Icon from '../Icon.astro';
+import Rich from '../Rich.astro';
+import { topics } from '../../site.config';
+import { countByTopic } from '../../lib/content';
+import { useCopy } from '../../copy';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = useCopy(lang);
+const counts = await countByTopic(lang);
+---
+
+<Base lang={lang} title={c.topics.title} description={c.topics.intro}>
+  <div class="container">
+    <SectionIntro overline={c.topics.title} title={c.explore.title} intro={c.topics.intro} level={1} />
+
+    <ul class="tp__list">
+      {topics.map((t) => (
+        <li class="tp__item">
+          <a class="tp__link" href={localizePath(`/topics/${t.id}`, lang)}>
+            <span class="tp__icon" aria-hidden="true"><Icon name={t.icon} size="md" /></span>
+            <span class="tp__text">
+              <Rich text={t[lang].name} as="h2" class="tp__name" />
+              <Rich text={t[lang].body} as="span" class="tp__body" />
+            </span>
+            <span class="tp__count nums">{c.topics.countLabel(counts[t.id] ?? 0)}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .tp__list {
+    list-style: none;
+    margin: var(--atc-space-10) 0 0;
+    padding: 0;
+    border-top: 1px solid var(--adel-border-hairline);
+  }
+  .tp__item { border-bottom: 1px solid var(--adel-border-hairline); }
+  .tp__link {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-5);
+    padding: var(--atc-space-6) 0;
+    text-decoration: none;
+    color: inherit;
+  }
+  .tp__icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    border-radius: var(--adel-radius-control);
+    background: var(--adel-surface-tint);
+    color: var(--adel-signature-blue);
+  }
+  .tp__text { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+  .tp__name {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-lg);
+    font-weight: 600;
+    color: var(--adel-text-primary);
+  }
+  .tp__link:hover .tp__name { color: var(--adel-text-link); }
+  .tp__body {
+    font-size: var(--adel-text-sm);
+    line-height: 1.6;
+    color: var(--adel-text-secondary);
+    max-width: 60ch;
+  }
+  .tp__count {
+    font-family: var(--adel-font-mono);
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-tertiary);
+    white-space: nowrap;
+  }
+  @media (max-width: 599px) {
+    .tp__link { align-items: flex-start; gap: var(--atc-space-4); }
+    .tp__count { display: none; }
+  }
+</style>

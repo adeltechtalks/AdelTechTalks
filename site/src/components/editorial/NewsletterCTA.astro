@@ -1,0 +1,127 @@
+---
+/* NewsletterCTA — the newsletter as an editorial band rather than a card.
+
+   §16's "Fewer Cards" applies here more than anywhere: the old treatment was a
+   white card floating on a tinted page, which made the most important
+   conversion on the site look like one more list item. This is a full-width
+   tinted band with real air around it, and it is the only thing on its row. */
+
+import NewsletterForm from '../NewsletterForm.astro';
+import Rich from '../Rich.astro';
+import { useCopy } from '../../copy';
+import { DEFAULT_LANG, type Lang } from '../../i18n';
+
+interface Props {
+  lang?: Lang;
+  placement?: string;
+  /* `tint` for the homepage band, `plain` at the end of an article where a
+     second tinted surface in a row would be noise. */
+  variant?: 'tint' | 'plain';
+  title?: string;
+  intro?: string;
+  class?: string;
+}
+
+const {
+  lang = DEFAULT_LANG,
+  placement = 'page',
+  variant = 'tint',
+  title,
+  intro,
+  class: className,
+} = Astro.props;
+
+const c = useCopy(lang);
+---
+
+<section class:list={['ncta', `ncta--${variant}`, className]} aria-labelledby={`ncta-${placement}`}>
+  <div class="ncta__inner">
+    <div class="ncta__text">
+      <h2 class="ncta__title" id={`ncta-${placement}`}>
+        <Rich text={title ?? c.newsletter.title} />
+      </h2>
+      <Rich text={intro ?? c.newsletter.intro} as="p" class="ncta__intro" />
+    </div>
+    <div class="ncta__form">
+      <NewsletterForm lang={lang} placement={placement} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .ncta__inner {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: var(--atc-space-12);
+    align-items: start;
+    padding: var(--atc-space-12);
+    border-radius: var(--adel-radius-panel);
+  }
+  .ncta--tint .ncta__inner {
+    background: var(--adel-surface-tint);
+    color: var(--adel-text-on-tint);
+  }
+  .ncta--plain .ncta__inner {
+    background: var(--adel-surface-raised);
+    border: 1px solid var(--adel-border-hairline);
+  }
+
+  .ncta__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-4);
+  }
+  .ncta__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(24px, 3vw, 32px);
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    text-wrap: balance;
+    color: inherit;
+  }
+  [lang='ar'] .ncta__title {
+    letter-spacing: normal;
+    line-height: 1.45;
+  }
+  .ncta__intro {
+    margin: 0;
+    font-size: var(--adel-text-lg);
+    line-height: 1.6;
+    /* On Ice Blue, Slate does not clear 4.5:1 — inherit the Deep Blue instead
+       and drop its weight optically rather than its contrast. */
+    color: inherit;
+    opacity: 0.88;
+  }
+  .ncta__form {
+    padding-block-start: var(--atc-space-2);
+  }
+  /* On Ice Blue the grey note tones fall under 3:1. Inside this band every
+     piece of text inherits Deep Blue and is separated by size and opacity,
+     never by dropping contrast. */
+  .ncta--tint .ncta__form :global(.nl__note) {
+    color: var(--adel-text-on-tint);
+    opacity: 0.78;
+  }
+  .ncta--tint .ncta__form :global(.nl__note--fine) {
+    opacity: 0.62;
+  }
+
+  @media (max-width: 1023px) {
+    .ncta__inner {
+      grid-template-columns: 1fr;
+      gap: var(--atc-space-8);
+      padding: var(--atc-space-8);
+    }
+  }
+  @media (max-width: 767px) {
+    .ncta__inner {
+      padding: var(--atc-space-6);
+      border-radius: var(--adel-radius-card);
+    }
+    .ncta__intro {
+      font-size: var(--adel-text-base);
+    }
+  }
+</style>

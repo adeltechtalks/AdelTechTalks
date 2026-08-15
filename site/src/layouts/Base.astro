@@ -1,84 +1,140 @@
 ---
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import ArabicDisplayFont from '../components/ArabicDisplayFont.astro';
 import { site } from '../site.config';
+import { useCopy } from '../copy';
+import { DEFAULT_LANG, LANG_DIR, LANG_TAG, alternates, neutralPath, type Lang } from '../i18n';
 import '../styles/tokens.css';
 import '../styles/app.css';
 
 interface Props {
   title?: string;
   description?: string;
+  lang?: Lang;
   /* Set false on pages that carry their own full-bleed hero */
   padded?: boolean;
+  /* Absolute or root-relative image for social previews (§27) */
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  /* Article-only metadata */
+  publishedTime?: string;
+  modifiedTime?: string;
+  /* Keep a page out of the index — used by nothing today, here for later. */
+  noindex?: boolean;
 }
 
-const { title, description = site.description, padded = true } = Astro.props;
+const {
+  title,
+  lang = DEFAULT_LANG,
+  description = lang === 'ar' ? site.descriptionAr : site.description,
+  padded = true,
+  ogImage = '/og/adel-default.png',
+  ogType = 'website',
+  publishedTime,
+  modifiedTime,
+  noindex = false,
+} = Astro.props;
+
+const c = useCopy(lang);
+const dir = LANG_DIR[lang];
 
 const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
-const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
+const base = Astro.site ?? new URL(site.url);
+const canonical = new URL(Astro.url.pathname, base).href;
+const ogImageUrl = new URL(ogImage, base).href;
+
+/* Every language version of THIS page, plus x-default pointing at English.
+   Without these, Google treats /ar/about as a near-duplicate of /about and
+   picks one to index (§26). */
+const langAlternates = alternates(Astro.url.pathname, base.href);
+const xDefault = new URL(neutralPath(Astro.url.pathname), base).href;
+
+/* §32 — Cairo is the Arabic display face. English pages never need it, so they
+   never ask for it. The other three carry both scripts and both pages use them.
+   Weight ranges are narrowed to what the site actually sets. */
+const families = [
+  'family=Montserrat:wght@600..800',
+  'family=Readex+Pro:wght@300..600',
+  'family=JetBrains+Mono:wght@400..500',
+  ...(lang === 'ar' ? ['family=Cairo:wght@700..900'] : []),
+];
+const fontHref = `https://fonts.googleapis.com/css2?${families.join('&')}&display=swap`;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={LANG_TAG[lang]} dir={dir}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    {/* Bilingual alternates (§26) */}
+    {langAlternates.map((alt) => (
+      <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={xDefault} />
 
     <link rel="icon" type="image/png" sizes="32x32" href="/logo/favicon-32.png" />
     <link rel="apple-touch-icon" href="/logo/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
-    <!-- Social sharing -->
-    <meta property="og:type" content="website" />
+    {/* ---- Social sharing (§27) ---- */}
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={lang === 'ar' ? 'ar_AR' : 'en_US'} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:alt" content={fullTitle} />
+    {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
 
-    <!-- Pages can add their own head tags — the badge pages use this for og:image -->
+    {/* Pages can add their own head tags — badge pages use this for og:image */}
     <slot name="head" />
 
-    <!-- TY v1.2 — the four families, no fifth. Loaded from Google Fonts;
-         see README "Substitutions" for the self-hosting caveat. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&family=JetBrains+Mono:wght@100..800&family=Montserrat:wght@100..900&family=Readex+Pro:wght@160..700&display=swap"
-    />
+    <link rel="stylesheet" href={fontHref} />
+    {/* §9 — emitted only when the licensed Ghorab file is present. */}
+    {lang === 'ar' && <ArabicDisplayFont />}
   </head>
 
   <body>
-    <a href="#main" class="skip">Skip to content</a>
-    <Header />
+    <a href="#main" class="skip">{c.common.skip}</a>
+    <Header lang={lang} />
     <main id="main" class:list={[padded && 'main--padded']}>
       <slot />
     </main>
-    <Footer />
+    <Footer lang={lang} />
   </body>
 </html>
 
 <style>
   .skip {
     position: absolute;
-    left: -9999px;
+    inset-inline-start: -9999px;
     top: 0;
-    z-index: 999;
+    z-index: var(--atc-z-4);
     padding: 12px 20px;
-    background: var(--atc-surface-raised);
-    border-radius: var(--atc-radius-control);
+    background: var(--adel-surface-raised);
+    color: var(--adel-text-primary);
+    border-radius: var(--adel-radius-control);
+    box-shadow: var(--adel-elevation-2);
   }
   .skip:focus {
-    left: var(--atc-space-4);
+    inset-inline-start: var(--atc-space-4);
     top: var(--atc-space-4);
   }
   .main--padded {
-    padding-top: var(--atc-space-8);
+    padding-top: var(--atc-space-10);
   }
 </style>

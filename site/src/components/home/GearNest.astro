@@ -1,0 +1,104 @@
+---
+/* GearNest cross-link (§5, §14)
+   -----------------------------------------------------------------------------
+   "GearNest should be linked from Adel's personal ecosystem but should not
+   visually merge into Adel's identity."
+
+   That is a design constraint with a clear consequence: this band uses NONE of
+   Adel's brand colour. It is graphite and warm white, it is separated from the
+   sections around it by full-width rules, and it names itself as a separate
+   thing in the eyebrow before it names itself at all.
+
+   Nothing here is invented about GearNest's own branding — when GearNest has a
+   logo and a palette of its own, they belong in this one component. */
+
+import Rich from '../Rich.astro';
+import { projects } from '../../site.config';
+import { useCopy } from '../../copy';
+import type { Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+const gearnest = projects.find((p) => p.id === 'gearnest');
+---
+
+{gearnest && (
+  <section class="gn">
+    <div class="container gn__inner">
+      <span class="gn__eyebrow">{c.gearnest.eyebrow}</span>
+      <Rich text={c.gearnest.title} as="h2" class="gn__title" />
+      <Rich text={c.gearnest.body} as="p" class="gn__body" />
+      <a class="gn__cta" href={gearnest.url} rel="noopener" target="_blank">
+        <Rich text={c.gearnest.cta} />
+        <span class="gn__arrow" aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </section>
+)}
+
+<style>
+  .gn {
+    margin-top: var(--atc-space-24);
+    padding-block: var(--atc-space-16);
+    background: var(--adel-surface-inverse);
+    color: var(--adel-text-inverse);
+  }
+  .gn__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--atc-space-4);
+    max-width: 900px;
+  }
+  .gn__eyebrow {
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    opacity: 0.65;
+  }
+  [lang='ar'] .gn__eyebrow { text-transform: none; letter-spacing: normal; }
+  .gn__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(30px, 4vw, 44px);
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: inherit;
+  }
+  [lang='ar'] .gn__title { letter-spacing: normal; line-height: 1.35; }
+  .gn__body {
+    margin: 0;
+    font-size: var(--adel-text-lg);
+    line-height: 1.65;
+    max-width: 56ch;
+    opacity: 0.82;
+  }
+  .gn__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    margin-top: var(--atc-space-3);
+    height: var(--atc-control-lg);
+    padding-inline: var(--atc-space-6);
+    border-radius: var(--adel-radius-control);
+    /* Reverse treatment: white on graphite. Not Signature Blue — Adel's brand
+       colour does not appear on GearNest's surface. */
+    background: var(--adel-white);
+    color: var(--adel-graphite);
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .gn__cta:hover { background: var(--adel-soft-gray); }
+  [dir='rtl'] .gn__arrow { display: inline-block; transform: scaleX(-1); }
+
+  @media (max-width: 767px) {
+    .gn { margin-top: var(--atc-space-16); padding-block: var(--atc-space-12); }
+  }
+</style>
