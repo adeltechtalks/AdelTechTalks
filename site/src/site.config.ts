@@ -246,7 +246,13 @@ export const retrieval = {
 export const projects = [
   {
     id: 'gearnest',
-    url: 'https://gearnest.com',
+    /* Canonical GearNest domain. Every GearNest link on this site resolves
+       from here — the homepage band, the series page's case-study panel and
+       the footer's separate-brands row all read `projects[].url`, so the
+       domain is set once. The case study's own `external.href` in
+       src/content/use-cases/ is the only other place it appears, because that
+       one belongs to the content rather than to this config. */
+    url: 'https://gearnest.ai',
     separate: true,
     status: 'building' as 'building' | 'live' | 'exploring',
     /* Phase 1.1 — GearNest is the first real-world case study for the Vibe

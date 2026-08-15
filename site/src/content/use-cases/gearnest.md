@@ -11,7 +11,7 @@ stage: building
 outcome: 'Being built in public. Every step is published here as it happens, including the ones that did not work.'
 external:
   label: 'Visit GearNest'
-  href: 'https://gearnest.com'
+  href: 'https://gearnest.ai'
 preview: 'GearNest is a separate brand with its own product, voice and roadmap. It is also the place where one question gets an honest answer: can I build a real business this way?'
 featured: true
 
