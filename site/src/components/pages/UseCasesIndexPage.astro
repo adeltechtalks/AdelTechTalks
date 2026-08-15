@@ -1,0 +1,103 @@
+---
+/* Use Cases index (Phase 1.1)
+   -----------------------------------------------------------------------------
+   Same editorial list as Guides — §16's "fewer cards" applies here too. What is
+   different is the filter row: Use Cases are browsed by what the reader is
+   trying to do (the topic) and by where the thing got to (the stage), and both
+   are plain links to real, indexable URLs rather than client-side state. */
+
+import Base from '../../layouts/Base.astro';
+import EntryList from '../editorial/EntryList.astro';
+import SectionIntro from '../editorial/SectionIntro.astro';
+import NewsletterCTA from '../editorial/NewsletterCTA.astro';
+import Rich from '../Rich.astro';
+import { topics } from '../../site.config';
+import { getUseCases } from '../../lib/content';
+import { flagshipSeries, seriesPath } from '../../lib/series';
+import { useCopy } from '../../copy';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+const entries = await getUseCases(lang);
+const used = new Set(entries.map((e) => e.topic).filter(Boolean));
+const flagship = flagshipSeries();
+---
+
+<Base lang={lang} title={c.useCases.title} description={c.useCases.indexIntro}>
+  <div class="container">
+    <SectionIntro
+      overline={c.useCases.title}
+      title={c.useCases.indexTitle}
+      intro={c.useCases.indexIntro}
+      level={1}
+    />
+
+    {used.size > 0 && (
+      <nav class="uc__filters" aria-label={c.topics.title}>
+        {topics
+          .filter((t) => used.has(t.id))
+          .map((t) => (
+            <a class="uc__filter" href={localizePath(`/topics/${t.id}`, lang)}>
+              <Rich text={t[lang].name} />
+            </a>
+          ))}
+        {flagship && (
+          <a class="uc__filter uc__filter--series" href={localizePath(seriesPath(flagship.id), lang)}>
+            <Rich text={flagship[lang].name} />
+          </a>
+        )}
+      </nav>
+    )}
+
+    {entries.length > 0 ? (
+      <EntryList entries={entries} lang={lang} showKind={false} headingLevel={2} class="uc__list" />
+    ) : (
+      <p class="uc__empty">{c.useCases.empty}</p>
+    )}
+
+    <div class="uc__cta">
+      <NewsletterCTA lang={lang} placement="use-cases" />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .uc__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-2);
+    margin: var(--atc-space-8) 0 var(--atc-space-6);
+  }
+  .uc__filter {
+    padding: 6px 14px;
+    border-radius: var(--adel-radius-pill);
+    border: 1px solid var(--adel-border-hairline);
+    font-size: var(--adel-text-sm);
+    color: var(--adel-text-secondary);
+    text-decoration: none;
+  }
+  .uc__filter:hover {
+    border-color: var(--adel-border-brand);
+    color: var(--adel-text-link);
+    background: var(--adel-surface-tint);
+  }
+  .uc__filter--series {
+    border-color: var(--adel-border-brand);
+    color: var(--adel-text-link);
+  }
+  .uc__list { margin-top: var(--atc-space-4); }
+  .uc__empty {
+    margin: var(--atc-space-10) 0 0;
+    padding: var(--atc-space-10);
+    border: 1px dashed var(--adel-border-strong);
+    border-radius: var(--adel-radius-panel);
+    text-align: center;
+    color: var(--adel-text-secondary);
+  }
+  .uc__cta { margin-top: var(--atc-space-20); }
+</style>

@@ -1,0 +1,329 @@
+---
+/* =============================================================================
+   Learn Hub (Phase 1.1) — the front door to the whole library
+   =============================================================================
+   One page that answers "what is here and which bit do I want". Guides, Use
+   Cases, Videos, Prompts, Topics and the Playground are all one click from
+   here, which is what lets the header stay at five items while the ecosystem
+   grows underneath it.
+
+   The list it renders is `ecosystem` in site.config.ts, in order. A surface
+   with `status: 'building'` is NAMED but NOT LINKED — Courses is the only one
+   today. That is deliberate: §22 forbids exposing unfinished product routes,
+   and a card that links nowhere is more honest than a card that links to an
+   empty page. The interest signal goes to the newsletter, which already exists
+   to carry it.
+   ========================================================================== */
+
+import Base from '../../layouts/Base.astro';
+import SectionIntro from '../editorial/SectionIntro.astro';
+import NewsletterCTA from '../editorial/NewsletterCTA.astro';
+import Divider from '../editorial/Divider.astro';
+import EntryList from '../editorial/EntryList.astro';
+import Icon from '../Icon.astro';
+import Rich from '../Rich.astro';
+import { ecosystem } from '../../site.config';
+import { flagshipSeries, seriesPath } from '../../lib/series';
+import { getLatest, countByKind } from '../../lib/content';
+import { useCopy } from '../../copy';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+
+const latest = await getLatest(lang, 6);
+const counts = await countByKind(lang);
+const flagship = flagshipSeries();
+
+/* Which Entry kind each ecosystem surface counts. Topics and the Playground do
+   not have a count of their own — they are ways in, not content types. */
+const COUNTED: Partial<Record<string, string>> = {
+  guides: 'guide',
+  useCases: 'use-case',
+  videos: 'video',
+  prompts: 'prompt',
+};
+
+const cards = ecosystem.map((item) => {
+  const kind = COUNTED[item.key];
+  return {
+    ...item,
+    copy: c.ecosystem[item.key as keyof typeof c.ecosystem],
+    href: item.path ? localizePath(item.path, lang) : null,
+    count: kind ? (counts[kind] ?? 0) : 0,
+  };
+});
+---
+
+<Base lang={lang} title={c.learn.title} description={c.learn.pageIntro}>
+  <div class="container">
+    <SectionIntro
+      overline={c.learn.title}
+      title={c.learn.pageTitle}
+      intro={c.learn.pageIntro}
+      level={1}
+    />
+
+    {/* ---- the flagship series, first, because it is the current work ---- */}
+    {flagship && (
+      <a class="lh__series" href={localizePath(seriesPath(flagship.id), lang)}>
+        <span class="lh__seriesLabel">
+          <span class="lh__dot" aria-hidden="true"></span>
+          {c.series.label} · {c.series.statusRunning}
+        </span>
+        <Rich text={flagship[lang].question} as="h2" class="lh__seriesQ" />
+        <Rich text={flagship[lang].body} as="p" class="lh__seriesBody" />
+        <span class="lh__seriesCta">
+          <Rich text={c.series.readSeries} />
+          <span class="lh__arrow" aria-hidden="true">→</span>
+        </span>
+      </a>
+    )}
+
+    {/* ---- the library ---- */}
+    <section class="lh__section" aria-labelledby="lh-eco">
+      <h2 class="lh__h2" id="lh-eco">{c.learn.ecosystemTitle}</h2>
+
+      <ul class="lh__grid">
+        {cards.map((card) => {
+          const Inner = card.href ? 'a' : 'div';
+          return (
+            <li class="lh__item">
+              <Inner
+                class:list={['lh__card', !card.href && 'lh__card--soon']}
+                href={card.href ?? undefined}
+                aria-disabled={card.href ? undefined : 'true'}
+              >
+                <span class="lh__icon" aria-hidden="true"><Icon name={card.icon} size="md" /></span>
+                <Rich text={card.copy.name} as="h3" class="lh__name" />
+                <Rich text={card.copy.body} as="p" class="lh__body" />
+                <span class="lh__foot">
+                  {card.status === 'building' ? (
+                    <span class="lh__soon">
+                      <span class="lh__dot" aria-hidden="true"></span>
+                      {c.common.comingSoon}
+                    </span>
+                  ) : card.count > 0 ? (
+                    <span class="lh__count nums">{c.topics.countLabel(card.count)}</span>
+                  ) : null}
+                </span>
+              </Inner>
+            </li>
+          );
+        })}
+      </ul>
+
+      {/* Courses is named above but goes nowhere, so the explanation of why
+          lives here rather than inside a card that cannot be clicked. */}
+      <p class="lh__note">{c.courses.note}</p>
+    </section>
+
+    {latest.length > 0 && (
+      <section class="lh__section" aria-labelledby="lh-latest">
+        <div class="lh__rule"><Divider /></div>
+        <SectionIntro
+          title={c.latest.title}
+          intro={c.latest.intro}
+          linkHref={localizePath('/topics', lang)}
+          linkLabel={c.common.allTopics}
+          class="lh__latestIntro"
+        />
+        <EntryList entries={latest} lang={lang} class="lh__list" />
+      </section>
+    )}
+
+    <div class="lh__cta">
+      <NewsletterCTA lang={lang} placement="learn" />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .lh__section { margin-top: var(--atc-space-20); }
+  .lh__rule { margin-bottom: var(--atc-space-10); }
+  .lh__h2 {
+    margin: 0 0 var(--atc-space-6);
+    font-family: var(--adel-font-display);
+    font-size: clamp(24px, 3vw, 30px);
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-text-primary);
+  }
+  [lang='ar'] .lh__h2 { letter-spacing: normal; line-height: 1.45; }
+
+  /* ---- the series band ---------------------------------------------------
+     Tinted rather than filled: it is the loudest thing on the page, and the
+     page's one primary action still belongs to the series link. */
+  .lh__series {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--atc-space-3);
+    margin-top: var(--atc-space-12);
+    padding: var(--atc-space-10);
+    border: 1px solid var(--adel-border-brand);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-tint);
+    text-decoration: none;
+    color: inherit;
+  }
+  .lh__series:hover { background: var(--adel-ice-blue); border-color: var(--adel-deep-blue); }
+  .lh__seriesLabel {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    color: var(--adel-text-on-tint);
+  }
+  [lang='ar'] .lh__seriesLabel { text-transform: none; letter-spacing: normal; }
+  /* The one Fresh Mint moment on this page — it marks the thing that is
+     genuinely live right now, and it is a dot, not a fill (§6, ~3% ceiling). */
+  .lh__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--adel-accent);
+    flex: 0 0 auto;
+  }
+  .lh__seriesQ {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(24px, 3.4vw, 34px);
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-deep-blue);
+    max-width: 24ch;
+  }
+  [lang='ar'] .lh__seriesQ { letter-spacing: normal; line-height: 1.4; }
+  .lh__seriesBody {
+    margin: 0;
+    font-size: var(--adel-text-base);
+    line-height: 1.65;
+    color: var(--adel-text-on-tint);
+    max-width: 60ch;
+  }
+  .lh__seriesCta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    margin-top: var(--atc-space-2);
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    color: var(--adel-deep-blue);
+  }
+  .lh__series:hover .lh__seriesCta { text-decoration: underline; }
+  [dir='rtl'] .lh__arrow { display: inline-block; transform: scaleX(-1); }
+
+  /* ---- the library grid ---- */
+  /* Seven cards in a three-column grid leaves two empty cells on the last row.
+     The usual "1px gap over a coloured container" trick paints those empty
+     cells grey, which reads as a broken tile rather than as the end of a list.
+     So the separator lives on each CARD as a hairline ring instead: with a 1px
+     gap the rings of neighbouring cards meet to form the same single rule, and
+     where there is no card there is simply nothing. */
+  .lh__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--adel-surface-canvas);
+    border: 1px solid var(--adel-border-hairline);
+    border-radius: var(--adel-radius-panel);
+    overflow: hidden;
+  }
+  .lh__item {
+    background: var(--adel-surface-canvas);
+    box-shadow: 0 0 0 1px var(--adel-border-hairline);
+  }
+  .lh__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-2);
+    height: 100%;
+    box-sizing: border-box;
+    padding: var(--atc-space-6);
+    text-decoration: none;
+    color: inherit;
+    background: var(--adel-surface-canvas);
+    transition: background-color var(--atc-duration-fast) var(--atc-ease-move);
+  }
+  a.lh__card:hover { background: var(--adel-surface-tint); }
+  /* Not a link, and it must not pretend to be one: no hover, no pointer. */
+  .lh__card--soon { background: var(--adel-surface-sunken); cursor: default; }
+  .lh__icon {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    margin-bottom: var(--atc-space-2);
+    border-radius: var(--adel-radius-control);
+    background: var(--adel-surface-tint);
+    color: var(--adel-signature-blue);
+  }
+  .lh__card--soon .lh__icon {
+    background: var(--adel-white);
+    color: var(--adel-slate);
+  }
+  a.lh__card:hover .lh__icon { background: var(--adel-white); }
+  .lh__name {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-lg);
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--adel-text-primary);
+  }
+  .lh__body {
+    margin: 0;
+    font-size: var(--adel-text-sm);
+    line-height: 1.6;
+    color: var(--adel-text-secondary);
+  }
+  .lh__foot {
+    margin-top: auto;
+    padding-top: var(--atc-space-3);
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-tertiary);
+  }
+  .lh__count { font-family: var(--adel-font-mono); }
+  .lh__soon {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-weight: 600;
+    color: var(--adel-text-secondary);
+  }
+
+  .lh__note {
+    margin: var(--atc-space-5) 0 0;
+    font-size: var(--adel-text-sm);
+    line-height: 1.65;
+    color: var(--adel-text-secondary);
+    max-width: 68ch;
+  }
+
+  .lh__latestIntro { margin-bottom: var(--atc-space-6); }
+  .lh__cta { margin-top: var(--atc-space-20); }
+
+  @media (max-width: 1023px) {
+    .lh__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 599px) {
+    .lh__grid { grid-template-columns: 1fr; }
+    .lh__series { padding: var(--atc-space-6); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lh__card { transition: none; }
+  }
+</style>

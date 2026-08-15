@@ -14,8 +14,9 @@
 
 import Rich from '../Rich.astro';
 import { projects } from '../../site.config';
+import { findByHubSlug } from '../../lib/content';
 import { useCopy } from '../../copy';
-import type { Lang } from '../../i18n';
+import { type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
@@ -24,18 +25,42 @@ interface Props {
 const { lang } = Astro.props;
 const c = useCopy(lang);
 const gearnest = projects.find((p) => p.id === 'gearnest');
+
+/* Phase 1.1 — GearNest is the first Vibe Coding case study, so the band now
+   offers the case study as well as the business. The case study is the primary
+   move on this band because it is the one that stays on Adel's site; the link
+   out to GearNest itself stays secondary and unchanged in treatment.
+
+   Resolved rather than hard-coded: if the case study has not been written in
+   this language yet, the band renders exactly as it did before. */
+const caseStudy = gearnest?.caseStudy
+  ? await findByHubSlug('use-case', gearnest.caseStudy, lang)
+  : undefined;
 ---
 
 {gearnest && (
   <section class="gn">
     <div class="container gn__inner">
-      <span class="gn__eyebrow">{c.gearnest.eyebrow}</span>
+      <Rich text={c.gearnest.eyebrow} class="gn__eyebrow" />
       <Rich text={c.gearnest.title} as="h2" class="gn__title" />
       <Rich text={c.gearnest.body} as="p" class="gn__body" />
-      <a class="gn__cta" href={gearnest.url} rel="noopener" target="_blank">
-        <Rich text={c.gearnest.cta} />
-        <span class="gn__arrow" aria-hidden="true">↗</span>
-      </a>
+      <div class="gn__actions">
+        {caseStudy && (
+          <a class="gn__cta" href={caseStudy.href}>
+            <Rich text={c.gearnest.caseStudyCta} />
+            <span class="gn__arrow" aria-hidden="true">→</span>
+          </a>
+        )}
+        <a
+          class:list={['gn__cta', caseStudy && 'gn__cta--alt']}
+          href={gearnest.url}
+          rel="noopener"
+          target="_blank"
+        >
+          <Rich text={c.gearnest.cta} />
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
     </div>
   </section>
 )}
@@ -79,11 +104,16 @@ const gearnest = projects.find((p) => p.id === 'gearnest');
     max-width: 56ch;
     opacity: 0.82;
   }
+  .gn__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-3);
+    margin-top: var(--atc-space-3);
+  }
   .gn__cta {
     display: inline-flex;
     align-items: center;
     gap: var(--atc-space-2);
-    margin-top: var(--atc-space-3);
     height: var(--atc-control-lg);
     padding-inline: var(--atc-space-6);
     border-radius: var(--adel-radius-control);
@@ -96,6 +126,17 @@ const gearnest = projects.find((p) => p.id === 'gearnest');
     text-decoration: none;
   }
   .gn__cta:hover { background: var(--adel-soft-gray); }
+  /* Secondary once there are two actions: outlined on graphite, still with no
+     Signature Blue anywhere on GearNest's surface (§5). */
+  .gn__cta--alt {
+    background: transparent;
+    color: var(--adel-white);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+  }
+  .gn__cta--alt:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--adel-white);
+  }
   [dir='rtl'] .gn__arrow { display: inline-block; transform: scaleX(-1); }
 
   @media (max-width: 767px) {

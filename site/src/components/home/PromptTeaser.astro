@@ -1,20 +1,22 @@
 ---
-/* Prompt Library teaser (§22)
+/* Prompt Library strip (§22, Phase 1.1)
    -----------------------------------------------------------------------------
-   §22: "Do not overbuild it during this migration… ensure the architecture does
-   not make it difficult to add later."
+   §22 said not to overbuild the Prompt Library "during this migration" and to
+   make sure the architecture did not make it hard to add later. Phase 1.1 is
+   later. This was a teaser pointing at the newsletter because there was no
+   /prompts route to point at; there is one now, with real prompts behind it,
+   so it points there.
 
-   So this is a teaser and nothing else. There is NO /prompts route, because
-   §22 also says not to "expose unfinished product routes publicly" — a link to
-   an empty product is worse than no link. The interest signal goes to the
-   newsletter, which is the surface that already exists to carry it.
+   The "in progress" badge is gone with it. It marked a thing that did not
+   exist yet, and leaving it on a live library would be inaccurate.
 
-   The route is already reserved in `nav` (phase 2) in site.config.ts. Turning
-   it on later is: build the page, change its phase to 1. */
+   The count is real. An empty library would render the strip with no count and
+   still link to a page that says so honestly, rather than claiming a number. */
 
 import Icon from '../Icon.astro';
 import Rich from '../Rich.astro';
 import Button from '../Button.astro';
+import { getPrompts } from '../../lib/content';
 import { useCopy } from '../../copy';
 import { localizePath, type Lang } from '../../i18n';
 
@@ -24,19 +26,19 @@ interface Props {
 
 const { lang } = Astro.props;
 const c = useCopy(lang);
+const count = (await getPrompts(lang)).length;
 ---
 
 <section class="container section">
   <div class="pt">
     <div class="pt__text">
-      <span class="pt__badge">
-        <span class="pt__dot" aria-hidden="true"></span>
-        {c.common.comingSoon}
-      </span>
+      {count > 0 && (
+        <span class="pt__badge nums">{c.topics.countLabel(count)}</span>
+      )}
       <Rich text={c.prompts.title} as="h2" class="pt__title" />
       <Rich text={c.prompts.intro} as="p" class="pt__body" />
       <div class="pt__action">
-        <Button variant="secondary" size="md" href={localizePath('/newsletter', lang)}>
+        <Button variant="secondary" size="md" href={localizePath('/prompts', lang)}>
           {c.prompts.cta}
         </Button>
       </div>
@@ -64,31 +66,12 @@ const c = useCopy(lang);
     gap: var(--atc-space-3);
     max-width: 56ch;
   }
-  /* The one Fresh Mint moment on the homepage. Mint marks the thing that is
-     genuinely new (§6, ~3% ceiling) — a dot and a word, nothing more. */
   .pt__badge {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--atc-space-2);
     align-self: flex-start;
+    font-family: var(--adel-font-mono);
     font-size: var(--adel-text-xs);
-    font-weight: 600;
-    letter-spacing: var(--adel-tracking-wide);
-    text-transform: uppercase;
-    color: var(--adel-text-secondary);
-  }
-  [lang='ar'] .pt__badge {
-    text-transform: none;
-    letter-spacing: normal;
-  }
-  .pt__dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--adel-accent);
-    /* The state is carried by the word as well as the colour — the dot alone
-       would be meaningless in greyscale. */
-    flex: 0 0 auto;
+    font-weight: 500;
+    color: var(--adel-text-tertiary);
   }
   .pt__title {
     margin: 0;

@@ -50,13 +50,45 @@ export function getLangFromUrl(url: URL): Lang {
 }
 
 /**
+ * Routes that exist in English only.
+ *
+ * The Playground's games, the account pages and the brand-partnership pages are
+ * authored in English and have no Arabic build. Before this list existed, the
+ * header on every Arabic page linked to /ar/playground/, /ar/login/,
+ * /ar/profile/ and /ar/work-with-me/ — four URLs that were never generated, so
+ * the Arabic site's navigation 404'd.
+ *
+ * Linking an Arabic reader to the English page is the honest behaviour: the
+ * page is real, it is simply in the other language, and the anchor says so with
+ * `lang`/`hreflang` (see isEnglishOnly's callers). Generating Arabic shells
+ * around English content would be worse — it would claim a translation that
+ * does not exist.
+ *
+ * Remove an entry the day that route gains an Arabic version. Nothing else has
+ * to change.
+ */
+const ENGLISH_ONLY = ['/playground', '/login', '/profile', '/work-with-me', '/contact', '/badge'];
+
+/** Is this route English-only, so an Arabic page must link out to English? */
+export function isEnglishOnly(path: string): boolean {
+  const clean = '/' + path.replace(/^\/+|\/+$/g, '');
+  return ENGLISH_ONLY.some((route) => clean === route || clean.startsWith(route + '/'));
+}
+
+/**
  * Take a language-neutral path (`/guides/`) and produce the path for `lang`.
  * Always returns a trailing slash, which is what the rest of the site uses and
  * what Cloudflare's static handler expects.
+ *
+ * English-only routes come back unprefixed in every language, because the
+ * prefixed URL does not exist.
  */
 export function localizePath(path: string, lang: Lang): string {
   const clean = '/' + path.replace(/^\/+|\/+$/g, '');
-  const base = lang === DEFAULT_LANG ? clean : `/${lang}${clean === '/' ? '' : clean}`;
+  const base =
+    lang === DEFAULT_LANG || isEnglishOnly(clean)
+      ? clean
+      : `/${lang}${clean === '/' ? '' : clean}`;
   return base.endsWith('/') ? base : base + '/';
 }
 
@@ -70,10 +102,17 @@ export function neutralPath(pathname: string): string {
   return stripped === '' ? '/' : stripped;
 }
 
-/** Every language version of the current page — for <link rel="alternate">. */
+/**
+ * Every language version of the current page — for <link rel="alternate">.
+ *
+ * An English-only route has exactly one version, so it gets one alternate.
+ * Advertising an hreflang for a URL that 404s is a worse signal to a search
+ * engine than advertising none at all (§26).
+ */
 export function alternates(pathname: string, siteUrl: string) {
   const neutral = neutralPath(pathname);
-  return LANGS.map((lang) => ({
+  const langs = isEnglishOnly(neutral) ? [DEFAULT_LANG] : LANGS;
+  return langs.map((lang) => ({
     lang,
     hreflang: LANG_TAG[lang],
     href: new URL(localizePath(neutral, lang), siteUrl).href,

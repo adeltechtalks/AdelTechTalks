@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import cloudflare from '@astrojs/cloudflare';
+import remarkTerms from './src/lib/remark-terms.mjs';
 
 // CHANGE ME if the domain ever changes. Used for the sitemap and share links.
 const SITE = 'https://adeltechtalks.com';
@@ -33,5 +34,11 @@ export default defineConfig({
         !/\/(login|profile|playground\/passport)\/$/.test(page),
     }),
   ],
+  markdown: {
+    // §11 — [[English term]] inside an Arabic Markdown body renders as a
+    // bidi-isolated LTR run, exactly as it does in copy.ts. Without this the
+    // brackets shipped to the reader.
+    remarkPlugins: [remarkTerms],
+  },
   build: { inlineStylesheets: 'auto' },
 });

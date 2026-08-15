@@ -1,0 +1,448 @@
+---
+/* Prompt detail (Phase 1.1)
+   -----------------------------------------------------------------------------
+   The prompt itself is the product, so it gets the top of the page in a
+   monospaced block you can read, select and copy. Everything else — when to
+   use it, what it gets wrong — is the Markdown body underneath.
+
+   The copy button is progressive enhancement: the <pre> is selectable text
+   whether or not the script runs, and if the clipboard API is unavailable or
+   refused the button says so rather than silently doing nothing.
+
+   `variables` are surfaced separately as well as being visible in the prompt,
+   because the single most common way to misuse a prompt is to paste it with
+   [SOMETHING] still in it. */
+
+import Base from '../../layouts/Base.astro';
+import Prose from '../editorial/Prose.astro';
+import Divider from '../editorial/Divider.astro';
+import NewsletterCTA from '../editorial/NewsletterCTA.astro';
+import EntryList from '../editorial/EntryList.astro';
+import Rich from '../Rich.astro';
+import Icon from '../Icon.astro';
+import { getRelated, findTopic, translationsOf } from '../../lib/content';
+import { findSeries, seriesPath } from '../../lib/series';
+import { useCopy } from '../../copy';
+import { formatDate, localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+  slug: string;
+  data: {
+    title: string;
+    description: string;
+    date: Date;
+    updated?: Date;
+    topic?: string;
+    tags: string[];
+    related: string[];
+    series?: string;
+    part?: number;
+    prompt: string;
+    variables: string[];
+    category: 'product' | 'building' | 'research' | 'writing' | 'automation';
+    testedOn: string[];
+  };
+}
+
+const { lang, slug, data } = Astro.props;
+const c = useCopy(lang);
+
+const topic = findTopic(data.topic);
+const series = findSeries(data.series);
+const related = await getRelated(lang, data.related);
+const isoDate = data.date.toISOString();
+const alternateLinks = await translationsOf('prompt', slug, lang);
+---
+
+<Base
+  lang={lang}
+  title={data.title}
+  description={data.description}
+  ogType="article"
+  publishedTime={isoDate}
+  alternateLinks={alternateLinks}
+>
+  <article class="container pp">
+    <header class="pp__head">
+      <nav class="pp__crumbs" aria-label="Breadcrumb">
+        <a href={localizePath('/prompts', lang)}><Rich text={c.prompts.title} /></a>
+        <span class="pp__sep" aria-hidden="true">/</span>
+        <span><Rich text={c.prompts.category[data.category]} /></span>
+      </nav>
+
+      {series && (
+        <a class="pp__series" href={localizePath(seriesPath(series.id), lang)}>
+          <span class="pp__seriesLabel">{c.series.label}</span>
+          <Rich text={series[lang].name} />
+        </a>
+      )}
+
+      <h1 class="pp__title">{data.title}</h1>
+      <p class="pp__desc">{data.description}</p>
+
+      <div class="pp__meta">
+        <time class="nums" datetime={isoDate.slice(0, 10)}>
+          {c.common.published} {formatDate(data.date, lang, true)}
+        </time>
+        {topic && (
+          <>
+            <span class="pp__dot" aria-hidden="true">·</span>
+            <a class="pp__topic" href={localizePath(`/topics/${topic.id}`, lang)}>
+              <Rich text={topic[lang].name} />
+            </a>
+          </>
+        )}
+      </div>
+    </header>
+
+    {/* ---- the prompt ---- */}
+    <section class="pp__block" aria-labelledby="pp-prompt">
+      <div class="pp__blockHead">
+        <h2 class="pp__blockTitle" id="pp-prompt"><Rich text={c.prompts.promptLabel} /></h2>
+        <button
+          class="pp__copy"
+          type="button"
+          data-copy
+          data-label={c.common.copy}
+          data-done={c.common.copied}
+          data-failed={c.common.copyFailed}
+        >
+          <span class="pp__copyIcon" aria-hidden="true"><Icon name="copy" size="sm" /></span>
+          <span data-copy-label>{c.common.copy}</span>
+        </button>
+      </div>
+      {/* dir="ltr" because prompt text is authored in English even on the
+          Arabic page — the surrounding page stays RTL, this block does not. */}
+      <pre class="pp__pre" dir="ltr" data-prompt-text><code>{data.prompt}</code></pre>
+      <p class="pp__live" role="status" aria-live="polite" data-copy-status></p>
+    </section>
+
+    {data.variables.length > 0 && (
+      <section class="pp__vars" aria-labelledby="pp-vars">
+        <h2 class="pp__varsTitle" id="pp-vars">{c.prompts.variablesLabel}</h2>
+        <ul class="pp__varList">
+          {data.variables.map((v) => <li class="pp__var" dir="ltr">{v}</li>)}
+        </ul>
+        <p class="pp__varNote">{c.prompts.variablesNote}</p>
+      </section>
+    )}
+
+    <Prose class="pp__prose">
+      <slot />
+    </Prose>
+
+    <aside class="pp__tested">
+      <span class="pp__testedLabel">{c.prompts.testedOnLabel}</span>
+      {data.testedOn.length > 0 ? (
+        <ul class="pp__testedList">
+          {data.testedOn.map((m) => <li class="pp__testedItem" dir="ltr">{m}</li>)}
+        </ul>
+      ) : (
+        <p class="pp__testedNone"><Rich text={c.prompts.untested} /></p>
+      )}
+    </aside>
+
+    {data.tags.length > 0 && (
+      <ul class="pp__tags">
+        {data.tags.map((tag) => <li class="pp__tag">{tag}</li>)}
+      </ul>
+    )}
+
+    {related.length > 0 && (
+      <section class="pp__related" aria-labelledby="pp-related">
+        <div class="pp__relDiv"><Divider label={c.guides.relatedTitle} /></div>
+        <h2 class="sr-only" id="pp-related">{c.guides.relatedTitle}</h2>
+        <EntryList entries={related} lang={lang} />
+      </section>
+    )}
+
+    <div class="pp__cta">
+      <NewsletterCTA lang={lang} placement="prompt" variant="plain" />
+    </div>
+  </article>
+</Base>
+
+<script>
+  /* Copy to clipboard, with an honest failure. The clipboard API needs a secure
+     context and a user gesture; where it is unavailable the button tells the
+     reader to select the text instead of pretending it worked. */
+  const button = document.querySelector<HTMLButtonElement>('[data-copy]');
+  const source = document.querySelector<HTMLElement>('[data-prompt-text]');
+  const label = document.querySelector<HTMLElement>('[data-copy-label]');
+  const status = document.querySelector<HTMLElement>('[data-copy-status]');
+
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
+  button?.addEventListener('click', async () => {
+    const text = source?.innerText ?? '';
+    if (!text) return;
+    const done = button.dataset.done ?? 'Copied';
+    const failed = button.dataset.failed ?? 'Select and copy';
+    const idle = button.dataset.label ?? 'Copy';
+
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(text);
+      ok = true;
+    } catch {
+      ok = false;
+    }
+
+    if (label) label.textContent = ok ? done : failed;
+    /* aria-live carries the result to a screen reader; the button's own label
+       change is not announced on its own. */
+    if (status) status.textContent = ok ? done : failed;
+    button.classList.toggle('pp__copy--done', ok);
+
+    if (!ok && source) {
+      const range = document.createRange();
+      range.selectNodeContents(source);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      if (label) label.textContent = idle;
+      if (status) status.textContent = '';
+      button.classList.remove('pp__copy--done');
+    }, 2500);
+  });
+</script>
+
+<style>
+  .pp {
+    max-width: 760px;
+    padding-block-end: var(--atc-space-16);
+  }
+  .pp__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--atc-space-4);
+    margin-bottom: var(--atc-space-10);
+  }
+  .pp__crumbs {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-sm);
+    color: var(--adel-text-secondary);
+  }
+  .pp__crumbs a { color: var(--adel-text-secondary); text-decoration: none; }
+  .pp__crumbs a:hover { color: var(--adel-text-link); text-decoration: underline; }
+  .pp__sep { color: var(--adel-text-tertiary); }
+
+  .pp__series {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    padding: 5px 12px;
+    border-radius: var(--adel-radius-pill);
+    border: 1px solid var(--adel-border-brand);
+    background: var(--adel-surface-tint);
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    color: var(--adel-text-on-tint);
+    text-decoration: none;
+  }
+  .pp__seriesLabel {
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+  [lang='ar'] .pp__seriesLabel { text-transform: none; letter-spacing: normal; }
+
+  .pp__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(28px, 4.2vw, 42px);
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+    text-wrap: balance;
+  }
+  [lang='ar'] .pp__title { letter-spacing: normal; line-height: 1.35; }
+  .pp__desc {
+    margin: 0;
+    font-size: var(--adel-text-lg);
+    line-height: 1.6;
+    color: var(--adel-text-secondary);
+  }
+  .pp__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    flex-wrap: wrap;
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-tertiary);
+  }
+  .pp__meta time { font-family: var(--adel-font-mono); }
+  .pp__topic { color: var(--adel-text-secondary); text-decoration: none; }
+  .pp__topic:hover { color: var(--adel-text-link); text-decoration: underline; }
+  .pp__dot { opacity: 0.6; }
+
+  /* ---- the prompt block ---- */
+  .pp__block {
+    margin-bottom: var(--atc-space-10);
+    border: 1px solid var(--adel-border-hairline);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-raised);
+    overflow: hidden;
+  }
+  .pp__blockHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--atc-space-4);
+    padding: var(--atc-space-4) var(--atc-space-5);
+    border-bottom: 1px solid var(--adel-border-hairline);
+    background: var(--adel-surface-sunken);
+  }
+  .pp__blockTitle {
+    margin: 0;
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    color: var(--adel-text-secondary);
+  }
+  [lang='ar'] .pp__blockTitle { text-transform: none; letter-spacing: normal; }
+  .pp__copy {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    min-height: 36px;
+    padding-inline: var(--atc-space-4);
+    border-radius: var(--adel-radius-control);
+    border: 1px solid var(--adel-border-strong);
+    background: var(--adel-white);
+    font-family: inherit;
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+    color: var(--adel-text-primary);
+    cursor: pointer;
+  }
+  .pp__copy:hover { border-color: var(--adel-border-brand); color: var(--adel-text-link); }
+  .pp__copy--done {
+    border-color: var(--adel-status-success);
+    color: var(--adel-status-success);
+    background: var(--adel-status-success-bg);
+  }
+  .pp__copyIcon { display: inline-flex; }
+
+  .pp__pre {
+    margin: 0;
+    padding: var(--atc-space-6);
+    overflow-x: auto;
+    font-family: var(--adel-font-mono);
+    font-size: var(--adel-text-sm);
+    line-height: 1.7;
+    color: var(--adel-text-primary);
+    white-space: pre-wrap;
+    word-break: break-word;
+    text-align: start;
+  }
+  .pp__live {
+    margin: 0;
+    padding: 0 var(--atc-space-6) var(--atc-space-4);
+    font-size: var(--adel-text-xs);
+    color: var(--adel-status-success);
+    min-height: 1em;
+  }
+
+  /* ---- variables ---- */
+  .pp__vars {
+    margin-bottom: var(--atc-space-10);
+    padding: var(--atc-space-5) var(--atc-space-6);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-tint);
+    color: var(--adel-text-on-tint);
+  }
+  .pp__varsTitle {
+    margin: 0 0 var(--atc-space-3);
+    font-size: var(--adel-text-sm);
+    font-weight: 700;
+  }
+  .pp__varList {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-2);
+    margin: 0 0 var(--atc-space-3);
+    padding: 0;
+  }
+  .pp__var {
+    padding: 4px 10px;
+    border-radius: var(--adel-radius-inline);
+    background: var(--adel-white);
+    font-family: var(--adel-font-mono);
+    font-size: var(--adel-text-xs);
+    color: var(--adel-deep-blue);
+  }
+  .pp__varNote { margin: 0; font-size: var(--adel-text-xs); opacity: 0.85; }
+
+  /* ---- tested on ---- */
+  .pp__tested {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--atc-space-3);
+    margin-top: var(--atc-space-12);
+    padding-top: var(--atc-space-5);
+    border-top: 1px solid var(--adel-border-hairline);
+  }
+  .pp__testedLabel {
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    color: var(--adel-text-secondary);
+  }
+  [lang='ar'] .pp__testedLabel { text-transform: none; letter-spacing: normal; }
+  .pp__testedList {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-2);
+    margin: 0;
+    padding: 0;
+  }
+  .pp__testedItem {
+    padding: 4px 10px;
+    border-radius: var(--adel-radius-pill);
+    background: var(--adel-surface-sunken);
+    font-family: var(--adel-font-mono);
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-secondary);
+  }
+  .pp__testedNone {
+    margin: 0;
+    font-size: var(--adel-text-sm);
+    color: var(--adel-text-secondary);
+    max-width: 60ch;
+  }
+
+  .pp__tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-2);
+    margin: var(--atc-space-8) 0 0;
+    padding: 0;
+  }
+  .pp__tag {
+    padding: 4px 10px;
+    border-radius: var(--adel-radius-pill);
+    background: var(--adel-surface-sunken);
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-secondary);
+  }
+
+  .pp__related { margin-top: var(--atc-space-16); }
+  .pp__relDiv { margin-bottom: var(--atc-space-6); }
+  .pp__cta { margin-top: var(--atc-space-16); }
+</style>

@@ -16,12 +16,14 @@
 
 import AdelLogo from './AdelLogo.astro';
 import AuthNav from './AuthNav.astro';
+import Rich from './Rich.astro';
 import { nav, site } from '../site.config';
 import { useCopy } from '../copy';
 import {
   DEFAULT_LANG,
   LANGS,
   LANG_TAG,
+  isEnglishOnly,
   localizePath,
   neutralPath,
   type Lang,
@@ -29,9 +31,16 @@ import {
 
 interface Props {
   lang?: Lang;
+  /* Where the language switch should go, when the page knows better than the
+     path does. A guide with an Arabic translation passes that translation's
+     real URL, which is not the English slug with /ar in front of it. */
+  switchTo?: string;
+  /* The page exists in this language only. The switch then goes to the other
+     language's home — a reader who taps it should land somewhere real. */
+  switchToHome?: boolean;
 }
 
-const { lang = DEFAULT_LANG } = Astro.props;
+const { lang = DEFAULT_LANG, switchTo, switchToHome = false } = Astro.props;
 const c = useCopy(lang);
 
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
@@ -45,10 +54,22 @@ const items = nav
     href: localizePath(item.path, lang),
     label: (c.nav as Record<string, string>)[item.key] ?? item.key,
     active: neutral === item.path || neutral.startsWith(item.path + '/'),
+    /* An Arabic page linking to an English-only route has to announce the
+       language change on the anchor, or a screen reader reads English words in
+       an Arabic voice. */
+    foreign: lang !== DEFAULT_LANG && isEnglishOnly(item.path),
   }));
 
 const other = LANGS.find((l) => l !== lang)!;
-const otherHref = localizePath(neutral, other);
+/* Three cases, in order: the page told us where its counterpart is; the page
+   told us it has none; or the path can be translated mechanically. The last one
+   still has to handle an English-only route, which has no Arabic address at all
+   — there the switch goes to that language's home rather than nowhere. */
+const otherHref =
+  switchTo ??
+  (switchToHome || isEnglishOnly(neutral)
+    ? localizePath('/', other)
+    : localizePath(neutral, other));
 const homeHref = localizePath('/', lang);
 ---
 
@@ -64,8 +85,9 @@ const homeHref = localizePath('/', lang);
           href={item.href}
           class:list={['hdr__link', item.active && 'hdr__link--active']}
           aria-current={item.active ? 'page' : undefined}
+          hreflang={item.foreign ? LANG_TAG[DEFAULT_LANG] : undefined}
         >
-          {item.label}
+          <Rich text={item.label} />
         </a>
       ))}
     </nav>
@@ -95,8 +117,12 @@ const homeHref = localizePath('/', lang);
 
   <nav class="hdr__mobile" id="mobile-nav" aria-label="Main" hidden>
     {items.map((item) => (
-      <a href={item.href} class:list={['hdr__link', item.active && 'hdr__link--active']}>
-        {item.label}
+      <a
+        href={item.href}
+        class:list={['hdr__link', item.active && 'hdr__link--active']}
+        hreflang={item.foreign ? LANG_TAG[DEFAULT_LANG] : undefined}
+      >
+        <Rich text={item.label} />
       </a>
     ))}
     <a href={localizePath('/login', lang)} class="hdr__link hdr__link--account" data-m-auth-out>

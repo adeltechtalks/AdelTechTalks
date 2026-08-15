@@ -1,11 +1,12 @@
 ---
 /* =============================================================================
-   Guide detail and Article (§18)
+   Guide, Article and Use Case detail (§18, Phase 1.1)
    =============================================================================
-   One template, two content types. §18: "If some of these are represented as
+   One template, three content types. §18: "If some of these are represented as
    shared templates rather than individual routes, preserve the approved
-   architecture." A Guide is an Article that may also hand you a file, so the
-   only structural difference is the download panel.
+   architecture." A Guide is an Article that may also hand you a file; a Use
+   Case is an Article that also reports where the thing got to. Neither earns a
+   second 275-line template that would drift.
 
    The rendered Markdown arrives through the default slot, because rendering it
    needs the collection entry and that lives in the route file.
@@ -20,14 +21,19 @@ import EntryList from '../editorial/EntryList.astro';
 import Button from '../Button.astro';
 import Rich from '../Rich.astro';
 import Icon from '../Icon.astro';
-import { getRelated, findTopic } from '../../lib/content';
+import { getRelated, findTopic, translationsOf } from '../../lib/content';
 import { PILLAR_TO_TOPIC } from '../../lib/topics';
+import { findSeries, seriesPath } from '../../lib/series';
 import { useCopy } from '../../copy';
 import { formatDate, localizePath, type Lang } from '../../i18n';
 
+type Kind = 'guide' | 'article' | 'use-case';
+
 interface Props {
   lang: Lang;
-  kind: 'guide' | 'article';
+  kind: Kind;
+  /* The file's own slug, so the page can find its translation. */
+  slug: string;
   data: {
     title: string;
     description: string;
@@ -41,20 +47,41 @@ interface Props {
     preview?: string;
     minutes?: number;
     related: string[];
+    series?: string;
+    part?: number;
     download?: { label?: string; href: string; meta?: string; gated?: boolean };
+    /* Use Case only */
+    stage?: 'exploring' | 'building' | 'live' | 'abandoned';
+    outcome?: string;
+    stack?: string[];
+    external?: { label: string; href: string };
   };
 }
 
-const { lang, kind, data } = Astro.props;
+const { lang, kind, slug, data } = Astro.props;
 const c = useCopy(lang);
 
 const topicId =
   data.topic ?? (data.pillar ? PILLAR_TO_TOPIC[data.pillar as keyof typeof PILLAR_TO_TOPIC] : undefined);
 const topic = findTopic(topicId);
 const related = await getRelated(lang, data.related);
+const series = findSeries(data.series);
+
+/* Where the breadcrumb's first crumb goes. A Use Case belongs to Use Cases; an
+   Article has no index of its own yet, so it points at Topics. */
+const CRUMB: Record<Kind, { path: string; label: string }> = {
+  guide: { path: '/guides', label: c.guides.title },
+  article: { path: '/topics', label: c.topics.title },
+  'use-case': { path: '/use-cases', label: c.useCases.title },
+};
+const crumb = CRUMB[kind];
+
+const hasFacts = Boolean(data.outcome || (data.stack && data.stack.length > 0) || data.external);
 
 const isoDate = data.date.toISOString();
 const isoUpdated = data.updated?.toISOString();
+
+const alternateLinks = await translationsOf(kind, slug, lang);
 ---
 
 <Base
@@ -65,12 +92,13 @@ const isoUpdated = data.updated?.toISOString();
   ogImage={data.cover}
   publishedTime={isoDate}
   modifiedTime={isoUpdated}
+  alternateLinks={alternateLinks}
 >
   <article class="container ep">
     <header class="ep__head">
       <nav class="ep__crumbs" aria-label="Breadcrumb">
-        <a href={localizePath(kind === 'guide' ? '/guides' : '/topics', lang)}>
-          {kind === 'guide' ? c.guides.title : c.topics.title}
+        <a href={localizePath(crumb.path, lang)}>
+          <Rich text={crumb.label} />
         </a>
         {topic && (
           <>
@@ -82,8 +110,28 @@ const isoUpdated = data.updated?.toISOString();
         )}
       </nav>
 
+      {/* Series chip — the reader landed here from search as often as from the
+          series page, and this is how they find out there is a series at all. */}
+      {series && (
+        <a class="ep__series" href={localizePath(seriesPath(series.id), lang)}>
+          <span class="ep__seriesLabel">{c.series.label}</span>
+          <Rich text={series[lang].name} class="ep__seriesName" />
+          {data.part != null && (
+            <span class="ep__seriesPart nums">{c.series.partLabel(data.part)}</span>
+          )}
+        </a>
+      )}
+
       <h1 class="ep__title">{data.title}</h1>
       <p class="ep__desc">{data.description}</p>
+
+      {/* Use Case status. The word carries the state, not the colour — 'Stopped'
+          reads the same in greyscale as it does in colour (§30). */}
+      {data.stage && (
+        <span class:list={['ep__stage', `ep__stage--${data.stage}`]}>
+          {c.useCases.stage[data.stage]}
+        </span>
+      )}
 
       <div class="ep__meta">
         <time class="nums" datetime={isoDate.slice(0, 10)}>
@@ -118,7 +166,34 @@ const isoUpdated = data.updated?.toISOString();
     )}
 
     {data.preview && (
-      <p class="ep__preview">{data.preview}</p>
+      <Rich text={data.preview} as="p" class="ep__preview" />
+    )}
+
+    {/* ---- Use Case facts. Above the body, because "where did it get to" is
+            the question the reader actually arrived with. ---- */}
+    {hasFacts && (
+      <aside class="ep__facts" aria-label={c.useCases.outcomeLabel}>
+        {data.outcome && (
+          <div class="ep__fact">
+            <span class="ep__factLabel">{c.useCases.outcomeLabel}</span>
+            <p class="ep__factValue">{data.outcome}</p>
+          </div>
+        )}
+        {data.stack && data.stack.length > 0 && (
+          <div class="ep__fact">
+            <span class="ep__factLabel">{c.useCases.stackLabel}</span>
+            <ul class="ep__stack">
+              {data.stack.map((item) => <li class="ep__stackItem">{item}</li>)}
+            </ul>
+          </div>
+        )}
+        {data.external && (
+          <a class="ep__factLink" href={data.external.href} rel="noopener" target="_blank">
+            {data.external.label}
+            <span aria-hidden="true">↗</span>
+          </a>
+        )}
+      </aside>
     )}
 
     <Prose class="ep__prose">
@@ -213,6 +288,111 @@ const isoUpdated = data.updated?.toISOString();
     color: var(--adel-text-tertiary);
   }
   .ep__dot { opacity: 0.6; }
+
+  /* ---- series chip ---- */
+  .ep__series {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    align-self: flex-start;
+    padding: 5px 12px;
+    border-radius: var(--adel-radius-pill);
+    border: 1px solid var(--adel-border-brand);
+    background: var(--adel-surface-tint);
+    font-size: var(--adel-text-xs);
+    text-decoration: none;
+    color: var(--adel-text-on-tint);
+  }
+  .ep__series:hover { background: var(--adel-ice-blue); }
+  .ep__seriesLabel {
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+  [lang='ar'] .ep__seriesLabel { text-transform: none; letter-spacing: normal; }
+  .ep__seriesName { font-weight: 600; }
+  .ep__seriesPart {
+    font-family: var(--adel-font-mono);
+    opacity: 0.8;
+  }
+  .ep__seriesPart::before { content: '·'; margin-inline-end: var(--atc-space-2); }
+
+  /* ---- use-case stage ---- */
+  .ep__stage {
+    align-self: flex-start;
+    padding: 4px 12px;
+    border-radius: var(--adel-radius-pill);
+    border: 1px solid var(--adel-border-strong);
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    color: var(--adel-text-secondary);
+    background: var(--adel-surface-sunken);
+  }
+  .ep__stage--live {
+    color: var(--adel-status-success);
+    background: var(--adel-status-success-bg);
+    border-color: var(--adel-status-success);
+  }
+  .ep__stage--building {
+    color: var(--adel-text-on-tint);
+    background: var(--adel-surface-tint);
+    border-color: var(--adel-border-brand);
+  }
+
+  /* ---- use-case facts ---- */
+  .ep__facts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-5);
+    margin: 0 0 var(--atc-space-10);
+    padding: var(--atc-space-6);
+    border: 1px solid var(--adel-border-hairline);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-raised);
+  }
+  .ep__fact { display: flex; flex-direction: column; gap: var(--atc-space-2); }
+  .ep__factLabel {
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    color: var(--adel-text-secondary);
+  }
+  [lang='ar'] .ep__factLabel { text-transform: none; letter-spacing: normal; }
+  .ep__factValue {
+    margin: 0;
+    font-size: var(--adel-text-base);
+    line-height: 1.6;
+    color: var(--adel-text-primary);
+  }
+  .ep__stack {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-2);
+    margin: 0;
+    padding: 0;
+  }
+  .ep__stackItem {
+    padding: 4px 10px;
+    border-radius: var(--adel-radius-pill);
+    background: var(--adel-surface-sunken);
+    font-family: var(--adel-font-mono);
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-secondary);
+  }
+  .ep__factLink {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    align-self: flex-start;
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+    color: var(--adel-text-link);
+    text-decoration: none;
+  }
+  .ep__factLink:hover { text-decoration: underline; color: var(--adel-text-link-hover); }
 
   .ep__cover { margin-bottom: var(--atc-space-10); }
 

@@ -1,0 +1,304 @@
+---
+/* =============================================================================
+   Series hub (Phase 1.1) — the Vibe Coding page
+   =============================================================================
+   A series is a question asked in public and answered over time. So the page
+   leads with the question, not with a product name:
+
+       "Can I build a real business with Vibe Coding?"
+
+   That framing is deliberate and it is load-bearing. It is a question, which
+   means the series is allowed to answer "no" in part four — and a series that
+   cannot answer "no" is marketing, not a build log.
+
+   What this page is NOT: a rebrand. "I ❤️ Tech" is still the master personal
+   brand expression (LOVE_TECH in copy.ts, rendered in the hero). Vibe Coding is
+   the current flagship series sitting underneath it. When the next series
+   starts, this page keeps its URL and its archive.
+
+   No claim is made anywhere on this page about being first, biggest or only.
+   ========================================================================== */
+
+import Base from '../../layouts/Base.astro';
+import SectionIntro from '../editorial/SectionIntro.astro';
+import EntryList from '../editorial/EntryList.astro';
+import NewsletterCTA from '../editorial/NewsletterCTA.astro';
+import Divider from '../editorial/Divider.astro';
+import Rich from '../Rich.astro';
+import Icon from '../Icon.astro';
+import { LOVE_TECH, plain, useCopy } from '../../copy';
+import { getSeriesEntries, findByHubSlug } from '../../lib/content';
+import { projects } from '../../site.config';
+import { localizePath, type Lang } from '../../i18n';
+import type { SeriesRecord } from '../../lib/series';
+
+interface Props {
+  lang: Lang;
+  series: SeriesRecord;
+}
+
+const { lang, series } = Astro.props;
+const c = useCopy(lang);
+const s = series[lang];
+
+const entries = await getSeriesEntries(lang, series.id);
+
+/* The case study, if it has been written in this language. Resolved through
+   `translationOf` rather than by slug, because the Arabic file is not called
+   `gearnest` — it is `gearnest-ar`, and naming is the author's business. */
+const caseStudy = series.caseStudy
+  ? await findByHubSlug('use-case', series.caseStudy, lang)
+  : undefined;
+const project = series.caseStudy ? projects.find((p) => p.id === series.caseStudy) : undefined;
+---
+
+<Base lang={lang} title={plain(s.name)} description={plain(s.question)}>
+  <article class="container sp">
+    {/* ---- the question ---- */}
+    <header class="sp__head">
+      <span class="sp__label">
+        <span class="sp__dot" aria-hidden="true"></span>
+        {c.series.label} · {c.series.statusRunning}
+      </span>
+
+      <h1 class="sp__q"><Rich text={s.question} /></h1>
+
+      <Rich text={s.body} as="p" class="sp__body" />
+      <Rich text={s.promise} as="p" class="sp__promise" />
+
+      {/* The master brand expression, kept visible on the series page so the
+          series reads as a chapter of it rather than as a replacement. */}
+      <p class="sp__master">
+        <span class="sp__masterMark" aria-hidden="true">{LOVE_TECH}</span>
+        <span class="sp__masterText">
+          <Rich text={s.name} />
+        </span>
+      </p>
+    </header>
+
+    {/* ---- the case study ---- */}
+    {(caseStudy || project) && (
+      <section class="sp__case" aria-labelledby="sp-case">
+        <div class="sp__caseText">
+          <span class="sp__caseEyebrow">{c.series.caseStudyTitle}</span>
+          <h2 class="sp__caseTitle" id="sp-case">
+            <Rich text={caseStudy?.title ?? project![lang].name} />
+          </h2>
+          <p class="sp__caseBody">
+            {caseStudy?.description ?? c.series.caseStudyIntro}
+          </p>
+          <div class="sp__caseActions">
+            {caseStudy && (
+              <a class="sp__caseCta" href={caseStudy.href}>
+                <Rich text={c.gearnest.caseStudyCta} />
+                <span class="sp__arrow" aria-hidden="true">→</span>
+              </a>
+            )}
+            {project && (
+              <a class="sp__caseAlt" href={project.url} rel="noopener" target="_blank">
+                <Rich text={c.gearnest.cta} />
+                <span aria-hidden="true">↗</span>
+              </a>
+            )}
+          </div>
+        </div>
+        <span class="sp__caseIcon" aria-hidden="true"><Icon name="store" size="xl" /></span>
+      </section>
+    )}
+
+    {/* ---- the parts ---- */}
+    <section class="sp__parts" aria-labelledby="sp-parts">
+      <div class="sp__rule"><Divider /></div>
+      <SectionIntro title={c.series.followTitle} intro={c.series.followIntro} class="sp__partsIntro" />
+      <h2 class="sr-only" id="sp-parts">{c.series.followTitle}</h2>
+
+      {entries.length > 0 ? (
+        <EntryList entries={entries} lang={lang} class="sp__list" />
+      ) : (
+        <p class="sp__empty">{c.series.empty}</p>
+      )}
+    </section>
+
+    <div class="sp__cta">
+      <NewsletterCTA lang={lang} placement={`series:${series.id}`} />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .sp { padding-block-end: var(--atc-space-16); }
+
+  .sp__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--atc-space-4);
+    max-width: 68ch;
+  }
+  .sp__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    color: var(--adel-signature-blue);
+  }
+  [lang='ar'] .sp__label { text-transform: none; letter-spacing: normal; }
+  /* The single Fresh Mint mark on the page: the series is genuinely running. */
+  .sp__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--adel-accent);
+    flex: 0 0 auto;
+  }
+
+  .sp__q {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(32px, 5.2vw, 54px);
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+    text-wrap: balance;
+  }
+  [lang='ar'] .sp__q { letter-spacing: normal; line-height: 1.35; }
+
+  .sp__body {
+    margin: 0;
+    font-size: var(--adel-text-lg);
+    line-height: 1.65;
+    color: var(--adel-text-secondary);
+  }
+  .sp__promise {
+    margin: 0;
+    padding-inline-start: var(--atc-space-5);
+    border-inline-start: 3px solid var(--adel-signature-blue);
+    font-size: var(--adel-text-base);
+    line-height: 1.65;
+    color: var(--adel-text-primary);
+    font-weight: 500;
+  }
+
+  .sp__master {
+    display: flex;
+    align-items: baseline;
+    gap: var(--atc-space-3);
+    margin: var(--atc-space-4) 0 0;
+    font-size: var(--adel-text-sm);
+    color: var(--adel-text-tertiary);
+  }
+  /* The wordmark stays Latin and LTR in both languages, the way a wordmark
+     does. `dir` is set explicitly so it does not reorder on the Arabic page. */
+  .sp__masterMark {
+    font-family: var(--adel-font-display);
+    font-weight: 700;
+    color: var(--adel-text-primary);
+    unicode-bidi: isolate;
+    direction: ltr;
+  }
+  .sp__masterText::before { content: '·'; margin-inline-end: var(--atc-space-3); }
+
+  /* ---- case study --------------------------------------------------------
+     Graphite, like the GearNest band on the homepage, and for the same reason
+     (§5): the case study is a separate business and none of Adel's brand
+     colour appears on its surface. */
+  .sp__case {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--atc-space-8);
+    margin-top: var(--atc-space-16);
+    padding: var(--atc-space-10);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-inverse);
+    color: var(--adel-text-inverse);
+  }
+  .sp__caseText { display: flex; flex-direction: column; gap: var(--atc-space-3); }
+  .sp__caseEyebrow {
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    opacity: 0.65;
+  }
+  [lang='ar'] .sp__caseEyebrow { text-transform: none; letter-spacing: normal; }
+  .sp__caseTitle {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(24px, 3.2vw, 34px);
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: inherit;
+  }
+  [lang='ar'] .sp__caseTitle { letter-spacing: normal; line-height: 1.4; }
+  .sp__caseBody {
+    margin: 0;
+    font-size: var(--adel-text-base);
+    line-height: 1.65;
+    max-width: 58ch;
+    opacity: 0.82;
+  }
+  .sp__caseActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-3);
+    margin-top: var(--atc-space-2);
+  }
+  .sp__caseCta,
+  .sp__caseAlt {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    height: var(--atc-control-md);
+    padding-inline: var(--atc-space-5);
+    border-radius: var(--adel-radius-control);
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .sp__caseCta { background: var(--adel-white); color: var(--adel-graphite); }
+  .sp__caseCta:hover { background: var(--adel-soft-gray); }
+  .sp__caseAlt {
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: var(--adel-white);
+  }
+  .sp__caseAlt:hover { border-color: var(--adel-white); background: rgba(255, 255, 255, 0.08); }
+  .sp__caseIcon {
+    display: grid;
+    place-items: center;
+    width: 96px;
+    height: 96px;
+    border-radius: var(--adel-radius-panel);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--adel-white);
+    flex: 0 0 auto;
+  }
+  [dir='rtl'] .sp__arrow { display: inline-block; transform: scaleX(-1); }
+
+  /* ---- parts ---- */
+  .sp__parts { margin-top: var(--atc-space-20); }
+  .sp__rule { margin-bottom: var(--atc-space-10); }
+  .sp__partsIntro { margin-bottom: var(--atc-space-6); }
+  .sp__empty {
+    margin: var(--atc-space-6) 0 0;
+    padding: var(--atc-space-10);
+    border: 1px dashed var(--adel-border-strong);
+    border-radius: var(--adel-radius-panel);
+    text-align: center;
+    color: var(--adel-text-secondary);
+  }
+  .sp__cta { margin-top: var(--atc-space-20); }
+
+  @media (max-width: 767px) {
+    .sp__case {
+      grid-template-columns: 1fr;
+      padding: var(--atc-space-6);
+    }
+    .sp__caseIcon { display: none; }
+  }
+</style>

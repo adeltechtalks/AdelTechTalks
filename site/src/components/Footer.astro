@@ -31,9 +31,20 @@ const SOCIAL: Array<[keyof typeof site.social, string, string]> = [
 ];
 const links = SOCIAL.filter(([key]) => site.social[key]);
 
-const exploreKeys = ['guides', 'topics', 'playground', 'newsletter'];
-const explore = nav
-  .filter((item) => item.phase === 1 && exploreKeys.includes(item.key))
+/* Phase 1.1 — the header carries five items; the footer carries the whole
+   ecosystem, because that is where a reader goes looking for the thing that was
+   not in the nav. Order is deliberate: the hub, the series, then each content
+   type, then the Playground.
+
+   `phase <= 1.5` is everything routed and live. Phase 2 and 3 entries stay
+   defined and unrendered exactly as before. */
+const exploreKeys = [
+  'learn', 'series', 'guides', 'useCases', 'videos', 'prompts', 'topics',
+  'playground', 'newsletter',
+];
+const explore = exploreKeys
+  .map((key) => nav.find((item) => item.key === key))
+  .filter((item): item is NonNullable<typeof item> => Boolean(item) && item!.phase <= 1.5)
   .map((item) => ({
     href: localizePath(item.path, lang),
     label: (c.nav as Record<string, string>)[item.key] ?? item.key,
@@ -52,7 +63,7 @@ const separate = projects.filter((p) => p.separate);
     <div class="ftr__col">
       <span class="ftr__title">{c.footer.explore}</span>
       {explore.map((item) => (
-        <a href={item.href} class="ftr__link">{item.label}</a>
+        <a href={item.href} class="ftr__link"><Rich text={item.label} /></a>
       ))}
       <a href={localizePath('/about', lang)} class="ftr__link">{c.nav.about}</a>
     </div>

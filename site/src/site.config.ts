@@ -45,13 +45,23 @@ export const site = {
    so the shape of the future navigation is already decided and visible.
    -------------------------------------------------------------------------- */
 export const nav: Array<{ key: string; path: string; phase: number }> = [
-  { key: 'guides', path: '/guides', phase: 1 },
-  { key: 'topics', path: '/topics', phase: 1 },
+  /* Phase 1.1: Learn is the hub, and the flagship Series sits beside it. Guides,
+     Use Cases, Videos, Prompts and Topics are all reachable one level in, from
+     /learn and from the footer — they stay routed at exactly the URLs they had,
+     they are simply no longer each competing for a slot in a header of five. */
+  { key: 'learn', path: '/learn', phase: 1 },
+  { key: 'series', path: '/series/vibe-coding', phase: 1 },
+  { key: 'playground', path: '/playground', phase: 1 },
   { key: 'about', path: '/about', phase: 1 },
   { key: 'newsletter', path: '/newsletter', phase: 1 },
-  { key: 'playground', path: '/playground', phase: 1 },
+  /* ---- routed and live, surfaced through /learn rather than the header ---- */
+  { key: 'guides', path: '/guides', phase: 1.5 },
+  { key: 'useCases', path: '/use-cases', phase: 1.5 },
+  { key: 'videos', path: '/videos', phase: 1.5 },
+  { key: 'prompts', path: '/prompts', phase: 1.5 },
+  { key: 'topics', path: '/topics', phase: 1.5 },
   /* ---- prepared, not yet routed (§22, §24) ---- */
-  { key: 'prompts', path: '/prompts', phase: 2 },
+  { key: 'courses', path: '/courses', phase: 2 },
   { key: 'projects', path: '/projects', phase: 2 },
   { key: 'podcast', path: '/podcast', phase: 3 },
   { key: 'services', path: '/services', phase: 3 },
@@ -107,6 +117,126 @@ export const topics = [
 export type TopicId = (typeof topics)[number]['id'];
 
 /* -----------------------------------------------------------------------------
+   SERIES (Phase 1.1)
+   -----------------------------------------------------------------------------
+   A Series is a build narrative told over time: one question, asked in public,
+   answered across guides, use cases, videos and prompts.
+
+   Vibe Coding is the CURRENT flagship series. It is not a rebrand — the master
+   personal-brand expression is still "I ❤️ Tech" (see LOVE_TECH in copy.ts),
+   and Vibe Coding sits underneath it as the thing being built right now. When
+   the next series starts, it is added here and this one keeps its URL, its
+   archive and its readers.
+
+   `question` is the framing the whole series answers. It is a real question,
+   asked honestly — the series is the attempt, not the victory lap.
+   -------------------------------------------------------------------------- */
+export const series = [
+  {
+    id: 'vibe-coding',
+    icon: 'terminal',
+    /* 'running' — publishing now. 'archived' — finished, still readable. */
+    status: 'running' as 'running' | 'archived',
+    /* The topic each series entry falls under when it does not declare one. */
+    defaultTopic: 'building' as TopicId,
+    /* The case study that carries the answer, if there is one. */
+    caseStudy: 'gearnest',
+    en: {
+      name: 'Vibe Coding',
+      question: 'Can I build a real business with Vibe Coding?',
+      body:
+        'Building software by describing what you want, in plain language, and shipping what comes back. I am doing it in the open — the parts that worked, the parts that cost me a weekend, and the bill at the end.',
+      /* What a reader gets by following it. No outcome is promised, because the
+         question has not been answered yet. */
+      promise:
+        'Every step is published as it happens: the guide, the prompts I used, the screen recording, and the decision I got wrong.',
+    },
+    ar: {
+      name: '[[Vibe Coding]]',
+      question: 'هل أستطيع بناء مشروع حقيقي بالـ[[Vibe Coding]]؟',
+      body:
+        'بناء البرمجيات بوصف ما تريده بلغة عادية، ثم شحن ما يعود إليك. أفعلها أمام الناس — ما نجح، وما كلّفني نهاية أسبوع كاملة، والفاتورة في آخر الشهر.',
+      promise:
+        'كل خطوة تُنشر وقت حدوثها: الدليل، والـ[[prompts]] التي استخدمتها، وتسجيل الشاشة، والقرار الذي أخطأت فيه.',
+    },
+  },
+];
+
+export type SeriesId = (typeof series)[number]['id'];
+
+/* -----------------------------------------------------------------------------
+   THE ECOSYSTEM (Phase 1.1) — what /learn is an index of
+   -----------------------------------------------------------------------------
+   One list, one source of truth. The Learn Hub renders this in order, and a
+   surface's `status` decides how it is rendered:
+
+     'live'     routed, linked, indexed
+     'building' named and honestly marked, NOT linked — there is no route to
+                send anybody to, and a link to an empty product is worse than
+                no link (§22). Interest goes to the newsletter instead.
+
+   Turning Courses on later is: build the route, change 'building' to 'live'.
+   Nothing else on this page changes.
+   -------------------------------------------------------------------------- */
+export const ecosystem: Array<{
+  key: string;
+  path: string | null;
+  icon: string;
+  status: 'live' | 'building';
+}> = [
+  { key: 'guides', path: '/guides', icon: 'book-open', status: 'live' },
+  { key: 'useCases', path: '/use-cases', icon: 'target', status: 'live' },
+  { key: 'videos', path: '/videos', icon: 'clapperboard', status: 'live' },
+  { key: 'prompts', path: '/prompts', icon: 'library', status: 'live' },
+  { key: 'topics', path: '/topics', icon: 'compass', status: 'live' },
+  { key: 'playground', path: '/playground', icon: 'gamepad-2', status: 'live' },
+  /* §22 — defined, deliberately not routed. Do not give this a path until the
+     course experience itself is finished. */
+  { key: 'courses', path: null, icon: 'graduation-cap', status: 'building' },
+];
+
+/* -----------------------------------------------------------------------------
+   MONETISATION (Phase 1.1 — architecture only, nothing switched on)
+   -----------------------------------------------------------------------------
+   Phase 1.1 does NOT build billing, credits, checkout or entitlements. What it
+   does is make sure the content model has somewhere to put a price when there
+   is one, so adding paid Courses later is not a schema migration across every
+   collection.
+
+   `enabled: false` is enforced in code: `isPurchasable()` in lib/commerce.ts
+   returns false while it is false, so no price, no button and no checkout can
+   render even if an entry declares one by mistake.
+   -------------------------------------------------------------------------- */
+export const commerce = {
+  enabled: false,
+  /* Set when a real processor exists. Nothing reads this while disabled. */
+  provider: '' as '' | 'stripe' | 'lemonsqueezy' | 'gumroad',
+  currency: 'USD',
+  /* Free content stays free. This only ever gates entries that opt in with an
+     `access: 'paid'` field, and today nothing does. */
+  defaultAccess: 'free' as 'free' | 'paid',
+};
+
+/* -----------------------------------------------------------------------------
+   RETRIEVAL (Phase 1.1 — architecture only, no AI)
+   -----------------------------------------------------------------------------
+   "Ask Adel" is a later phase. What it will need is a clean, language-aware,
+   chunk-sized index of everything published — and that is a build artefact, not
+   a product. /ask-index.json is generated at build time from the same content
+   the pages render, so it can never drift from the site.
+
+   No model is called, no embedding is computed and no user input is accepted
+   anywhere in this phase.
+   -------------------------------------------------------------------------- */
+export const retrieval = {
+  /* Emit /ask-index.json. Harmless while nothing consumes it. */
+  buildIndex: true,
+  /* Longest body excerpt carried per entry, in characters. Keeps the artefact
+     small enough to serve from the CDN and large enough to be useful later. */
+  excerptChars: 600,
+};
+
+/* -----------------------------------------------------------------------------
    WHAT I'M BUILDING (§14)
    -----------------------------------------------------------------------------
    A list, not a GearNest special case — add a second project and the section
@@ -119,6 +249,13 @@ export const projects = [
     url: 'https://gearnest.com',
     separate: true,
     status: 'building' as 'building' | 'live' | 'exploring',
+    /* Phase 1.1 — GearNest is the first real-world case study for the Vibe
+       Coding series. It is the thing the series question is being tested on.
+       This does NOT merge GearNest into Adel's identity (§5): it is still its
+       own brand and it is still rendered with visible distance. The series
+       links to the case study, and the case study links out to the business. */
+    series: 'vibe-coding' as SeriesId,
+    caseStudy: 'gearnest',
     en: {
       name: 'GearNest',
       body: 'A separate brand and business of its own — its own product, voice and roadmap.',

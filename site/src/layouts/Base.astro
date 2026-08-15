@@ -3,7 +3,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ArabicDisplayFont from '../components/ArabicDisplayFont.astro';
 import { site } from '../site.config';
-import { useCopy } from '../copy';
+import { plain, useCopy } from '../copy';
 import { DEFAULT_LANG, LANG_DIR, LANG_TAG, alternates, neutralPath, type Lang } from '../i18n';
 import '../styles/tokens.css';
 import '../styles/app.css';
@@ -22,6 +22,12 @@ interface Props {
   modifiedTime?: string;
   /* Keep a page out of the index — used by nothing today, here for later. */
   noindex?: boolean;
+  /* The languages this SPECIFIC page exists in, with their real paths.
+     Index pages leave this unset: they exist in every language at the same
+     path, so prefixing is correct for them. Content detail pages pass what
+     lib/content.ts's translationsOf() found, because an untranslated guide has
+     no Arabic URL and must not advertise one (§26). */
+  alternateLinks?: Array<{ lang: Lang; href: string }>;
 }
 
 const {
@@ -34,21 +40,53 @@ const {
   publishedTime,
   modifiedTime,
   noindex = false,
+  alternateLinks,
 } = Astro.props;
 
 const c = useCopy(lang);
 const dir = LANG_DIR[lang];
 
-const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
+/* §11 — a [[term]] marker is an element in the body and plain text in an
+   attribute. Everything below lands in <title>, a meta tag or an og property,
+   so it is flattened once, here, rather than at forty call sites. */
+const fullTitle = plain(
+  title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`
+);
+const metaDescription = plain(description);
 const base = Astro.site ?? new URL(site.url);
 const canonical = new URL(Astro.url.pathname, base).href;
 const ogImageUrl = new URL(ogImage, base).href;
 
 /* Every language version of THIS page, plus x-default pointing at English.
    Without these, Google treats /ar/about as a near-duplicate of /about and
-   picks one to index (§26). */
-const langAlternates = alternates(Astro.url.pathname, base.href);
-const xDefault = new URL(neutralPath(Astro.url.pathname), base).href;
+   picks one to index (§26).
+
+   `alternateLinks` wins when a page knows better than the path does. A guide
+   with no Arabic translation passes a single-entry list, so it advertises only
+   itself — an hreflang pointing at a 404 is a worse signal than none. */
+const langAlternates = noindex
+  ? /* A page told crawlers to ignore it. Declaring language alternates for it
+       is meaningless, and the 404 in particular has no /ar/ counterpart to
+       point at — it answers in both languages on one document. */
+    []
+  : alternateLinks
+    ? alternateLinks.map((a) => ({ lang: a.lang, hreflang: LANG_TAG[a.lang], href: new URL(a.href, base).href }))
+    : alternates(Astro.url.pathname, base.href);
+
+/* x-default names the version to serve a reader whose language we do not know.
+   English where there is one, otherwise this page — never a URL that does not
+   exist. */
+const xDefault =
+  langAlternates.find((a) => a.lang === DEFAULT_LANG)?.href ??
+  (alternateLinks || noindex ? canonical : new URL(neutralPath(Astro.url.pathname), base).href);
+
+/* Where the header's language switch should go. Same rule: if this page has no
+   counterpart in the other language, the switch takes the reader to that
+   language's home rather than to a dead URL. */
+const switchTo = alternateLinks
+  ? alternateLinks.find((a) => a.lang !== lang)?.href
+  : undefined;
+const switchIsDeadEnd = (Boolean(alternateLinks) || noindex) && !switchTo;
 
 /* §32 — Cairo is the Arabic display face. English pages never need it, so they
    never ask for it. The other three carry both scripts and both pages use them.
@@ -68,15 +106,19 @@ const fontHref = `https://fonts.googleapis.com/css2?${families.join('&')}&displa
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
-    <meta name="description" content={description} />
+    <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, follow" />}
 
     {/* Bilingual alternates (§26) */}
-    {langAlternates.map((alt) => (
-      <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
-    ))}
-    <link rel="alternate" hreflang="x-default" href={xDefault} />
+    {langAlternates.length > 0 && (
+      <>
+        {langAlternates.map((alt) => (
+          <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+        ))}
+        <link rel="alternate" hreflang="x-default" href={xDefault} />
+      </>
+    )}
 
     <link rel="icon" type="image/png" sizes="32x32" href="/logo/favicon-32.png" />
     <link rel="apple-touch-icon" href="/logo/apple-touch-icon.png" />
@@ -86,7 +128,7 @@ const fontHref = `https://fonts.googleapis.com/css2?${families.join('&')}&displa
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={fullTitle} />
-    <meta property="og:description" content={description} />
+    <meta property="og:description" content={metaDescription} />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={lang === 'ar' ? 'ar_AR' : 'en_US'} />
     <meta property="og:image" content={ogImageUrl} />
@@ -95,7 +137,7 @@ const fontHref = `https://fonts.googleapis.com/css2?${families.join('&')}&displa
     {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:description" content={metaDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
 
     {/* Pages can add their own head tags — badge pages use this for og:image */}
@@ -110,7 +152,7 @@ const fontHref = `https://fonts.googleapis.com/css2?${families.join('&')}&displa
 
   <body>
     <a href="#main" class="skip">{c.common.skip}</a>
-    <Header lang={lang} />
+    <Header lang={lang} switchTo={switchTo} switchToHome={switchIsDeadEnd} />
     <main id="main" class:list={[padded && 'main--padded']}>
       <slot />
     </main>
