@@ -1,0 +1,146 @@
+---
+/* The flagship series on the homepage (Phase 1.1)
+   -----------------------------------------------------------------------------
+   Vibe Coding is the current build narrative, so it gets a band on the homepage
+   — placed after "What I explore" and before the library strips, because it is
+   the thing happening right now rather than a category of thing.
+
+   It is NOT a rebrand and the design says so: the master brand expression
+   ("I ❤️ Tech", in the hero above) keeps the top of the page, and this band is
+   tinted rather than filled. It leads with the question, because a question is
+   what the series actually is.
+
+   Renders nothing if no series is running — so archiving the last one removes
+   the band rather than leaving a dead promise on the homepage.
+
+   CS-05: the homepage has exactly one primary action and it belongs to the
+   hero. This band's action is a link, not a button. */
+
+import Rich from '../Rich.astro';
+import { useCopy } from '../../copy';
+import { flagshipSeries, seriesPath } from '../../lib/series';
+import { getSeriesEntries } from '../../lib/content';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+const flagship = flagshipSeries();
+const count = flagship ? (await getSeriesEntries(lang, flagship.id)).length : 0;
+---
+
+{flagship && (
+  <section class="container section" aria-labelledby="sb-title">
+    <a class="sb" href={localizePath(seriesPath(flagship.id), lang)}>
+      <span class="sb__label">
+        <span class="sb__dot" aria-hidden="true"></span>
+        {c.series.label} · <Rich text={flagship[lang].name} />
+      </span>
+
+      <h2 class="sb__q" id="sb-title"><Rich text={flagship[lang].question} /></h2>
+
+      <Rich text={flagship[lang].body} as="p" class="sb__body" />
+
+      <span class="sb__foot">
+        <span class="sb__cta">
+          {c.series.readSeries}
+          <span class="sb__arrow" aria-hidden="true">→</span>
+        </span>
+        {count > 0 && <span class="sb__count nums">{c.topics.countLabel(count)}</span>}
+      </span>
+    </a>
+  </section>
+)}
+
+<style>
+  .sb {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--atc-space-4);
+    padding: var(--atc-space-12) var(--atc-space-10);
+    border: 1px solid var(--adel-border-brand);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-tint);
+    text-decoration: none;
+    color: inherit;
+    transition: background-color var(--atc-duration-fast) var(--atc-ease-move);
+  }
+  .sb:hover { background: var(--adel-ice-blue); }
+
+  .sb__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    color: var(--adel-text-on-tint);
+  }
+  [lang='ar'] .sb__label { text-transform: none; letter-spacing: normal; }
+  /* Fresh Mint, once, for the thing that is genuinely live (§6). The word
+     "Series" carries the meaning as well, so the dot is not load-bearing. */
+  .sb__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--adel-accent);
+    flex: 0 0 auto;
+  }
+
+  .sb__q {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(26px, 4vw, 42px);
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-deep-blue);
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+  [lang='ar'] .sb__q { letter-spacing: normal; line-height: 1.4; }
+
+  .sb__body {
+    margin: 0;
+    font-size: var(--adel-text-base);
+    line-height: 1.65;
+    color: var(--adel-text-on-tint);
+    max-width: 62ch;
+  }
+
+  .sb__foot {
+    display: flex;
+    align-items: baseline;
+    gap: var(--atc-space-4);
+    margin-top: var(--atc-space-2);
+    flex-wrap: wrap;
+  }
+  .sb__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    color: var(--adel-deep-blue);
+  }
+  .sb:hover .sb__cta { text-decoration: underline; }
+  [dir='rtl'] .sb__arrow { display: inline-block; transform: scaleX(-1); }
+  .sb__count {
+    font-family: var(--adel-font-mono);
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-on-tint);
+    opacity: 0.75;
+  }
+
+  @media (max-width: 599px) {
+    .sb { padding: var(--atc-space-8) var(--atc-space-6); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sb { transition: none; }
+  }
+</style>

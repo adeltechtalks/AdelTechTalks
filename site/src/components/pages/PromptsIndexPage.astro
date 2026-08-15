@@ -1,0 +1,111 @@
+---
+/* Prompt Library index (Phase 1.1)
+   -----------------------------------------------------------------------------
+   §22 said not to overbuild this "during this migration" and to keep the
+   architecture from making it hard to add later. Phase 1.1 is later. The teaser
+   that had no route now has one, and the route has real content behind it.
+
+   Grouped by category rather than listed flat, because a prompt library is
+   used by errand ("I need a research prompt") and not by recency. */
+
+import Base from '../../layouts/Base.astro';
+import SectionIntro from '../editorial/SectionIntro.astro';
+import NewsletterCTA from '../editorial/NewsletterCTA.astro';
+import EntryList from '../editorial/EntryList.astro';
+import Rich from '../Rich.astro';
+import { getCollection } from 'astro:content';
+import { getPrompts } from '../../lib/content';
+import { plain, useCopy } from '../../copy';
+import { type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+
+const entries = await getPrompts(lang);
+
+/* The category of each prompt, read once so the grouping below does not have to
+   go back to the collection per item. */
+const raw = entries.length
+  ? await getCollection('prompts', ({ data }) => !data.draft && data.lang === lang)
+  : [];
+const categoryOf = new Map(raw.map((p) => [p.id, p.data.category]));
+
+const ORDER = ['product', 'building', 'research', 'writing', 'automation'] as const;
+const groups = ORDER.map((category) => ({
+  category,
+  label: c.prompts.category[category],
+  items: entries.filter((e) => categoryOf.get(e.slug) === category),
+})).filter((g) => g.items.length > 0);
+---
+
+<Base lang={lang} title={plain(c.prompts.title)} description={c.prompts.indexIntro}>
+  <div class="container">
+    <SectionIntro
+      overline={c.prompts.title}
+      title={c.prompts.indexTitle}
+      intro={c.prompts.indexIntro}
+      level={1}
+    />
+
+    {groups.length > 0 ? (
+      <div class="pl__groups">
+        {groups.map((group) => (
+          <section class="pl__group" aria-labelledby={`pl-${group.category}`}>
+            <h2 class="pl__groupTitle" id={`pl-${group.category}`}>
+              <Rich text={group.label} />
+              <span class="pl__groupCount nums">{group.items.length}</span>
+            </h2>
+            <EntryList entries={group.items} lang={lang} showKind={false} headingLevel={3} />
+          </section>
+        ))}
+      </div>
+    ) : (
+      <p class="pl__empty"><Rich text={c.prompts.empty} /></p>
+    )}
+
+    <div class="pl__cta">
+      <NewsletterCTA lang={lang} placement="prompts" />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .pl__groups {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-16);
+    margin-top: var(--atc-space-12);
+  }
+  .pl__groupTitle {
+    display: flex;
+    align-items: baseline;
+    gap: var(--atc-space-3);
+    margin: 0 0 var(--atc-space-4);
+    font-family: var(--adel-font-display);
+    font-size: clamp(20px, 2.4vw, 26px);
+    line-height: 1.3;
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-text-primary);
+  }
+  [lang='ar'] .pl__groupTitle { letter-spacing: normal; line-height: 1.45; }
+  .pl__groupCount {
+    font-family: var(--adel-font-mono);
+    font-size: var(--adel-text-xs);
+    font-weight: 500;
+    color: var(--adel-text-tertiary);
+  }
+  .pl__empty {
+    margin: var(--atc-space-10) 0 0;
+    padding: var(--atc-space-10);
+    border: 1px dashed var(--adel-border-strong);
+    border-radius: var(--adel-radius-panel);
+    text-align: center;
+    color: var(--adel-text-secondary);
+  }
+  .pl__cta { margin-top: var(--atc-space-20); }
+</style>

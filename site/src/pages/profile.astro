@@ -33,6 +33,11 @@ const stamps = playground.tracks.map((t) => ({
 
 <Base title="Your profile" description="Your Tech Passport, badges and share links.">
   <section class="container pf">
+    <!-- One h1 for the document (§30). The two states below swap at runtime,
+         so neither of them can be it — a hidden h1 would leave the visible
+         state with no page heading at all. -->
+    <h1 class="sr-only">Your profile</h1>
+
     <!-- Shown until we know who they are, so nothing flashes wrongly. -->
     <div class="pf__loading" data-loading>
       <span class="muted">Loading your profile…</span>
@@ -42,7 +47,7 @@ const stamps = playground.tracks.map((t) => ({
     <div class="pf__out" data-signed-out hidden>
       <Card elevation={2} padding="var(--atc-space-8)">
         <div class="stack">
-          <h1 class="h-section">You are not signed in</h1>
+          <h2 class="h-section">You are not signed in</h2>
           <p class="lede">Sign in to see your Tech Passport, your badges and your share links.</p>
           <div class="row">
             <Button variant="secondary" size="lg" href="/login/?next=/profile/" iconRight="arrow-right">
@@ -59,7 +64,7 @@ const stamps = playground.tracks.map((t) => ({
         <div class="pf__id">
           <span class="pf__avatar" data-avatar>A</span>
           <div class="pf__idText">
-            <h1 class="h-section" data-name>—</h1>
+            <p class="h-section" data-name>—</p>
             <span class="muted" data-email>—</span>
           </div>
         </div>

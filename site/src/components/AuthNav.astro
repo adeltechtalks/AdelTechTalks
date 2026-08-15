@@ -11,6 +11,15 @@
  * anyone with JavaScript off.
  */
 import { services } from '../site.config';
+import { useCopy } from '../copy';
+import { DEFAULT_LANG, localizePath, type Lang } from '../i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = DEFAULT_LANG } = Astro.props;
+const c = useCopy(lang);
 
 const ref = services.supabaseUrl
   ? new URL(services.supabaseUrl).hostname.split('.')[0]
@@ -20,10 +29,10 @@ const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
 
 {live && (
   <div class="auth" data-auth data-ref={ref}>
-    <a class="auth__signin" href="/login/" data-auth-out>Sign in</a>
-    <a class="auth__profile" href="/profile/" data-auth-in hidden>
+    <a class="auth__signin" href={localizePath('/login', lang)} data-auth-out>{c.common.signIn}</a>
+    <a class="auth__profile" href={localizePath('/profile', lang)} data-auth-in hidden>
       <span class="auth__avatar" data-auth-initial>A</span>
-      <span class="auth__label">Profile</span>
+      <span class="auth__label">{c.common.profile}</span>
     </a>
   </div>
 )}
@@ -62,39 +71,41 @@ const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
     align-items: center;
     height: var(--atc-control-md);
     padding: 0 var(--atc-space-4);
-    border-radius: var(--atc-radius-control);
-    font-size: var(--atc-body-small-size);
+    border-radius: var(--adel-radius-control);
+    font-size: var(--adel-text-sm);
     font-weight: 500;
-    color: var(--atc-ink-700);
+    color: var(--adel-text-secondary);
     text-decoration: none;
     white-space: nowrap;
   }
-  .auth__signin:hover { background: var(--atc-purple-50); color: var(--atc-purple-700); }
+  .auth__signin:hover { background: var(--adel-surface-tint); color: var(--adel-text-on-tint); }
 
   .auth__profile {
     display: inline-flex;
     align-items: center;
     gap: var(--atc-space-2);
     height: var(--atc-control-md);
-    padding: 0 var(--atc-space-3) 0 4px;
-    border-radius: var(--atc-radius-chip);
-    border: var(--atc-stroke-hairline) solid var(--atc-ink-200);
-    background: var(--atc-surface-raised);
+    /* logical, so the avatar keeps its tight edge in RTL too */
+    padding-block: 0;
+    padding-inline: 4px var(--atc-space-3);
+    border-radius: var(--adel-radius-pill);
+    border: 1px solid var(--adel-border-hairline);
+    background: var(--adel-surface-raised);
     text-decoration: none;
-    color: var(--atc-ink-700);
+    color: var(--adel-text-secondary);
   }
-  .auth__profile:hover { border-color: var(--atc-purple-600); color: var(--atc-purple-700); }
+  .auth__profile:hover { border-color: var(--adel-border-brand); color: var(--adel-text-link); }
   .auth__avatar {
     width: 28px;
     height: 28px;
     flex: 0 0 auto;
-    border-radius: var(--atc-radius-circle);
-    background: var(--atc-purple-600);
-    color: var(--atc-white);
+    border-radius: var(--adel-radius-circle);
+    background: var(--adel-signature-blue);
+    color: var(--adel-white);
     display: grid;
     place-items: center;
     font-size: 12px;
     font-weight: 600;
   }
-  .auth__label { font-size: var(--atc-body-small-size); font-weight: 500; }
+  .auth__label { font-size: var(--adel-text-sm); font-weight: 500; }
 </style>

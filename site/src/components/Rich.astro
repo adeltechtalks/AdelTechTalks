@@ -1,0 +1,100 @@
+---
+/* Renders a copy string, turning [[English term]] into a properly isolated
+   LTR run (§11).
+
+   Why a marker convention instead of raw HTML in the copy file: the copy file
+   is meant to be edited by a non-developer, and raw HTML there would be both
+   easy to break and an injection surface. Every part below is interpolated by
+   Astro, which escapes it — so `[[<script>]]` renders as literal text.
+
+   Nothing is done to the string on English pages either: an English term
+   inside English copy is already an LTR run, and `.term` only adds
+   `white-space: nowrap`, which is correct for an acronym in any language. */
+
+interface Props {
+  text: string;
+  /* Element to render into. Inline by default so it can sit inside a heading. */
+  as?: string;
+  /* Long phrases (three words or more) are allowed to wrap. */
+  wrap?: boolean;
+  class?: string;
+}
+
+const { text, as: Tag = 'span', wrap = false, class: className } = Astro.props;
+
+/* Two markers:
+
+     [[term]]     an English technical term — bidi-isolated LTR run (§11)
+     **emphasis** genuine emphasis — <strong>
+
+   Terms NEST INSIDE emphasis, and they have to: the Arabic About copy bolds a
+   whole question that contains three English terms —
+
+       '**هل أقدر أبني [[business]] حقيقي … [[Vibe Coding]]؟**'
+
+   so the emphasis is split first and each emphasised run is then split for
+   terms. The reverse never occurs — emphasis inside a single technical term is
+   not a thing — so one level of nesting is the whole grammar.
+
+   Everything is still interpolated by Astro, so `**<script>**` renders as
+   literal text. The copy file stays safe for a non-developer to edit. */
+/* The string is parsed HERE, in the frontmatter, and the template below stays a
+   flat two-line map. That is not a style preference — it is load-bearing.
+
+   JSX preserves the whitespace around an interpolation, so writing
+
+       <span class="term">
+         {term}
+       </span>
+
+   emits `<span class="term"> Tech </span>`, and an Arabic prefix that must sit
+   flush against its term renders as `بـ Tech ،` — a space before the term and
+   another before the comma. Keeping `>{value}</span>` tight is what prevents
+   that, in every language. */
+interface Piece {
+  term: boolean;
+  value: string;
+  wraps: boolean;
+}
+interface Run {
+  bold: boolean;
+  pieces: Piece[];
+}
+
+/** A term is allowed to wrap once it is a phrase rather than an acronym. */
+const termWraps = (term: string) => wrap || term.trim().split(/\s+/).length > 2;
+
+/** Split a run into plain text and [[term]] pieces, dropping empty ones. */
+function toPieces(source: string): Piece[] {
+  return source
+    .split(/(\[\[.+?\]\])/g)
+    .filter((p) => p !== '')
+    .map((p) => {
+      const isTerm = p.startsWith('[[') && p.endsWith(']]');
+      const value = isTerm ? p.slice(2, -2) : p;
+      return { term: isTerm, value, wraps: isTerm && termWraps(value) };
+    });
+}
+
+const runs: Run[] = text
+  .split(/(\*\*.+?\*\*)/g)
+  .filter((p) => p !== '')
+  .map((part) => {
+    const bold = part.startsWith('**') && part.endsWith('**');
+    return { bold, pieces: toPieces(bold ? part.slice(2, -2) : part) };
+  });
+---
+
+<Tag class={className}>
+  {runs.map((run) => {
+    const pieces = run.pieces.map((p) =>
+      p.term ? <span class:list={['term', p.wraps && 'term--wrap']}>{p.value}</span> : p.value
+    );
+    return run.bold ? <strong>{pieces}</strong> : pieces;
+  })}
+</Tag>
+
+<style is:global>
+  /* .term itself is defined in tokens/adel-type.css — it is a type rule, not a
+     component rule, and Arabic articles authored in Markdown need it too. */
+</style>

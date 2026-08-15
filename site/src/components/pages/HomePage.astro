@@ -1,0 +1,90 @@
+---
+/* =============================================================================
+   The homepage (§14) — one implementation, two languages
+   =============================================================================
+   Both `/` and `/ar/` render this. The alternative — two 300-line page files —
+   guarantees they drift apart, and a drifted Arabic homepage is exactly the
+   "visual afterthought" §10 forbids.
+
+   Section order is the order §14 lists them, with one Phase 1.1 insertion:
+
+     Hero → What I Explore → [Vibe Coding series] → Latest → Guides →
+     Prompt Library → What I'm Building → Latest Videos → GearNest →
+     Newsletter → Sign-Off
+
+   The series band goes after "What I Explore" and before the library strips,
+   because it is the thing happening right now rather than another category of
+   thing. It sits BELOW the hero, deliberately: the hero carries "I ❤️ Tech",
+   which is still the master brand expression, and Vibe Coding is the current
+   series underneath it — not a replacement for it.
+
+   CS-05: exactly one primary action on this page, and it is the hero's. Every
+   other action below is secondary, ghost or a plain link.
+   ========================================================================== */
+
+import Base from '../../layouts/Base.astro';
+import Hero from '../home/Hero.astro';
+import Explore from '../home/Explore.astro';
+import SeriesBand from '../home/SeriesBand.astro';
+import Latest from '../home/Latest.astro';
+import GuidesStrip from '../home/GuidesStrip.astro';
+import PromptTeaser from '../home/PromptTeaser.astro';
+import Building from '../home/Building.astro';
+import Videos from '../home/Videos.astro';
+import GearNest from '../home/GearNest.astro';
+import SignOff from '../home/SignOff.astro';
+import NewsletterCTA from '../editorial/NewsletterCTA.astro';
+import Divider from '../editorial/Divider.astro';
+import { getLatest, getGuides, getVideoPages, getVideos, countByTopic } from '../../lib/content';
+import { site } from '../../site.config';
+import type { Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const latest = await getLatest(lang, 6);
+const guides = (await getGuides(lang)).slice(0, 3);
+/* Structured video pages first, then anything that only exists as a config
+   link-out. Both render identically in the strip. */
+const videos = [...(await getVideoPages(lang)), ...getVideos()].slice(0, 3);
+const counts = await countByTopic(lang);
+
+const description = lang === 'ar' ? site.descriptionAr : site.description;
+---
+
+<Base lang={lang} padded={false} description={description}>
+  <Hero lang={lang} />
+
+  <Explore lang={lang} counts={counts} />
+
+  <SeriesBand lang={lang} />
+
+  <div class="container home__rule"><Divider /></div>
+
+  <Latest lang={lang} entries={latest} />
+
+  <GuidesStrip lang={lang} guides={guides} />
+
+  <PromptTeaser lang={lang} />
+
+  <Building lang={lang} />
+
+  <Videos lang={lang} entries={videos} />
+
+  <GearNest lang={lang} />
+
+  <section class="container section">
+    <NewsletterCTA lang={lang} placement="home" />
+  </section>
+
+  <SignOff lang={lang} />
+</Base>
+
+<style>
+  .home__rule {
+    margin-top: var(--atc-space-24);
+  }
+</style>

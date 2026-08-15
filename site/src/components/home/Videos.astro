@@ -1,0 +1,143 @@
+---
+/* "Latest Videos" (§14)
+   -----------------------------------------------------------------------------
+   "Implement the approved editorial video treatment. Avoid a generic wall of
+   embeds."
+
+   So nothing is embedded. Each video is a thumbnail, a title and a link out —
+   which is also the right performance decision (§31): three YouTube iframes on
+   the homepage is roughly a megabyte of third-party JavaScript, and the
+   thumbnail is an image.
+
+   AdelTechTalks is named here, because this is the channel's surface (§5). */
+
+import SectionIntro from '../editorial/SectionIntro.astro';
+import Rich from '../Rich.astro';
+import Icon from '../Icon.astro';
+import { site } from '../../site.config';
+import { useCopy } from '../../copy';
+import { localizePath, type Lang } from '../../i18n';
+import type { Entry } from '../../lib/content';
+
+interface Props {
+  lang: Lang;
+  entries: Entry[];
+}
+
+const { lang, entries } = Astro.props;
+const c = useCopy(lang);
+---
+
+<section class="container section" aria-labelledby="videos-title">
+  <SectionIntro
+    overline={site.showName}
+    title={c.videos.title}
+    intro={c.videos.intro}
+    {/* Phase 1.1 — this now goes to the on-site index rather than straight out
+        to YouTube. The channel link is still on every page, in the footer. */}
+    linkHref={localizePath('/videos', lang)}
+    linkLabel={c.common.viewAll}
+  />
+
+  {entries.length > 0 ? (
+    <div class="vd__grid">
+      {entries.map((v) => (
+        /* A structured video links to its own page and must NOT open in a new
+           tab; a config-array video links straight out to YouTube and must. */
+        <a
+          class="vd__item"
+          href={v.href}
+          rel={v.external ? 'noopener' : undefined}
+          target={v.external ? '_blank' : undefined}
+        >
+          <span class="vd__thumb">
+            <img
+              src={`https://i.ytimg.com/vi/${v.youtubeId ?? v.slug}/hqdefault.jpg`}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              width="480"
+              height="360"
+            />
+            <span class="vd__play" aria-hidden="true"><Icon name="play" size="md" /></span>
+          </span>
+          <h3 class="vd__title">{v.title}</h3>
+          {v.description && <Rich text={v.description} as="span" class="vd__meta" />}
+        </a>
+      ))}
+    </div>
+  ) : (
+    <p class="vd__empty">{c.videos.empty}</p>
+  )}
+</section>
+
+<style>
+  .vd__grid {
+    margin-top: var(--atc-space-10);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--atc-space-8);
+  }
+  .vd__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-3);
+    text-decoration: none;
+    color: inherit;
+  }
+  .vd__thumb {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--adel-radius-media);
+    background: var(--adel-surface-sunken);
+  }
+  .vd__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .vd__play {
+    position: absolute;
+    inset-block-end: var(--atc-space-3);
+    inset-inline-start: var(--atc-space-3);
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--adel-white);
+    color: var(--adel-graphite);
+    box-shadow: var(--adel-elevation-2);
+  }
+  /* The play triangle points the way video plays, which is LTR everywhere —
+     it is not a directional UI affordance and must not mirror (§29). */
+  [dir='rtl'] .vd__play { transform: none; }
+
+  .vd__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-base);
+    line-height: 1.4;
+    font-weight: 600;
+    color: var(--adel-text-primary);
+  }
+  .vd__item:hover .vd__title { color: var(--adel-text-link); }
+  .vd__meta {
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-tertiary);
+  }
+  .vd__empty {
+    margin: var(--atc-space-8) 0 0;
+    padding: var(--atc-space-8);
+    border: 1px dashed var(--adel-border-strong);
+    border-radius: var(--adel-radius-panel);
+    color: var(--adel-text-secondary);
+    text-align: center;
+  }
+
+  @media (max-width: 1023px) { .vd__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 599px) { .vd__grid { grid-template-columns: 1fr; } }
+</style>

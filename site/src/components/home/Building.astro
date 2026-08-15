@@ -1,0 +1,126 @@
+---
+/* "What I'm Building" (§14)
+   -----------------------------------------------------------------------------
+   Driven by the `projects` list in site.config.ts, never by a GearNest special
+   case: "Do not hard-code the architecture so only GearNest can exist."
+
+   A project marked `separate: true` is NOT listed here. Separate brands get
+   their own cross-link band (§5, §14 "Keep GearNest visually separate"), and
+   listing GearNest in both places would say the same thing twice. So this
+   section holds Adel's OWN projects and stays hidden until there is one —
+   which is honest, and is why the list is data-driven rather than a GearNest
+   special case. Add a project to `projects` and the section appears. */
+
+import SectionIntro from '../editorial/SectionIntro.astro';
+import Rich from '../Rich.astro';
+import { projects } from '../../site.config';
+import { useCopy } from '../../copy';
+import type { Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+const own = projects.filter((p) => !p.separate);
+---
+
+{own.length > 0 && (
+  <section class="container section" aria-labelledby="building-title">
+    <SectionIntro title={c.building.title} intro={c.building.intro} />
+    <ul class="bd__list">
+      {own.map((p) => (
+        <li class:list={['bd__item', p.separate && 'bd__item--separate']}>
+          <div class="bd__head">
+            <Rich text={p[lang].name} as="h3" class="bd__name" />
+            <span class:list={['bd__status', `bd__status--${p.status}`]}>{p.status}</span>
+          </div>
+          <Rich text={p[lang].body} as="p" class="bd__body" />
+          <a class="bd__link" href={p.url} rel="noopener" target="_blank">
+            {c.building.visit}
+            <span class="bd__arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
+<style>
+  .bd__list {
+    list-style: none;
+    margin: var(--atc-space-10) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--atc-space-6);
+  }
+  .bd__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-3);
+    padding: var(--atc-space-8);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-raised);
+    border: 1px solid var(--adel-border-hairline);
+  }
+  /* A separate brand does not sit inside Adel's surface treatment. The dashed
+     edge is the visual equivalent of "this belongs to someone else". */
+  .bd__item--separate {
+    background: var(--adel-surface-canvas);
+    border-style: dashed;
+    border-color: var(--adel-border-strong);
+  }
+  .bd__head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--atc-space-3);
+    flex-wrap: wrap;
+  }
+  .bd__name {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-text-primary);
+  }
+  [lang='ar'] .bd__name { letter-spacing: normal; }
+  .bd__status {
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: var(--adel-radius-pill);
+    background: var(--adel-surface-sunken);
+    color: var(--adel-text-secondary);
+    /* Status names are a fixed English vocabulary in the config, so they stay
+       LTR even on the Arabic page. */
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+  .bd__status--live {
+    background: var(--adel-status-success-bg);
+    color: var(--adel-status-success);
+  }
+  .bd__body {
+    margin: 0;
+    font-size: var(--adel-text-sm);
+    line-height: 1.65;
+    color: var(--adel-text-secondary);
+  }
+  .bd__link {
+    margin-top: auto;
+    padding-top: var(--atc-space-3);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    align-self: flex-start;
+    font-size: var(--adel-text-sm);
+    font-weight: 500;
+    color: var(--adel-text-link);
+    text-decoration: none;
+  }
+  .bd__link:hover { text-decoration: underline; }
+  [dir='rtl'] .bd__arrow { display: inline-block; transform: scaleX(-1); }
+</style>

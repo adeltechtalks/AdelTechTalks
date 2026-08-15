@@ -1,71 +1,148 @@
 ---
-/* Sticky glass header. BP v1.0: glass is ONE layer deep, only at elevation 2+.
-   This is the only glass surface on any page.
-   Header actions are deliberately SECONDARY — the header persists across every
-   route and would otherwise duplicate each page's single Spark moment. */
+/* =============================================================================
+   Site header — the one glass surface on the site (§17)
+   =============================================================================
+   §17: "Liquid Glass is an accent, not the entire website… The primary glass
+   element should remain the approved navigation/chrome treatment."
 
-import Logo from './Logo.astro';
-import Button from './Button.astro';
+   So this is it. Nothing else on any page uses backdrop-filter. If a second
+   glass container appears anywhere, that is the budget being spent without a
+   decision.
+
+   The header actions stay SECONDARY: the header persists across every route,
+   and a primary button here would compete with each page's own single primary
+   action on every screen.
+   ========================================================================== */
+
+import AdelLogo from './AdelLogo.astro';
 import AuthNav from './AuthNav.astro';
+import Rich from './Rich.astro';
+import { nav, site } from '../site.config';
+import { useCopy } from '../copy';
+import {
+  DEFAULT_LANG,
+  LANGS,
+  LANG_TAG,
+  isEnglishOnly,
+  localizePath,
+  neutralPath,
+  type Lang,
+} from '../i18n';
+
+interface Props {
+  lang?: Lang;
+  /* Where the language switch should go, when the page knows better than the
+     path does. A guide with an Arabic translation passes that translation's
+     real URL, which is not the English slug with /ar in front of it. */
+  switchTo?: string;
+  /* The page exists in this language only. The switch then goes to the other
+     language's home — a reader who taps it should land somewhere real. */
+  switchToHome?: boolean;
+}
+
+const { lang = DEFAULT_LANG, switchTo, switchToHome = false } = Astro.props;
+const c = useCopy(lang);
 
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const neutral = neutralPath(path) || '/';
 
-const NAV = [
-  { href: '/guides', label: 'Guides' },
-  { href: '/playground', label: 'Playground' },
-  { href: '/about', label: 'About' },
-  { href: '/work-with-me', label: 'Work with me' },
-];
+/* Phase 1 only. Everything else in `nav` is defined but not rendered — the
+   shape of the future navigation already exists, it is just not switched on. */
+const items = nav
+  .filter((item) => item.phase === 1)
+  .map((item) => ({
+    href: localizePath(item.path, lang),
+    label: (c.nav as Record<string, string>)[item.key] ?? item.key,
+    active: neutral === item.path || neutral.startsWith(item.path + '/'),
+    /* An Arabic page linking to an English-only route has to announce the
+       language change on the anchor, or a screen reader reads English words in
+       an Arabic voice. */
+    foreign: lang !== DEFAULT_LANG && isEnglishOnly(item.path),
+  }));
 
-const isActive = (href: string) => path === href || path.startsWith(href + '/');
+const other = LANGS.find((l) => l !== lang)!;
+/* Three cases, in order: the page told us where its counterpart is; the page
+   told us it has none; or the path can be translated mechanically. The last one
+   still has to handle an English-only route, which has no Arabic address at all
+   — there the switch goes to that language's home rather than nowhere. */
+const otherHref =
+  switchTo ??
+  (switchToHome || isEnglishOnly(neutral)
+    ? localizePath('/', other)
+    : localizePath(neutral, other));
+const homeHref = localizePath('/', lang);
 ---
 
 <header class="hdr">
   <div class="hdr__inner">
-    <a href="/" class="hdr__logo" aria-label="AdelTechTalks — home">
-      <Logo size={32} />
+    <a href={homeHref} class="hdr__logo" aria-label={`${site.name} — ${c.common.home}`}>
+      <AdelLogo size={28} tone="default" />
     </a>
 
     <nav class="hdr__nav" aria-label="Main">
-      {NAV.map((item) => (
+      {items.map((item) => (
         <a
           href={item.href}
-          class:list={['hdr__link', isActive(item.href) && 'hdr__link--active']}
-          aria-current={isActive(item.href) ? 'page' : undefined}
+          class:list={['hdr__link', item.active && 'hdr__link--active']}
+          aria-current={item.active ? 'page' : undefined}
+          hreflang={item.foreign ? LANG_TAG[DEFAULT_LANG] : undefined}
         >
-          {item.label}
+          <Rich text={item.label} />
         </a>
       ))}
     </nav>
 
     <div class="hdr__actions">
-      <AuthNav />
-      <Button variant="secondary" size="md" href="/work-with-me" iconRight="arrow-right">
-        Work with me
-      </Button>
+      <AuthNav lang={lang} />
+      {/* The language switch is a link to the same page, not a dropdown: one
+          tap, no menu, and it works with JavaScript switched off. `lang` and
+          `hreflang` on the anchor tell a screen reader the destination is in
+          another language before it is announced in the wrong voice. */}
+      <a class="hdr__lang" href={otherHref} lang={LANG_TAG[other]} hreflang={LANG_TAG[other]}>
+        {c.common.languageSwitch}
+      </a>
     </div>
 
-    <button class="hdr__burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+    <button
+      class="hdr__burger"
+      aria-label={c.common.menuOpen}
+      data-label-open={c.common.menuOpen}
+      data-label-close={c.common.menuClose}
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+    >
       <span></span><span></span><span></span>
     </button>
   </div>
 
   <nav class="hdr__mobile" id="mobile-nav" aria-label="Main" hidden>
-    {NAV.map((item) => (
-      <a href={item.href} class:list={['hdr__link', isActive(item.href) && 'hdr__link--active']}>
-        {item.label}
+    {items.map((item) => (
+      <a
+        href={item.href}
+        class:list={['hdr__link', item.active && 'hdr__link--active']}
+        hreflang={item.foreign ? LANG_TAG[DEFAULT_LANG] : undefined}
+      >
+        <Rich text={item.label} />
       </a>
     ))}
-    <a href="/login/" class="hdr__link hdr__link--account" data-m-auth-out>Sign in</a>
-    <a href="/profile/" class="hdr__link hdr__link--account" data-m-auth-in hidden>Your profile</a>
+    <a href={localizePath('/login', lang)} class="hdr__link hdr__link--account" data-m-auth-out>
+      {c.common.signIn}
+    </a>
+    <a href={localizePath('/profile', lang)} class="hdr__link hdr__link--account" data-m-auth-in hidden>
+      {c.common.profile}
+    </a>
+    <a class="hdr__link hdr__link--lang" href={otherHref} lang={LANG_TAG[other]} hreflang={LANG_TAG[other]}>
+      {c.common.languageSwitch}
+    </a>
   </nav>
 </header>
 
 <script>
   const burger = document.querySelector<HTMLButtonElement>('.hdr__burger');
   const menu = document.querySelector<HTMLElement>('.hdr__mobile');
+
   /* Mirror the header's account state into the mobile menu. Same cheap
-     localStorage read as AuthNav — no SDK. */
+     localStorage read as AuthNav — no SDK, no network. */
   const authEl = document.querySelector<HTMLElement>('[data-auth]');
   const ref = authEl?.dataset.ref;
   if (ref) {
@@ -82,8 +159,21 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
   burger?.addEventListener('click', () => {
     const open = burger.getAttribute('aria-expanded') === 'true';
     burger.setAttribute('aria-expanded', String(!open));
-    burger.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+    burger.setAttribute(
+      'aria-label',
+      (open ? burger.dataset.labelOpen : burger.dataset.labelClose) ?? ''
+    );
     if (menu) menu.hidden = open;
+  });
+
+  /* Escape closes it and returns focus to the button — a menu you can open
+     with the keyboard has to be closable with the keyboard. */
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || !burger || !menu || menu.hidden) return;
+    menu.hidden = true;
+    burger.setAttribute('aria-expanded', 'false');
+    burger.setAttribute('aria-label', burger.dataset.labelOpen ?? '');
+    burger.focus();
   });
 </script>
 
@@ -92,16 +182,24 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
     position: sticky;
     top: 0;
     z-index: var(--atc-z-3);
-    background: var(--atc-surface-glass-fill);
-    backdrop-filter: blur(var(--atc-surface-glass-blur));
-    -webkit-backdrop-filter: blur(var(--atc-surface-glass-blur));
-    border-bottom: var(--atc-stroke-hairline) solid var(--atc-ink-100);
+    background: var(--adel-glass-fill);
+    backdrop-filter: blur(var(--adel-glass-blur)) saturate(1.4);
+    -webkit-backdrop-filter: blur(var(--adel-glass-blur)) saturate(1.4);
+    border-bottom: 1px solid var(--adel-border-hairline);
   }
+  /* Where backdrop-filter is unavailable the fill must become opaque, or the
+     nav sits unreadable over scrolling text. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .hdr {
+      background: var(--adel-surface-canvas);
+    }
+  }
+
   .hdr__inner {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 var(--atc-space-8);
-    height: 72px;
+    height: 68px;
     display: flex;
     align-items: center;
     gap: var(--atc-space-8);
@@ -112,45 +210,59 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
   }
   .hdr__nav {
     display: flex;
-    gap: var(--atc-space-1);
+    gap: 2px;
     margin-inline-start: auto;
   }
   .hdr__link {
-    padding: 8px 14px;
-    border-radius: var(--atc-radius-control);
+    padding: 8px 12px;
+    border-radius: var(--adel-radius-control);
     text-decoration: none;
-    font-size: var(--atc-body-small-size);
+    font-size: var(--adel-text-sm);
     font-weight: 500;
-    color: var(--atc-ink-700);
+    color: var(--adel-text-secondary);
     white-space: nowrap;
   }
   .hdr__link:hover {
-    background: var(--atc-purple-50);
-    color: var(--atc-purple-700);
+    background: var(--adel-surface-tint);
+    color: var(--adel-text-on-tint);
   }
   .hdr__link--active {
-    color: var(--atc-purple-700);
-    background: var(--atc-purple-50);
+    color: var(--adel-text-primary);
+    font-weight: 600;
   }
   .hdr__actions {
     display: flex;
-    gap: var(--atc-space-3);
+    gap: var(--atc-space-2);
     align-items: center;
+  }
+  .hdr__lang {
+    padding: 8px 12px;
+    border-radius: var(--adel-radius-control);
+    border: 1px solid var(--adel-border-hairline);
+    font-size: var(--adel-text-sm);
+    font-weight: 500;
+    color: var(--adel-text-primary);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .hdr__lang:hover {
+    border-color: var(--adel-border-brand);
+    color: var(--adel-text-link);
   }
 
   /* ---- burger, hidden on desktop ---- */
   .hdr__burger {
     display: none;
     margin-inline-start: auto;
-    width: 44px; /* touch target 44×44 regardless of visual height */
+    width: 44px; /* 44×44 touch target regardless of visual height */
     height: 44px;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     gap: 5px;
     background: transparent;
-    border: var(--atc-stroke-hairline) solid var(--atc-ink-200);
-    border-radius: var(--atc-radius-control);
+    border: 1px solid var(--adel-border-strong);
+    border-radius: var(--adel-radius-control);
     cursor: pointer;
   }
   .hdr__burger span {
@@ -158,23 +270,25 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
     width: 18px;
     height: 2px;
     border-radius: 1px;
-    background: var(--atc-ink-700);
+    background: var(--adel-text-primary);
   }
   .hdr__mobile {
     display: none;
     flex-direction: column;
-    gap: var(--atc-space-1);
+    gap: 2px;
     padding: var(--atc-space-4) var(--atc-space-5) var(--atc-space-5);
-    border-top: var(--atc-stroke-hairline) solid var(--atc-ink-100);
+    border-top: 1px solid var(--adel-border-hairline);
+    background: var(--adel-surface-canvas);
   }
   .hdr__mobile .hdr__link {
     padding: 12px 14px;
   }
-  .hdr__link--account {
+  .hdr__link--account,
+  .hdr__link--lang {
     margin-top: var(--atc-space-2);
-    border-top: var(--atc-stroke-hairline) solid var(--atc-ink-100);
+    border-top: 1px solid var(--adel-border-hairline);
     padding-top: var(--atc-space-4) !important;
-    color: var(--atc-purple-700);
+    color: var(--adel-text-link);
   }
 
   @media (max-width: 1023px) {

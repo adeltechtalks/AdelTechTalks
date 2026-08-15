@@ -1,0 +1,75 @@
+---
+/* Videos index (Phase 1.1)
+   -----------------------------------------------------------------------------
+   "Structured Videos" means each video has a page — chapters, takeaways, the
+   prompts that were on screen — not that the site embeds more of them. Nothing
+   is embedded here: §31's performance rule has not changed, and three YouTube
+   iframes on an index page is about a megabyte of third-party JavaScript.
+
+   Two sources feed this page, deliberately:
+     · the `videos` collection — the ones with a page of their own
+     · the `videos` array in site.config.ts — quick links straight to YouTube
+   A video that has not been written up yet still appears, it just links out. */
+
+import Base from '../../layouts/Base.astro';
+import SectionIntro from '../editorial/SectionIntro.astro';
+import NewsletterCTA from '../editorial/NewsletterCTA.astro';
+import EntryList from '../editorial/EntryList.astro';
+import { site } from '../../site.config';
+import { getVideoPages, getVideos } from '../../lib/content';
+import { useCopy } from '../../copy';
+import type { Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+
+const entries = [...(await getVideoPages(lang)), ...getVideos()].sort(
+  (a, b) => b.date.valueOf() - a.date.valueOf()
+);
+---
+
+{/* Same rule as /guides — see GuidesIndexPage. */}
+<Base
+  lang={lang}
+  title={c.videos.title}
+  description={c.videos.indexIntro}
+  noindex={entries.length === 0}
+>
+  <div class="container">
+    <SectionIntro
+      overline={site.showName}
+      title={c.videos.indexTitle}
+      intro={c.videos.indexIntro}
+      level={1}
+      linkHref={site.social.youtube}
+      linkLabel={c.videos.watchOn}
+    />
+
+    {entries.length > 0 ? (
+      <EntryList entries={entries} lang={lang} showKind={false} headingLevel={2} class="vi__list" />
+    ) : (
+      <p class="vi__empty">{c.videos.empty}</p>
+    )}
+
+    <div class="vi__cta">
+      <NewsletterCTA lang={lang} placement="videos" />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .vi__list { margin-top: var(--atc-space-10); }
+  .vi__empty {
+    margin: var(--atc-space-10) 0 0;
+    padding: var(--atc-space-10);
+    border: 1px dashed var(--adel-border-strong);
+    border-radius: var(--adel-radius-panel);
+    text-align: center;
+    color: var(--adel-text-secondary);
+  }
+  .vi__cta { margin-top: var(--atc-space-20); }
+</style>

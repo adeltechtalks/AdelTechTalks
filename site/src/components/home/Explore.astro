@@ -1,0 +1,121 @@
+---
+/* "What I Explore" (§14) — the six topics, as editorial columns rather than a
+   grid of coloured cards. Each links to its topic page, so the section is a
+   navigation surface and not a decorative one. */
+
+import SectionIntro from '../editorial/SectionIntro.astro';
+import Icon from '../Icon.astro';
+import Rich from '../Rich.astro';
+import { topics } from '../../site.config';
+import { useCopy } from '../../copy';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+  counts?: Record<string, number>;
+}
+
+const { lang, counts } = Astro.props;
+const c = useCopy(lang);
+---
+
+<section class="container section" aria-labelledby="explore-title">
+  <SectionIntro
+    title={c.explore.title}
+    intro={c.explore.intro}
+    linkHref={localizePath('/topics', lang)}
+    linkLabel={c.common.allTopics}
+  />
+
+  <ul class="ex__grid">
+    {topics.map((topic) => (
+      <li class="ex__item">
+        <a class="ex__link" href={localizePath(`/topics/${topic.id}`, lang)}>
+          <span class="ex__icon" aria-hidden="true"><Icon name={topic.icon} size="md" /></span>
+          <Rich text={topic[lang].name} as="h3" class="ex__name" />
+          <Rich text={topic[lang].body} as="p" class="ex__body" />
+          {counts && counts[topic.id] > 0 && (
+            <span class="ex__count nums">{c.topics.countLabel(counts[topic.id])}</span>
+          )}
+        </a>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .ex__grid {
+    list-style: none;
+    margin: var(--atc-space-10) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--adel-border-hairline);
+    border: 1px solid var(--adel-border-hairline);
+    border-radius: var(--adel-radius-panel);
+    overflow: hidden;
+  }
+  .ex__item {
+    background: var(--adel-surface-canvas);
+  }
+  .ex__link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-2);
+    height: 100%;
+    box-sizing: border-box;
+    padding: var(--atc-space-6);
+    text-decoration: none;
+    color: inherit;
+    background: var(--adel-surface-canvas);
+    transition: background-color var(--atc-duration-fast) var(--atc-ease-move);
+  }
+  .ex__link:hover {
+    background: var(--adel-surface-tint);
+  }
+  .ex__icon {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    margin-bottom: var(--atc-space-2);
+    border-radius: var(--adel-radius-control);
+    background: var(--adel-surface-tint);
+    color: var(--adel-signature-blue);
+  }
+  .ex__link:hover .ex__icon {
+    background: var(--adel-white);
+  }
+  .ex__name {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-lg);
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--adel-text-primary);
+  }
+  .ex__body {
+    margin: 0;
+    font-size: var(--adel-text-sm);
+    line-height: 1.6;
+    color: var(--adel-text-secondary);
+  }
+  .ex__count {
+    margin-top: auto;
+    padding-top: var(--atc-space-3);
+    font-family: var(--adel-font-mono);
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-tertiary);
+  }
+
+  @media (max-width: 1023px) {
+    .ex__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 599px) {
+    .ex__grid { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ex__link { transition: none; }
+  }
+</style>

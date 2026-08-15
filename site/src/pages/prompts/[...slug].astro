@@ -1,0 +1,16 @@
+---
+import PromptPage from '../../components/pages/PromptPage.astro';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const items = await getCollection('prompts', ({ data }) => !data.draft && data.lang === 'en');
+  return items.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+};
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+<PromptPage lang="en" slug={entry.id} data={entry.data}>
+  <Content />
+</PromptPage>

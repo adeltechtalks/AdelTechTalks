@@ -1,3 +1,15 @@
+/* -----------------------------------------------------------------------------
+   Token entry point. ORDER IS LOAD-BEARING.
+   -----------------------------------------------------------------------------
+   1–8   the original ATT system, untouched. It still defines every geometry,
+         motion and typography token the components use.
+   9–10  the Adel v2.0 palette and type system.
+   11    the bridge — re-points every `--atc-*` COLOUR token at a v2.0 value.
+         It must load AFTER tokens/colors.css or the purple wins.
+   12    Legacy · ATT Content System — scoped to `.att-legacy`, never global.
+
+   To roll the whole visual migration back: comment out lines 9–11.
+   -------------------------------------------------------------------------- */
 @import url("./tokens/fonts.css");
 @import url("./tokens/colors.css");
 @import url("./tokens/typography.css");
@@ -6,3 +18,9 @@
 @import url("./tokens/brand.css");
 @import url("./tokens/motion.css");
 @import url("./tokens/base.css");
+
+@import url("./tokens/adel-v2.css");
+@import url("./tokens/adel-type.css");
+@import url("./tokens/bridge-v2.css");
+
+@import url("./tokens/legacy-att.css");

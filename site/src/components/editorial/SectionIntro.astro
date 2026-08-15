@@ -1,0 +1,135 @@
+---
+/* SectionIntro — the standard opening of every homepage and index section.
+   An overline, a heading, an optional sentence, and an optional link on the
+   far side. It exists so that fourteen sections do not each invent their own
+   header treatment. */
+
+import Rich from '../Rich.astro';
+
+interface Props {
+  overline?: string;
+  title: string;
+  intro?: string;
+  linkHref?: string;
+  linkLabel?: string;
+  /* h2 by default. On an index page whose title IS the section title, pass
+     level={1} — every page needs exactly one h1 (§30). */
+  level?: 1 | 2 | 3;
+  align?: 'start' | 'center';
+  class?: string;
+}
+
+const {
+  overline,
+  title,
+  intro,
+  linkHref,
+  linkLabel,
+  level = 2,
+  align = 'start',
+  class: className,
+} = Astro.props;
+
+const Heading = `h${level}` as 'h1' | 'h2' | 'h3';
+---
+
+<div class:list={['si', align === 'center' && 'si--center', className]}>
+  <div class="si__text">
+    {overline && <Rich text={overline} class="overline si__overline" />}
+    <Heading class="si__title">
+      <Rich text={title} />
+    </Heading>
+    {intro && <Rich text={intro} as="p" class="si__intro" />}
+  </div>
+
+  {linkHref && linkLabel && (
+    <a class="si__link" href={linkHref}>
+      <Rich text={linkLabel} />
+      <span class="si__arrow" aria-hidden="true">→</span>
+    </a>
+  )}
+</div>
+
+<style>
+  .si {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--atc-space-6);
+    flex-wrap: wrap;
+  }
+  .si--center {
+    justify-content: center;
+    text-align: center;
+  }
+  .si--center .si__text {
+    margin-inline: auto;
+  }
+  .si__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-3);
+    max-width: 62ch;
+  }
+  .si__overline {
+    color: var(--adel-signature-blue);
+  }
+  .si__title {
+    font-family: var(--adel-font-display);
+    font-size: clamp(26px, 3.2vw, 34px);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-text-primary);
+    margin: 0;
+    text-wrap: balance;
+  }
+  /* When it IS the page title it takes the page-title scale and weight. */
+  h1.si__title {
+    font-size: clamp(32px, 4.5vw, 46px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+  [lang='ar'] .si__title,
+  [lang='ar'] h1.si__title {
+    letter-spacing: normal;
+    line-height: 1.4;
+  }
+  .si__intro {
+    margin: 0;
+    font-size: var(--adel-text-lg);
+    line-height: 1.6;
+    color: var(--adel-text-secondary);
+  }
+  .si__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    padding-bottom: 4px;
+    font-size: var(--adel-text-sm);
+    font-weight: 500;
+    color: var(--adel-text-link);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .si__link:hover {
+    color: var(--adel-text-link-hover);
+    text-decoration: underline;
+  }
+  /* The arrow points the way the language reads. It is one of the few glyphs
+     that MUST mirror in RTL (§29). */
+  [dir='rtl'] .si__arrow {
+    transform: scaleX(-1);
+    display: inline-block;
+  }
+
+  @media (max-width: 767px) {
+    .si__title {
+      font-size: 24px;
+    }
+    .si__intro {
+      font-size: var(--adel-text-base);
+    }
+  }
+</style>

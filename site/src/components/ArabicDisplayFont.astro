@@ -1,0 +1,48 @@
+---
+/* =============================================================================
+   KO Ghorab — the approved Arabic display typeface (§9)
+   =============================================================================
+   ⚠️ STAGED. The licensed file is not in this repository.
+
+   Drop it at exactly:
+
+       src/assets/fonts/KOGhorab-Regular.woff2
+
+   …and it activates on the next build. Vite fingerprints the file, so it gets
+   a far-future immutable cache header, and the @font-face below is emitted
+   with the hashed URL.
+
+   WHY THE @font-face IS HERE AND NOT IN THE TOKEN FILE
+   ---------------------------------------------------
+   A static @font-face pointing at a file that does not exist makes every
+   Arabic page request a missing font and take a 404. `font-display: swap`
+   means nothing breaks, but it is a wasted round trip on the page that can
+   least afford one. Emitting the rule only when the file is really there costs
+   nothing and is silent until the asset arrives.
+
+   The TOKEN — --adel-font-arabic-display — stays exactly as approved in
+   tokens/adel-type.css, with 'KO Ghorab' first and Cairo as the documented
+   temporary fallback. No other display family substitutes for Ghorab.
+
+   No font file has been fabricated or redistributed.
+   ========================================================================== */
+
+const fonts = import.meta.glob('../assets/fonts/KOGhorab-Regular.woff2', {
+  query: '?url',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>;
+
+const ghorab = Object.values(fonts)[0] ?? null;
+---
+
+{ghorab && (
+  <style is:global set:html={`@font-face{
+  font-family:'KO Ghorab';
+  src:url('${ghorab}') format('woff2');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+  unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF;
+}`} />
+)}

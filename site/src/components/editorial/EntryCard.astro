@@ -1,0 +1,105 @@
+---
+/* EntryCard — used ONLY where a cover image is the point (the Guides strip).
+   Everywhere else the editorial list is the right primitive (§16). */
+
+import PhotoFigure from './PhotoFigure.astro';
+import Rich from '../Rich.astro';
+import { formatDate, type Lang } from '../../i18n';
+import { useCopy } from '../../copy';
+import { findTopic } from '../../lib/content';
+import type { Entry } from '../../lib/content';
+
+interface Props {
+  entry: Entry;
+  lang: Lang;
+}
+
+const { entry, lang } = Astro.props;
+const c = useCopy(lang);
+const topic = findTopic(entry.topic);
+---
+
+<a class="ec" href={entry.href}>
+  <PhotoFigure
+    src={entry.cover}
+    alt={entry.coverAlt ?? ''}
+    ratio="16 / 10"
+    class="ec__cover"
+    slotNote="Cover image"
+  />
+  <div class="ec__body">
+    <div class="ec__meta">
+      {topic && <Rich text={topic[lang].name} class="ec__topic" />}
+      <time class="ec__date nums" datetime={entry.date.toISOString().slice(0, 10)}>
+        {formatDate(entry.date, lang)}
+      </time>
+    </div>
+    <h3 class="ec__title">{entry.title}</h3>
+    <p class="ec__desc">{entry.description}</p>
+    {entry.minutes && <span class="ec__mins nums">{c.common.minutes(entry.minutes)}</span>}
+  </div>
+</a>
+
+<style>
+  .ec {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-4);
+    text-decoration: none;
+    color: inherit;
+  }
+  .ec__cover {
+    transition: opacity var(--atc-duration-fast) var(--atc-ease-move);
+  }
+  .ec:hover .ec__cover {
+    opacity: 0.92;
+  }
+  .ec:hover .ec__title {
+    color: var(--adel-text-link);
+  }
+  .ec__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-2);
+  }
+  .ec__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-3);
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-tertiary);
+  }
+  .ec__topic {
+    font-weight: 600;
+    color: var(--adel-signature-blue);
+  }
+  .ec__date,
+  .ec__mins {
+    font-family: var(--adel-font-mono);
+  }
+  .ec__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-lg);
+    line-height: 1.35;
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-text-primary);
+  }
+  [lang='ar'] .ec__title {
+    letter-spacing: normal;
+  }
+  .ec__desc {
+    margin: 0;
+    font-size: var(--adel-text-sm);
+    line-height: 1.6;
+    color: var(--adel-text-secondary);
+  }
+  .ec__mins {
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-tertiary);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ec__cover { transition: none; }
+  }
+</style>

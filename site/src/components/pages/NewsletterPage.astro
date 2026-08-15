@@ -1,0 +1,77 @@
+---
+/* The newsletter's own page (§18). Also the destination for the Prompt Library
+   teaser, so it has to stand on its own rather than be a form on a card. */
+
+import Base from '../../layouts/Base.astro';
+import NewsletterForm from '../NewsletterForm.astro';
+import Divider from '../editorial/Divider.astro';
+import Rich from '../Rich.astro';
+import { useCopy } from '../../copy';
+import type { Lang } from '../../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = useCopy(lang);
+---
+
+<Base lang={lang} title={c.newsletter.pageTitle} description={c.newsletter.pageIntro}>
+  <div class="container nlp">
+    <span class="overline nlp__overline">{c.newsletter.pageTitle}</span>
+    <Rich text={c.newsletter.title} as="h1" class="nlp__title" />
+    <p class="nlp__intro">{c.newsletter.pageIntro}</p>
+
+    <div class="nlp__form">
+      <NewsletterForm lang={lang} placement="newsletter" />
+    </div>
+
+    <div class="nlp__rule"><Divider /></div>
+
+    <ul class="nlp__points">
+      {c.hero.pattern.map((line) => <li class="nlp__point">{line}</li>)}
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .nlp {
+    max-width: 640px;
+    padding-block: var(--atc-space-10) var(--atc-space-20);
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-4);
+  }
+  .nlp__overline { color: var(--adel-signature-blue); }
+  .nlp__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(30px, 4.5vw, 44px);
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+    text-wrap: balance;
+  }
+  [lang='ar'] .nlp__title { letter-spacing: normal; line-height: 1.35; }
+  .nlp__intro {
+    margin: 0;
+    font-size: var(--adel-text-lg);
+    line-height: 1.65;
+    color: var(--adel-text-secondary);
+  }
+  .nlp__form { margin-top: var(--atc-space-4); }
+  .nlp__rule { margin-block: var(--atc-space-10); }
+  .nlp__points {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-3);
+  }
+  .nlp__point {
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-lg);
+    font-weight: 600;
+    color: var(--adel-text-tertiary);
+  }
+</style>

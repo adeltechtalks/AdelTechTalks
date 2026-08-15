@@ -1,0 +1,164 @@
+/* =============================================================================
+   Adel Personal Brand — Typography v2.0
+   =============================================================================
+   FOUR families, no fifth (§32 — "avoid loading every historical font
+   globally", "use only required weights/styles"). The v2.0 brand keeps the
+   four faces already in the system and narrows their weight ranges:
+
+     Readex Pro   body, and any Latin sitting INSIDE an Arabic sentence
+     Montserrat   Latin display — standalone headings, wordmark, index figures
+     Cairo        Arabic display, and the documented fallback for Ghorab
+     JetBrains    technical figures: dates, durations, specs, code
+
+   Adding a fifth Latin family (Inter and friends) was considered and rejected:
+   it is another network round-trip for a face Readex Pro already covers, and
+   §11 needs one family whose Latin and Arabic metrics match.
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   ARABIC DISPLAY — KO Ghorab / Ghorab Typeface (Kotype)
+   -----------------------------------------------------------------------------
+   ⚠️ STAGED, NOT ACTIVE. The licensed font file is not in the repository.
+
+   The approved token is below and does not change. The @font-face that loads
+   the file lives in src/components/ArabicDisplayFont.astro, which emits it
+   only once the licensed file is present at:
+
+       src/assets/fonts/KOGhorab-Regular.woff2
+
+   Splitting it that way keeps the approved token and the staged implementation
+   exactly as specified, while not making every Arabic page request a file that
+   does not exist yet.
+
+   Until the file arrives, Arabic display text falls back to Cairo, which is
+   licensed (SIL OFL) and already loaded — a temporary fallback, not a
+   replacement. No other display family substitutes for Ghorab.
+
+   No font file has been fabricated or redistributed.
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* ---- families -----------------------------------------------------------
+     These are the v2.0 names. They resolve to the same four faces the ATT
+     system already loads, so nothing new is fetched. */
+  --adel-font-text: 'Readex Pro', 'Segoe UI', Tahoma, 'Noto Sans Arabic', sans-serif;
+  --adel-font-display: 'Montserrat', 'Readex Pro', 'Segoe UI', sans-serif;
+  --adel-font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Arabic body is the same family as Latin body — that is the point. One set
+     of metrics means a mixed sentence does not jump mid-line (§11). */
+  --adel-font-arabic: var(--adel-font-text);
+
+  /* Arabic display — Ghorab first, Cairo as the documented temporary fallback. */
+  --adel-font-arabic-display: 'KO Ghorab', 'Cairo', 'Readex Pro', Tahoma, sans-serif;
+
+  /* ---- scale — editorial, a touch larger than a UI scale ---- */
+  --adel-text-xs:   12px;
+  --adel-text-sm:   14px;
+  --adel-text-base: 17px;
+  --adel-text-lg:   20px;
+  --adel-text-xl:   24px;
+  --adel-text-2xl:  32px;
+  --adel-text-3xl:  42px;
+  --adel-text-4xl:  56px;
+  --adel-text-5xl:  72px;
+
+  --adel-leading-tight: 1.15;
+  --adel-leading-snug:  1.35;
+  --adel-leading-body:  1.7;
+
+  --adel-tracking-tight: -0.02em;
+  --adel-tracking-wide:  0.08em;
+
+  /* ---- measure ---- */
+  --adel-measure: 68ch;        /* Latin long-form */
+  --adel-measure-arabic: 58ch; /* Arabic sets denser and wants a shorter line */
+}
+
+/* -----------------------------------------------------------------------------
+   ARABIC / RTL TYPE ADJUSTMENTS (§10, §11)
+   -----------------------------------------------------------------------------
+   Applied by LANGUAGE, not by direction, so a mixed page behaves correctly and
+   an English quotation inside an Arabic article does not inherit Arabic rules.
+   -------------------------------------------------------------------------- */
+:root:lang(ar),
+[lang='ar'] {
+  --adel-font-display: var(--adel-font-arabic-display);
+  --adel-measure: var(--adel-measure-arabic);
+  /* Arabic needs more line height: diacritics and connecting strokes sit
+     outside the Latin x-height band. */
+  --adel-leading-body: 1.85;
+  --adel-leading-snug: 1.5;
+}
+
+/* TY-04 in tokens/typography.css sets a FIXED em line-height on [lang="ar"].
+   On a full Arabic page that lands on <html> and is inherited as a computed
+   length, which flattens every heading to body leading. Unitless wins here and
+   this file loads last, so the ratio inherits correctly instead. */
+html[lang='ar'] {
+  font-size: 100%;
+  line-height: var(--adel-leading-body);
+}
+
+/* Arabic is never letter-spaced — it severs the connecting strokes. */
+[lang='ar'],
+[lang='ar'] * {
+  letter-spacing: normal !important;
+}
+
+/* Arabic is never set in synthesised italics; weight carries the emphasis. */
+[lang='ar'] em,
+[lang='ar'] i {
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* Arabic has no uppercase. An .overline in Arabic is sentence case. */
+[lang='ar'] .overline,
+[lang='ar'] .ftr__title {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* -----------------------------------------------------------------------------
+   MIXED ARABIC + ENGLISH (§11)
+   -----------------------------------------------------------------------------
+   Adel writes "أنا شغال على AI و Automation". The English terms are meant to
+   stay English — §11 lists them explicitly and forbids translating them away
+   to dodge an RTL problem. Two things make that render correctly:
+
+   1. `.term` marks an English technical term inside an Arabic run. It sets
+      dir=ltr and ISOLATES it, so the bidi algorithm cannot drag adjacent
+      Arabic punctuation to the wrong side of it. `embed` and `override` do
+      not do this; only `isolate` does.
+   2. Latin metrics inside Arabic come from the body family, not the display
+      family — mixing font metrics mid-sentence is the exact failure that makes
+      bilingual text look broken.
+
+   Usage:  <span class="term">Product Manager</span>
+   The <Rich> component (src/components/Rich.astro) applies this from the
+   [[term]] markers used in src/copy.ts.
+   -------------------------------------------------------------------------- */
+.term {
+  unicode-bidi: isolate;
+  direction: ltr;
+  /* stay in the surrounding family so the metrics match */
+  font-family: inherit;
+  /* a short term or acronym should not break across lines */
+  white-space: nowrap;
+}
+
+/* Longer English phrases may wrap; only the short ones are nowrap. */
+.term--wrap {
+  white-space: normal;
+}
+
+/* Numbers are Western 0–9 in both languages, and tabular wherever they line up.
+   Digits form LTR runs even inside Arabic, so they isolate too. */
+.nums,
+time,
+[data-nums] {
+  font-variant-numeric: tabular-nums;
+  unicode-bidi: isolate;
+  direction: ltr;
+}

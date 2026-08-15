@@ -1,0 +1,495 @@
+---
+/* =============================================================================
+   Guide, Article and Use Case detail (§18, Phase 1.1)
+   =============================================================================
+   One template, three content types. §18: "If some of these are represented as
+   shared templates rather than individual routes, preserve the approved
+   architecture." A Guide is an Article that may also hand you a file; a Use
+   Case is an Article that also reports where the thing got to. Neither earns a
+   second 275-line template that would drift.
+
+   The rendered Markdown arrives through the default slot, because rendering it
+   needs the collection entry and that lives in the route file.
+   ========================================================================== */
+
+import Base from '../../layouts/Base.astro';
+import Prose from '../editorial/Prose.astro';
+import PhotoFigure from '../editorial/PhotoFigure.astro';
+import Divider from '../editorial/Divider.astro';
+import NewsletterCTA from '../editorial/NewsletterCTA.astro';
+import EntryList from '../editorial/EntryList.astro';
+import Button from '../Button.astro';
+import Rich from '../Rich.astro';
+import Icon from '../Icon.astro';
+import { getRelated, findTopic, translationsOf } from '../../lib/content';
+import { PILLAR_TO_TOPIC } from '../../lib/topics';
+import { findSeries, seriesPath } from '../../lib/series';
+import { useCopy } from '../../copy';
+import { formatDate, localizePath, type Lang } from '../../i18n';
+
+type Kind = 'guide' | 'article' | 'use-case';
+
+interface Props {
+  lang: Lang;
+  kind: Kind;
+  /* The file's own slug, so the page can find its translation. */
+  slug: string;
+  data: {
+    title: string;
+    description: string;
+    date: Date;
+    updated?: Date;
+    topic?: string;
+    pillar?: string;
+    tags: string[];
+    cover?: string;
+    coverAlt?: string;
+    preview?: string;
+    minutes?: number;
+    related: string[];
+    series?: string;
+    part?: number;
+    download?: { label?: string; href: string; meta?: string; gated?: boolean };
+    /* Use Case only */
+    stage?: 'exploring' | 'building' | 'live' | 'abandoned';
+    outcome?: string;
+    stack?: string[];
+    external?: { label: string; href: string };
+    pending?: { title: string; note: string };
+  };
+}
+
+const { lang, kind, slug, data } = Astro.props;
+const c = useCopy(lang);
+
+const topicId =
+  data.topic ?? (data.pillar ? PILLAR_TO_TOPIC[data.pillar as keyof typeof PILLAR_TO_TOPIC] : undefined);
+const topic = findTopic(topicId);
+const related = await getRelated(lang, data.related);
+const series = findSeries(data.series);
+
+/* Where the breadcrumb's first crumb goes. A Use Case belongs to Use Cases; an
+   Article has no index of its own yet, so it points at Topics. */
+const CRUMB: Record<Kind, { path: string; label: string }> = {
+  guide: { path: '/guides', label: c.guides.title },
+  article: { path: '/topics', label: c.topics.title },
+  'use-case': { path: '/use-cases', label: c.useCases.title },
+};
+const crumb = CRUMB[kind];
+
+const hasFacts = Boolean(data.outcome || (data.stack && data.stack.length > 0) || data.external);
+
+const isoDate = data.date.toISOString();
+const isoUpdated = data.updated?.toISOString();
+
+const alternateLinks = await translationsOf(kind, slug, lang);
+---
+
+<Base
+  lang={lang}
+  title={data.title}
+  description={data.description}
+  ogType="article"
+  ogImage={data.cover}
+  publishedTime={isoDate}
+  modifiedTime={isoUpdated}
+  alternateLinks={alternateLinks}
+>
+  <article class="container ep">
+    <header class="ep__head">
+      <nav class="ep__crumbs" aria-label="Breadcrumb">
+        <a href={localizePath(crumb.path, lang)}>
+          <Rich text={crumb.label} />
+        </a>
+        {topic && (
+          <>
+            <span class="ep__sep" aria-hidden="true">/</span>
+            <a href={localizePath(`/topics/${topic.id}`, lang)}>
+              <Rich text={topic[lang].name} />
+            </a>
+          </>
+        )}
+      </nav>
+
+      {/* Series chip — the reader landed here from search as often as from the
+          series page, and this is how they find out there is a series at all. */}
+      {series && (
+        <a class="ep__series" href={localizePath(seriesPath(series.id), lang)}>
+          <span class="ep__seriesLabel">{c.series.label}</span>
+          <Rich text={series[lang].name} class="ep__seriesName" />
+          {data.part != null && (
+            <span class="ep__seriesPart nums">{c.series.partLabel(data.part)}</span>
+          )}
+        </a>
+      )}
+
+      <h1 class="ep__title">{data.title}</h1>
+      <p class="ep__desc">{data.description}</p>
+
+      {/* Use Case status. The word carries the state, not the colour — 'Stopped'
+          reads the same in greyscale as it does in colour (§30). */}
+      {data.stage && (
+        <span class:list={['ep__stage', `ep__stage--${data.stage}`]}>
+          {c.useCases.stage[data.stage]}
+        </span>
+      )}
+
+      <div class="ep__meta">
+        <time class="nums" datetime={isoDate.slice(0, 10)}>
+          {c.common.published} {formatDate(data.date, lang, true)}
+        </time>
+        {data.updated && (
+          <>
+            <span class="ep__dot" aria-hidden="true">·</span>
+            <time class="nums" datetime={isoUpdated!.slice(0, 10)}>
+              {c.common.updated} {formatDate(data.updated, lang, true)}
+            </time>
+          </>
+        )}
+        {data.minutes && (
+          <>
+            <span class="ep__dot" aria-hidden="true">·</span>
+            <span class="nums">{c.common.minutes(data.minutes)}</span>
+          </>
+        )}
+      </div>
+    </header>
+
+    {data.cover && (
+      <PhotoFigure
+        src={data.cover}
+        alt={data.coverAlt ?? ''}
+        ratio="16 / 9"
+        ratioMobile="4 / 3"
+        priority
+        class="ep__cover"
+      />
+    )}
+
+    {data.preview && (
+      <Rich text={data.preview} as="p" class="ep__preview" />
+    )}
+
+    {/* ---- Use Case facts. Above the body, because "where did it get to" is
+            the question the reader actually arrived with. ---- */}
+    {hasFacts && (
+      <aside class="ep__facts" aria-label={c.useCases.outcomeLabel}>
+        {data.outcome && (
+          <div class="ep__fact">
+            <span class="ep__factLabel">{c.useCases.outcomeLabel}</span>
+            <p class="ep__factValue">{data.outcome}</p>
+          </div>
+        )}
+        {data.stack && data.stack.length > 0 && (
+          <div class="ep__fact">
+            <span class="ep__factLabel">{c.useCases.stackLabel}</span>
+            <ul class="ep__stack">
+              {data.stack.map((item) => <li class="ep__stackItem">{item}</li>)}
+            </ul>
+          </div>
+        )}
+        {data.external && (
+          <a class="ep__factLink" href={data.external.href} rel="noopener" target="_blank">
+            {data.external.label}
+            <span aria-hidden="true">↗</span>
+          </a>
+        )}
+      </aside>
+    )}
+
+    <Prose class="ep__prose">
+      <slot />
+    </Prose>
+
+    {/* ---- a section that is deliberately not published yet ----------------
+            The dashed panel is the site's established "nothing here yet"
+            treatment — the same one /guides, /use-cases and a series with no
+            parts use. Naming the gap is honest; filling it with an estimate
+            would not be, and filling it with the word PLACEHOLDER would be
+            neither honest nor finished. ---- */}
+    {data.pending && (
+      <section class="ep__pending" aria-labelledby="pending-title">
+        <h2 class="ep__pendingTitle" id="pending-title">
+          <Rich text={data.pending.title} />
+        </h2>
+        <Rich text={data.pending.note} as="p" class="ep__pendingNote" />
+      </section>
+    )}
+
+    {data.download && (
+      <aside class="ep__download" aria-labelledby="dl-title">
+        <span class="ep__dlIcon" aria-hidden="true"><Icon name="download" size="lg" /></span>
+        <div class="ep__dlText">
+          <strong class="ep__dlTitle" id="dl-title">
+            {data.download.label ?? c.guides.downloadLabel}
+          </strong>
+          {data.download.meta && <span class="ep__dlMeta nums">{data.download.meta}</span>}
+        </div>
+        <Button variant="primary" size="md" href={data.download.href}>
+          {c.guides.downloadLabel}
+        </Button>
+      </aside>
+    )}
+
+    {data.tags.length > 0 && (
+      <ul class="ep__tags">
+        {data.tags.map((tag) => <li class="ep__tag">{tag}</li>)}
+      </ul>
+    )}
+
+    {related.length > 0 && (
+      <section class="ep__related" aria-labelledby="related-title">
+        <div class="ep__relDiv"><Divider label={c.guides.relatedTitle} /></div>
+        <h2 class="sr-only" id="related-title">{c.guides.relatedTitle}</h2>
+        <EntryList entries={related} lang={lang} />
+      </section>
+    )}
+
+    <div class="ep__cta">
+      <NewsletterCTA lang={lang} placement={kind} variant="plain" />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .ep {
+    max-width: 760px;
+    padding-block-end: var(--atc-space-16);
+  }
+  .ep__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-4);
+    margin-bottom: var(--atc-space-10);
+  }
+  .ep__crumbs {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-sm);
+    color: var(--adel-text-secondary);
+  }
+  .ep__crumbs a {
+    color: var(--adel-text-secondary);
+    text-decoration: none;
+  }
+  .ep__crumbs a:hover { color: var(--adel-text-link); text-decoration: underline; }
+  .ep__sep { color: var(--adel-text-tertiary); }
+
+  .ep__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(30px, 4.5vw, 46px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+    text-wrap: balance;
+  }
+  [lang='ar'] .ep__title { letter-spacing: normal; line-height: 1.35; }
+
+  .ep__desc {
+    margin: 0;
+    font-size: var(--adel-text-lg);
+    line-height: 1.6;
+    color: var(--adel-text-secondary);
+  }
+  .ep__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    flex-wrap: wrap;
+    font-family: var(--adel-font-mono);
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-tertiary);
+  }
+  .ep__dot { opacity: 0.6; }
+
+  /* ---- series chip ---- */
+  .ep__series {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    align-self: flex-start;
+    padding: 5px 12px;
+    border-radius: var(--adel-radius-pill);
+    border: 1px solid var(--adel-border-brand);
+    background: var(--adel-surface-tint);
+    font-size: var(--adel-text-xs);
+    text-decoration: none;
+    color: var(--adel-text-on-tint);
+  }
+  .ep__series:hover { background: var(--adel-ice-blue); }
+  .ep__seriesLabel {
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+  [lang='ar'] .ep__seriesLabel { text-transform: none; letter-spacing: normal; }
+  .ep__seriesName { font-weight: 600; }
+  .ep__seriesPart {
+    font-family: var(--adel-font-mono);
+    opacity: 0.8;
+  }
+  .ep__seriesPart::before { content: '·'; margin-inline-end: var(--atc-space-2); }
+
+  /* ---- use-case stage ---- */
+  .ep__stage {
+    align-self: flex-start;
+    padding: 4px 12px;
+    border-radius: var(--adel-radius-pill);
+    border: 1px solid var(--adel-border-strong);
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    color: var(--adel-text-secondary);
+    background: var(--adel-surface-sunken);
+  }
+  .ep__stage--live {
+    color: var(--adel-status-success);
+    background: var(--adel-status-success-bg);
+    border-color: var(--adel-status-success);
+  }
+  .ep__stage--building {
+    color: var(--adel-text-on-tint);
+    background: var(--adel-surface-tint);
+    border-color: var(--adel-border-brand);
+  }
+
+  /* ---- use-case facts ---- */
+  .ep__facts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-5);
+    margin: 0 0 var(--atc-space-10);
+    padding: var(--atc-space-6);
+    border: 1px solid var(--adel-border-hairline);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-raised);
+  }
+  .ep__fact { display: flex; flex-direction: column; gap: var(--atc-space-2); }
+  .ep__factLabel {
+    font-size: var(--adel-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-wide);
+    text-transform: uppercase;
+    color: var(--adel-text-secondary);
+  }
+  [lang='ar'] .ep__factLabel { text-transform: none; letter-spacing: normal; }
+  .ep__factValue {
+    margin: 0;
+    font-size: var(--adel-text-base);
+    line-height: 1.6;
+    color: var(--adel-text-primary);
+  }
+  .ep__stack {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-2);
+    margin: 0;
+    padding: 0;
+  }
+  .ep__stackItem {
+    padding: 4px 10px;
+    border-radius: var(--adel-radius-pill);
+    background: var(--adel-surface-sunken);
+    font-family: var(--adel-font-mono);
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-secondary);
+  }
+  .ep__factLink {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    align-self: flex-start;
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+    color: var(--adel-text-link);
+    text-decoration: none;
+  }
+  .ep__factLink:hover { text-decoration: underline; color: var(--adel-text-link-hover); }
+
+  .ep__cover { margin-bottom: var(--atc-space-10); }
+
+  .ep__preview {
+    margin: 0 0 var(--atc-space-8);
+    padding-inline-start: var(--atc-space-5);
+    border-inline-start: 3px solid var(--adel-signature-blue);
+    font-size: var(--adel-text-lg);
+    line-height: 1.65;
+    color: var(--adel-text-primary);
+    font-weight: 500;
+  }
+
+  /* ---- download ---- */
+  .ep__download {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-5);
+    margin-top: var(--atc-space-12);
+    padding: var(--atc-space-6);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-tint);
+    color: var(--adel-text-on-tint);
+    flex-wrap: wrap;
+  }
+  .ep__dlIcon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    flex: 0 0 auto;
+    border-radius: var(--adel-radius-control);
+    background: var(--adel-white);
+    color: var(--adel-signature-blue);
+  }
+  .ep__dlText { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 180px; }
+  .ep__dlTitle { font-size: var(--adel-text-base); font-weight: 600; }
+  .ep__dlMeta { font-family: var(--adel-font-mono); font-size: var(--adel-text-xs); opacity: 0.8; }
+
+  /* ---- tags ---- */
+  .ep__tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-2);
+    margin: var(--atc-space-10) 0 0;
+    padding: 0;
+  }
+  .ep__tag {
+    padding: 4px 10px;
+    border-radius: var(--adel-radius-pill);
+    background: var(--adel-surface-sunken);
+    font-size: var(--adel-text-xs);
+    color: var(--adel-text-secondary);
+  }
+
+  /* ---- unpublished section ---- */
+  .ep__pending {
+    margin-top: var(--atc-space-12);
+    padding: var(--atc-space-8);
+    border: 1px dashed var(--adel-border-strong);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-sunken);
+  }
+  .ep__pendingTitle {
+    margin: 0 0 var(--atc-space-2);
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-lg);
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--adel-text-primary);
+  }
+  .ep__pendingNote {
+    margin: 0;
+    font-size: var(--adel-text-sm);
+    line-height: 1.7;
+    color: var(--adel-text-secondary);
+    max-width: 62ch;
+  }
+
+  .ep__related { margin-top: var(--atc-space-16); }
+  .ep__relDiv { margin-bottom: var(--atc-space-6); }
+  .ep__cta { margin-top: var(--atc-space-16); }
+</style>

@@ -1,0 +1,45 @@
+---
+/* "Latest" (§14) — a flexible editorial index of everything Adel has
+   published, learned, tested, built or shared. Guides, articles and videos all
+   flow through the same list; adding a fourth type is a loader in
+   lib/content.ts, not a change here. */
+
+import SectionIntro from '../editorial/SectionIntro.astro';
+import EntryList from '../editorial/EntryList.astro';
+import { useCopy } from '../../copy';
+import type { Lang } from '../../i18n';
+import type { Entry } from '../../lib/content';
+
+interface Props {
+  lang: Lang;
+  entries: Entry[];
+}
+
+const { lang, entries } = Astro.props;
+const c = useCopy(lang);
+---
+
+<section class="container section" aria-labelledby="latest-title">
+  <SectionIntro title={c.latest.title} intro={c.latest.intro} />
+
+  {entries.length > 0 ? (
+    <EntryList entries={entries} lang={lang} class="lt__list" />
+  ) : (
+    <p class="lt__empty">{c.latest.empty}</p>
+  )}
+</section>
+
+<style>
+  .lt__list {
+    margin-top: var(--atc-space-8);
+  }
+  .lt__empty {
+    margin: var(--atc-space-8) 0 0;
+    padding: var(--atc-space-8);
+    border: 1px dashed var(--adel-border-strong);
+    border-radius: var(--adel-radius-panel);
+    font-size: var(--adel-text-base);
+    color: var(--adel-text-secondary);
+    text-align: center;
+  }
+</style>

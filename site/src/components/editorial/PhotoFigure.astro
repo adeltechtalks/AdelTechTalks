@@ -1,0 +1,166 @@
+---
+/* =============================================================================
+   PhotoFigure — the photography primitive (§15)
+   =============================================================================
+   Handles the aspect ratio, the crop, the caption and the responsive
+   behaviour. Everything photographic on the site goes through it.
+
+   ── THE PLACEHOLDER IS THE POINT ────────────────────────────────────────────
+   §15: "If a required real photograph is missing, retain the intentionally
+   designed placeholder instead of generating fake photography. Do not generate
+   fake images of Adel."
+
+   So when `src` is empty this renders a designed placeholder that says plainly
+   what belongs there and what shape it needs. It is not a broken image and not
+   a grey box — it is a slot, and it looks deliberate until a real photograph
+   fills it.
+   ========================================================================== */
+
+interface Props {
+  src?: string;
+  /* Optional narrower crop used below 768px. Falls back to `src`. */
+  srcMobile?: string;
+  alt?: string;
+  caption?: string;
+  /* Aspect ratio as a CSS ratio: '3 / 4', '3 / 2', '16 / 9', '1 / 1'. */
+  ratio?: string;
+  ratioMobile?: string;
+  /* What belongs here, shown inside the empty slot.
+
+     WRITE IT FOR A VISITOR, NOT FOR A DEVELOPER. This string is public HTML on
+     a live page — it once read "Set photography.aboutPhoto in site.config.ts",
+     which told a reader to edit a file they cannot see. The crop sizes and the
+     config field names belong in the `photography` block in site.config.ts,
+     which is where somebody looking to add the photograph is already reading. */
+  slotNote?: string;
+  /* Above the fold? Then it is not lazy and it gets fetch priority. */
+  priority?: boolean;
+  rounded?: boolean;
+  class?: string;
+}
+
+const {
+  src,
+  srcMobile,
+  alt = '',
+  caption,
+  ratio = '3 / 4',
+  ratioMobile,
+  slotNote,
+  priority = false,
+  rounded = true,
+  class: className,
+} = Astro.props;
+
+const hasPhoto = Boolean(src);
+const mobile = srcMobile || src;
+---
+
+<figure class:list={['pf', rounded && 'pf--rounded', className]}>
+  <div
+    class="pf__frame"
+    style={`--pf-ratio:${ratio};--pf-ratio-mobile:${ratioMobile || ratio}`}
+  >
+    {hasPhoto ? (
+      <picture>
+        {srcMobile && <source media="(max-width: 767px)" srcset={mobile} />}
+        <img
+          class="pf__img"
+          src={src}
+          alt={alt}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding={priority ? 'sync' : 'async'}
+          fetchpriority={priority ? 'high' : 'auto'}
+        />
+      </picture>
+    ) : (
+      <div class="pf__slot" role="img" aria-label={alt || slotNote || 'Photograph pending'}>
+        <svg class="pf__glyph" viewBox="0 0 48 48" aria-hidden="true">
+          <rect x="6" y="10" width="36" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" />
+          <circle cx="17" cy="21" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+          <path d="M6 32l10-9 8 7 6-5 12 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+        </svg>
+        {slotNote && <span class="pf__slotNote" lang="en" dir="ltr">{slotNote}</span>}
+        <span class="pf__slotRatio nums">{ratio.replace(/\s/g, '')}</span>
+      </div>
+    )}
+  </div>
+
+  {caption && <figcaption class="pf__caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .pf {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-3);
+  }
+  .pf__frame {
+    position: relative;
+    aspect-ratio: var(--pf-ratio);
+    overflow: hidden;
+    background: var(--adel-surface-sunken);
+  }
+  .pf--rounded .pf__frame {
+    border-radius: var(--adel-radius-media);
+  }
+  .pf__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* The safe area: a portrait's face sits in the upper third, so a crop
+       takes it off the bottom, never off the top. */
+    object-position: center 30%;
+  }
+
+  /* ---- the designed slot ---- */
+  .pf__slot {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--atc-space-3);
+    padding: var(--atc-space-6);
+    text-align: center;
+    /* White, not the sunken tone: Slate on #F2F3F5 measures 4.43:1 and misses
+       the 4.5 floor, and a white plate reads more like a waiting image. */
+    color: var(--adel-text-secondary);
+    background: var(--adel-surface-raised);
+    border: 1px dashed var(--adel-border-strong);
+    border-radius: inherit;
+    box-sizing: border-box;
+  }
+  .pf__glyph {
+    width: 40px;
+    height: 40px;
+    opacity: 0.7;
+  }
+  .pf__slotNote {
+    font-size: var(--adel-text-sm);
+    line-height: 1.5;
+    max-width: 26ch;
+    color: var(--adel-text-secondary);
+  }
+  .pf__slotRatio {
+    font-family: var(--adel-font-mono);
+    font-size: var(--adel-text-xs);
+    letter-spacing: 0.04em;
+  }
+
+  .pf__caption {
+    font-size: var(--adel-text-sm);
+    line-height: 1.55;
+    color: var(--adel-text-secondary);
+    max-width: 52ch;
+  }
+
+  @media (max-width: 767px) {
+    .pf__frame {
+      aspect-ratio: var(--pf-ratio-mobile);
+    }
+  }
+</style>

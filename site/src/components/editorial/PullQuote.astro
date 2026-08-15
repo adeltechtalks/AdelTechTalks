@@ -1,0 +1,96 @@
+---
+/* PullQuote — a line lifted out of the reading column.
+
+   The quote mark is a decorative glyph, so it is aria-hidden and drawn rather
+   than typed: a real " character would be read aloud by a screen reader and
+   would sit on the wrong side of an Arabic quote. */
+
+import Rich from '../Rich.astro';
+
+interface Props {
+  quote: string;
+  attribution?: string;
+  class?: string;
+}
+
+const { quote, attribution, class: className } = Astro.props;
+---
+
+<figure class:list={['pq', className]}>
+  <span class="pq__mark" aria-hidden="true"></span>
+  <blockquote class="pq__quote">
+    <Rich text={quote} as="p" class="pq__text" />
+  </blockquote>
+  {attribution && (
+    <figcaption class="pq__attr">
+      <Rich text={attribution} />
+    </figcaption>
+  )}
+</figure>
+
+<style>
+  .pq {
+    position: relative;
+    margin: var(--atc-space-10) 0;
+    padding: var(--atc-space-8) var(--atc-space-8) var(--atc-space-8) var(--atc-space-10);
+    background: var(--adel-surface-tint);
+    border-radius: var(--adel-radius-panel);
+    /* The one place Ice Blue carries a whole surface. Body text on it uses
+       Deep Blue, which clears 4.5:1 — Slate would not. */
+    color: var(--adel-text-on-tint);
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-4);
+  }
+  /* padding-inline-start is the RTL-correct edge; the shorthand above sets the
+     LTR case and this corrects it in both directions. */
+  .pq {
+    padding-inline-start: var(--atc-space-10);
+    padding-inline-end: var(--atc-space-8);
+  }
+
+  .pq__mark {
+    position: absolute;
+    inset-block-start: var(--atc-space-5);
+    inset-inline-start: var(--atc-space-5);
+    width: 4px;
+    height: calc(100% - var(--atc-space-10));
+    border-radius: 2px;
+    background: var(--adel-signature-blue);
+  }
+
+  .pq__quote {
+    margin: 0;
+  }
+  .pq__text {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(20px, 2.4vw, 26px);
+    line-height: 1.45;
+    font-weight: 600;
+    letter-spacing: var(--adel-tracking-tight);
+    text-wrap: balance;
+  }
+  /* The Arabic display face has its own optical size; -0.02em tracking on a
+     connected script is a defect, not a refinement. */
+  [lang='ar'] .pq__text {
+    letter-spacing: normal;
+    line-height: 1.65;
+  }
+
+  .pq__attr {
+    font-size: var(--adel-text-sm);
+    font-weight: 500;
+    opacity: 0.85;
+  }
+  .pq__attr::before {
+    content: '— ';
+  }
+
+  @media (max-width: 767px) {
+    .pq {
+      padding: var(--atc-space-6);
+      padding-inline-start: var(--atc-space-8);
+    }
+  }
+</style>

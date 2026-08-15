@@ -1,0 +1,211 @@
+---
+/* About (§18) — the long version of the sign-off.
+   §13: Amazon appears as professional context, in its own small block, worded
+   so it cannot read as an endorsement and cannot turn the page into an
+   employee profile. */
+
+import Base from '../../layouts/Base.astro';
+import Prose from '../editorial/Prose.astro';
+import PhotoFigure from '../editorial/PhotoFigure.astro';
+import PullQuote from '../editorial/PullQuote.astro';
+import Divider from '../editorial/Divider.astro';
+import NewsletterCTA from '../editorial/NewsletterCTA.astro';
+import Rich from '../Rich.astro';
+import { about, photography } from '../../site.config';
+import { useCopy } from '../../copy';
+import type { Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+const a = about[lang];
+
+/* The biography is the one thing on this site nobody can write for Adel, and
+   until he does, this page must still be a finished page rather than a form
+   with the word PLACEHOLDER in it.
+
+   So when `about.body` is empty it falls back to the positioning paragraph that
+   is ALREADY approved and ALREADY published in the homepage hero, in both
+   languages. That is reuse of approved copy, not invented biography — it says
+   what Adel does, which is true and signed off, and it says nothing about where
+   he is from or how he got here, which is his to tell.
+
+   Paste the real paragraphs into `about.body` in site.config.ts and they take
+   over here with no other change. */
+const paragraphs = a.body.length > 0 ? a.body : [c.hero.body];
+const usingFallback = a.body.length === 0;
+---
+
+<Base lang={lang} title={c.about.title} description={c.about.intro}>
+  <article class="container ab">
+    <header class="ab__head">
+      <span class="overline ab__overline">{c.about.title}</span>
+      <Rich text={a.title} as="h1" class="ab__title" />
+      <p class="ab__intro">{c.about.intro}</p>
+    </header>
+
+    <div class="ab__grid">
+      <div class="ab__photo">
+        <PhotoFigure
+          src={photography.aboutPhoto}
+          alt={c.hero.portraitAlt}
+          ratio="3 / 4"
+          ratioMobile="4 / 5"
+          slotNote="A photograph of Adel goes here."
+        />
+      </div>
+
+      <div class="ab__body">
+        <Prose>
+          {paragraphs.map((p) => <Rich text={p} as="p" class={usingFallback ? 'ab__lede' : undefined} />)}
+        </Prose>
+      </div>
+    </div>
+
+    <PullQuote quote={c.hero.pattern.join(' ')} class="ab__quote" />
+
+    <section class="ab__values" aria-labelledby="values-title">
+      <h2 class="ab__h2" id="values-title">{c.about.workTitle}</h2>
+      <ul class="ab__valueList">
+        {a.values.map((v) => (
+          <li class="ab__value">
+            <h3 class="ab__valueTitle">{v.title}</h3>
+            <p class="ab__valueBody">{v.body}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {a.context.employer && (
+      <>
+        <div class="ab__divider"><Divider /></div>
+        <section class="ab__context" aria-labelledby="context-title">
+          <h2 class="ab__h3" id="context-title">{c.about.contextTitle}</h2>
+          <p class="ab__contextRole">
+            <Rich text={a.context.role} />
+            <span class="ab__at"> · </span>
+            <Rich text={a.context.employer} />
+          </p>
+          <Rich text={a.context.note} as="p" class="ab__contextNote" />
+        </section>
+      </>
+    )}
+
+    <div class="ab__cta">
+      <NewsletterCTA lang={lang} placement="about" variant="plain" />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .ab { max-width: 1000px; }
+  .ab__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-4);
+    max-width: 40ch;
+    margin-bottom: var(--atc-space-12);
+  }
+  .ab__overline { color: var(--adel-signature-blue); }
+  .ab__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(32px, 4.5vw, 48px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+    text-wrap: balance;
+  }
+  [lang='ar'] .ab__title { letter-spacing: normal; line-height: 1.35; }
+  .ab__intro {
+    margin: 0;
+    font-size: var(--adel-text-lg);
+    line-height: 1.6;
+    color: var(--adel-text-secondary);
+  }
+
+  .ab__grid {
+    display: grid;
+    grid-template-columns: 0.7fr 1.3fr;
+    gap: var(--atc-space-12);
+    align-items: start;
+  }
+  .ab__photo { position: sticky; top: 100px; }
+
+  /* A single paragraph carrying the column on its own is set one step up, so
+     the column reads as deliberate rather than as a page missing its text. */
+  .ab__lede {
+    font-size: var(--adel-text-lg);
+    line-height: 1.7;
+    color: var(--adel-text-primary);
+  }
+
+  .ab__quote { margin-block: var(--atc-space-16); }
+
+  .ab__h2 {
+    margin: 0 0 var(--atc-space-6);
+    font-family: var(--adel-font-display);
+    font-size: clamp(24px, 3vw, 30px);
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-text-primary);
+  }
+  .ab__h3 {
+    margin: 0 0 var(--atc-space-3);
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-xl);
+    font-weight: 600;
+    color: var(--adel-text-primary);
+  }
+  [lang='ar'] .ab__h2, [lang='ar'] .ab__h3 { letter-spacing: normal; }
+
+  .ab__valueList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--atc-space-8) var(--atc-space-12);
+  }
+  .ab__value { display: flex; flex-direction: column; gap: var(--atc-space-2); }
+  .ab__valueTitle {
+    margin: 0;
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    color: var(--adel-text-primary);
+  }
+  .ab__valueBody {
+    margin: 0;
+    font-size: var(--adel-text-sm);
+    line-height: 1.65;
+    color: var(--adel-text-secondary);
+  }
+
+  .ab__divider { margin-block: var(--atc-space-16); }
+  .ab__context { max-width: 60ch; }
+  .ab__contextRole {
+    margin: 0 0 var(--atc-space-2);
+    font-size: var(--adel-text-lg);
+    font-weight: 600;
+    color: var(--adel-text-primary);
+  }
+  .ab__at { color: var(--adel-text-tertiary); }
+  .ab__contextNote {
+    margin: 0;
+    font-size: var(--adel-text-sm);
+    line-height: 1.65;
+    color: var(--adel-text-tertiary);
+  }
+
+  .ab__cta { margin-top: var(--atc-space-20); }
+
+  @media (max-width: 1023px) {
+    .ab__grid { grid-template-columns: 1fr; gap: var(--atc-space-8); }
+    .ab__photo { position: static; max-width: 420px; }
+    .ab__valueList { grid-template-columns: 1fr; gap: var(--atc-space-6); }
+  }
+</style>

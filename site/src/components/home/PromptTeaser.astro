@@ -1,0 +1,111 @@
+---
+/* Prompt Library strip (§22, Phase 1.1)
+   -----------------------------------------------------------------------------
+   §22 said not to overbuild the Prompt Library "during this migration" and to
+   make sure the architecture did not make it hard to add later. Phase 1.1 is
+   later. This was a teaser pointing at the newsletter because there was no
+   /prompts route to point at; there is one now, with real prompts behind it,
+   so it points there.
+
+   The "in progress" badge is gone with it. It marked a thing that did not
+   exist yet, and leaving it on a live library would be inaccurate.
+
+   The count is real. An empty library would render the strip with no count and
+   still link to a page that says so honestly, rather than claiming a number. */
+
+import Icon from '../Icon.astro';
+import Rich from '../Rich.astro';
+import Button from '../Button.astro';
+import { getPrompts } from '../../lib/content';
+import { useCopy } from '../../copy';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+const count = (await getPrompts(lang)).length;
+---
+
+<section class="container section">
+  <div class="pt">
+    <div class="pt__text">
+      {count > 0 && (
+        <span class="pt__badge nums">{c.topics.countLabel(count)}</span>
+      )}
+      <Rich text={c.prompts.title} as="h2" class="pt__title" />
+      <Rich text={c.prompts.intro} as="p" class="pt__body" />
+      <div class="pt__action">
+        <Button variant="secondary" size="md" href={localizePath('/prompts', lang)}>
+          {c.prompts.cta}
+        </Button>
+      </div>
+    </div>
+    <div class="pt__mark" aria-hidden="true">
+      <Icon name="library" size="xl" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .pt {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--atc-space-8);
+    align-items: center;
+    padding: var(--atc-space-10);
+    border: 1px solid var(--adel-border-hairline);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-raised);
+  }
+  .pt__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-3);
+    max-width: 56ch;
+  }
+  .pt__badge {
+    align-self: flex-start;
+    font-family: var(--adel-font-mono);
+    font-size: var(--adel-text-xs);
+    font-weight: 500;
+    color: var(--adel-text-tertiary);
+  }
+  .pt__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(24px, 3vw, 30px);
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-text-primary);
+  }
+  [lang='ar'] .pt__title { letter-spacing: normal; line-height: 1.45; }
+  .pt__body {
+    margin: 0;
+    font-size: var(--adel-text-base);
+    line-height: 1.65;
+    color: var(--adel-text-secondary);
+  }
+  .pt__action { margin-top: var(--atc-space-2); }
+  .pt__mark {
+    display: grid;
+    place-items: center;
+    width: 96px;
+    height: 96px;
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-tint);
+    color: var(--adel-signature-blue);
+    flex: 0 0 auto;
+  }
+
+  @media (max-width: 767px) {
+    .pt {
+      grid-template-columns: 1fr;
+      padding: var(--atc-space-6);
+    }
+    .pt__mark { display: none; }
+  }
+</style>

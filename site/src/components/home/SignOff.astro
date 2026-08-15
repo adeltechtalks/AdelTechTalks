@@ -1,0 +1,106 @@
+---
+/* Personal sign-off (§14, §8)
+   -----------------------------------------------------------------------------
+   §8: "The handwritten Adel signature remains a secondary editorial/sign-off
+   element, not the primary brand mark."
+
+   This is the one place it belongs. If photography.signature is set, the real
+   handwritten signature renders; if it is not, the name is set in the display
+   face instead. A handwriting FONT is not used as a stand-in — a fake
+   signature is a fake signature. */
+
+import Rich from '../Rich.astro';
+import Button from '../Button.astro';
+import PhotoFigure from '../editorial/PhotoFigure.astro';
+import { photography } from '../../site.config';
+import { useCopy } from '../../copy';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+---
+
+<section class="container section so" aria-labelledby="signoff-title">
+  <div class="so__grid">
+    <div class="so__photo">
+      <PhotoFigure
+        src={photography.aboutPhoto}
+        alt={c.hero.portraitAlt}
+        ratio="4 / 5"
+        ratioMobile="3 / 2"
+        slotNote="A photograph of Adel at work goes here."
+      />
+    </div>
+
+    <div class="so__text">
+      <h2 class="so__title" id="signoff-title">{c.signoff.title}</h2>
+      <Rich text={c.signoff.body} as="p" class="so__body" />
+
+      <div class="so__sign">
+        {photography.signature ? (
+          <img class="so__signImg" src={photography.signature} alt={c.signoff.signature} />
+        ) : (
+          <span class="so__signText">{c.signoff.signature}</span>
+        )}
+      </div>
+
+      <div>
+        <Button variant="secondary" size="md" href={localizePath('/about', lang)}>
+          {c.signoff.cta}
+        </Button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .so__grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: var(--atc-space-16);
+    align-items: center;
+  }
+  .so__photo { max-width: 340px; width: 100%; }
+  .so__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-5);
+    max-width: 54ch;
+  }
+  .so__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(26px, 3.2vw, 34px);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-text-primary);
+  }
+  [lang='ar'] .so__title { letter-spacing: normal; line-height: 1.4; }
+  .so__body {
+    margin: 0;
+    font-size: var(--adel-text-lg);
+    line-height: var(--adel-leading-body);
+    color: var(--adel-text-secondary);
+  }
+  .so__signImg { height: 52px; width: auto; display: block; }
+  .so__signText {
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-xl);
+    font-weight: 700;
+    color: var(--adel-text-primary);
+    /* An editorial sign-off, so it is set as one: a rule above it, tight. */
+    display: inline-block;
+    padding-top: var(--atc-space-3);
+    border-top: 2px solid var(--adel-graphite);
+  }
+
+  @media (max-width: 1023px) {
+    .so__grid { grid-template-columns: 1fr; gap: var(--atc-space-10); }
+    .so__photo { max-width: 100%; }
+  }
+</style>

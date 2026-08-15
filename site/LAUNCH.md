@@ -196,18 +196,42 @@ Enquiries now arrive in your email.
 
 ---
 
-## Step 6 — The newsletter (10 minutes)
+## Step 6 — The newsletter — **already working, nothing to do**
 
-1. Pick one and sign up — all have free tiers:
-   - **Kit** (kit.com) — best for creators, free to 10,000 subscribers
-   - **Beehiiv** (beehiiv.com) — good analytics, free to 2,500
-   - **Buttondown** (buttondown.com) — simplest, free to 100
-2. Create a signup form in their dashboard
-3. Find the form's **action URL** — it looks like
-   `https://app.kit.com/forms/1234567/subscriptions`
-4. Open `src/site.config.ts`, find `newsletterAction: ''` and paste it between the quotes
+The newsletter runs on your own Supabase database — the same one the Playground
+uses. There is no third-party signup service to create, pay for or connect.
 
-The signup boxes on the site start working immediately.
+**Where the subscribers are.** Supabase dashboard → **Table Editor** →
+`subscribers`. Each row holds the email address, which language they were
+reading, which page they subscribed from, and where they came from if the link
+carried campaign parameters (see below). Export it as CSV whenever you want to
+send an email.
+
+**Why nobody can steal the list.** The key in the page is the *public* anon key,
+and the database is set so that anyone may add a row and **nobody may read one**.
+Even with the key, the list cannot be pulled out of the browser. Only you can
+read it, in the dashboard.
+
+**Sending the actual emails.** When the list is big enough to be worth sending,
+export the CSV into whatever you like at that point (Kit, Beehiiv, Buttondown).
+Nothing on the site changes — this step only decides who *delivers* the mail.
+
+### Knowing which TikTok brought which subscriber
+
+Add parameters to the link you post:
+
+```
+https://adeltechtalks.com/guides/?source=tiktok&campaign=ai-guide-001
+```
+
+Anyone who subscribes in that visit is stored with `source: tiktok` and
+`campaign: ai-guide-001`. The four parameters that are recorded are `source`,
+`platform`, `campaign` and `guide`. Nothing else is tracked — no cookies, no
+third-party scripts, and nothing is sent anywhere until someone actually
+submits the form.
+
+> The old `newsletterAction` setting in `src/site.config.ts` is no longer used
+> and can stay empty.
 
 ---
 
@@ -229,8 +253,19 @@ the rest of your site.
 1. In Supabase, click **SQL Editor** in the left menu → **New query**
 2. Open the file `supabase/schema.sql` from your site folder
 3. Copy everything in it, paste it into the box, click **Run**
+4. Do the same for `supabase/schema-shares.sql` (public badge pages) and
+   `supabase/schema-subscribers.sql` (the newsletter)
 
-You should see "Success. No rows returned." That is correct.
+You should see "Success. No rows returned." That is correct. All three files are
+safe to run twice — they create things only if they are missing, and they never
+touch data that is already there.
+
+> ⚠️ **If sign-in ever stops working and nothing else changed:** a free Supabase
+> project **pauses itself** after about a week with no traffic, and everything
+> that talks to the database stops until you wake it. Open the project in the
+> Supabase dashboard and click **Restore**. It takes a couple of minutes and
+> **no data is lost** — this has already happened once. If the site starts
+> getting steady traffic it will not happen again.
 
 ### 7c. Turn on Google sign-in
 

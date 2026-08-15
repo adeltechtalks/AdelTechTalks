@@ -2,6 +2,8 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import cloudflare from '@astrojs/cloudflare';
+import remarkTerms from './src/lib/remark-terms.mjs';
+import { emptyIndexFilter } from './src/lib/published.mjs';
 
 // CHANGE ME if the domain ever changes. Used for the sitemap and share links.
 const SITE = 'https://adeltechtalks.com';
@@ -17,6 +19,36 @@ export default defineConfig({
   // on the fly and rewrote this file at build time, which meant the deployed
   // configuration was decided by whatever version happened to be current.
   adapter: cloudflare({ imageService: 'compile' }),
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      // §26 — declare the English/Arabic pairs so Google indexes both rather
+      // than treating /ar/* as near-duplicates and picking one. English keeps
+      // the bare paths; every live URL stays exactly where it was.
+      i18n: {
+        defaultLocale: 'en',
+        locales: { en: 'en', ar: 'ar' },
+      },
+      // Pages that should never appear in search results. Account pages hold
+      // nothing public, and /playground/passport is a 301 kept only so links
+      // shared before the move still land somewhere sensible.
+      //
+      // An index whose collection is empty is dropped too, per language. Those
+      // pages render `noindex`, and listing a noindex page in the sitemap is a
+      // contradictory signal. Both come back automatically the moment something
+      // is published — this is a content-availability state, not a routing one.
+      filter: (page) =>
+        !/\/(login|profile|playground\/passport)\/$/.test(page) &&
+        emptyIndexFilter([
+          ['guides', 'guides'],
+          ['videos', 'videos'],
+        ])(page),
+    }),
+  ],
+  markdown: {
+    // §11 — [[English term]] inside an Arabic Markdown body renders as a
+    // bidi-isolated LTR run, exactly as it does in copy.ts. Without this the
+    // brackets shipped to the reader.
+    remarkPlugins: [remarkTerms],
+  },
   build: { inlineStylesheets: 'auto' },
 });
