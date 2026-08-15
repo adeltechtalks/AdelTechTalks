@@ -1,4 +1,9 @@
 ---
+/* The no-form fallback below is written for a VISITOR, not for whoever
+   maintains the site. It used to print "add your Formspree ID to
+   src/site.config.ts — step 5 in LAUNCH.md" on a public page, which told a
+   reader to edit a file they cannot see. The setup instruction belongs in
+   `services` in site.config.ts and in LAUNCH.md, and it is in both. */
 import Base from '../layouts/Base.astro';
 import Card from '../components/Card.astro';
 import Button from '../components/Button.astro';
@@ -61,10 +66,10 @@ const PACKAGE_HINT = [
         </form>
       ) : (
         <div class="stack">
-          <strong class="h-card">Contact form not connected yet</strong>
+          <strong class="h-card">Email is the fastest way to reach me</strong>
           <p class="muted">
-            Add your Formspree form ID to <code>formspreeId</code> in
-            <code>src/site.config.ts</code> — step 5 in LAUNCH.md. Until then, the address below works.
+            There is no form on this page yet, so write to me directly — it goes to the same
+            place and I reply to every serious enquiry within a week.
           </p>
           <div class="row">
             <Button variant="secondary" size="md" href={`mailto:${site.email}`} iconLeft="mail">

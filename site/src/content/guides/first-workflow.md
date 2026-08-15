@@ -4,10 +4,17 @@ description: You will have a running workflow before the explanation ends.
 date: 2026-08-01
 pillar: automation
 minutes: 20
----
 
-> **PLACEHOLDER GUIDE.** This file exists so you can see how guides look and so the
-> site builds. Replace the text with your own, or delete the file.
+# Held back from publication. This file shipped in Phase 1 as a shape to look
+# at — its own opening line said "replace the text with your own, or delete the
+# file" — and it is generic automation advice rather than a guide Adel wrote and
+# ran. Publishing it under his name would be putting words in his mouth, and
+# publishing it with its placeholder banner intact would ship the banner.
+#
+# It stays here, complete, as the reference for writing the real one. Set
+# `draft: false` once the text is Adel's and /guides picks it up immediately.
+draft: true
+---
 
 Most automation tutorials spend fifteen minutes on theory. This one does not. You will
 connect two apps, run the thing once, and see it work — then we will talk about why it

@@ -14,6 +14,13 @@ external:
   href: 'https://gearnest.com'
 preview: 'GearNest is a separate brand with its own product, voice and roadmap. It is also the place where one question gets an honest answer: can I build a real business this way?'
 featured: true
+
+# The figures are not published because they have not been measured, and an
+# estimate presented as a measurement would break rule 2 of the test below.
+# Delete this block the day the numbers are real; the section disappears with it.
+pending:
+  title: 'The numbers are not published yet'
+  note: 'This case study reports the split between what Vibe Coding produced and what I wrote by hand, and what the build has cost. Neither is published here yet, because neither has been measured properly — and an estimate printed as a figure would break the second rule of the test above before the series has even started. They go here when they are counted, not before.'
 ---
 
 ## The question
@@ -52,23 +59,6 @@ Published up front, so the result cannot be quietly redefined later:
    that cost me a weekend are the useful half of the record.
 4. **"Real business" means customers and revenue, not traffic.** Nothing else
    counts as an answer to the question.
-
-## Where it stands today
-
-<!-- ⚠️ PLACEHOLDER — Adel: the three paragraphs below are the only invented
-     text in this case study, and they are the facts nobody can write for you.
-     Replace them and the page is finished. Everything above is the framing you
-     approved and does not need to change. -->
-
-PLACEHOLDER — what GearNest actually is, in your own words. What it sells, who
-it is for, and what stage it is genuinely at right now.
-
-PLACEHOLDER — what you have built so far and how much of it came out of Vibe
-Coding rather than out of you writing code. Be specific about the split; it is
-the whole measurement.
-
-PLACEHOLDER — what has cost the most so far, in money or in weekends, and what
-you would do differently if you started again on Monday.
 
 ## What is coming next in the series
 

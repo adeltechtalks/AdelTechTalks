@@ -145,6 +145,20 @@ const useCases = defineCollection({
     stack: z.array(z.string()).default([]),
     /* The real thing, if it is public. */
     external: z.object({ label: z.string(), href: z.string().url() }).optional(),
+
+    /* A section of this case study that is NOT published yet.
+       -----------------------------------------------------------------------
+       A build log that reports figures has to be able to say "not measured
+       yet" without either inventing a number or shipping the word PLACEHOLDER
+       to a reader. This renders a designed, quiet panel that names what is
+       missing and nothing else — no estimate, no range, no promise of a
+       figure. Delete the field the day the numbers are real. */
+    pending: z
+      .object({
+        title: z.string(),
+        note: z.string(),
+      })
+      .optional(),
   }),
 });
 

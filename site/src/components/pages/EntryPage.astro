@@ -55,6 +55,7 @@ interface Props {
     outcome?: string;
     stack?: string[];
     external?: { label: string; href: string };
+    pending?: { title: string; note: string };
   };
 }
 
@@ -199,6 +200,21 @@ const alternateLinks = await translationsOf(kind, slug, lang);
     <Prose class="ep__prose">
       <slot />
     </Prose>
+
+    {/* ---- a section that is deliberately not published yet ----------------
+            The dashed panel is the site's established "nothing here yet"
+            treatment — the same one /guides, /use-cases and a series with no
+            parts use. Naming the gap is honest; filling it with an estimate
+            would not be, and filling it with the word PLACEHOLDER would be
+            neither honest nor finished. ---- */}
+    {data.pending && (
+      <section class="ep__pending" aria-labelledby="pending-title">
+        <h2 class="ep__pendingTitle" id="pending-title">
+          <Rich text={data.pending.title} />
+        </h2>
+        <Rich text={data.pending.note} as="p" class="ep__pendingNote" />
+      </section>
+    )}
 
     {data.download && (
       <aside class="ep__download" aria-labelledby="dl-title">
@@ -447,6 +463,30 @@ const alternateLinks = await translationsOf(kind, slug, lang);
     background: var(--adel-surface-sunken);
     font-size: var(--adel-text-xs);
     color: var(--adel-text-secondary);
+  }
+
+  /* ---- unpublished section ---- */
+  .ep__pending {
+    margin-top: var(--atc-space-12);
+    padding: var(--atc-space-8);
+    border: 1px dashed var(--adel-border-strong);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-sunken);
+  }
+  .ep__pendingTitle {
+    margin: 0 0 var(--atc-space-2);
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-lg);
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--adel-text-primary);
+  }
+  .ep__pendingNote {
+    margin: 0;
+    font-size: var(--adel-text-sm);
+    line-height: 1.7;
+    color: var(--adel-text-secondary);
+    max-width: 62ch;
   }
 
   .ep__related { margin-top: var(--atc-space-16); }

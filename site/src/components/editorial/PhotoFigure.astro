@@ -25,8 +25,13 @@ interface Props {
   /* Aspect ratio as a CSS ratio: '3 / 4', '3 / 2', '16 / 9', '1 / 1'. */
   ratio?: string;
   ratioMobile?: string;
-  /* What belongs here — shown in the placeholder only, never to a visitor
-     once the real photograph is in place. */
+  /* What belongs here, shown inside the empty slot.
+
+     WRITE IT FOR A VISITOR, NOT FOR A DEVELOPER. This string is public HTML on
+     a live page — it once read "Set photography.aboutPhoto in site.config.ts",
+     which told a reader to edit a file they cannot see. The crop sizes and the
+     config field names belong in the `photography` block in site.config.ts,
+     which is where somebody looking to add the photograph is already reading. */
   slotNote?: string;
   /* Above the fold? Then it is not lazy and it gets fetch priority. */
   priority?: boolean;

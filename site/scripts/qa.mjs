@@ -156,10 +156,19 @@ for (const file of files) {
   const canonical = html.match(/<link\b[^>]*rel="canonical"[^>]*>/i)?.[0];
   if (!canonical) fail(page, 'no canonical');
 
-  /* ---- placeholders: a warning, not a failure. Some are intentional and
-          documented (About copy, the GearNest facts), and the point is that
-          they stay visible rather than silently shipping as if finished. ---- */
-  if (/PLACEHOLDER/.test(text)) warn(page, 'contains PLACEHOLDER copy awaiting the author');
+  /* ---- placeholders are a FAILURE, not a warning -------------------------
+          No literal PLACEHOLDER text ships publicly. Unwritten content is
+          either hidden (an empty `about.body` falls back to approved copy; a
+          draft guide does not publish) or declared as an unpublished section
+          with a designed panel that names the gap. If this fires, something
+          unfinished is about to reach a reader. ---- */
+  /* Tags are stripped first: `placeholder="you@example.com"` is a legitimate
+     attribute on every newsletter input and is not shipped copy. The marker
+     convention is uppercase, and this looks only at what a reader sees. */
+  const readerText = text.replace(/<[^>]+>/g, ' ');
+  if (/PLACEHOLDER/.test(readerText)) {
+    fail(page, 'literal PLACEHOLDER copy would ship to a reader');
+  }
 }
 
 /* ---- report ---- */

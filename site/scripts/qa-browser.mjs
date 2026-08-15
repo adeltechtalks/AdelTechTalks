@@ -59,7 +59,9 @@ const check = (ok, label) => {
 };
 
 const ROUTES = [
-  '/', '/learn/', '/series/vibe-coding/', '/guides/', '/guides/first-workflow/',
+  /* No guide detail route is listed: the Phase 1 demo guide is held back as a
+     draft, so /guides renders its designed empty state until Adel writes one. */
+  '/', '/learn/', '/series/vibe-coding/', '/guides/',
   '/use-cases/', '/use-cases/gearnest/', '/prompts/', '/prompts/spec-before-you-build/',
   '/videos/', '/topics/', '/topics/building/', '/about/', '/newsletter/',
   '/playground/', '/login/', '/profile/', '/work-with-me/', '/contact/',

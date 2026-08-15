@@ -22,6 +22,21 @@ interface Props {
 const { lang } = Astro.props;
 const c = useCopy(lang);
 const a = about[lang];
+
+/* The biography is the one thing on this site nobody can write for Adel, and
+   until he does, this page must still be a finished page rather than a form
+   with the word PLACEHOLDER in it.
+
+   So when `about.body` is empty it falls back to the positioning paragraph that
+   is ALREADY approved and ALREADY published in the homepage hero, in both
+   languages. That is reuse of approved copy, not invented biography — it says
+   what Adel does, which is true and signed off, and it says nothing about where
+   he is from or how he got here, which is his to tell.
+
+   Paste the real paragraphs into `about.body` in site.config.ts and they take
+   over here with no other change. */
+const paragraphs = a.body.length > 0 ? a.body : [c.hero.body];
+const usingFallback = a.body.length === 0;
 ---
 
 <Base lang={lang} title={c.about.title} description={c.about.intro}>
@@ -39,13 +54,13 @@ const a = about[lang];
           alt={c.hero.portraitAlt}
           ratio="3 / 4"
           ratioMobile="4 / 5"
-          slotNote="A real photograph of Adel. Set photography.aboutPhoto in site.config.ts."
+          slotNote="A photograph of Adel goes here."
         />
       </div>
 
       <div class="ab__body">
         <Prose>
-          {a.body.map((p) => <Rich text={p} as="p" />)}
+          {paragraphs.map((p) => <Rich text={p} as="p" class={usingFallback ? 'ab__lede' : undefined} />)}
         </Prose>
       </div>
     </div>
@@ -120,6 +135,14 @@ const a = about[lang];
     align-items: start;
   }
   .ab__photo { position: sticky; top: 100px; }
+
+  /* A single paragraph carrying the column on its own is set one step up, so
+     the column reads as deliberate rather than as a page missing its text. */
+  .ab__lede {
+    font-size: var(--adel-text-lg);
+    line-height: 1.7;
+    color: var(--adel-text-primary);
+  }
 
   .ab__quote { margin-block: var(--atc-space-16); }
 

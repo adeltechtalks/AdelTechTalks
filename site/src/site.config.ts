@@ -313,26 +313,42 @@ export const pillars = [
    `topic` must be one of the ids in `topics` above.
    -------------------------------------------------------------------------- */
 export const videos: Array<{ id: string; title: string; topic: string; meta: string; date?: string }> = [
-  /* ⚠️ PLACEHOLDERS — three real YouTube IDs replace these. Until then the
-     homepage renders the designed empty state rather than three dead embeds. */
+  /* Empty on purpose. No real YouTube ID exists to list yet, and an invented
+     one renders a broken thumbnail and a dead link — so the homepage and
+     /videos render their designed empty state instead. Adding one real ID here
+     lights up both. A video that earns a full write-up goes in
+     src/content/videos/ instead; see that folder's _template.md. */
 ];
 
 /* -----------------------------------------------------------------------------
    ABOUT PAGE
    -----------------------------------------------------------------------------
-   ⚠️ The paragraphs marked PLACEHOLDER are the only invented text on the site.
-   They are Adel's own story and cannot be written for him. Replace them and the
-   page is finished — nothing else about it needs to change.
+   ── THE BIOGRAPHY ───────────────────────────────────────────────────────────
+   `body` is Adel's own story, in the first person, and it is the one thing on
+   this site that cannot be written for him. It is EMPTY rather than filled with
+   placeholder text: the page must never ship the word PLACEHOLDER to a reader,
+   and inventing a biography would be worse than saying nothing.
+
+   Empty is not a broken page. AboutPage falls back to the positioning paragraph
+   that is already approved and already live in the homepage hero, so About
+   reads as a finished page today — title, positioning, the four values and the
+   professional context are all real and all approved.
+
+   TO FINISH IT: paste the paragraphs in here, one string per paragraph, in both
+   languages. They take over from the fallback automatically and nothing else
+   needs to change.
+
+       body: [
+         'First paragraph…',
+         'Second paragraph…',
+       ],
    -------------------------------------------------------------------------- */
 export const about = {
   en: {
     title: 'I learn it, I test it, I build with it, and I share it.',
-    /* Each line below becomes its own paragraph */
-    body: [
-      'PLACEHOLDER — who you are and where you are based, in your own words. Two or three sentences is plenty.',
-      'PLACEHOLDER — how you got into product and into AI, and what keeps you there.',
-      'PLACEHOLDER — what you are working on now, and where you are going next.',
-    ],
+    /* Each line below becomes its own paragraph. Empty → the approved
+       positioning paragraph from the hero is used instead. */
+    body: [] as string[],
     values: [
       { title: 'Curious first', body: 'I open the thing and find out, rather than reading the spec sheet.' },
       { title: 'Honest about limits', body: 'A claim, then the cost of the claim. If it is not worth it, I say so.' },
@@ -349,11 +365,7 @@ export const about = {
   },
   ar: {
     title: 'أتعلّمها، أجرّبها، أبني بها، وأشاركها.',
-    body: [
-      'PLACEHOLDER — من أنت وأين تقيم، بكلماتك أنت. جملتان أو ثلاث تكفي.',
-      'PLACEHOLDER — كيف دخلت مجال الـProduct والـAI، وما الذي يبقيك فيه.',
-      'PLACEHOLDER — على ماذا تعمل الآن، وإلى أين تتجه.',
-    ],
+    body: [] as string[],
     values: [
       { title: 'الفضول أولاً', body: 'أفتح الشيء وأكتشفه بنفسي بدل أن أقرأ ورقة المواصفات.' },
       { title: 'صريح في الحدود', body: 'الميزة، ثم ثمنها. وإن لم تكن تستحق، أقولها.' },
