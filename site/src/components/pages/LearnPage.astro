@@ -24,7 +24,7 @@ import Icon from '../Icon.astro';
 import Rich from '../Rich.astro';
 import { ecosystem } from '../../site.config';
 import { flagshipSeries, seriesPath } from '../../lib/series';
-import { getLatest, countByKind } from '../../lib/content';
+import { getLatest, countByKind, emptySurfaces } from '../../lib/content';
 import { useCopy } from '../../copy';
 import { localizePath, type Lang } from '../../i18n';
 
@@ -48,7 +48,14 @@ const COUNTED: Partial<Record<string, string>> = {
   prompts: 'prompt',
 };
 
-const cards = ecosystem.map((item) => {
+/* A live surface with nothing published is not shown at all. Courses is
+   different and stays: it is `status: 'building'`, so it is named as in
+   progress on purpose. */
+const empty = await emptySurfaces(lang);
+
+const cards = ecosystem
+  .filter((item) => item.status !== 'live' || !empty.has(item.key))
+  .map((item) => {
   const kind = COUNTED[item.key];
   return {
     ...item,

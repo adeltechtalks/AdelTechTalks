@@ -324,31 +324,26 @@ export const videos: Array<{ id: string; title: string; topic: string; meta: str
    ABOUT PAGE
    -----------------------------------------------------------------------------
    ── THE BIOGRAPHY ───────────────────────────────────────────────────────────
-   `body` is Adel's own story, in the first person, and it is the one thing on
-   this site that cannot be written for him. It is EMPTY rather than filled with
-   placeholder text: the page must never ship the word PLACEHOLDER to a reader,
-   and inventing a biography would be worse than saying nothing.
+   Adel's own story, in the first person, approved and supplied by him. One
+   string per paragraph.
 
-   Empty is not a broken page. AboutPage falls back to the positioning paragraph
-   that is already approved and already live in the homepage hero, so About
-   reads as a finished page today — title, positioning, the four values and the
-   professional context are all real and all approved.
+   The Arabic follows §11: English technical terms stay English and are wrapped
+   in [[ ]], which renders them as bidi-isolated LTR runs. `**` is reserved for
+   genuine emphasis — here, the question the Vibe Coding series is asking.
 
-   TO FINISH IT: paste the paragraphs in here, one string per paragraph, in both
-   languages. They take over from the fallback automatically and nothing else
-   needs to change.
-
-       body: [
-         'First paragraph…',
-         'Second paragraph…',
-       ],
+   AboutPage still falls back to the approved hero positioning paragraph if this
+   array is ever emptied, so the page can never render blank.
    -------------------------------------------------------------------------- */
 export const about = {
   en: {
     title: 'I learn it, I test it, I build with it, and I share it.',
-    /* Each line below becomes its own paragraph. Empty → the approved
-       positioning paragraph from the hero is used instead. */
-    body: [] as string[],
+    /* Each line below becomes its own paragraph. */
+    body: [
+      'I’m Adel — a Product Manager at Amazon, AI enthusiast, builder, and someone who’s always experimenting with technology.',
+      'I learn by building. I test AI, Automation, products, creator tech, and whatever I’m curious about next — then I share what works, what breaks, and what I learn along the way.',
+      'Right now, I’m building GearNest and documenting a bigger experiment: **Can I build a real business from idea to launch using Vibe Coding?**',
+      'My goal here is simple: if I learn something useful, I want to make it easier for someone else to learn it too.',
+    ] as string[],
     values: [
       { title: 'Curious first', body: 'I open the thing and find out, rather than reading the spec sheet.' },
       { title: 'Honest about limits', body: 'A claim, then the cost of the claim. If it is not worth it, I say so.' },
@@ -365,7 +360,13 @@ export const about = {
   },
   ar: {
     title: 'أتعلّمها، أجرّبها، أبني بها، وأشاركها.',
-    body: [] as string[],
+    body: [
+      'أنا عادل — [[Product Manager]] في [[Amazon]]، ومهتم جدًا بـ[[Tech]]، وخصوصًا [[AI]] و[[Automation]].',
+      'أنا بحب أتعلم وأنا ببني. بجرب [[tools]]، [[products]]، [[creator tech]]، وأي حاجة جديدة تثير فضولي — وبعدها أشارك إيه اللي اشتغل، إيه اللي ما اشتغلش، وإيه اللي اتعلمته في الطريق.',
+      'دلوقتي ببني [[GearNest]] وبوثق تجربة أكبر:',
+      '**هل أقدر أبني [[business]] حقيقي من مجرد فكرة لحد الـ[[launch]] باستخدام [[Vibe Coding]]؟**',
+      'هدفي هنا بسيط: أي حاجة مفيدة أتعلمها، أحب أخلي تعلمها أسهل على أي حد تاني.',
+    ] as string[],
     values: [
       { title: 'الفضول أولاً', body: 'أفتح الشيء وأكتشفه بنفسي بدل أن أقرأ ورقة المواصفات.' },
       { title: 'صريح في الحدود', body: 'الميزة، ثم ثمنها. وإن لم تكن تستحق، أقولها.' },

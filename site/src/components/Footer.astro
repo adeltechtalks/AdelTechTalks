@@ -11,6 +11,7 @@ import AdelLogo from './AdelLogo.astro';
 import Icon from './Icon.astro';
 import Rich from './Rich.astro';
 import { site, nav, projects } from '../site.config';
+import { emptySurfaces } from '../lib/content';
 import { useCopy } from '../copy';
 import { DEFAULT_LANG, localizePath, type Lang } from '../i18n';
 
@@ -42,9 +43,15 @@ const exploreKeys = [
   'learn', 'series', 'guides', 'useCases', 'videos', 'prompts', 'topics',
   'playground', 'newsletter',
 ];
+/* A surface with nothing in it is dropped from the footer too — a link is a
+   promise, and this one would land on an empty index. It returns by itself
+   when something is published there. */
+const empty = await emptySurfaces(lang);
+
 const explore = exploreKeys
   .map((key) => nav.find((item) => item.key === key))
   .filter((item): item is NonNullable<typeof item> => Boolean(item) && item!.phase <= 1.5)
+  .filter((item) => !empty.has(item.key))
   .map((item) => ({
     href: localizePath(item.path, lang),
     label: (c.nav as Record<string, string>)[item.key] ?? item.key,

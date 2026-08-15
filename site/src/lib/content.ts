@@ -228,6 +228,39 @@ export async function countByKind(lang: Lang): Promise<Record<string, number>> {
   return counts;
 }
 
+/* -----------------------------------------------------------------------------
+   Which live surfaces are empty right now
+   -----------------------------------------------------------------------------
+   A content-availability state, NOT an architecture change. Guides, Use Cases,
+   Videos and Prompts are all routed, templated and ready; some of them simply
+   have nothing published yet, and a section header over nothing is a worse
+   experience than no section — and thin content Google is invited to index.
+
+   So every surface that names a content type asks this first. The day a piece
+   is published with `draft: false`, its key drops out of this set and the
+   homepage strip, the Learn Hub card, the footer link and the index's
+   indexability all come back on their own. Nothing to remember, nothing to
+   switch on.
+
+   Keyed by the `ecosystem` / `nav` key so callers do not have to know which
+   Entry kind backs which surface.
+   -------------------------------------------------------------------------- */
+const SURFACE_KIND: Record<string, EntryKind> = {
+  guides: 'guide',
+  useCases: 'use-case',
+  videos: 'video',
+  prompts: 'prompt',
+};
+
+export async function emptySurfaces(lang: Lang): Promise<Set<string>> {
+  const counts = await countByKind(lang);
+  const empty = new Set<string>();
+  for (const [key, kind] of Object.entries(SURFACE_KIND)) {
+    if (!(counts[kind] > 0)) empty.add(key);
+  }
+  return empty;
+}
+
 /** Everything under one topic. */
 export async function getByTopic(lang: Lang, topicId: string): Promise<Entry[]> {
   return (await getLatest(lang)).filter((e) => e.topic === topicId);

@@ -49,7 +49,8 @@ export interface Copy {
   };
   hero: {
     identity: string; loveTechGloss: string; positioning: string; body: string;
-    pattern: string[]; primaryCta: string; secondaryCta: string; portraitAlt: string;
+    pattern: string[]; primaryCta: string; primaryCtaAlt: string; secondaryCta: string;
+    portraitAlt: string;
   };
   explore: { title: string; intro: string };
   latest: { title: string; intro: string; empty: string; kind: Record<'guide' | 'article' | 'video', string> };
@@ -98,7 +99,7 @@ export interface Copy {
   signoff: { title: string; body: string; cta: string; signature: string };
   about: { title: string; intro: string; workTitle: string; contextTitle: string };
   topics: { title: string; intro: string; countLabel: (n: number) => string; empty: string };
-  notFound: { title: string; body: string; guidesCta: string };
+  notFound: { title: string; body: string; guidesCta: string; learnCta: string };
   footer: { explore: string; brands: string; blurb: string; rights: string; signature: string };
 }
 
@@ -146,6 +147,9 @@ const en: Copy = {
       'Product Manager at Amazon. I spend my own time pulling AI apart to see how it works, building things with it, and writing down what actually held up.',
     pattern: ['I learn it.', 'I test it.', 'I build with it.', 'I share it.'],
     primaryCta: 'Start with the guides',
+    /* Used while no guide is published — the hero's one primary action must
+       never land on an empty index. */
+    primaryCtaAlt: 'Start with the library',
     secondaryCta: 'More about me',
     portraitAlt: 'Adel',
   },
@@ -334,6 +338,7 @@ const en: Copy = {
     title: 'That page does not exist',
     body: 'It may have moved, or the link may be wrong. The guides and the topics are both one click away.',
     guidesCta: 'Browse guides',
+    learnCta: 'Explore the library',
   },
   footer: {
     explore: 'Explore',
@@ -388,6 +393,7 @@ const ar: Copy = {
       '[[Product Manager]] في [[Amazon]]. وفي وقتي الخاص أفكّك الـ[[AI]] لأفهم كيف يشتغل، أبني به أشياء حقيقية، وأكتب ما صمد منها فعلاً.',
     pattern: ['أتعلّمها.', 'أجرّبها.', 'أبني بها.', 'أشاركها.'],
     primaryCta: 'ابدأ من الأدلة',
+    primaryCtaAlt: 'ابدأ من المكتبة',
     secondaryCta: 'المزيد عني',
     portraitAlt: 'عادل',
   },
@@ -576,6 +582,7 @@ const ar: Copy = {
     title: 'هذه الصفحة غير موجودة',
     body: 'ربما انتقلت، أو الرابط غير صحيح. الأدلة والمواضيع على بُعد نقرة واحدة.',
     guidesCta: 'تصفّح الأدلة',
+    learnCta: 'تصفّح المكتبة',
   },
   footer: {
     explore: 'استكشف',

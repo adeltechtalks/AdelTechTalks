@@ -32,7 +32,13 @@ const entries = [...(await getVideoPages(lang)), ...getVideos()].sort(
 );
 ---
 
-<Base lang={lang} title={c.videos.title} description={c.videos.indexIntro}>
+{/* Same rule as /guides — see GuidesIndexPage. */}
+<Base
+  lang={lang}
+  title={c.videos.title}
+  description={c.videos.indexIntro}
+  noindex={entries.length === 0}
+>
   <div class="container">
     <SectionIntro
       overline={site.showName}

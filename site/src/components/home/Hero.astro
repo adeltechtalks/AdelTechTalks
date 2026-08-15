@@ -19,6 +19,7 @@ import Rich from '../Rich.astro';
 import PhotoFigure from '../editorial/PhotoFigure.astro';
 import { photography } from '../../site.config';
 import { LOVE_TECH, useCopy } from '../../copy';
+import { emptySurfaces } from '../../lib/content';
 import { localizePath, type Lang } from '../../i18n';
 
 interface Props {
@@ -30,6 +31,13 @@ const c = useCopy(lang);
 
 /* "I ❤️ Tech" → ['I', 'Tech'] so the heart can be drawn rather than typed. */
 const [beforeHeart, afterHeart] = LOVE_TECH.split('❤️');
+
+/* CS-05 gives this page exactly one primary action, and it points at Guides.
+   While nothing is published there it points at the Learn Hub instead, which
+   is the same promise — start here — against a surface that has content. It
+   reverts on its own the moment a guide goes live. */
+const guidesEmpty = (await emptySurfaces(lang)).has('guides');
+const primaryHref = guidesEmpty ? '/learn' : '/guides';
 ---
 
 <section class="hero">
@@ -68,8 +76,8 @@ const [beforeHeart, afterHeart] = LOVE_TECH.split('❤️');
       {/* Exactly one primary action on this page. Everything below is
           secondary, ghost or a plain link. */}
       <div class="hero__actions">
-        <Button variant="primary" size="lg" href={localizePath('/guides', lang)}>
-          {c.hero.primaryCta}
+        <Button variant="primary" size="lg" href={localizePath(primaryHref, lang)}>
+          {guidesEmpty ? c.hero.primaryCtaAlt : c.hero.primaryCta}
         </Button>
         <Button variant="ghost" size="lg" href={localizePath('/about', lang)}>
           {c.hero.secondaryCta}

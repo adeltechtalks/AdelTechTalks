@@ -23,7 +23,16 @@ const guides = await getGuides(lang);
 const used = new Set(guides.map((g) => g.topic).filter(Boolean));
 ---
 
-<Base lang={lang} title={c.guides.title} description={c.guides.indexIntro}>
+{/* An index with nothing on it is thin content. It stays REACHABLE — anybody
+    holding the URL gets a real page with a real empty state — but it is not
+    offered to a search engine, and Base drops its hreflang alternates with it.
+    Publish one guide and the page becomes indexable again on its own. */}
+<Base
+  lang={lang}
+  title={c.guides.title}
+  description={c.guides.indexIntro}
+  noindex={guides.length === 0}
+>
   <div class="container">
     <SectionIntro overline={c.guides.title} title={c.guides.indexTitle} intro={c.guides.indexIntro} level={1} />
 

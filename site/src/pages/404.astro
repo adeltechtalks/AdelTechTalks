@@ -10,10 +10,16 @@ import Base from '../layouts/Base.astro';
 import Button from '../components/Button.astro';
 import Divider from '../components/editorial/Divider.astro';
 import { COPY } from '../copy';
+import { emptySurfaces } from '../lib/content';
 import { localizePath } from '../i18n';
 
 const en = COPY.en;
 const ar = COPY.ar;
+
+/* One document answers in both languages, so each block asks about its own.
+   Neither may offer "browse guides" while there is nothing to browse. */
+const enGuides = !(await emptySurfaces('en')).has('guides');
+const arGuides = !(await emptySurfaces('ar')).has('guides');
 ---
 
 <Base lang="en" title={en.notFound.title} description={en.notFound.body} noindex>
@@ -25,7 +31,9 @@ const ar = COPY.ar;
       <p class="nf__body">{en.notFound.body}</p>
       <div class="nf__actions">
         <Button variant="secondary" size="md" href="/">{en.common.backHome}</Button>
-        <Button variant="ghost" size="md" href="/guides/">{en.notFound.guidesCta}</Button>
+        <Button variant="ghost" size="md" href={enGuides ? '/guides/' : '/learn/'}>
+          {enGuides ? en.notFound.guidesCta : en.notFound.learnCta}
+        </Button>
       </div>
     </section>
 
@@ -38,8 +46,8 @@ const ar = COPY.ar;
         <Button variant="secondary" size="md" href={localizePath('/', 'ar')}>
           {ar.common.backHome}
         </Button>
-        <Button variant="ghost" size="md" href={localizePath('/guides', 'ar')}>
-          {ar.notFound.guidesCta}
+        <Button variant="ghost" size="md" href={localizePath(arGuides ? '/guides' : '/learn', 'ar')}>
+          {arGuides ? ar.notFound.guidesCta : ar.notFound.learnCta}
         </Button>
       </div>
     </section>

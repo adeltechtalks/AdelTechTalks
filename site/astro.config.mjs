@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import cloudflare from '@astrojs/cloudflare';
 import remarkTerms from './src/lib/remark-terms.mjs';
+import { emptyIndexFilter } from './src/lib/published.mjs';
 
 // CHANGE ME if the domain ever changes. Used for the sitemap and share links.
 const SITE = 'https://adeltechtalks.com';
@@ -30,8 +31,17 @@ export default defineConfig({
       // Pages that should never appear in search results. Account pages hold
       // nothing public, and /playground/passport is a 301 kept only so links
       // shared before the move still land somewhere sensible.
+      //
+      // An index whose collection is empty is dropped too, per language. Those
+      // pages render `noindex`, and listing a noindex page in the sitemap is a
+      // contradictory signal. Both come back automatically the moment something
+      // is published — this is a content-availability state, not a routing one.
       filter: (page) =>
-        !/\/(login|profile|playground\/passport)\/$/.test(page),
+        !/\/(login|profile|playground\/passport)\/$/.test(page) &&
+        emptyIndexFilter([
+          ['guides', 'guides'],
+          ['videos', 'videos'],
+        ])(page),
     }),
   ],
   markdown: {
