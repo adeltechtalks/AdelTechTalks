@@ -14,7 +14,7 @@
    action on every screen.
    ========================================================================== */
 
-import AdelLogo from './AdelLogo.astro';
+import Logo from './Logo.astro';
 import AuthNav from './AuthNav.astro';
 import Rich from './Rich.astro';
 import { nav, site } from '../site.config';
@@ -75,8 +75,16 @@ const homeHref = localizePath('/', lang);
 
 <header class="hdr">
   <div class="hdr__inner">
-    <a href={homeHref} class="hdr__logo" aria-label={`${site.name} — ${c.common.home}`}>
-      <AdelLogo size={28} tone="default" />
+    {/* The approved AdelTechTalks lockup from the Design System — the locked
+        mark geometry plus the wordmark, in the documented `reversed` role for a
+        dark ground. Not a new logo and not a redraw: Logo.astro carries the
+        exact path from atc-mark-currentcolor.svg.
+
+        The accessible name is the CHANNEL, because that is what the lockup
+        says. Brand architecture is unchanged — Adel remains the site's subject;
+        AdelTechTalks is the recognisable identity that carries it. */}
+    <a href={homeHref} class="hdr__logo" aria-label={`${site.showName} — ${c.common.home}`}>
+      <Logo size={28} tone="reversed" />
     </a>
 
     <nav class="hdr__nav" aria-label="Main">
@@ -156,6 +164,13 @@ const homeHref = localizePath('/', lang);
     } catch {}
   }
 
+  /* The bar lifts off the page only once there is content under it. Passive
+     listener, one class toggle, no layout read beyond scrollY. */
+  const header = document.querySelector<HTMLElement>('.hdr');
+  const setScrolled = () => header?.classList.toggle('hdr--scrolled', window.scrollY > 4);
+  setScrolled();
+  window.addEventListener('scroll', setScrolled, { passive: true });
+
   burger?.addEventListener('click', () => {
     const open = burger.getAttribute('aria-expanded') === 'true';
     burger.setAttribute('aria-expanded', String(!open));
@@ -178,21 +193,33 @@ const homeHref = localizePath('/', lang);
 </script>
 
 <style>
+  /* ---- the graphite bar --------------------------------------------------
+     Graphite base, restrained blur, a one-pixel highlight along the top edge
+     and a dark rule along the bottom. No gradient, no glow: the depth is the
+     blur and the shadow, and the shadow only exists once the page has moved. */
   .hdr {
     position: sticky;
     top: 0;
     z-index: var(--atc-z-3);
     background: var(--adel-glass-fill);
-    backdrop-filter: blur(var(--adel-glass-blur)) saturate(1.4);
-    -webkit-backdrop-filter: blur(var(--adel-glass-blur)) saturate(1.4);
-    border-bottom: 1px solid var(--adel-border-hairline);
+    backdrop-filter: blur(var(--adel-glass-blur)) saturate(1.2);
+    -webkit-backdrop-filter: blur(var(--adel-glass-blur)) saturate(1.2);
+    border-top: 1px solid var(--adel-glass-border);
+    border-bottom: 1px solid var(--adel-glass-edge);
+    transition: box-shadow var(--atc-duration-fast) var(--atc-ease-move);
   }
-  /* Where backdrop-filter is unavailable the fill must become opaque, or the
-     nav sits unreadable over scrolling text. */
+  .hdr--scrolled {
+    box-shadow: var(--adel-glass-shadow);
+  }
+  /* Where backdrop-filter is unavailable the fill must become fully opaque, or
+     page text scrolls through the bar and nothing on it stays legible. */
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .hdr {
-      background: var(--adel-surface-canvas);
+      background: var(--adel-graphite);
     }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hdr { transition: none; }
   }
 
   .hdr__inner {
@@ -214,21 +241,35 @@ const homeHref = localizePath('/', lang);
     margin-inline-start: auto;
   }
   .hdr__link {
+    position: relative;
     padding: 8px 12px;
     border-radius: var(--adel-radius-control);
     text-decoration: none;
     font-size: var(--adel-text-sm);
     font-weight: 500;
-    color: var(--adel-text-secondary);
+    color: var(--adel-nav-fg);
     white-space: nowrap;
   }
   .hdr__link:hover {
-    background: var(--adel-surface-tint);
-    color: var(--adel-text-on-tint);
+    background: var(--adel-nav-bg-hover);
+    color: var(--adel-nav-fg-hover);
   }
+  /* The active item is carried by weight and a full-white label — both survive
+     greyscale. The Signature Blue rule under it is a graphic accent at 3.37:1
+     on Graphite, which clears the 3:1 floor for non-text UI and is never asked
+     to do the work of a label. */
   .hdr__link--active {
-    color: var(--adel-text-primary);
+    color: var(--adel-nav-fg-strong);
     font-weight: 600;
+  }
+  .hdr__link--active::after {
+    content: '';
+    position: absolute;
+    inset-inline: 12px;
+    bottom: 2px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--adel-nav-indicator);
   }
   .hdr__actions {
     display: flex;
@@ -238,16 +279,17 @@ const homeHref = localizePath('/', lang);
   .hdr__lang {
     padding: 8px 12px;
     border-radius: var(--adel-radius-control);
-    border: 1px solid var(--adel-border-hairline);
+    border: 1px solid var(--adel-nav-border);
     font-size: var(--adel-text-sm);
     font-weight: 500;
-    color: var(--adel-text-primary);
+    color: var(--adel-nav-fg-strong);
     text-decoration: none;
     white-space: nowrap;
   }
   .hdr__lang:hover {
-    border-color: var(--adel-border-brand);
-    color: var(--adel-text-link);
+    border-color: var(--adel-nav-fg-hover);
+    background: var(--adel-nav-bg-hover);
+    color: var(--adel-nav-fg-hover);
   }
 
   /* ---- burger, hidden on desktop ---- */
@@ -261,7 +303,7 @@ const homeHref = localizePath('/', lang);
     flex-direction: column;
     gap: 5px;
     background: transparent;
-    border: 1px solid var(--adel-border-strong);
+    border: 1px solid var(--adel-nav-border);
     border-radius: var(--adel-radius-control);
     cursor: pointer;
   }
@@ -270,15 +312,17 @@ const homeHref = localizePath('/', lang);
     width: 18px;
     height: 2px;
     border-radius: 1px;
-    background: var(--adel-text-primary);
+    background: var(--adel-nav-fg-strong);
   }
+  /* The open menu is part of the bar, so it carries the bar's ground. A
+     warm-white panel hanging off a graphite header reads as two components. */
   .hdr__mobile {
     display: none;
     flex-direction: column;
     gap: 2px;
     padding: var(--atc-space-4) var(--atc-space-5) var(--atc-space-5);
-    border-top: 1px solid var(--adel-border-hairline);
-    background: var(--adel-surface-canvas);
+    border-top: 1px solid var(--adel-glass-edge);
+    background: var(--adel-graphite);
   }
   .hdr__mobile .hdr__link {
     padding: 12px 14px;
@@ -286,9 +330,22 @@ const homeHref = localizePath('/', lang);
   .hdr__link--account,
   .hdr__link--lang {
     margin-top: var(--atc-space-2);
-    border-top: 1px solid var(--adel-border-hairline);
+    border-top: 1px solid var(--adel-glass-edge);
     padding-top: var(--atc-space-4) !important;
-    color: var(--adel-text-link);
+    color: var(--adel-nav-fg-hover);
+  }
+
+  /* ---- compact lockup -----------------------------------------------------
+     Below 480px the full lockup crowds the burger. The Design System's own
+     compact form is the mark standing alone, so the WORDMARK is dropped and the
+     mark is left at its published size — it stays at 28px, well clear of the
+     measured 24px floor where the counter closes. The mark is not shrunk and no
+     new compact artwork is invented. The link keeps its aria-label, so the
+     accessible name is unchanged. */
+  @media (max-width: 479px) {
+    .hdr__logo :global(.atc-logo__word) {
+      display: none;
+    }
   }
 
   @media (max-width: 1023px) {
