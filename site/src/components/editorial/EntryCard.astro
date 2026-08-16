@@ -79,14 +79,14 @@ const topic = findTopic(entry.topic);
   }
   .ec__title {
     margin: 0;
-    font-family: var(--adel-font-display);
+    font-family: var(--adel-font-display-sm);
     font-size: var(--adel-text-lg);
     line-height: 1.35;
     font-weight: 600;
     letter-spacing: var(--adel-tracking-tight);
     color: var(--adel-text-primary);
   }
-  [lang='ar'] .ec__title {
+  :global([lang='ar']) .ec__title {
     letter-spacing: normal;
   }
   .ec__desc {

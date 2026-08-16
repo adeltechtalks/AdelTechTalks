@@ -61,7 +61,7 @@ const project = series.caseStudy ? projects.find((p) => p.id === series.caseStud
         {c.series.label} · {c.series.statusRunning}
       </span>
 
-      <h1 class="sp__q"><Rich text={s.question} /></h1>
+      <h1 class="sp__q ar-hero"><Rich text={s.question} /></h1>
 
       <Rich text={s.body} as="p" class="sp__body" />
       <Rich text={s.promise} as="p" class="sp__promise" />
@@ -81,7 +81,7 @@ const project = series.caseStudy ? projects.find((p) => p.id === series.caseStud
       <section class="sp__case" aria-labelledby="sp-case">
         <div class="sp__caseText">
           <span class="sp__caseEyebrow">{c.series.caseStudyTitle}</span>
-          <h2 class="sp__caseTitle" id="sp-case">
+          <h2 class="sp__caseTitle ar-heading" id="sp-case">
             <Rich text={caseStudy?.title ?? project![lang].name} />
           </h2>
           <p class="sp__caseBody">
@@ -145,7 +145,7 @@ const project = series.caseStudy ? projects.find((p) => p.id === series.caseStud
     text-transform: uppercase;
     color: var(--adel-signature-blue);
   }
-  [lang='ar'] .sp__label { text-transform: none; letter-spacing: normal; }
+  :global([lang='ar']) .sp__label { text-transform: none; letter-spacing: normal; }
   /* The single Fresh Mint mark on the page: the series is genuinely running. */
   .sp__dot {
     width: 8px;
@@ -165,7 +165,6 @@ const project = series.caseStudy ? projects.find((p) => p.id === series.caseStud
     color: var(--adel-text-primary);
     text-wrap: balance;
   }
-  [lang='ar'] .sp__q { letter-spacing: normal; line-height: 1.35; }
 
   .sp__body {
     margin: 0;
@@ -194,7 +193,7 @@ const project = series.caseStudy ? projects.find((p) => p.id === series.caseStud
   /* The wordmark stays Latin and LTR in both languages, the way a wordmark
      does. `dir` is set explicitly so it does not reorder on the Arabic page. */
   .sp__masterMark {
-    font-family: var(--adel-font-display);
+    font-family: var(--adel-font-latin);
     font-weight: 700;
     color: var(--adel-text-primary);
     unicode-bidi: isolate;
@@ -225,7 +224,7 @@ const project = series.caseStudy ? projects.find((p) => p.id === series.caseStud
     text-transform: uppercase;
     opacity: 0.65;
   }
-  [lang='ar'] .sp__caseEyebrow { text-transform: none; letter-spacing: normal; }
+  :global([lang='ar']) .sp__caseEyebrow { text-transform: none; letter-spacing: normal; }
   .sp__caseTitle {
     margin: 0;
     font-family: var(--adel-font-display);
@@ -235,7 +234,6 @@ const project = series.caseStudy ? projects.find((p) => p.id === series.caseStud
     letter-spacing: -0.02em;
     color: inherit;
   }
-  [lang='ar'] .sp__caseTitle { letter-spacing: normal; line-height: 1.4; }
   .sp__caseBody {
     margin: 0;
     font-size: var(--adel-text-base);
@@ -278,7 +276,7 @@ const project = series.caseStudy ? projects.find((p) => p.id === series.caseStud
     color: var(--adel-white);
     flex: 0 0 auto;
   }
-  [dir='rtl'] .sp__arrow { display: inline-block; transform: scaleX(-1); }
+  :global([dir='rtl']) .sp__arrow { display: inline-block; transform: scaleX(-1); }
 
   /* ---- parts ---- */
   .sp__parts { margin-top: var(--atc-space-20); }

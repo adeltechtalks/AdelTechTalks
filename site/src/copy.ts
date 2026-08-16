@@ -51,6 +51,9 @@ export interface Copy {
     identity: string; loveTechGloss: string; positioning: string; body: string;
     pattern: string[]; primaryCta: string; primaryCtaAlt: string; secondaryCta: string;
     portraitAlt: string;
+    /* ---- DS v2.1 hero ---- */
+    badge: string; line2: string; line3: string;
+    ctaPrimary: string; ctaSecondary: string; nowBuilding: string;
   };
   explore: { title: string; intro: string };
   latest: { title: string; intro: string; empty: string; kind: Record<'guide' | 'article' | 'video', string> };
@@ -151,7 +154,16 @@ const en: Copy = {
        never land on an empty index. */
     primaryCtaAlt: 'Start with the library',
     secondaryCta: 'More about me',
-    portraitAlt: 'Adel',
+    portraitAlt: 'Adel at his studio desk — headphones, microphone and keyboard',
+    /* ---- DS v2.1 hero. Three lines, deliberately unequal weight: "I ❤ Tech"
+       carries the 800 display presence, line2 sits a step below at 700, line3
+       is supporting text. ---- */
+    badge: 'Vibe Coding · Building in public',
+    line2: 'I turn ideas into launches with [[Vibe Coding]].',
+    line3: 'Building GearNest. Sharing everything I learn.',
+    ctaPrimary: 'Explore the build',
+    ctaSecondary: 'Start with the library',
+    nowBuilding: 'Currently building · GearNest',
   },
   explore: {
     title: 'What I explore',
@@ -396,6 +408,14 @@ const ar: Copy = {
     primaryCtaAlt: 'ابدأ من المكتبة',
     secondaryCta: 'المزيد عني',
     portraitAlt: 'عادل',
+    /* DS v2.1 hero, Adel's own Egyptian-Arabic voice as supplied. English
+       terms stay English per the non-translated list. */
+    badge: '[[Vibe Coding]] · بابني قدّام الناس',
+    line2: 'بحوّل الأفكار لمشاريع باستخدام [[Vibe Coding]].',
+    line3: 'ببني [[GearNest]] وبشارك كل حاجة بتعلمها.',
+    ctaPrimary: 'اكتشف الرحلة',
+    ctaSecondary: 'ابدأ من المكتبة',
+    nowBuilding: 'بابني دلوقتي · [[GearNest]]',
   },
   explore: {
     title: 'ما أستكشفه',

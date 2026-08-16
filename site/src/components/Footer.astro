@@ -217,7 +217,7 @@ const separate = projects.filter((p) => p.separate);
     color: var(--adel-text-link);
   }
   /* ↗ points away from the reading direction on both sides. */
-  [dir='rtl'] .ftr__sepArrow {
+  :global([dir='rtl']) .ftr__sepArrow {
     display: inline-block;
     transform: scaleX(-1);
   }

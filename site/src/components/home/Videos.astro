@@ -122,11 +122,11 @@ const c = useCopy(lang);
   }
   /* The play triangle points the way video plays, which is LTR everywhere —
      it is not a directional UI affordance and must not mirror (§29). */
-  [dir='rtl'] .vd__play { transform: none; }
+  :global([dir='rtl']) .vd__play { transform: none; }
 
   .vd__title {
     margin: 0;
-    font-family: var(--adel-font-display);
+    font-family: var(--adel-font-display-sm);
     font-size: var(--adel-text-base);
     line-height: 1.4;
     font-weight: 600;

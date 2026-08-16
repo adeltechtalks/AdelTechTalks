@@ -37,14 +37,14 @@ const c = useCopy(lang);
     </div>
 
     <div class="so__text">
-      <h2 class="so__title" id="signoff-title">{c.signoff.title}</h2>
+      <h2 class="so__title ar-heading" id="signoff-title">{c.signoff.title}</h2>
       <Rich text={c.signoff.body} as="p" class="so__body" />
 
       <div class="so__sign">
         {photography.signature ? (
           <img class="so__signImg" src={photography.signature} alt={c.signoff.signature} />
         ) : (
-          <span class="so__signText">{c.signoff.signature}</span>
+          <span class="so__signText ar-heading">{c.signoff.signature}</span>
         )}
       </div>
 
@@ -80,7 +80,6 @@ const c = useCopy(lang);
     letter-spacing: var(--adel-tracking-tight);
     color: var(--adel-text-primary);
   }
-  [lang='ar'] .so__title { letter-spacing: normal; line-height: 1.4; }
   .so__body {
     margin: 0;
     font-size: var(--adel-text-lg);

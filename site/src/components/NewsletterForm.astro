@@ -207,7 +207,7 @@ const id = `nl-${placement}`;
     direction: ltr;
     text-align: start;
   }
-  [dir='rtl'] .nl__input {
+  :global([dir='rtl']) .nl__input {
     text-align: right;
   }
   .nl__input::placeholder {
@@ -259,7 +259,7 @@ const id = `nl-${placement}`;
   }
   [data-state='ok'] .nl__status {
     background: var(--adel-status-success-bg);
-    color: var(--adel-status-success);
+    color: var(--adel-status-success-text);
   }
   [data-state='ok'] .nl__status::before {
     content: '✓';

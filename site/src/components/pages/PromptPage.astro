@@ -78,7 +78,7 @@ const alternateLinks = await translationsOf('prompt', slug, lang);
         </a>
       )}
 
-      <h1 class="pp__title">{data.title}</h1>
+      <h1 class="pp__title ar-hero">{data.title}</h1>
       <p class="pp__desc">{data.description}</p>
 
       <div class="pp__meta">
@@ -253,7 +253,7 @@ const alternateLinks = await translationsOf('prompt', slug, lang);
     text-transform: uppercase;
     opacity: 0.75;
   }
-  [lang='ar'] .pp__seriesLabel { text-transform: none; letter-spacing: normal; }
+  :global([lang='ar']) .pp__seriesLabel { text-transform: none; letter-spacing: normal; }
 
   .pp__title {
     margin: 0;
@@ -265,7 +265,6 @@ const alternateLinks = await translationsOf('prompt', slug, lang);
     color: var(--adel-text-primary);
     text-wrap: balance;
   }
-  [lang='ar'] .pp__title { letter-spacing: normal; line-height: 1.35; }
   .pp__desc {
     margin: 0;
     font-size: var(--adel-text-lg);
@@ -310,7 +309,7 @@ const alternateLinks = await translationsOf('prompt', slug, lang);
     text-transform: uppercase;
     color: var(--adel-text-secondary);
   }
-  [lang='ar'] .pp__blockTitle { text-transform: none; letter-spacing: normal; }
+  :global([lang='ar']) .pp__blockTitle { text-transform: none; letter-spacing: normal; }
   .pp__copy {
     display: inline-flex;
     align-items: center;
@@ -329,7 +328,7 @@ const alternateLinks = await translationsOf('prompt', slug, lang);
   .pp__copy:hover { border-color: var(--adel-border-brand); color: var(--adel-text-link); }
   .pp__copy--done {
     border-color: var(--adel-status-success);
-    color: var(--adel-status-success);
+    color: var(--adel-status-success-text);
     background: var(--adel-status-success-bg);
   }
   .pp__copyIcon { display: inline-flex; }
@@ -350,7 +349,7 @@ const alternateLinks = await translationsOf('prompt', slug, lang);
     margin: 0;
     padding: 0 var(--atc-space-6) var(--atc-space-4);
     font-size: var(--adel-text-xs);
-    color: var(--adel-status-success);
+    color: var(--adel-status-success-text);
     min-height: 1em;
   }
 
@@ -402,7 +401,7 @@ const alternateLinks = await translationsOf('prompt', slug, lang);
     text-transform: uppercase;
     color: var(--adel-text-secondary);
   }
-  [lang='ar'] .pp__testedLabel { text-transform: none; letter-spacing: normal; }
+  :global([lang='ar']) .pp__testedLabel { text-transform: none; letter-spacing: normal; }
   .pp__testedList {
     list-style: none;
     display: flex;

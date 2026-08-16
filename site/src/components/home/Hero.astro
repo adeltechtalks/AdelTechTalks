@@ -1,25 +1,39 @@
 ---
 /* =============================================================================
-   Homepage hero (§14)
+   Hero — Design System v2.1, "Ice arch"
    =============================================================================
-   "Adel's digital home — not a conventional blog homepage."
+   Implemented from the approved template (ui_kits/website/Home.jsx → Hero),
+   annotated there as "Phase 1.2, refined 1b (Ice arch) + 1a calm + 1c headline
+   confidence". The composition, ratios and stagger order are the design's; the
+   routes, copy plumbing and bilingual handling are this site's.
 
-   Five things, in this order: who he is, the expression, the positioning, the
-   pattern, one main action. Plus the photograph, which is half the composition
-   rather than an illustration beside it.
+   THE STRUCTURE
+     · Section ground is Ice Blue — the one Ice moment on the homepage.
+     · Two columns, 1.1fr / 0.9fr, aligned to their BASELINE at the bottom, so
+       the arch and the text column meet on one line.
+     · Left: badge → "I ❤ Tech" → the Vibe Coding line → the GearNest line →
+       actions. Deliberately unequal weight (TY v2.2): 800 display, then a full
+       step down to 700 at a smaller size, then supporting text.
+     · Right: the arch — a 4:5 portrait with a fully round top
+       (`border-radius: 999px 999px 0 0`), and one glass pill overlapping its
+       lower-left corner.
 
-   "I ❤️ Tech" is a brand expression and stays in Latin on the Arabic page too —
-   the same way a wordmark does. The Arabic gloss underneath carries the
-   meaning. It is isolated as an LTR run so the bidi algorithm cannot reorder
-   it when Arabic text sits beside it.
+   THE HEART IS SIGNATURE BLUE, NOT RED. It is a brand mark inside a wordmark,
+   and the design draws it with `fill: var(--atc-blue-500)`.
+
+   GLASS BUDGET: the pill is the hero's single glass element. With the header
+   that is two on the homepage, which the 10–15% budget allows for "navigation,
+   floating controls, small overlays" — but it is the ceiling. No third.
+
+   data-reveal 1…7 is the design's own stagger order. See styles/motion.css.
    ========================================================================== */
 
 import Button from '../Button.astro';
 import Rich from '../Rich.astro';
-import PhotoFigure from '../editorial/PhotoFigure.astro';
-import { photography } from '../../site.config';
 import { LOVE_TECH, useCopy } from '../../copy';
 import { emptySurfaces } from '../../lib/content';
+import { photography } from '../../site.config';
+import { flagshipSeries, seriesPath } from '../../lib/series';
 import { localizePath, type Lang } from '../../i18n';
 
 interface Props {
@@ -29,229 +43,319 @@ interface Props {
 const { lang } = Astro.props;
 const c = useCopy(lang);
 
-/* "I ❤️ Tech" → ['I', 'Tech'] so the heart can be drawn rather than typed. */
+/* "I ❤️ Tech" is one brand expression; the heart is drawn, not typed, so it
+   takes the brand colour and a stable size instead of whatever the visitor's
+   emoji font decides. Splitting on the emoji keeps the string in copy.ts as the
+   single source of the wordmark. */
 const [beforeHeart, afterHeart] = LOVE_TECH.split('❤️');
 
-/* CS-05 gives this page exactly one primary action, and it points at Guides.
-   While nothing is published there it points at the Learn Hub instead, which
-   is the same promise — start here — against a surface that has content. It
-   reverts on its own the moment a guide goes live. */
+/* The primary action goes to the series — that IS "the build". The secondary
+   goes to the library. Both are real routes; neither can land on an empty
+   index, which is the rule the homepage has followed since Phase 1.1. */
+const flagship = flagshipSeries();
+const primaryHref = flagship ? seriesPath(flagship.id) : '/learn';
 const guidesEmpty = (await emptySurfaces(lang)).has('guides');
-const primaryHref = guidesEmpty ? '/learn' : '/guides';
+const secondaryHref = guidesEmpty ? '/learn' : '/guides';
+
+const portrait = photography.heroPortrait;
+const portraitMobile = photography.heroPortraitMobile;
 ---
 
 <section class="hero">
-  <div class="container hero__grid">
-    <div class="hero__copy">
-      <p class="hero__identity">{c.hero.identity}</p>
+  <div class="hero__inner">
+    <div class="hero__text">
+      <span class="hero__badge" data-reveal style="--reveal-index:1">
+        <Rich text={c.hero.badge} />
+      </span>
 
-      <h1 class="hero__love" lang="en" dir="ltr">
-        <span>{beforeHeart.trim()}</span>
-        <span class="hero__heart" aria-hidden="true">
-          <svg viewBox="0 0 24 24" role="presentation">
-            <path
-              d="M12 21s-7.5-4.7-9.6-9.1C.7 8.5 2.4 5 5.9 5c2 0 3.4 1.1 4.1 2.2C10.7 6.1 12.1 5 14.1 5c3.5 0 5.2 3.5 3.5 6.9C19.5 16.3 12 21 12 21z"
-              fill="currentColor"
-            />
-          </svg>
-        </span>
-        <span class="sr-only">love</span>
-        <span>{afterHeart.trim()}</span>
+      <h1 class="hero__love" data-reveal style="--reveal-index:2">
+        <span class="hero__loveWord">{beforeHeart.trim()}</span>
+        <svg class="hero__heart" viewBox="0 0 24 24" role="img" aria-label="love" focusable="false">
+          <path
+            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+          />
+        </svg>
+        <span class="hero__loveWord">{afterHeart.trim()}</span>
       </h1>
 
-      {c.hero.loveTechGloss && <p class="hero__gloss">{c.hero.loveTechGloss}</p>}
+      <p class="hero__line2 ar-heading" data-reveal style="--reveal-index:3">
+        <Rich text={c.hero.line2} />
+      </p>
+      <p class="hero__line3" data-reveal style="--reveal-index:4">
+        <Rich text={c.hero.line3} />
+      </p>
 
-      <Rich text={c.hero.positioning} as="p" class="hero__positioning" />
-
-      {/* The four-line pattern (§12). A list, because it is one — and reading
-          it aloud as four items is exactly how it should sound. */}
-      <ul class="hero__pattern">
-        {c.hero.pattern.map((line) => (
-          <li class="hero__patternItem">{line}</li>
-        ))}
-      </ul>
-
-      <Rich text={c.hero.body} as="p" class="hero__body" />
-
-      {/* Exactly one primary action on this page. Everything below is
-          secondary, ghost or a plain link. */}
-      <div class="hero__actions">
+      <div class="hero__actions" data-reveal style="--reveal-index:5">
         <Button variant="primary" size="lg" href={localizePath(primaryHref, lang)}>
-          {guidesEmpty ? c.hero.primaryCtaAlt : c.hero.primaryCta}
+          {c.hero.ctaPrimary}
         </Button>
-        <Button variant="ghost" size="lg" href={localizePath('/about', lang)}>
-          {c.hero.secondaryCta}
-        </Button>
+        <a class="hero__secondary" href={localizePath(secondaryHref, lang)}>
+          {c.hero.ctaSecondary}
+          <span class="hero__arrow" aria-hidden="true">→</span>
+        </a>
       </div>
     </div>
 
-    <div class="hero__photo">
-      <PhotoFigure
-        src={photography.heroPortrait}
-        srcMobile={photography.heroPortraitMobile}
-        alt={c.hero.portraitAlt}
-        ratio="3 / 4"
-        ratioMobile="4 / 5"
-        priority
-        slotNote="A portrait of Adel goes here."
-      />
+    <div class="hero__media">
+      <div class="hero__arch" data-reveal style="--reveal-index:6">
+        {portrait ? (
+          <picture>
+            {portraitMobile && <source media="(max-width: 767px)" srcset={portraitMobile} />}
+            <img
+              class="hero__img"
+              src={portrait}
+              alt={c.hero.portraitAlt}
+              width="800"
+              height="1000"
+              loading="eager"
+              decoding="sync"
+              fetchpriority="high"
+            />
+          </picture>
+        ) : (
+          /* PH v1.0 — a designed, silent slot rather than a stock or generated
+             stand-in. Never a fabricated photograph of Adel. */
+          <div class="hero__slot" aria-hidden="true"></div>
+        )}
+      </div>
+
+      <span class="hero__pill" data-reveal style="--reveal-index:7">
+        <span class="hero__dot" aria-hidden="true"></span>
+        <Rich text={c.hero.nowBuilding} />
+      </span>
     </div>
   </div>
 </section>
 
 <style>
+  /* ---- ground ------------------------------------------------------------
+     Ice Blue, full bleed. This is the homepage's one Ice moment; the Mint
+     moment is the pill's dot, and CS v2.0 forbids both competing in the same
+     section — the dot is 8px, which is why it can sit here at all. */
   .hero {
-    padding-block-start: var(--atc-space-16);
+    background: var(--adel-surface-tint);
   }
-  .hero__grid {
+  .hero__inner {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: var(--atc-space-16) var(--atc-space-10) 0;
     display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: var(--atc-space-16);
-    align-items: center;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: var(--atc-space-16); /* design 56px → 64px, nearest step */
+    align-items: end;
   }
-  .hero__copy {
+
+  .hero__text {
     display: flex;
     flex-direction: column;
-    gap: var(--atc-space-5);
-    /* The copy column has its own measure regardless of the grid. */
-    max-width: 34rem;
+    gap: var(--atc-space-6);
+    padding-bottom: var(--atc-space-20); /* design 72px → 80px, nearest step */
   }
 
-  .hero__identity {
-    margin: 0;
-    font-family: var(--adel-font-display);
-    font-size: var(--adel-text-sm);
+  /* ---- badge — the only rotated element in the system, from the design ---- */
+  .hero__badge {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 14px;
+    border-radius: var(--adel-radius-pill);
+    background: var(--adel-white);
+    border: 1px solid var(--adel-blue-200);
+    color: var(--adel-blue-700);
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
     font-weight: 600;
-    letter-spacing: var(--adel-tracking-wide);
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--adel-signature-blue);
+    transform: rotate(-2deg);
+    white-space: nowrap;
   }
-  [lang='ar'] .hero__identity {
-    text-transform: none;
+  /* Arabic is never letter-spaced and has no uppercase concept (TY v2.0), and
+     the tilt reads as a defect rather than a flourish in a connected script. */
+  :global([lang='ar']) .hero__badge {
     letter-spacing: normal;
-    font-size: var(--adel-text-lg);
+    text-transform: none;
+    transform: none;
+    font-family: var(--adel-font-text);
+    font-size: var(--adel-text-xs);
   }
 
-  /* ---- the expression ---- */
+  /* ---- "I ❤ Tech" — Display XL, Montserrat 800 ---- */
   .hero__love {
     margin: 0;
     display: flex;
     align-items: center;
-    gap: 0.22em;
-    flex-wrap: wrap;
-    font-family: var(--adel-font-display);
-    font-size: clamp(48px, 8vw, 88px);
-    line-height: 1.02;
+    gap: 0.21em;
+    /* "I ❤ Tech" is a Latin lockup on the Arabic page too, so it is pinned to
+       Montserrat rather than inheriting the Arabic display face. */
+    font-family: var(--adel-font-latin);
+    font-size: clamp(52px, 7.2vw, 84px);
+    line-height: 1;
     font-weight: 800;
-    letter-spacing: -0.035em;
+    letter-spacing: -0.04em;
     color: var(--adel-text-primary);
-    /* A fixed Latin lockup: it does not mirror, and it does not reorder. */
+    /* A Latin wordmark, so it stays LTR on the Arabic page. */
     direction: ltr;
     unicode-bidi: isolate;
   }
+  .hero__loveWord { display: inline-block; }
   .hero__heart {
-    display: inline-flex;
-    width: 0.86em;
-    height: 0.86em;
-    /* The heart is the one warm thing in a blue-and-graphite palette, and it
-       is the expression's whole point. It is not a brand colour and it is not
-       Fresh Mint — it is a heart, so it is red. */
-    color: #E0342A;
-  }
-  .hero__heart svg {
-    width: 100%;
-    height: 100%;
-    display: block;
+    width: 0.76em;
+    height: 0.76em;
+    flex: 0 0 auto;
+    fill: var(--adel-blue-500);
   }
 
-  .hero__gloss {
+  /* ---- the Vibe Coding line — a full step below the display ---- */
+  .hero__line2 {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(21px, 2.2vw, 27px);
+    line-height: 1.35;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--adel-text-primary);
+    max-width: 24ch;
+  }
+  /* The face, size, weight and inline-Latin handling for Arabic all come from
+     the shared .ar-heading role in tokens/adel-type.css. Only the measure is
+     hero-specific: Arabic sets denser, so the same line wants a shorter one. */
+  :global([lang='ar']) .hero__line2 { max-width: 20ch; }
+
+  /* ---- supporting line ---- */
+  .hero__line3 {
     margin: 0;
     font-size: var(--adel-text-lg);
     line-height: 1.6;
     color: var(--adel-text-secondary);
   }
 
-  .hero__positioning {
-    margin: 0;
-    font-size: var(--adel-text-base);
-    font-weight: 500;
-    line-height: 1.6;
-    color: var(--adel-text-primary);
-  }
-
-  /* ---- I learn it. I test it. I build with it. I share it. ---- */
-  .hero__pattern {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--atc-space-2);
-    list-style: none;
-    margin: var(--atc-space-1) 0 0;
-    padding: 0;
-  }
-  .hero__patternItem {
-    padding: 6px 12px;
-    border-radius: var(--adel-radius-pill);
-    background: var(--adel-surface-tint);
-    color: var(--adel-text-on-tint);
-    font-size: var(--adel-text-sm);
-    font-weight: 500;
-    white-space: nowrap;
-  }
-
-  .hero__body {
-    margin: 0;
-    font-size: var(--adel-text-base);
-    line-height: var(--adel-leading-body);
-    color: var(--adel-text-secondary);
-    max-width: 46ch;
-  }
-
+  /* ---- actions ---- */
   .hero__actions {
     display: flex;
-    gap: var(--atc-space-3);
+    align-items: center;
+    gap: var(--atc-space-6); /* design 26px → 24px, nearest step */
     flex-wrap: wrap;
-    margin-top: var(--atc-space-2);
+    margin-top: var(--atc-space-1);
   }
+  .hero__secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    color: var(--adel-ink-700);
+    text-decoration: none;
+  }
+  .hero__secondary:hover {
+    color: var(--adel-text-link);
+    text-decoration: underline;
+  }
+  :global([dir='rtl']) .hero__arrow { display: inline-block; transform: scaleX(-1); }
 
-  .hero__photo {
-    max-width: 460px;
-    width: 100%;
+  /* ---- the arch ----------------------------------------------------------
+     4:5, fully round at the top. The width is capped rather than fixed so the
+     column can breathe below 1160px without the arch ever being scaled
+     non-uniformly — the ratio is held by aspect-ratio, not by two hard numbers. */
+  .hero__media {
+    position: relative;
     justify-self: end;
+    width: 100%;
+    max-width: 400px;
   }
-  [dir='rtl'] .hero__photo {
-    justify-self: start;
+  .hero__arch {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: 999px 999px 0 0;
+    overflow: hidden;
+    box-shadow: var(--adel-elevation-3);
+    background: var(--adel-surface-raised);
+  }
+  .hero__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* The supplied photograph is already cropped to 4:5, so this only guards
+       against a future replacement of a different ratio. */
+    object-position: 50% 18%;
+    display: block;
+  }
+  .hero__slot {
+    width: 100%;
+    height: 100%;
+    background: var(--adel-surface-raised);
+    border: 1px dashed var(--adel-border-strong);
+    border-radius: inherit;
   }
 
-  @media (max-width: 1023px) {
-    .hero {
-      padding-block-start: var(--atc-space-10);
-    }
-    .hero__grid {
+  /* ---- the glass pill — the hero's one glass element ---- */
+  .hero__pill {
+    position: absolute;
+    inset-inline-start: -24px;
+    bottom: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    height: 36px;
+    padding: 0 16px;
+    border-radius: var(--adel-radius-pill);
+    background: rgba(255, 255, 255, 0.68);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: var(--adel-elevation-2);
+    color: var(--adel-graphite);
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  :global([lang='ar']) .hero__pill {
+    letter-spacing: normal;
+    text-transform: none;
+    font-family: var(--adel-font-text);
+    font-size: var(--adel-text-xs);
+  }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .hero__pill { background: var(--adel-white); }
+  }
+  /* The 3% Mint moment: 8px, once, marking the thing that is genuinely live. */
+  .hero__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--adel-accent);
+    flex: 0 0 auto;
+  }
+
+  /* ---- responsive --------------------------------------------------------
+     The design is authored at desktop. Below 900px the arch moves above the
+     text so the headline still owns the first screen on a phone, and the pill
+     tucks inside the arch's edge rather than hanging off the viewport. */
+  @media (max-width: 899px) {
+    .hero__inner {
       grid-template-columns: 1fr;
       gap: var(--atc-space-10);
+      padding: var(--atc-space-10) var(--atc-space-5) 0;
     }
-    /* The photograph leads on mobile — most arrivals are from social, and the
-       first thing they should see is a person (§28). */
-    .hero__photo {
-      order: -1;
-      max-width: 100%;
-      justify-self: stretch;
+    .hero__media {
+      grid-row: 1;
+      justify-self: center;
+      max-width: 320px;
     }
-    .hero__copy {
-      max-width: none;
+    .hero__text {
+      padding-bottom: var(--atc-space-12);
+      gap: var(--atc-space-5);
+    }
+    .hero__pill {
+      inset-inline-start: 8px;
+      bottom: 16px;
     }
   }
-
-  @media (max-width: 767px) {
-    .hero__love {
-      font-size: clamp(40px, 13vw, 56px);
-    }
-    .hero__pattern {
-      gap: 6px;
-    }
-    .hero__patternItem {
-      font-size: var(--adel-text-xs);
-      padding: 5px 10px;
-    }
+  @media (max-width: 599px) {
+    .hero__actions { gap: var(--atc-space-4); }
   }
 </style>

@@ -76,7 +76,7 @@ const { label, variant = 'rule', class: className } = Astro.props;
     white-space: nowrap;
   }
   /* Arabic has no uppercase and no letter-spacing. */
-  [lang='ar'] .dv__label {
+  :global([lang='ar']) .dv__label {
     text-transform: none;
     letter-spacing: normal;
   }

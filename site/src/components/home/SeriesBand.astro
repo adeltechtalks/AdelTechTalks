@@ -40,7 +40,7 @@ const count = flagship ? (await getSeriesEntries(lang, flagship.id)).length : 0;
         {c.series.label} · <Rich text={flagship[lang].name} />
       </span>
 
-      <h2 class="sb__q" id="sb-title"><Rich text={flagship[lang].question} /></h2>
+      <h2 class="sb__q ar-heading" id="sb-title"><Rich text={flagship[lang].question} /></h2>
 
       <Rich text={flagship[lang].body} as="p" class="sb__body" />
 
@@ -81,7 +81,7 @@ const count = flagship ? (await getSeriesEntries(lang, flagship.id)).length : 0;
     text-transform: uppercase;
     color: var(--adel-text-on-tint);
   }
-  [lang='ar'] .sb__label { text-transform: none; letter-spacing: normal; }
+  :global([lang='ar']) .sb__label { text-transform: none; letter-spacing: normal; }
   /* Fresh Mint, once, for the thing that is genuinely live (§6). The word
      "Series" carries the meaning as well, so the dot is not load-bearing. */
   .sb__dot {
@@ -103,7 +103,6 @@ const count = flagship ? (await getSeriesEntries(lang, flagship.id)).length : 0;
     max-width: 22ch;
     text-wrap: balance;
   }
-  [lang='ar'] .sb__q { letter-spacing: normal; line-height: 1.4; }
 
   .sb__body {
     margin: 0;
@@ -129,7 +128,7 @@ const count = flagship ? (await getSeriesEntries(lang, flagship.id)).length : 0;
     color: var(--adel-deep-blue);
   }
   .sb:hover .sb__cta { text-decoration: underline; }
-  [dir='rtl'] .sb__arrow { display: inline-block; transform: scaleX(-1); }
+  :global([dir='rtl']) .sb__arrow { display: inline-block; transform: scaleX(-1); }
   .sb__count {
     font-family: var(--adel-font-mono);
     font-size: var(--adel-text-xs);

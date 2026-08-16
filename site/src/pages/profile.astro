@@ -32,19 +32,19 @@ const stamps = playground.tracks.map((t) => ({
 ---
 
 <Base title="Your profile" description="Your Tech Passport, badges and share links.">
-  <section class="container pf">
+  <section class="container prof">
     <!-- One h1 for the document (§30). The two states below swap at runtime,
          so neither of them can be it — a hidden h1 would leave the visible
          state with no page heading at all. -->
     <h1 class="sr-only">Your profile</h1>
 
     <!-- Shown until we know who they are, so nothing flashes wrongly. -->
-    <div class="pf__loading" data-loading>
+    <div class="prof__loading" data-loading>
       <span class="muted">Loading your profile…</span>
     </div>
 
     <!-- Signed out -->
-    <div class="pf__out" data-signed-out hidden>
+    <div class="prof__out" data-signed-out hidden>
       <Card elevation={2} padding="var(--atc-space-8)">
         <div class="stack">
           <h2 class="h-section">You are not signed in</h2>
@@ -60,54 +60,54 @@ const stamps = playground.tracks.map((t) => ({
 
     <!-- Signed in -->
     <div data-signed-in hidden>
-      <div class="pf__head">
-        <div class="pf__id">
-          <span class="pf__avatar" data-avatar>A</span>
-          <div class="pf__idText">
+      <div class="prof__head">
+        <div class="prof__id">
+          <span class="prof__avatar" data-avatar>A</span>
+          <div class="prof__idText">
             <p class="h-section" data-name>—</p>
             <span class="muted" data-email>—</span>
           </div>
         </div>
-        <button class="pf__signout" type="button" data-signout>Sign out</button>
+        <button class="prof__signout" type="button" data-signout>Sign out</button>
       </div>
 
-      <div class="pf__grid">
+      <div class="prof__grid">
         <Card elevation={1} padding="var(--atc-space-6)">
-          <div class="pf__stampsHead">
-            <strong class="pf__stampsTitle">Tech Passport</strong>
-            <span class="pf__count" data-count>—</span>
+          <div class="prof__stampsHead">
+            <strong class="prof__stampsTitle">Tech Passport</strong>
+            <span class="prof__count" data-count>—</span>
           </div>
-          <p class="muted pf__sub">A record of what you have run — not what you have watched.</p>
-          <div class="pf__stamps">
+          <p class="muted prof__sub">A record of what you have run — not what you have watched.</p>
+          <div class="prof__stamps">
             {stamps.map((s) => (
-              <div class="pf__stamp" data-stamp={s.slug}>
-                <span class="pf__disc" style={`--pillar: var(--atc-category-${s.pillar}-graphic)`}>
+              <div class="prof__stamp" data-stamp={s.slug}>
+                <span class="prof__disc" style={`--pillar: var(--atc-category-${s.pillar}-graphic)`}>
                   <Icon name={s.icon} size="lg" />
                 </span>
-                <span class="pf__label">{s.label}</span>
+                <span class="prof__label">{s.label}</span>
               </div>
             ))}
           </div>
         </Card>
 
-        <div class="pf__side">
+        <div class="prof__side">
           <!-- SH-04: the single Origin Corner on this page -->
-          <OriginFrame shorterSide={200} background="var(--atc-gradient-aurora)" class="pf__card">
-            <div class="pf__cardInner">
-              <span class="pf__cardLabel">Passport No.</span>
-              <strong class="pf__cardNo" data-passport-no>ATT-————</strong>
-              <span class="pf__cardIssued" data-issued>—</span>
+          <OriginFrame shorterSide={200} background="var(--atc-gradient-aurora)" class="prof__card">
+            <div class="prof__cardInner">
+              <span class="prof__cardLabel">Passport No.</span>
+              <strong class="prof__cardNo" data-passport-no>ATT-————</strong>
+              <span class="prof__cardIssued" data-issued>—</span>
             </div>
           </OriginFrame>
 
           <Card elevation={1} padding="var(--atc-space-6)">
-            <div class="pf__next">
-              <div class="pf__progHead">
-                <span class="pf__progLabel">Collection</span>
-                <span class="pf__progVal" data-pct>0%</span>
+            <div class="prof__next">
+              <div class="prof__progHead">
+                <span class="prof__progLabel">Collection</span>
+                <span class="prof__progVal" data-pct>0%</span>
               </div>
-              <div class="pf__track"><span class="pf__fill" data-fill style="width:0%"></span></div>
-              <span class="muted pf__nextText" data-next-text>—</span>
+              <div class="prof__track"><span class="prof__fill" data-fill style="width:0%"></span></div>
+              <span class="muted prof__nextText" data-next-text>—</span>
               <Button variant="secondary" size="md" href="/playground/" iconRight="arrow-right">
                 Play a game
               </Button>
@@ -117,10 +117,10 @@ const stamps = playground.tracks.map((t) => ({
       </div>
 
       <!-- Share links for badges already published -->
-      <Card elevation={1} padding="var(--atc-space-6)" class="pf__shares">
+      <Card elevation={1} padding="var(--atc-space-6)" class="prof__shares">
         <strong class="h-card">Your share links</strong>
-        <p class="muted pf__sub">Post these anywhere. Each one invites people to play the same game.</p>
-        <div class="pf__shareList" data-shares>
+        <p class="muted prof__sub">Post these anywhere. Each one invites people to play the same game.</p>
+        <div class="prof__shareList" data-shares>
           <span class="muted">No badges yet — play a game and you will get a link to post.</span>
         </div>
       </Card>
@@ -218,21 +218,21 @@ const stamps = playground.tracks.map((t) => ({
         for (const s of shares) {
           const t = tracks.find((x: any) => x.slug === s.track_slug);
           const row = document.createElement('div');
-          row.className = 'pf__shareRow';
+          row.className = 'prof__shareRow';
 
           const label = document.createElement('span');
-          label.className = 'pf__shareName';
+          label.className = 'prof__shareName';
           label.textContent = t?.badge ?? s.track_slug;
           row.appendChild(label);
 
           const view = document.createElement('a');
-          view.className = 'pf__shareBtn';
+          view.className = 'prof__shareBtn';
           view.href = `/badge/${s.id}/`;
           view.textContent = 'Open';
           row.appendChild(view);
 
           const copy = document.createElement('button');
-          copy.className = 'pf__shareBtn';
+          copy.className = 'prof__shareBtn';
           copy.type = 'button';
           copy.textContent = 'Copy link';
           copy.addEventListener('click', async () => {
@@ -254,19 +254,19 @@ const stamps = playground.tracks.map((t) => ({
 </script>
 
 <style>
-  .pf { max-width: 1000px; }
-  .pf__loading { padding: var(--atc-space-8) 0; }
+  .prof { max-width: 1000px; }
+  .prof__loading { padding: var(--atc-space-8) 0; }
 
-  .pf__head {
+  .prof__head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--atc-space-6);
     flex-wrap: wrap;
-    margin-bottom: var(--atc-space-7);
+    margin-bottom: var(--atc-space-6);
   }
-  .pf__id { display: flex; align-items: center; gap: var(--atc-space-4); }
-  .pf__avatar {
+  .prof__id { display: flex; align-items: center; gap: var(--atc-space-4); }
+  .prof__avatar {
     width: 56px; height: 56px; flex: 0 0 auto;
     border-radius: var(--atc-radius-circle);
     background: var(--atc-purple-600); color: var(--atc-white);
@@ -274,72 +274,72 @@ const stamps = playground.tracks.map((t) => ({
     font-family: var(--atc-font-latin-disp);
     font-size: 22px; font-weight: 800;
   }
-  .pf__idText { display: flex; flex-direction: column; gap: 2px; }
-  .pf__idText span { font-size: var(--atc-body-small-size); }
-  .pf__signout {
+  .prof__idText { display: flex; flex-direction: column; gap: 2px; }
+  .prof__idText span { font-size: var(--atc-body-small-size); }
+  .prof__signout {
     background: none; border: 0; padding: 4px 8px; font: inherit;
     font-size: var(--atc-body-small-size); color: var(--atc-purple-700);
     text-decoration: underline; cursor: pointer;
   }
 
-  .pf__grid {
+  .prof__grid {
     display: grid;
     grid-template-columns: 1fr 320px;
     gap: var(--atc-space-6);
     align-items: start;
   }
-  .pf__sub { font-size: var(--atc-body-small-size); margin: 0; }
-  .pf__stampsHead { display: flex; justify-content: space-between; align-items: baseline; }
-  .pf__stampsTitle { font-size: 22px; font-family: var(--atc-font-latin-disp); font-weight: 700; }
-  .pf__count {
+  .prof__sub { font-size: var(--atc-body-small-size); margin: 0; }
+  .prof__stampsHead { display: flex; justify-content: space-between; align-items: baseline; }
+  .prof__stampsTitle { font-size: 22px; font-family: var(--atc-font-latin-disp); font-weight: 700; }
+  .prof__count {
     font-family: var(--atc-font-mono); font-variant-numeric: tabular-nums;
     font-size: var(--atc-body-small-size); color: var(--atc-ink-500);
   }
-  .pf__stamps {
+  .prof__stamps {
     display: grid; grid-template-columns: repeat(4, 1fr);
     gap: var(--atc-space-5); margin-top: var(--atc-space-4);
   }
-  .pf__stamp { display: flex; flex-direction: column; align-items: center; gap: var(--atc-space-2); text-align: center; }
+  .prof__stamp { display: flex; flex-direction: column; align-items: center; gap: var(--atc-space-2); text-align: center; }
   /* UNEARNED — dashed outline. The form carries the state, not the colour. */
-  .pf__disc {
+  .prof__disc {
     width: 64px; height: 64px; border-radius: var(--atc-radius-circle);
     display: grid; place-items: center;
     background: var(--atc-ink-50);
     border: 1.5px dashed var(--atc-ink-200);
     color: var(--atc-ink-300);
   }
-  .pf__stamp.is-earned .pf__disc {
+  .prof__stamp.is-earned .prof__disc {
     background: var(--pillar); border: none; color: var(--atc-white);
   }
-  .pf__label { font-size: 12px; line-height: 18px; color: var(--atc-ink-300); }
-  .pf__stamp.is-earned .pf__label { color: var(--atc-ink-900); font-weight: 500; }
+  .prof__label { font-size: 12px; line-height: 18px; color: var(--atc-ink-300); }
+  .prof__stamp.is-earned .prof__label { color: var(--atc-ink-900); font-weight: 500; }
 
-  .pf__side { display: flex; flex-direction: column; gap: var(--atc-space-4); }
-  .pf__card { height: 200px; display: grid; place-items: center; padding: var(--atc-space-6); box-sizing: border-box; }
-  .pf__cardInner { text-align: center; color: var(--atc-white); display: flex; flex-direction: column; gap: 6px; }
-  .pf__cardLabel { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.8; }
-  .pf__cardNo { font-size: 28px; font-variant-numeric: tabular-nums; font-family: var(--atc-font-mono); }
-  .pf__cardIssued { font-size: 13px; opacity: 0.85; }
+  .prof__side { display: flex; flex-direction: column; gap: var(--atc-space-4); }
+  .prof__card { height: 200px; display: grid; place-items: center; padding: var(--atc-space-6); box-sizing: border-box; }
+  .prof__cardInner { text-align: center; color: var(--atc-white); display: flex; flex-direction: column; gap: 6px; }
+  .prof__cardLabel { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.8; }
+  .prof__cardNo { font-size: 28px; font-variant-numeric: tabular-nums; font-family: var(--atc-font-mono); }
+  .prof__cardIssued { font-size: 13px; opacity: 0.85; }
 
-  .pf__next { display: flex; flex-direction: column; gap: var(--atc-space-3); }
-  .pf__progHead { display: flex; justify-content: space-between; align-items: baseline; }
-  .pf__progLabel { font-size: var(--atc-label-size); font-weight: var(--atc-label-weight); }
-  .pf__progVal { font-family: var(--atc-font-mono); font-variant-numeric: tabular-nums; font-size: 12px; color: var(--atc-ink-500); }
-  .pf__track { height: 8px; border-radius: var(--atc-radius-chip); background: var(--atc-ink-100); overflow: hidden; }
-  .pf__fill { display: block; height: 100%; background: var(--atc-purple-600); transition: width var(--atc-duration-slow) var(--atc-ease-enter); }
-  .pf__nextText { font-size: var(--atc-body-small-size); line-height: var(--atc-body-small-line); }
+  .prof__next { display: flex; flex-direction: column; gap: var(--atc-space-3); }
+  .prof__progHead { display: flex; justify-content: space-between; align-items: baseline; }
+  .prof__progLabel { font-size: var(--atc-label-size); font-weight: var(--atc-label-weight); }
+  .prof__progVal { font-family: var(--atc-font-mono); font-variant-numeric: tabular-nums; font-size: 12px; color: var(--atc-ink-500); }
+  .prof__track { height: 8px; border-radius: var(--atc-radius-chip); background: var(--atc-ink-100); overflow: hidden; }
+  .prof__fill { display: block; height: 100%; background: var(--atc-purple-600); transition: width var(--atc-duration-slow) var(--atc-ease-enter); }
+  .prof__nextText { font-size: var(--atc-body-small-size); line-height: var(--atc-body-small-line); }
 
-  .pf__shares { margin-top: var(--atc-space-6); }
-  .pf__shareList { display: flex; flex-direction: column; gap: var(--atc-space-3); margin-top: var(--atc-space-3); }
-  .pf__shareRow {
+  .prof__shares { margin-top: var(--atc-space-6); }
+  .prof__shareList { display: flex; flex-direction: column; gap: var(--atc-space-3); margin-top: var(--atc-space-3); }
+  .prof__shareRow {
     display: flex; align-items: center; gap: var(--atc-space-3);
     padding: var(--atc-space-3) var(--atc-space-4);
     border: var(--atc-stroke-hairline) solid var(--atc-ink-100);
     border-radius: var(--atc-radius-control);
     background: var(--atc-surface-canvas);
   }
-  .pf__shareName { flex: 1; font-weight: 500; font-size: var(--atc-body-small-size); }
-  .pf__shareBtn {
+  .prof__shareName { flex: 1; font-weight: 500; font-size: var(--atc-body-small-size); }
+  .prof__shareBtn {
     height: var(--atc-control-sm); padding: 0 var(--atc-space-3);
     display: inline-flex; align-items: center;
     font: inherit; font-size: var(--atc-body-small-size); font-weight: 500;
@@ -348,12 +348,12 @@ const stamps = playground.tracks.map((t) => ({
     border-radius: var(--atc-radius-control);
     text-decoration: none; cursor: pointer;
   }
-  .pf__shareBtn:hover { border-color: var(--atc-purple-600); color: var(--atc-purple-700); }
+  .prof__shareBtn:hover { border-color: var(--atc-purple-600); color: var(--atc-purple-700); }
 
-  @media (prefers-reduced-motion: reduce) { .pf__fill { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .prof__fill { transition: none; } }
   @media (max-width: 1023px) {
-    .pf__grid { grid-template-columns: 1fr; }
-    .pf__stamps { grid-template-columns: repeat(3, 1fr); }
+    .prof__grid { grid-template-columns: 1fr; }
+    .prof__stamps { grid-template-columns: repeat(3, 1fr); }
   }
-  @media (max-width: 600px) { .pf__stamps { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .prof__stamps { grid-template-columns: repeat(2, 1fr); } }
 </style>

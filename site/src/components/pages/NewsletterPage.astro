@@ -17,7 +17,7 @@ const c = useCopy(lang);
 <Base lang={lang} title={c.newsletter.pageTitle} description={c.newsletter.pageIntro}>
   <div class="container nlp">
     <span class="overline nlp__overline">{c.newsletter.pageTitle}</span>
-    <Rich text={c.newsletter.title} as="h1" class="nlp__title" />
+    <Rich text={c.newsletter.title} as="h1" class="nlp__title ar-hero" />
     <p class="nlp__intro">{c.newsletter.pageIntro}</p>
 
     <div class="nlp__form">
@@ -51,7 +51,6 @@ const c = useCopy(lang);
     color: var(--adel-text-primary);
     text-wrap: balance;
   }
-  [lang='ar'] .nlp__title { letter-spacing: normal; line-height: 1.35; }
   .nlp__intro {
     margin: 0;
     font-size: var(--adel-text-lg);
@@ -69,7 +68,7 @@ const c = useCopy(lang);
     gap: var(--atc-space-3);
   }
   .nlp__point {
-    font-family: var(--adel-font-display);
+    font-family: var(--adel-font-display-sm);
     font-size: var(--adel-text-lg);
     font-weight: 600;
     color: var(--adel-text-tertiary);

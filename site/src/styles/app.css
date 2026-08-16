@@ -70,6 +70,17 @@ h3 {
 [lang='ar'] h3 {
   letter-spacing: normal;
 }
+/* TY v2.0: KO Ghorab never renders below 24px, and an h3 or lower on this site
+   is a card, list or value title well under that. So the display token stops at
+   h2 on the Arabic page and the rest fall to the body family. A small heading
+   that genuinely IS display-sized opts back in with .ar-heading, which outranks
+   this. */
+[lang='ar'] h3,
+[lang='ar'] h4,
+[lang='ar'] h5,
+[lang='ar'] h6 {
+  font-family: var(--adel-font-display-sm);
+}
 
 .h-display {
   font-size: clamp(32px, 5vw, 56px);

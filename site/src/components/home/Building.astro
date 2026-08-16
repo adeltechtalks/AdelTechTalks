@@ -33,7 +33,7 @@ const own = projects.filter((p) => !p.separate);
       {own.map((p) => (
         <li class:list={['bd__item', p.separate && 'bd__item--separate']}>
           <div class="bd__head">
-            <Rich text={p[lang].name} as="h3" class="bd__name" />
+            <Rich text={p[lang].name} as="h3" class="bd__name ar-heading" />
             <span class:list={['bd__status', `bd__status--${p.status}`]}>{p.status}</span>
           </div>
           <Rich text={p[lang].body} as="p" class="bd__body" />
@@ -86,7 +86,6 @@ const own = projects.filter((p) => !p.separate);
     letter-spacing: var(--adel-tracking-tight);
     color: var(--adel-text-primary);
   }
-  [lang='ar'] .bd__name { letter-spacing: normal; }
   .bd__status {
     font-size: var(--adel-text-xs);
     font-weight: 600;
@@ -101,7 +100,7 @@ const own = projects.filter((p) => !p.separate);
   }
   .bd__status--live {
     background: var(--adel-status-success-bg);
-    color: var(--adel-status-success);
+    color: var(--adel-status-success-text);
   }
   .bd__body {
     margin: 0;
@@ -122,5 +121,5 @@ const own = projects.filter((p) => !p.separate);
     text-decoration: none;
   }
   .bd__link:hover { text-decoration: underline; }
-  [dir='rtl'] .bd__arrow { display: inline-block; transform: scaleX(-1); }
+  :global([dir='rtl']) .bd__arrow { display: inline-block; transform: scaleX(-1); }
 </style>

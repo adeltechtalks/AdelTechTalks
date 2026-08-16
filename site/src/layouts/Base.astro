@@ -7,6 +7,7 @@ import { plain, useCopy } from '../copy';
 import { DEFAULT_LANG, LANG_DIR, LANG_TAG, alternates, neutralPath, type Lang } from '../i18n';
 import '../styles/tokens.css';
 import '../styles/app.css';
+import '../styles/motion.css';
 
 interface Props {
   title?: string;
@@ -88,14 +89,24 @@ const switchTo = alternateLinks
   : undefined;
 const switchIsDeadEnd = (Boolean(alternateLinks) || noindex) && !switchTo;
 
-/* §32 — Cairo is the Arabic display face. English pages never need it, so they
-   never ask for it. The other three carry both scripts and both pages use them.
-   Weight ranges are narrowed to what the site actually sets. */
+/* TY v2.2 — three CDN faces, and only the weights the system actually sets.
+
+   Montserrat 400..800 is the full ACTIVE weight system: 800 hero, 700 major
+   headings, 600 secondary, 500/600 nav and CTA, 400 for specific supporting
+   text. It widened from 600..800 in DS v2.1 — the hero's supporting line and
+   the nav labels need the lower end, and the freeze is explicit that hierarchy
+   is editorial rather than everything-equally-heavy.
+
+   CAIRO IS GONE. It was Edition 1's Arabic display face and the documented
+   fallback while KO Ghorab was unlicensed. Ghorab is now installed and
+   self-hosted, so Arabic pages no longer pull a display family from a CDN at
+   all — they load one 8.8 KB WOFF2 from our own origin instead. Cairo remains
+   the display face of frozen AdelTechTalks social assets, which this site does
+   not render. */
 const families = [
-  'family=Montserrat:wght@600..800',
+  'family=Montserrat:wght@400..800',
   'family=Readex+Pro:wght@300..600',
   'family=JetBrains+Mono:wght@400..500',
-  ...(lang === 'ar' ? ['family=Cairo:wght@700..900'] : []),
 ];
 const fontHref = `https://fonts.googleapis.com/css2?${families.join('&')}&display=swap`;
 ---
@@ -146,7 +157,8 @@ const fontHref = `https://fonts.googleapis.com/css2?${families.join('&')}&displa
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href={fontHref} />
-    {/* §9 — emitted only when the licensed Ghorab file is present. */}
+    {/* Self-hosted KO Ghorab, emitted only on Arabic pages and only when the
+        licensed file is present. English pages never request it. */}
     {lang === 'ar' && <ArabicDisplayFont />}
   </head>
 

@@ -28,12 +28,15 @@ interface Props {
   class?: string;
 }
 
-const { entries, lang, showKind = true, headingLevel = 3, class: className } = Astro.props;
+/* `...rest` forwards the scope attribute Astro hands a child component, so a
+   parent styling this component through `class` actually reaches it. See the
+   long note in src/components/Rich.astro. */
+const { entries, lang, showKind = true, headingLevel = 3, class: className, ...rest } = Astro.props;
 const Heading = `h${headingLevel}` as 'h2' | 'h3' | 'h4';
 const c = useCopy(lang);
 ---
 
-<ul class:list={['el', className]}>
+<ul class:list={['el', className]} {...rest}>
   {entries.map((entry) => {
     const topic = findTopic(entry.topic);
     return (
@@ -106,7 +109,7 @@ const c = useCopy(lang);
     text-transform: uppercase;
     color: var(--adel-signature-blue);
   }
-  [lang='ar'] .el__kind {
+  :global([lang='ar']) .el__kind {
     text-transform: none;
     letter-spacing: normal;
   }
@@ -120,7 +123,7 @@ const c = useCopy(lang);
 
   .el__title {
     margin: 0 0 var(--atc-space-2);
-    font-family: var(--adel-font-display);
+    font-family: var(--adel-font-display-sm);
     font-size: clamp(19px, 2.2vw, 23px);
     line-height: 1.3;
     font-weight: 600;
@@ -128,7 +131,7 @@ const c = useCopy(lang);
     color: var(--adel-text-primary);
     max-width: 34ch;
   }
-  [lang='ar'] .el__title {
+  :global([lang='ar']) .el__title {
     letter-spacing: normal;
     line-height: 1.5;
   }

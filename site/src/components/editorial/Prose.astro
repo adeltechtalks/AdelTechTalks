@@ -177,13 +177,34 @@ const { width = 'reading', class: className } = Astro.props;
   }
 
   /* ---- Arabic long-form ---- */
-  [lang='ar'] .prose,
+  :global([lang='ar']) .prose,
   .prose:lang(ar) {
     line-height: 1.9;
   }
-  [lang='ar'] .prose :global(h2),
-  [lang='ar'] .prose :global(h3) {
+  /* Markdown headings cannot carry the .ar-heading marker the hand-written
+     headings use, so the same TY v2.0 contract is applied here by selector:
+     Ghorab, single style, sized by the Arabic display scale rather than by a
+     synthesised Latin weight. h4 stays in the body family — it renders below
+     Ghorab's 24px floor. */
+  :global([lang='ar']) .prose :global(h2),
+  :global([lang='ar']) .prose :global(h3) {
+    font-family: var(--adel-font-arabic-display);
+    font-weight: 400;
+    font-synthesis-weight: none;
+    font-size: clamp(var(--adel-type-ar-display-min), 3.4vw, var(--adel-type-ar-heading));
     letter-spacing: normal;
-    line-height: 1.5;
+    line-height: var(--adel-type-ar-heading-line);
+  }
+  :global([lang='ar']) .prose :global(h3) {
+    font-size: var(--adel-type-ar-display-min);
+  }
+  :global([lang='ar']) .prose :global(h4) {
+    font-family: var(--adel-font-display-sm);
+  }
+  :global([lang='ar']) .prose :global(h2) :global(.term),
+  :global([lang='ar']) .prose :global(h3) :global(.term) {
+    font-family: var(--adel-font-latin);
+    font-size: calc(1em * var(--adel-type-ar-latin-scale));
+    font-weight: 700;
   }
 </style>

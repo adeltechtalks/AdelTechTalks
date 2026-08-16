@@ -37,7 +37,7 @@ const c = useCopy(lang);
 <section class:list={['ncta', `ncta--${variant}`, className]} aria-labelledby={`ncta-${placement}`}>
   <div class="ncta__inner">
     <div class="ncta__text">
-      <h2 class="ncta__title" id={`ncta-${placement}`}>
+      <h2 class="ncta__title ar-heading" id={`ncta-${placement}`}>
         <Rich text={title ?? c.newsletter.title} />
       </h2>
       <Rich text={intro ?? c.newsletter.intro} as="p" class="ncta__intro" />
@@ -80,10 +80,6 @@ const c = useCopy(lang);
     letter-spacing: var(--adel-tracking-tight);
     text-wrap: balance;
     color: inherit;
-  }
-  [lang='ar'] .ncta__title {
-    letter-spacing: normal;
-    line-height: 1.45;
   }
   .ncta__intro {
     margin: 0;

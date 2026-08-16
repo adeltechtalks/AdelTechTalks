@@ -42,7 +42,7 @@ const caseStudy = gearnest?.caseStudy
   <section class="gn">
     <div class="container gn__inner">
       <Rich text={c.gearnest.eyebrow} class="gn__eyebrow" />
-      <Rich text={c.gearnest.title} as="h2" class="gn__title" />
+      <Rich text={c.gearnest.title} as="h2" class="gn__title ar-heading" />
       <Rich text={c.gearnest.body} as="p" class="gn__body" />
       <div class="gn__actions">
         {caseStudy && (
@@ -86,7 +86,7 @@ const caseStudy = gearnest?.caseStudy
     text-transform: uppercase;
     opacity: 0.65;
   }
-  [lang='ar'] .gn__eyebrow { text-transform: none; letter-spacing: normal; }
+  :global([lang='ar']) .gn__eyebrow { text-transform: none; letter-spacing: normal; }
   .gn__title {
     margin: 0;
     font-family: var(--adel-font-display);
@@ -96,7 +96,6 @@ const caseStudy = gearnest?.caseStudy
     letter-spacing: -0.03em;
     color: inherit;
   }
-  [lang='ar'] .gn__title { letter-spacing: normal; line-height: 1.35; }
   .gn__body {
     margin: 0;
     font-size: var(--adel-text-lg);
@@ -137,7 +136,7 @@ const caseStudy = gearnest?.caseStudy
     background: rgba(255, 255, 255, 0.08);
     border-color: var(--adel-white);
   }
-  [dir='rtl'] .gn__arrow { display: inline-block; transform: scaleX(-1); }
+  :global([dir='rtl']) .gn__arrow { display: inline-block; transform: scaleX(-1); }
 
   @media (max-width: 767px) {
     .gn { margin-top: var(--atc-space-16); padding-block: var(--atc-space-12); }

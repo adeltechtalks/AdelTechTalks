@@ -171,6 +171,100 @@ for (const file of files) {
   }
 }
 
+/* =============================================================================
+   Undefined design tokens
+   =============================================================================
+   A `var(--token)` that was never defined does not throw and does not show up
+   in the built CSS as an error — the declaration is simply dropped, and the
+   element silently falls back to its initial value. During the DS v2.1 hero
+   build this cost a broken layout twice: --atc-space-14/-18/-7 do not exist on
+   the 4px scale, so a 56px grid gap and a 26px action gap both became 0.
+
+   So: every var(--…) referenced in src/ must be defined somewhere in src/.
+   Cheap, and it catches the failure at build time instead of in a screenshot.
+   ========================================================================== */
+const SRC = join(DIST, '..', 'src');
+function walkSrc(dir, out = []) {
+  for (const name of readdirSync(dir)) {
+    const full = join(dir, name);
+    if (statSync(full).isDirectory()) walkSrc(full, out);
+    else if (/\.(css|astro)$/.test(name)) out.push(full);
+  }
+  return out;
+}
+
+if (existsSync(SRC)) {
+  const sources = walkSrc(SRC);
+  const defined = new Set();
+  const referenced = new Map();
+  for (const file of sources) {
+    const text = readFileSync(file, 'utf8');
+    for (const m of text.matchAll(/(--[a-zA-Z0-9-]+)\s*:/g)) defined.add(m[1]);
+    for (const m of text.matchAll(/var\(\s*(--[a-zA-Z0-9-]+)/g)) {
+      /* A trailing hyphen means the name is being built by interpolation —
+         `var(--atc-elevation-${n})`. The prefix is not itself a token, and the
+         real name cannot be known statically. */
+      if (m[1].endsWith('-')) continue;
+      if (!referenced.has(m[1])) referenced.set(m[1], file.slice(SRC.length + 1));
+    }
+  }
+  for (const [token, where] of referenced) {
+    /* A var() with its own fallback is deliberate — motion.css does this so the
+       reveal still works if the motion token layer is ever absent. */
+    const hasFallback = sources.some((f) =>
+      new RegExp(`var\\(\\s*${token}\\s*,`).test(readFileSync(f, 'utf8'))
+    );
+    if (!defined.has(token) && !hasFallback) {
+      fail(where, `uses ${token}, which is never defined — the declaration will be dropped silently`);
+    }
+  }
+}
+
+/* =============================================================================
+   DEAD SCOPED RULES
+   =============================================================================
+   Astro scopes a component's CSS by stamping `data-astro-cid-XXXX` onto the
+   elements in its own template, and by handing that attribute to a child
+   component as a prop. A child that does not forward the prop renders an
+   element the parent's stylesheet cannot see: the class is in the HTML, the
+   rule is in the CSS, and nothing connects them. The page still renders — with
+   the browser's default heading sizes — so it looks like a design decision
+   rather than a bug.
+
+   That is exactly how ~30 headings across this site ended up at UA defaults
+   without anyone noticing, because <Rich as="h3" class="ex__name" /> dropped
+   the attribute on the floor.
+
+   So: for every `.klass[data-astro-cid-x]` the CSS relies on, at least one
+   element carrying that class must also carry one of those attributes.
+   ========================================================================== */
+{
+  const cssFiles = walk(DIST).filter((f) => f.endsWith('.css'));
+  const css = cssFiles.map((f) => readFileSync(f, 'utf8')).join('\n');
+
+  const needs = new Map(); // class -> Set of acceptable cid attributes
+  for (const m of css.matchAll(/\.([A-Za-z0-9_-]+)\[(data-astro-cid-[a-z0-9]+)\]/g)) {
+    if (!needs.has(m[1])) needs.set(m[1], new Set());
+    needs.get(m[1]).add(m[2]);
+  }
+
+  const dead = new Map(); // "class" -> first page it was seen on
+  for (const file of files) {
+    const html = readFileSync(file, 'utf8');
+    for (const tag of html.matchAll(/<[a-zA-Z][^>]*class="([^"]*)"[^>]*>/g)) {
+      for (const cls of tag[1].split(/\s+/)) {
+        const cids = needs.get(cls);
+        if (!cids) continue;
+        if ([...cids].some((cid) => tag[0].includes(cid))) continue;
+        if (!dead.has(cls)) dead.set(cls, routeOf(file));
+      }
+    }
+  }
+  for (const [cls, route] of dead) {
+    fail(route, `.${cls} is styled by a scoped rule that never matches it — the component is dropping its scope attribute (forward ...rest onto the root element)`);
+  }
+}
+
 /* ---- report ---- */
 console.log(`\nQA swept ${files.length} pages in dist/\n`);
 if (warnings.length) {

@@ -7,8 +7,23 @@
 
      Readex Pro   body, and any Latin sitting INSIDE an Arabic sentence
      Montserrat   Latin display — standalone headings, wordmark, index figures
-     Cairo        Arabic display, and the documented fallback for Ghorab
+     KO Ghorab    Arabic display — INSTALLED (DS v2.1)
      JetBrains    technical figures: dates, durations, specs, code
+
+   ── TY v2.2 · MONTSERRAT WEIGHT SYSTEM (active — load no others) ────────────
+     800 ExtraBold  Hero / Display XL ("I ❤ Tech")
+     700 Bold       major section headings
+     600 SemiBold   secondary headings
+     500/600        navigation, CTA and label weights
+     400 Regular    permitted only for specific supporting text
+   Hierarchy is editorial: never every line equally heavy — the hero supporting
+   line sits a full weight AND size step below "I ❤ Tech".
+
+   ── CAIRO IS RETIRED (DS v2.1) ──────────────────────────────────────────────
+   Cairo was Edition 1's Arabic display face and the documented fallback while
+   Ghorab was unavailable. Ghorab is now installed, so Cairo is retired from the
+   personal brand and is no longer loaded. It survives only as the display face
+   of frozen AdelTechTalks social assets, which this site does not render.
 
    Adding a fifth Latin family (Inter and friends) was considered and rejected:
    it is another network round-trip for a face Readex Pro already covers, and
@@ -16,25 +31,33 @@
    ============================================================================= */
 
 /* -----------------------------------------------------------------------------
-   ARABIC DISPLAY — KO Ghorab / Ghorab Typeface (Kotype)
+   ARABIC DISPLAY — KO Ghorab (Kotype, Hussien Khalifa 2025)
    -----------------------------------------------------------------------------
-   ⚠️ STAGED, NOT ACTIVE. The licensed font file is not in the repository.
-
-   The approved token is below and does not change. The @font-face that loads
-   the file lives in src/components/ArabicDisplayFont.astro, which emits it
-   only once the licensed file is present at:
+   INSTALLED. The licensed file was supplied with Design System v2.1 and is
+   self-hosted at:
 
        src/assets/fonts/KOGhorab-Regular.woff2
 
-   Splitting it that way keeps the approved token and the staged implementation
-   exactly as specified, while not making every Arabic page request a file that
-   does not exist yet.
+   converted from the supplied OTF at integration time, as the DESIGN_FREEZE
+   engineering handoff requires ("Convert to WOFF2 at build for production
+   weight" — 15.9 KB OTF → 8.8 KB WOFF2).
 
-   Until the file arrives, Arabic display text falls back to Cairo, which is
-   licensed (SIL OFL) and already loaded — a temporary fallback, not a
-   replacement. No other display family substitutes for Ghorab.
+   The @font-face still lives in src/components/ArabicDisplayFont.astro rather
+   than here, and is still emitted only when the file is really present. That
+   was built as a staging mechanism; it is now simply a guard, and it keeps the
+   font out of every English page's critical path.
 
-   No font file has been fabricated or redistributed.
+   USAGE RULES (TY v2.0, enforced by the tokens below):
+     · Arabic DISPLAY only — hero headlines, major headings, editorial titles,
+       pull quotes. Never body, UI, nav, labels or captions: those are Readex.
+     · Hierarchy by SIZE, not weight — Ghorab ships a single style.
+     · Never rendered below 24px. Never letter-spaced.
+     · Ghorab carries NO Latin, so an inline English term inside a Ghorab
+       headline falls through the stack to Montserrat automatically. It is
+       optically down-sized (~×0.925) and set at 700 so it sits with the Arabic
+       rather than shouting over it.
+
+   The file is licensed to Adel and is NOT redistributable.
    -------------------------------------------------------------------------- */
 
 :root {
@@ -49,8 +72,35 @@
      of metrics means a mixed sentence does not jump mid-line (§11). */
   --adel-font-arabic: var(--adel-font-text);
 
-  /* Arabic display — Ghorab first, Cairo as the documented temporary fallback. */
-  --adel-font-arabic-display: 'KO Ghorab', 'Cairo', 'Readex Pro', Tahoma, sans-serif;
+  /* Arabic display — Ghorab, then Montserrat. Montserrat is second on purpose,
+     not as a fallback for the Arabic: Ghorab has no Latin glyphs, so this is
+     the mechanism that renders an inline English term inside an Arabic
+     headline. Cairo is gone (retired in DS v2.1). */
+  --adel-font-arabic-display: 'KO Ghorab', 'Montserrat', 'Readex Pro', Tahoma, sans-serif;
+
+  /* Montserrat that is NEVER remapped by language. A wordmark is Latin on the
+     Arabic site too, and so is an English term quoted inside an Arabic
+     headline — neither may fall into the Arabic display stack. */
+  --adel-font-latin: 'Montserrat', 'Readex Pro', 'Segoe UI', sans-serif;
+
+  /* The display face for headings that never reach Ghorab's 24px floor —
+     card titles, list titles, sub-headings. TY v2.0 forbids Ghorab below
+     24px, so on the Arabic page these fall to Readex Pro (see the [lang='ar']
+     block below) rather than being set in a face that may not go that small.
+     Latin is unaffected: it is Montserrat either way. */
+  --adel-font-display-sm: var(--adel-font-latin);
+
+  /* ---- Arabic display scale (TY v2.0) — sizes, not weights --------------- */
+  --adel-type-ar-hero:         52px;  /* mobile 34px, applied below */
+  --adel-type-ar-hero-line:    1.4;
+  --adel-type-ar-heading:      32px;  /* mobile 24px */
+  --adel-type-ar-heading-line: 1.45;
+  --adel-type-ar-quote:        26px;
+  --adel-type-ar-quote-line:   1.5;
+  /* The floor Ghorab may never render below. */
+  --adel-type-ar-display-min:  24px;
+  /* Inline Latin inside a Ghorab headline. */
+  --adel-type-ar-latin-scale:  0.925;
 
   /* ---- scale — editorial, a touch larger than a UI scale ---- */
   --adel-text-xs:   12px;
@@ -84,6 +134,9 @@
 :root:lang(ar),
 [lang='ar'] {
   --adel-font-display: var(--adel-font-arabic-display);
+  /* Ghorab is a display face with a hard 24px floor, so anything smaller than
+     a heading is set in the body family instead. */
+  --adel-font-display-sm: var(--adel-font-text);
   --adel-measure: var(--adel-measure-arabic);
   /* Arabic needs more line height: diacritics and connecting strokes sit
      outside the Latin x-height band. */
@@ -118,6 +171,67 @@ html[lang='ar'] {
 [lang='ar'] .ftr__title {
   text-transform: none;
   letter-spacing: normal;
+}
+
+/* -----------------------------------------------------------------------------
+   ARABIC DISPLAY ROLES (TY v2.0)
+   -----------------------------------------------------------------------------
+   Ghorab ships ONE style. Every Latin heading on this site carries a weight —
+   800 for a hero, 700 for a section, 600 for a sub-heading — and if those
+   weights survive onto the Arabic page the browser synthesises them, which is
+   a fake bold on a face that has no bold. TY v2.0's answer is that Arabic
+   hierarchy is carried by SIZE, so these three classes replace the Latin
+   weight AND size with the Arabic display scale.
+
+   A heading marks itself with the role it plays, not with the size it wants:
+
+     .ar-hero      page title — the one biggest thing on the page
+     .ar-heading   section headings and editorial titles
+     .ar-quote     pull quotes
+
+   The selectors look odd on purpose. Astro compiles a component rule to
+   `.cls[data-astro-cid-x]` — and to `h1.cls[data-astro-cid-x]` where the
+   component qualifies by element — so a plain `[lang='ar'] .ar-hero` ties on
+   specificity and loses on source order. `html[lang='ar']` plus the repeated
+   class puts these rules one step clear of both, which is what a role that
+   OVERRIDES the Latin treatment has to be.
+
+   Sizes are clamped rather than switched at a breakpoint so the 24px floor
+   holds continuously, including on the tablet widths between the two.
+   -------------------------------------------------------------------------- */
+html[lang='ar'] .ar-hero.ar-hero,
+html[lang='ar'] .ar-heading.ar-heading,
+html[lang='ar'] .ar-quote.ar-quote {
+  font-family: var(--adel-font-arabic-display);
+  font-weight: 400;
+  /* Belt and braces: even if a weight leaks through from somewhere else, the
+     browser is not allowed to invent one. */
+  font-synthesis-weight: none;
+}
+html[lang='ar'] .ar-hero.ar-hero {
+  /* 52px desktop → 34px mobile (TY v2.0) */
+  font-size: clamp(34px, 5.4vw, var(--adel-type-ar-hero));
+  line-height: var(--adel-type-ar-hero-line);
+}
+html[lang='ar'] .ar-heading.ar-heading {
+  /* 32px desktop → 24px mobile, which is also the floor */
+  font-size: clamp(var(--adel-type-ar-display-min), 3.4vw, var(--adel-type-ar-heading));
+  line-height: var(--adel-type-ar-heading-line);
+}
+html[lang='ar'] .ar-quote.ar-quote {
+  font-size: var(--adel-type-ar-quote);
+  line-height: var(--adel-type-ar-quote-line);
+}
+
+/* An English term inside a Ghorab headline. Ghorab has no Latin, so it already
+   falls through to Montserrat; this is the optical correction that stops it
+   shouting over the Arabic it sits inside. */
+html[lang='ar'] .ar-hero.ar-hero .term,
+html[lang='ar'] .ar-heading.ar-heading .term,
+html[lang='ar'] .ar-quote.ar-quote .term {
+  font-family: var(--adel-font-latin);
+  font-size: calc(1em * var(--adel-type-ar-latin-scale));
+  font-weight: 700;
 }
 
 /* -----------------------------------------------------------------------------
