@@ -20,7 +20,19 @@ interface Props {
   class?: string;
 }
 
-const { text, as: Tag = 'span', wrap = false, class: className } = Astro.props;
+/* `...rest` is load-bearing, not tidiness.
+
+   Astro scopes a component's styles by stamping `data-astro-cid-XXXX` onto the
+   elements in ITS OWN template, and it hands that same attribute to a child
+   component as an ordinary prop. A child that does not forward it renders an
+   element the parent's stylesheet cannot see — so `<Rich as="h3" class="ex__name" />`
+   produced an `<h3 class="ex__name">` with no scope attribute, and every rule in
+   the parent's `.ex__name { … }` block was dead. It rendered at the browser's
+   default heading size and weight instead, on ~30 headings across the site.
+
+   Forwarding the rest of the props fixes all of them at once, and lets a caller
+   pass `id`, `lang` or `dir` through as well. */
+const { text, as: Tag = 'span', wrap = false, class: className, ...rest } = Astro.props;
 
 /* Two markers:
 
@@ -85,7 +97,7 @@ const runs: Run[] = text
   });
 ---
 
-<Tag class={className}>
+<Tag class={className} {...rest}>
   {runs.map((run) => {
     const pieces = run.pieces.map((p) =>
       p.term ? <span class:list={['term', p.wraps && 'term--wrap']}>{p.value}</span> : p.value

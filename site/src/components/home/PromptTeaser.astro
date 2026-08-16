@@ -35,7 +35,7 @@ const count = (await getPrompts(lang)).length;
       {count > 0 && (
         <span class="pt__badge nums">{c.topics.countLabel(count)}</span>
       )}
-      <Rich text={c.prompts.title} as="h2" class="pt__title" />
+      <Rich text={c.prompts.title} as="h2" class="pt__title ar-heading" />
       <Rich text={c.prompts.intro} as="p" class="pt__body" />
       <div class="pt__action">
         <Button variant="secondary" size="md" href={localizePath('/prompts', lang)}>
@@ -82,7 +82,6 @@ const count = (await getPrompts(lang)).length;
     letter-spacing: var(--adel-tracking-tight);
     color: var(--adel-text-primary);
   }
-  [lang='ar'] .pt__title { letter-spacing: normal; line-height: 1.45; }
   .pt__body {
     margin: 0;
     font-size: var(--adel-text-base);

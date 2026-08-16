@@ -35,6 +35,29 @@
      the call site. */
   --adel-accent: var(--adel-fresh-mint);
 
+  /* ---- Tier 1 · the published CS v2.0 ramps -------------------------------
+     Design System v2.1 ships full blue/mint/ink ramps. They are added here so
+     components can reach a documented step instead of inventing one — the
+     hover ladder below used to sit on a hand-mixed #1D5AD8 for exactly that
+     reason. Tier 1 is still never consumed directly by a component. */
+  --adel-blue-50:  #F0F6FF;
+  --adel-blue-100: #DCEBFF; /* = Ice Blue */
+  --adel-blue-200: #BBD7FF;
+  --adel-blue-300: #8FB9FA;
+  --adel-blue-400: #5B8EF4;
+  --adel-blue-500: #2563EB; /* = Signature Blue */
+  --adel-blue-600: #1D53CC;
+  --adel-blue-700: #1746A2; /* = Deep Blue */
+  --adel-blue-800: #123577;
+  --adel-blue-900: #0D264F;
+
+  --adel-mint-100: #DDF8F0; /* Mint Mist */
+  --adel-mint-300: #8FE9CE;
+  --adel-mint-500: #2DD4A8; /* = Fresh Mint */
+  --adel-mint-700: #17A97F; /* text-safe on light */
+
+  --adel-ink-700:  #3A414C;
+
   /* ---- Derived neutrals -----------------------------------------------------
      NOT new brand colours. Three interpolations the UI genuinely needs and the
      nine-value palette does not supply: a sunken band between Warm White and
@@ -42,11 +65,11 @@
      disabled controls. Each sits on the Warm White → Graphite ramp and carries
      no hue of its own. If the design system later publishes official values
      for these three roles, replace them here and nowhere else. */
-  --adel-neutral-sunken:   #F2F3F5; /* between Warm White and Soft Gray */
-  --adel-neutral-border:   #CBD2DA; /* between Soft Gray and Slate */
+  --adel-neutral-sunken:   #F3F4F6; /* CS v2.0 ink-50 */
+  --adel-neutral-border:   #CDD1D8; /* CS v2.0 ink-200 */
   /* ⚠️ NOT A TEXT COLOUR. 2.46:1 on Warm White. Disabled controls, icon
      strokes and decorative rules only — never a word a visitor has to read. */
-  --adel-neutral-muted:    #98A2B3;
+  --adel-neutral-muted:    #9AA1AC; /* CS v2.0 ink-300 */
 
   /* ---- Tier 2 · semantic surface ---- */
   --adel-surface-canvas:  var(--adel-warm-white);
@@ -54,6 +77,9 @@
   --adel-surface-sunken:  var(--adel-neutral-sunken);
   --adel-surface-tint:    var(--adel-ice-blue);
   --adel-surface-inverse: var(--adel-graphite);
+  /* CS v2.0 surface-depth. Tint surfaces are RARE: about one Ice moment and one
+     Mint moment per scroll-screen, never both in the same section. */
+  --adel-surface-depth:   var(--adel-mint-100);
 
   /* ---- Tier 2 · semantic text ---- */
   --adel-text-primary:    var(--adel-graphite);
@@ -79,7 +105,7 @@
      Primary action is Signature Blue; pressed goes to Deep Blue. Mint is NOT
      an action colour — it marks state, not intent. */
   --adel-action-primary-bg:         var(--adel-signature-blue);
-  --adel-action-primary-bg-hover:   #1D5AD8; /* one step of the same hue */
+  --adel-action-primary-bg-hover:   var(--adel-blue-600); /* CS v2.0 ladder */
   --adel-action-primary-bg-pressed: var(--adel-deep-blue);
   --adel-action-primary-fg:         var(--adel-white);
   --adel-action-primary-border:     var(--adel-deep-blue);
@@ -97,10 +123,22 @@
 
   /* ---- Tier 2 · status. Functional, not brand. Kept distinct from the blue
      family precisely so "correct", "error" and "brand" never read alike. ---- */
-  --adel-status-success: #0B7468;
+  /* CS v2.0 fixes this value by decision: success is a green of its own and
+     Fresh Mint is never swapped in for status work. Adopted as published — it
+     is the GRAPHIC success colour: dots, borders, icon strokes.
+
+     It is not legible as text. #17A96A measures 2.90:1 on Warm White and
+     2.71:1 on its own success background, and every success state on this site
+     is a coloured WORD on that background. §30 is explicit that accessibility
+     is not traded for visual fidelity, so text gets the companion below: the
+     same hue, darkened until it clears 4.5:1 (5.14:1 on Warm White, 4.79:1 on
+     the success tint). Graphic and text roles now differ by one step, which is
+     the smallest honest reconciliation of the two rules. */
+  --adel-status-success: #17A96A;
+  --adel-status-success-text: #0F7A4C;
   --adel-status-success-bg: #E6F5F3;
   --adel-status-warning: #E08A0B;
-  --adel-status-error: #CE3A24;
+  --adel-status-error: #DB3A3F; /* CS v2.0 */
   --adel-status-error-bg: #FFE9E4;
   --adel-status-info: var(--adel-deep-blue);
 

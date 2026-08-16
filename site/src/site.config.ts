@@ -282,9 +282,12 @@ export const projects = [
    generated or stock image standing in for a real person.
    -------------------------------------------------------------------------- */
 export const photography = {
-  /* Portrait for the homepage hero. Portrait crop, ideally 3:4, at least 1200px tall. */
-  heroPortrait: '',
-  heroPortraitMobile: '', /* optional square/4:5 crop; falls back to heroPortrait */
+  /* Homepage hero portrait. PH v1.0 fixes the HERO ratio at 4:5.
+     Supplied with Design System v2.1 and cropped to 4:5 at integration:
+     3024×4032 / 2.7 MB source → 800×1000 / 107 KB and a 560×700 / 64 KB
+     mobile crop. Real photography only — never stock, never generated. */
+  heroPortrait: '/photos/adel-hero.jpg',
+  heroPortraitMobile: '/photos/adel-hero-mobile.jpg',
   /* Wider environmental shot for the About page. 3:2 or 16:9. */
   aboutPhoto: '',
   /* Adel's real handwritten signature as an SVG or transparent PNG. */

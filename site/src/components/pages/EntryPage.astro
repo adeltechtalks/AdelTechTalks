@@ -123,7 +123,7 @@ const alternateLinks = await translationsOf(kind, slug, lang);
         </a>
       )}
 
-      <h1 class="ep__title">{data.title}</h1>
+      <h1 class="ep__title ar-hero">{data.title}</h1>
       <p class="ep__desc">{data.description}</p>
 
       {/* Use Case status. The word carries the state, not the colour — 'Stopped'
@@ -286,7 +286,6 @@ const alternateLinks = await translationsOf(kind, slug, lang);
     color: var(--adel-text-primary);
     text-wrap: balance;
   }
-  [lang='ar'] .ep__title { letter-spacing: normal; line-height: 1.35; }
 
   .ep__desc {
     margin: 0;
@@ -326,7 +325,7 @@ const alternateLinks = await translationsOf(kind, slug, lang);
     text-transform: uppercase;
     opacity: 0.75;
   }
-  [lang='ar'] .ep__seriesLabel { text-transform: none; letter-spacing: normal; }
+  :global([lang='ar']) .ep__seriesLabel { text-transform: none; letter-spacing: normal; }
   .ep__seriesName { font-weight: 600; }
   .ep__seriesPart {
     font-family: var(--adel-font-mono);
@@ -346,7 +345,7 @@ const alternateLinks = await translationsOf(kind, slug, lang);
     background: var(--adel-surface-sunken);
   }
   .ep__stage--live {
-    color: var(--adel-status-success);
+    color: var(--adel-status-success-text);
     background: var(--adel-status-success-bg);
     border-color: var(--adel-status-success);
   }
@@ -375,7 +374,7 @@ const alternateLinks = await translationsOf(kind, slug, lang);
     text-transform: uppercase;
     color: var(--adel-text-secondary);
   }
-  [lang='ar'] .ep__factLabel { text-transform: none; letter-spacing: normal; }
+  :global([lang='ar']) .ep__factLabel { text-transform: none; letter-spacing: normal; }
   .ep__factValue {
     margin: 0;
     font-size: var(--adel-text-base);
@@ -475,7 +474,7 @@ const alternateLinks = await translationsOf(kind, slug, lang);
   }
   .ep__pendingTitle {
     margin: 0 0 var(--atc-space-2);
-    font-family: var(--adel-font-display);
+    font-family: var(--adel-font-display-sm);
     font-size: var(--adel-text-lg);
     font-weight: 600;
     line-height: 1.35;

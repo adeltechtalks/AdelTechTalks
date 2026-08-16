@@ -248,6 +248,52 @@ try {
     await mobile.close();
   }
 
+  /* ---- 7. TY v2.0: the Arabic display face obeys its own rules ------------
+     KO Ghorab ships ONE style, is never letter-spaced, and never renders below
+     24px. Those are the three ways an Arabic display face gets quietly abused —
+     a Latin weight inherited from a shared rule becomes a synthesised bold, a
+     Latin `letter-spacing` severs the connecting strokes, and a card title
+     inherits the display token at 17px. None of the three throws, and none of
+     them is obvious in a screenshot unless you already know the script.
+
+     Checked on the rendered page rather than in the CSS, because the failure is
+     always a cascade accident rather than a wrong declaration. */
+  {
+    const routes = [
+      '/ar/', '/ar/learn/', '/ar/about/', '/ar/series/vibe-coding/', '/ar/prompts/',
+      '/ar/newsletter/', '/ar/topics/', '/ar/use-cases/',
+    ];
+    const page = await ctx.newPage();
+    const violations = [];
+    for (const route of routes) {
+      await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'domcontentloaded' });
+      const found = await page.evaluate(() => {
+        const out = new Set();
+        for (const el of document.querySelectorAll('h1,h2,h3,h4,p,span,li,a,blockquote')) {
+          const cs = getComputedStyle(el);
+          if (!/KO Ghorab/.test(cs.fontFamily)) continue;
+          /* screen-reader-only and hidden text is never rendered */
+          if (el.classList.contains('sr-only') || el.closest('.sr-only')) continue;
+          if (!el.getClientRects().length) continue;
+          const name = (el.className?.toString?.() || el.tagName).slice(0, 30);
+          if (Number(cs.fontWeight) !== 400) out.add(`${name} weight=${cs.fontWeight}`);
+          if (parseFloat(cs.fontSize) < 24) out.add(`${name} size=${cs.fontSize}`);
+          if (cs.letterSpacing !== 'normal' && Math.abs(parseFloat(cs.letterSpacing)) > 0.01)
+            out.add(`${name} tracking=${cs.letterSpacing}`);
+        }
+        return [...out];
+      });
+      if (found.length) violations.push(`${route} ${found.join(', ')}`);
+    }
+    check(
+      violations.length === 0,
+      violations.length === 0
+        ? `Arabic display is Ghorab at one weight, ≥24px, untracked on ${routes.length} routes`
+        : `Arabic display breaks TY v2.0 — ${violations.join(' | ')}`
+    );
+    await page.close();
+  }
+
   await ctx.close();
 } finally {
   await browser.close();

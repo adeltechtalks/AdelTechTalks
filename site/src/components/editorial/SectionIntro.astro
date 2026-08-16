@@ -28,15 +28,19 @@ const {
   level = 2,
   align = 'start',
   class: className,
+  /* Forwards the scope attribute Astro hands a child component, so a parent
+     styling this component through `class` actually reaches it. See the long
+     note in src/components/Rich.astro. */
+  ...rest
 } = Astro.props;
 
 const Heading = `h${level}` as 'h1' | 'h2' | 'h3';
 ---
 
-<div class:list={['si', align === 'center' && 'si--center', className]}>
+<div class:list={['si', align === 'center' && 'si--center', className]} {...rest}>
   <div class="si__text">
     {overline && <Rich text={overline} class="overline si__overline" />}
-    <Heading class="si__title">
+    <Heading class:list={['si__title', level === 1 ? 'ar-hero' : 'ar-heading']}>
       <Rich text={title} />
     </Heading>
     {intro && <Rich text={intro} as="p" class="si__intro" />}
@@ -91,11 +95,6 @@ const Heading = `h${level}` as 'h1' | 'h2' | 'h3';
     font-weight: 800;
     letter-spacing: -0.03em;
   }
-  [lang='ar'] .si__title,
-  [lang='ar'] h1.si__title {
-    letter-spacing: normal;
-    line-height: 1.4;
-  }
   .si__intro {
     margin: 0;
     font-size: var(--adel-text-lg);
@@ -119,7 +118,7 @@ const Heading = `h${level}` as 'h1' | 'h2' | 'h3';
   }
   /* The arrow points the way the language reads. It is one of the few glyphs
      that MUST mirror in RTL (§29). */
-  [dir='rtl'] .si__arrow {
+  :global([dir='rtl']) .si__arrow {
     transform: scaleX(-1);
     display: inline-block;
   }

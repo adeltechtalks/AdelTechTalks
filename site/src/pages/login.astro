@@ -122,7 +122,7 @@ const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
     display: flex;
     flex-direction: column;
     gap: var(--atc-space-4);
-    margin-bottom: var(--atc-space-7);
+    margin-bottom: var(--atc-space-6); /* was --atc-space-7, which does not exist on the 4px scale — the rule was being dropped and the gap collapsed to 0 */
   }
   .lg__card { align-items: stretch; }
   .lg__body { display: flex; flex-direction: column; gap: var(--atc-space-5); }

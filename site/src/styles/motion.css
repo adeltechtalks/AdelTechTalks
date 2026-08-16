@@ -1,0 +1,62 @@
+/* =============================================================================
+   Reveal — the one piece of motion the design system asks for
+   =============================================================================
+   The Hero in the DS export carries `data-reveal="1"`…`"7"` with the note:
+
+       "Motion-ready: data-reveal marks the stagger order; no motion
+        implemented yet."
+
+   So the design specifies the ORDER and the Motion Charter specifies the
+   NUMBERS. This file is the two joined together, and nothing else — no
+   scroll-triggered sections, no parallax, no decorative loops. Motion Charter
+   v1.0 values only, all read from tokens:
+
+     duration   --atc-duration-moderate  300ms  (marketing entrance)
+     easing     --atc-ease-enter         cubic-bezier(.16,.84,.44,1)
+     stagger    --atc-stagger-marketing  70ms
+     distance   --atc-distance-3         16px
+     opacity    --atc-opacity-hidden → --atc-opacity-visible
+
+   Seven items × 70ms = 420ms of stagger plus a 300ms tail = 720ms, inside the
+   1200ms marketing sequence ceiling (--atc-sequence-marketing-max).
+
+   WHY IT IS CSS-ONLY, AND WHY IT RUNS ON LOAD
+   -------------------------------------------
+   The hero is above the fold on every viewport, so there is nothing to observe
+   — an IntersectionObserver would fire immediately and cost a script. A plain
+   CSS animation with a per-item delay is smaller, cannot jank the main thread,
+   and cannot leave content invisible if JavaScript fails: if the animation
+   never runs, `animation-fill-mode: both` still resolves to the final state
+   the moment the style is applied.
+
+   It animates `transform` and `opacity` only — both composited, so this stays
+   off the layout and paint paths and is safe on a mid-range phone.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal] {
+    opacity: var(--atc-opacity-hidden, 0);
+    transform: translateY(var(--atc-distance-3, 16px));
+    animation: adel-reveal var(--atc-duration-moderate, 300ms) var(--atc-ease-enter, ease-out) both;
+    animation-delay: calc((var(--reveal-index, 1) - 1) * var(--atc-stagger-marketing, 70ms));
+  }
+}
+
+@keyframes adel-reveal {
+  to {
+    opacity: var(--atc-opacity-visible, 1);
+    transform: none;
+  }
+}
+
+/* Reduced motion is a FULL REPLACEMENT, never a degradation (Motion Charter).
+   The element is simply present — no fade, no shortened slide, no delay. The
+   global rule in tokens/motion.css already clamps durations; this makes the
+   resting state explicit so nothing depends on an animation having run. */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}

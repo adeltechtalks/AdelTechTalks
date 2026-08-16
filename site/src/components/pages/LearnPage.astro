@@ -82,7 +82,7 @@ const cards = ecosystem
           <span class="lh__dot" aria-hidden="true"></span>
           {c.series.label} · {c.series.statusRunning}
         </span>
-        <Rich text={flagship[lang].question} as="h2" class="lh__seriesQ" />
+        <Rich text={flagship[lang].question} as="h2" class="lh__seriesQ ar-heading" />
         <Rich text={flagship[lang].body} as="p" class="lh__seriesBody" />
         <span class="lh__seriesCta">
           <Rich text={c.series.readSeries} />
@@ -93,7 +93,7 @@ const cards = ecosystem
 
     {/* ---- the library ---- */}
     <section class="lh__section" aria-labelledby="lh-eco">
-      <h2 class="lh__h2" id="lh-eco">{c.learn.ecosystemTitle}</h2>
+      <h2 class="lh__h2 ar-heading" id="lh-eco">{c.learn.ecosystemTitle}</h2>
 
       <ul class="lh__grid">
         {cards.map((card) => {
@@ -161,7 +161,6 @@ const cards = ecosystem
     letter-spacing: var(--adel-tracking-tight);
     color: var(--adel-text-primary);
   }
-  [lang='ar'] .lh__h2 { letter-spacing: normal; line-height: 1.45; }
 
   /* ---- the series band ---------------------------------------------------
      Tinted rather than filled: it is the loudest thing on the page, and the
@@ -190,7 +189,7 @@ const cards = ecosystem
     text-transform: uppercase;
     color: var(--adel-text-on-tint);
   }
-  [lang='ar'] .lh__seriesLabel { text-transform: none; letter-spacing: normal; }
+  :global([lang='ar']) .lh__seriesLabel { text-transform: none; letter-spacing: normal; }
   /* The one Fresh Mint moment on this page — it marks the thing that is
      genuinely live right now, and it is a dot, not a fill (§6, ~3% ceiling). */
   .lh__dot {
@@ -210,7 +209,6 @@ const cards = ecosystem
     color: var(--adel-deep-blue);
     max-width: 24ch;
   }
-  [lang='ar'] .lh__seriesQ { letter-spacing: normal; line-height: 1.4; }
   .lh__seriesBody {
     margin: 0;
     font-size: var(--adel-text-base);
@@ -228,7 +226,7 @@ const cards = ecosystem
     color: var(--adel-deep-blue);
   }
   .lh__series:hover .lh__seriesCta { text-decoration: underline; }
-  [dir='rtl'] .lh__arrow { display: inline-block; transform: scaleX(-1); }
+  :global([dir='rtl']) .lh__arrow { display: inline-block; transform: scaleX(-1); }
 
   /* ---- the library grid ---- */
   /* Seven cards in a three-column grid leaves two empty cells on the last row.
@@ -285,7 +283,7 @@ const cards = ecosystem
   a.lh__card:hover .lh__icon { background: var(--adel-white); }
   .lh__name {
     margin: 0;
-    font-family: var(--adel-font-display);
+    font-family: var(--adel-font-display-sm);
     font-size: var(--adel-text-lg);
     font-weight: 600;
     line-height: 1.3;

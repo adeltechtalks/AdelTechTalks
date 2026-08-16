@@ -43,20 +43,22 @@ const usingFallback = a.body.length === 0;
   <article class="container ab">
     <header class="ab__head">
       <span class="overline ab__overline">{c.about.title}</span>
-      <Rich text={a.title} as="h1" class="ab__title" />
+      <Rich text={a.title} as="h1" class="ab__title ar-hero" />
       <p class="ab__intro">{c.about.intro}</p>
     </header>
 
-    <div class="ab__grid">
-      <div class="ab__photo">
-        <PhotoFigure
-          src={photography.aboutPhoto}
-          alt={c.hero.portraitAlt}
-          ratio="3 / 4"
-          ratioMobile="4 / 5"
-          slotNote="A photograph of Adel goes here."
-        />
-      </div>
+    <div class:list={['ab__grid', !photography.aboutPhoto && 'ab__grid--solo']}>
+      {photography.aboutPhoto && (
+        <div class="ab__photo">
+          <PhotoFigure
+            src={photography.aboutPhoto}
+            alt={c.hero.portraitAlt}
+            ratio="3 / 4"
+            ratioMobile="4 / 5"
+            slotNote="A photograph of Adel goes here."
+          />
+        </div>
+      )}
 
       <div class="ab__body">
         <Prose>
@@ -68,7 +70,7 @@ const usingFallback = a.body.length === 0;
     <PullQuote quote={c.hero.pattern.join(' ')} class="ab__quote" />
 
     <section class="ab__values" aria-labelledby="values-title">
-      <h2 class="ab__h2" id="values-title">{c.about.workTitle}</h2>
+      <h2 class="ab__h2 ar-heading" id="values-title">{c.about.workTitle}</h2>
       <ul class="ab__valueList">
         {a.values.map((v) => (
           <li class="ab__value">
@@ -83,7 +85,7 @@ const usingFallback = a.body.length === 0;
       <>
         <div class="ab__divider"><Divider /></div>
         <section class="ab__context" aria-labelledby="context-title">
-          <h2 class="ab__h3" id="context-title">{c.about.contextTitle}</h2>
+          <h2 class="ab__h3 ar-heading" id="context-title">{c.about.contextTitle}</h2>
           <p class="ab__contextRole">
             <Rich text={a.context.role} />
             <span class="ab__at"> · </span>
@@ -120,7 +122,6 @@ const usingFallback = a.body.length === 0;
     color: var(--adel-text-primary);
     text-wrap: balance;
   }
-  [lang='ar'] .ab__title { letter-spacing: normal; line-height: 1.35; }
   .ab__intro {
     margin: 0;
     font-size: var(--adel-text-lg);
@@ -134,6 +135,11 @@ const usingFallback = a.body.length === 0;
     gap: var(--atc-space-12);
     align-items: start;
   }
+  /* No approved photograph yet, so the column does not exist rather than
+     standing empty. Add `aboutPhoto` in site.config.ts and it comes back.
+     The prose keeps its own measure so it does not run the full width. */
+  .ab__grid--solo { grid-template-columns: 1fr; }
+  .ab__grid--solo .ab__body { max-width: var(--adel-measure); }
   .ab__photo { position: sticky; top: 100px; }
 
   /* A single paragraph carrying the column on its own is set one step up, so
@@ -161,7 +167,6 @@ const usingFallback = a.body.length === 0;
     font-weight: 600;
     color: var(--adel-text-primary);
   }
-  [lang='ar'] .ab__h2, [lang='ar'] .ab__h3 { letter-spacing: normal; }
 
   .ab__valueList {
     list-style: none;

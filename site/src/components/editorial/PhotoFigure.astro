@@ -5,25 +5,22 @@
    Handles the aspect ratio, the crop, the caption and the responsive
    behaviour. Everything photographic on the site goes through it.
 
-   ── THE PLACEHOLDER IS THE POINT ────────────────────────────────────────────
-   §15: "If a required real photograph is missing, retain the intentionally
-   designed placeholder instead of generating fake photography. Do not generate
-   fake images of Adel."
+   ── NO PHOTOGRAPH MEANS NO FIGURE ───────────────────────────────────────────
+   §15 still holds and is not negotiable: a missing photograph is never filled
+   with stock or generated imagery, and never with a fake image of Adel.
 
-   So when `src` is empty this renders a designed placeholder. It is not a
-   broken image and not a grey box — it is a slot, and it looks deliberate until
-   a real photograph fills it.
+   What changed is what happens instead. This used to render a designed slot —
+   a dashed frame around a picture glyph — on the theory that it looked
+   deliberate. It does not. A dashed border around a picture icon is the
+   universal browser idiom for "this image failed to load", so on a live page it
+   reads as broken rather than as reserved, and it was doing that on the About
+   page and the homepage sign-off.
 
-   ── THE SLOT IS DECORATIVE AND SILENT ───────────────────────────────────────
-   It renders the frame and the glyph, and NOTHING ELSE.
-
-   It used to print `slotNote` and the aspect ratio into the page, so a visitor
-   read "A portrait of Adel goes here" and "3/4" — production notes addressed to
-   whoever maintains the site, printed on a live page. Neither means anything to
-   a reader and neither is theirs to act on, so neither is rendered.
-
-   Carrying no text, the slot is `aria-hidden`: announcing "Adel" for a
-   photograph that does not exist is worse than announcing nothing.
+   So with no `src` this component renders NOTHING, and the layouts that use it
+   collapse to their single-column form. The moment a real photograph is added
+   to `photography` in site.config.ts, the figure and its column come back with
+   no other change — the same content-availability pattern the empty Guides and
+   Videos surfaces already follow.
    ========================================================================== */
 
 interface Props {
@@ -37,13 +34,10 @@ interface Props {
   ratioMobile?: string;
   /* What belongs here — an AUTHORING NOTE, never rendered.
 
-     This is documentation at the call site, for whoever adds the photograph.
-     It is deliberately NOT printed into the page: a visitor should never be
-     told "A portrait of Adel goes here", any more than they should be told to
-     edit a config file. The empty slot speaks for itself visually.
-
-     Crop sizes and config field names belong in the `photography` block in
-     site.config.ts, which is where somebody adding a photograph is reading. */
+     Documentation at the call site, for whoever adds the photograph. It is
+     deliberately not printed into the page: a visitor should never be told
+     "A portrait of Adel goes here", any more than they should be told to edit
+     a config file. */
   slotNote?: string;
   /* Above the fold? Then it is not lazy and it gets fetch priority. */
   priority?: boolean;
@@ -68,36 +62,28 @@ const hasPhoto = Boolean(src);
 const mobile = srcMobile || src;
 ---
 
+{hasPhoto && (
 <figure class:list={['pf', rounded && 'pf--rounded', className]}>
   <div
     class="pf__frame"
     style={`--pf-ratio:${ratio};--pf-ratio-mobile:${ratioMobile || ratio}`}
   >
-    {hasPhoto ? (
-      <picture>
-        {srcMobile && <source media="(max-width: 767px)" srcset={mobile} />}
-        <img
-          class="pf__img"
-          src={src}
-          alt={alt}
-          loading={priority ? 'eager' : 'lazy'}
-          decoding={priority ? 'sync' : 'async'}
-          fetchpriority={priority ? 'high' : 'auto'}
-        />
-      </picture>
-    ) : (
-      <div class="pf__slot" aria-hidden="true">
-        <svg class="pf__glyph" viewBox="0 0 48 48" aria-hidden="true">
-          <rect x="6" y="10" width="36" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" />
-          <circle cx="17" cy="21" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5" />
-          <path d="M6 32l10-9 8 7 6-5 12 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
-        </svg>
-      </div>
-    )}
+    <picture>
+      {srcMobile && <source media="(max-width: 767px)" srcset={mobile} />}
+      <img
+        class="pf__img"
+        src={src}
+        alt={alt}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding={priority ? 'sync' : 'async'}
+        fetchpriority={priority ? 'high' : 'auto'}
+      />
+    </picture>
   </div>
 
   {caption && <figcaption class="pf__caption">{caption}</figcaption>}
 </figure>
+)}
 
 <style>
   .pf {
@@ -123,29 +109,6 @@ const mobile = srcMobile || src;
     /* The safe area: a portrait's face sits in the upper third, so a crop
        takes it off the bottom, never off the top. */
     object-position: center 30%;
-  }
-
-  /* ---- the designed slot ---- */
-  .pf__slot {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    /* Glyph only — no text to stack or pad around any more. */
-    /* White, not the sunken tone: Slate on #F2F3F5 measures 4.43:1 and misses
-       the 4.5 floor, and a white plate reads more like a waiting image. */
-    color: var(--adel-text-secondary);
-    background: var(--adel-surface-raised);
-    border: 1px dashed var(--adel-border-strong);
-    border-radius: inherit;
-    box-sizing: border-box;
-  }
-  .pf__glyph {
-    width: 40px;
-    height: 40px;
-    opacity: 0.7;
   }
 
   .pf__caption {

@@ -19,7 +19,7 @@ const { quote, attribution, class: className } = Astro.props;
 <figure class:list={['pq', className]}>
   <span class="pq__mark" aria-hidden="true"></span>
   <blockquote class="pq__quote">
-    <Rich text={quote} as="p" class="pq__text" />
+    <Rich text={quote} as="p" class="pq__text ar-quote" />
   </blockquote>
   {attribution && (
     <figcaption class="pq__attr">
@@ -71,13 +71,6 @@ const { quote, attribution, class: className } = Astro.props;
     letter-spacing: var(--adel-tracking-tight);
     text-wrap: balance;
   }
-  /* The Arabic display face has its own optical size; -0.02em tracking on a
-     connected script is a defect, not a refinement. */
-  [lang='ar'] .pq__text {
-    letter-spacing: normal;
-    line-height: 1.65;
-  }
-
   .pq__attr {
     font-size: var(--adel-text-sm);
     font-weight: 500;
