@@ -12,7 +12,7 @@ stage: building
 outcome: 'يُبنى أمام الناس. كل خطوة تُنشر هنا وقت حدوثها، بما فيها ما لم ينجح.'
 external:
   label: 'زيارة GearNest'
-  href: 'https://gearnest.com'
+  href: 'https://gearnest.ai'
 preview: '[[GearNest]] علامة مستقلة بمنتجها وصوتها وخارطة طريقها. وهي أيضاً المكان الذي يجد فيه سؤال واحد إجابة صادقة: هل أستطيع بناء مشروع حقيقي بهذه الطريقة؟'
 featured: true
 
