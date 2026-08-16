@@ -25,16 +25,18 @@ const c = useCopy(lang);
 ---
 
 <section class="container section so" aria-labelledby="signoff-title">
-  <div class="so__grid">
-    <div class="so__photo">
-      <PhotoFigure
-        src={photography.aboutPhoto}
-        alt={c.hero.portraitAlt}
-        ratio="4 / 5"
-        ratioMobile="3 / 2"
-        slotNote="A photograph of Adel at work goes here."
-      />
-    </div>
+  <div class:list={['so__grid', !photography.aboutPhoto && 'so__grid--solo']}>
+    {photography.aboutPhoto && (
+      <div class="so__photo">
+        <PhotoFigure
+          src={photography.aboutPhoto}
+          alt={c.hero.portraitAlt}
+          ratio="4 / 5"
+          ratioMobile="3 / 2"
+          slotNote="A photograph of Adel at work goes here."
+        />
+      </div>
+    )}
 
     <div class="so__text">
       <h2 class="so__title ar-heading" id="signoff-title">{c.signoff.title}</h2>
@@ -64,6 +66,9 @@ const c = useCopy(lang);
     gap: var(--atc-space-16);
     align-items: center;
   }
+  /* No approved photograph yet, so the column does not exist rather than
+     standing empty. Add `aboutPhoto` in site.config.ts and it comes back. */
+  .so__grid--solo { grid-template-columns: 1fr; }
   .so__photo { max-width: 340px; width: 100%; }
   .so__text {
     display: flex;

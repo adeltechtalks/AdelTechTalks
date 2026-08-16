@@ -6,6 +6,19 @@ business, linked but never merged in.
 
 **👉 To get this live, read [LAUNCH.md](./LAUNCH.md).**
 
+> **Which document wins.** The Design System export is the visual source of
+> truth — colour, type, spacing, motion, photography. It is not the source of
+> truth for product scope. Its `DESIGN_FREEZE.md` still carries scope notes
+> from an earlier phase — a four-item header of Home · Topics · Guides · About,
+> and "Prompt Library — do not build yet" — and both were superseded by the
+> approved Phase 1.1 architecture that is live in this repo. Where the two
+> disagree about **what exists**, the live Phase 1.1 product architecture and
+> navigation win. Where they disagree about **how it looks**, the Design System
+> wins. The one visual exception is the header lockup: the graphite
+> AdelTechTalks navbar was an explicit Phase 1.2 decision taken after that
+> export, so it supersedes the older A-mark + "Adel" header treatment shown in
+> the export's `ui_kits/website/Chrome.jsx`.
+
 ## What this is
 
 A static site — Astro builds it into plain HTML, CSS and a small amount of

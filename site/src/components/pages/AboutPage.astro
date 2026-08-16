@@ -47,16 +47,18 @@ const usingFallback = a.body.length === 0;
       <p class="ab__intro">{c.about.intro}</p>
     </header>
 
-    <div class="ab__grid">
-      <div class="ab__photo">
-        <PhotoFigure
-          src={photography.aboutPhoto}
-          alt={c.hero.portraitAlt}
-          ratio="3 / 4"
-          ratioMobile="4 / 5"
-          slotNote="A photograph of Adel goes here."
-        />
-      </div>
+    <div class:list={['ab__grid', !photography.aboutPhoto && 'ab__grid--solo']}>
+      {photography.aboutPhoto && (
+        <div class="ab__photo">
+          <PhotoFigure
+            src={photography.aboutPhoto}
+            alt={c.hero.portraitAlt}
+            ratio="3 / 4"
+            ratioMobile="4 / 5"
+            slotNote="A photograph of Adel goes here."
+          />
+        </div>
+      )}
 
       <div class="ab__body">
         <Prose>
@@ -133,6 +135,11 @@ const usingFallback = a.body.length === 0;
     gap: var(--atc-space-12);
     align-items: start;
   }
+  /* No approved photograph yet, so the column does not exist rather than
+     standing empty. Add `aboutPhoto` in site.config.ts and it comes back.
+     The prose keeps its own measure so it does not run the full width. */
+  .ab__grid--solo { grid-template-columns: 1fr; }
+  .ab__grid--solo .ab__body { max-width: var(--adel-measure); }
   .ab__photo { position: sticky; top: 100px; }
 
   /* A single paragraph carrying the column on its own is set one step up, so
