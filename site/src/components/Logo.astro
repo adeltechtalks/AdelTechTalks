@@ -1,19 +1,53 @@
 ---
-/* LG v2.0 — the official mark. Path is the exact geometry from
+/* LG v2.0 — the official AdelTechTalks mark. Path is the exact geometry from
    assets/logo/atc-mark-currentcolor.svg. viewBox 220.64 × 180, ratio 1.2258:1 LOCKED.
    The counter is deliberately open at the bottom and the legs are 1.19° apart —
    both are in the original artwork. Never redraw, never scale non-uniformly.
-   Measured floor: 24px bare. Below that, use an app icon tile. */
+   Measured floor: 24px bare. Below that, use an app icon tile.
+
+   ── PHASE 1.2 · COLOUR ONLY ─────────────────────────────────────────────────
+   The geometry above is untouched. What changed is that the lockup can now be
+   asked for a colour ROLE rather than a raw value, using the roles the design
+   system already publishes in colors.css and re-points in bridge-v2.css:
+
+     primary   --atc-mark-primary   Graphite      the everyday mark
+     reversed  --atc-mark-reversed  White         "dark or photographic grounds;
+                                                   never tinted grey"
+     brand     Signature Blue                     the v2.0 brand alternative
+
+   `reversed` is what the graphite navbar uses, and it is a documented variant
+   of this system rather than a new treatment — /logo/atc-mark-white.svg is the
+   same artwork already published in that colour.
+
+   The wordmark now inherits the role too. It was pinned to --atc-text-primary,
+   which is near-black, so on a dark ground the mark reversed correctly and the
+   word disappeared. */
 
 interface Props {
   size?: number;
+  /* Documented colour roles. Prefer this over `color`. */
+  tone?: 'primary' | 'reversed' | 'brand';
+  /* Escape hatch for a one-off ground. `tone` covers every approved case. */
   color?: string;
   showWordmark?: boolean;
   class?: string;
 }
 
-const { size = 36, color = 'var(--atc-purple-600)', showWordmark = true, class: className } =
-  Astro.props;
+const TONE = {
+  primary: 'var(--atc-mark-primary)',
+  reversed: 'var(--atc-mark-reversed)',
+  brand: 'var(--adel-signature-blue)',
+} as const;
+
+const {
+  size = 36,
+  tone = 'primary',
+  color,
+  showWordmark = true,
+  class: className,
+} = Astro.props;
+
+const ink = color ?? TONE[tone];
 
 const MARK_PATH =
   'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.89 121.04 L 101.29 120.89 L 69.49 179.21 L 108.07 179.31 L 121.08 155.45 L 220.64 155.69 Z';
@@ -26,7 +60,7 @@ if (size < 24) {
 }
 ---
 
-<span class:list={['atc-logo', className]} style={`color:${color}`}>
+<span class:list={['atc-logo', className]} style={`color:${ink}`}>
   <svg
     viewBox="0 0 220.64 180"
     height={size}
@@ -45,6 +79,10 @@ if (size < 24) {
     align-items: center;
     gap: var(--atc-space-3);
     text-decoration: none;
+    /* The lockup is a fixed brand object: it never mirrors, in either
+       direction, and it stays Latin on the Arabic site. */
+    direction: ltr;
+    unicode-bidi: isolate;
   }
   .atc-logo__mark {
     display: block;
@@ -57,7 +95,9 @@ if (size < 24) {
     font-weight: 800;
     letter-spacing: -0.02em;
     line-height: 1;
-    color: var(--atc-text-primary);
+    /* Inherits the colour role from the lockup, so `reversed` reverses the
+       whole thing rather than just the mark. */
+    color: currentColor;
     white-space: nowrap;
   }
 </style>

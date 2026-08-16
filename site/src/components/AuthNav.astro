@@ -74,11 +74,11 @@ const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
     border-radius: var(--adel-radius-control);
     font-size: var(--adel-text-sm);
     font-weight: 500;
-    color: var(--adel-text-secondary);
+    color: var(--adel-nav-fg);
     text-decoration: none;
     white-space: nowrap;
   }
-  .auth__signin:hover { background: var(--adel-surface-tint); color: var(--adel-text-on-tint); }
+  .auth__signin:hover { background: var(--adel-nav-bg-hover); color: var(--adel-nav-fg-hover); }
 
   .auth__profile {
     display: inline-flex;
@@ -89,12 +89,12 @@ const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
     padding-block: 0;
     padding-inline: 4px var(--atc-space-3);
     border-radius: var(--adel-radius-pill);
-    border: 1px solid var(--adel-border-hairline);
-    background: var(--adel-surface-raised);
+    border: 1px solid var(--adel-nav-border);
+    background: transparent;
     text-decoration: none;
-    color: var(--adel-text-secondary);
+    color: var(--adel-nav-fg);
   }
-  .auth__profile:hover { border-color: var(--adel-border-brand); color: var(--adel-text-link); }
+  .auth__profile:hover { border-color: var(--adel-nav-fg-hover); color: var(--adel-nav-fg-hover); }
   .auth__avatar {
     width: 28px;
     height: 28px;

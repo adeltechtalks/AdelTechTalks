@@ -116,10 +116,42 @@
 
   /* ---- Liquid Glass (§17) -------------------------------------------------
      BUDGET: the site header is the only glass surface. Do not add another
-     glass container without an explicit design decision. */
-  --adel-glass-fill:   rgba(250, 250, 248, 0.72);
-  --adel-glass-border: rgba(255, 255, 255, 0.60);
-  --adel-glass-blur:   20px;
+     glass container without an explicit design decision.
+
+     Phase 1.2 — the navbar is now GRAPHITE. It previously sat on a warm-white
+     glass that was within a couple of luminance points of the page canvas, so
+     the top of the site had no anchor.
+
+     The alpha is 0.94, and it is high on purpose. Over the warm-white canvas,
+     0.82 composites to #404246 — a mid grey that is plainly not Graphite, and
+     bright content scrolling under it (the hero's blue button, say) printed a
+     coloured plate straight through the bar. 0.94 composites to #25272C, which
+     reads as Graphite, while the blur still registers on whatever passes
+     beneath. Subtle transparency, not a tinted window.
+
+     No gradient and no glow — the depth comes from the blur, a one-pixel top
+     highlight, and a shadow that only appears once the page has scrolled. */
+  --adel-glass-fill:   rgba(23, 26, 31, 0.94);
+  /* A hairline of light along the top edge, the way a physical panel catches
+     it. Bottom edge is a dark rule instead — see --adel-glass-edge. */
+  --adel-glass-border: rgba(255, 255, 255, 0.10);
+  --adel-glass-edge:   rgba(255, 255, 255, 0.06);
+  --adel-glass-blur:   18px;
+  /* Sits under the bar only once it is over content, so a page at rest is flat
+     and scrolling gives the bar its lift. */
+  --adel-glass-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+
+  /* ---- on the graphite bar -------------------------------------------------
+     Signature Blue measures 3.37:1 on Graphite. That clears the 3:1 floor for a
+     non-text UI accent and FAILS the 4.5:1 floor for text, so it marks the
+     active item as a graphic indicator and never colours a label. Ice Blue is
+     14.43:1 and does the text work. */
+  --adel-nav-fg:          #E6E8EC;           /* rest, 14.22:1 */
+  --adel-nav-fg-strong:   var(--adel-white); /* active, 17.44:1 */
+  --adel-nav-fg-hover:    var(--adel-ice-blue); /* hover, 14.43:1 */
+  --adel-nav-bg-hover:    rgba(255, 255, 255, 0.08);
+  --adel-nav-indicator:   var(--adel-signature-blue);
+  --adel-nav-border:      rgba(255, 255, 255, 0.22);
 
   /* ---- geometry ---- */
   --adel-radius-inline:  6px;
