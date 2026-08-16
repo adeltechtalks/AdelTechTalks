@@ -28,19 +28,29 @@ const { lang, entries } = Astro.props;
 const c = useCopy(lang);
 ---
 
+{/* Nothing published, nothing rendered — the whole section goes, heading and
+    "View all" link included.
+
+    This is the same empty-surface rule the Learn Hub, the footer and the
+    homepage's Guides strip already follow: a section header over an empty state
+    is a worse experience than no section, and its CTA would land on an index
+    with nothing on it. `/videos` is `noindex` while it is empty for the same
+    reason.
+
+    It comes back on its own — publish a video page to src/content/videos/ or
+    add a real ID to `videos` in site.config.ts and the section reappears with
+    no other change. */}
+{entries.length > 0 && (
 <section class="container section" aria-labelledby="videos-title">
   <SectionIntro
     overline={site.showName}
     title={c.videos.title}
     intro={c.videos.intro}
-    {/* Phase 1.1 — this now goes to the on-site index rather than straight out
-        to YouTube. The channel link is still on every page, in the footer. */}
     linkHref={localizePath('/videos', lang)}
     linkLabel={c.common.viewAll}
   />
 
-  {entries.length > 0 ? (
-    <div class="vd__grid">
+  <div class="vd__grid">
       {entries.map((v) => (
         /* A structured video links to its own page and must NOT open in a new
            tab; a config-array video links straight out to YouTube and must. */
@@ -64,12 +74,10 @@ const c = useCopy(lang);
           <h3 class="vd__title">{v.title}</h3>
           {v.description && <Rich text={v.description} as="span" class="vd__meta" />}
         </a>
-      ))}
-    </div>
-  ) : (
-    <p class="vd__empty">{c.videos.empty}</p>
-  )}
+    ))}
+  </div>
 </section>
+)}
 
 <style>
   .vd__grid {
@@ -128,14 +136,6 @@ const c = useCopy(lang);
   .vd__meta {
     font-size: var(--adel-text-xs);
     color: var(--adel-text-tertiary);
-  }
-  .vd__empty {
-    margin: var(--atc-space-8) 0 0;
-    padding: var(--atc-space-8);
-    border: 1px dashed var(--adel-border-strong);
-    border-radius: var(--adel-radius-panel);
-    color: var(--adel-text-secondary);
-    text-align: center;
   }
 
   @media (max-width: 1023px) { .vd__grid { grid-template-columns: repeat(2, 1fr); } }
