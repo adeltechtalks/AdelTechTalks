@@ -1,0 +1,221 @@
+---
+/* =============================================================================
+   The build journey rail — ONE source of truth, three variants
+   =============================================================================
+   Frozen in homepage §2 and reused, not re-cut, by the Vibe Coding Hub's
+   featured card (`mini`) and the Build Story (`full`). The reuse map in
+   FINAL_CLAUDE_CODE_HANDOFF names this component explicitly, so the rule is:
+   if a surface needs a rail, it imports this one.
+
+   Six stages, always, in the frozen vocabulary — Idea · Explore · Design ·
+   Build · Test · Launch. A story declares only WHICH stage it has reached;
+   everything before it is done and everything after is next, so one value
+   describes the whole rail and it cannot contradict itself.
+
+   Deliberately not project-management software: no dates, no percentages, no
+   counts. The one mint on the rail is the active stage, and a paused build
+   simply shows the rail frozen where it stopped.
+   ========================================================================== */
+
+import Rich from '../Rich.astro';
+import { useCopy } from '../../copy';
+import { BUILD_STAGES, type BuildStage } from '../../lib/pillars';
+import type { Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+  /** The stage the build has reached. Everything before it reads as done. */
+  stage: BuildStage;
+  /** `full` — labelled stages over a track. `mini` — dots and one line. */
+  variant?: 'full' | 'mini';
+  /** A paused build shows the rail without an active marker. */
+  paused?: boolean;
+  label?: string;
+  class?: string;
+}
+
+/* `...rest` is load-bearing, not tidiness — see the same note in Rich.astro.
+   Astro scopes a parent's styles by stamping `data-astro-cid-XXXX` onto the
+   elements in its own template, and hands that attribute to a child component
+   as an ordinary prop. A child that does not forward it renders a root the
+   parent's stylesheet cannot see, so a parent rule like `.rw__rail { width:
+   100% }` is silently dead. */
+const { lang, stage, variant = 'full', paused = false, label, class: className, ...rest } = Astro.props;
+const c = useCopy(lang);
+
+const activeIndex = BUILD_STAGES.indexOf(stage);
+const stages = BUILD_STAGES.map((id, i) => ({
+  id,
+  state: i < activeIndex ? 'done' : i === activeIndex ? (paused ? 'done' : 'now') : 'next',
+}));
+
+/* Filled to the CENTRE of the active stage, so the fill always meets the ring
+   whatever the stage count. Computed, never a hard-coded percentage. */
+const fillPercent = ((activeIndex + 0.5) / BUILD_STAGES.length) * 100;
+
+/* Arabic marks the first stage's "done" differently — الفكرة is feminine and
+   takes تمّت where the rest take تمّ. English uses one word for both. */
+const stateLabel = (state: string, i: number) =>
+  state === 'now'
+    ? c.ia.vc.stageState.now
+    : state === 'next'
+      ? c.ia.vc.stageState.next
+      : i === 0
+        ? c.ia.vc.stageState.doneFirst
+        : c.ia.vc.stageState.done;
+---
+
+<div class:list={['jr', `jr--${variant}`, className]} {...rest}>
+  {label && <span class="jr__label" data-vb-reveal><Rich text={label} /></span>}
+
+  <div class="jr__track">
+    <span class="jr__rail" aria-hidden="true"></span>
+    <span class="jr__fill" aria-hidden="true" style={`--jr-fill:${fillPercent}%`}></span>
+
+    <ol class="jr__stages">
+      {stages.map((s, i) => (
+        <li class:list={['jr__stage', `jr__stage--${s.state}`]} data-vb-stage style={`--vb-step:${i}`}>
+          {s.state === 'done' ? (
+            <svg class="jr__dot" viewBox="0 0 20 20" aria-hidden="true">
+              <circle cx="10" cy="10" r="9" fill="var(--adel-blue-500)"></circle>
+              <path d="M6 10.2l2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"></path>
+            </svg>
+          ) : s.state === 'now' ? (
+            <span class="jr__dot jr__dot--now" aria-hidden="true"><span></span></span>
+          ) : (
+            <span class="jr__dot jr__dot--next" aria-hidden="true"></span>
+          )}
+          <span class="jr__name"><Rich text={c.ia.vc.stage[s.id]} /></span>
+          <span class="jr__state"><Rich text={stateLabel(s.state, i)} /></span>
+        </li>
+      ))}
+    </ol>
+  </div>
+</div>
+
+<style>
+  .jr__label {
+    display: block;
+    margin-bottom: var(--atc-space-6);
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  :global([lang='ar']) .jr__label {
+    font-family: var(--adel-font-text);
+    font-size: 13px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  .jr__track { position: relative; }
+  /* Logical, so the whole rail mirrors in Arabic without a second rule set. */
+  .jr__rail,
+  .jr__fill {
+    position: absolute;
+    top: 9px;
+    height: 2px;
+    inset-inline-start: 9px;
+  }
+  .jr__rail { inset-inline-end: 9px; background: rgba(255, 255, 255, 0.12); }
+  .jr__fill { width: var(--jr-fill); background: var(--adel-blue-400); }
+
+  .jr__stages {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--atc-space-4);
+  }
+  .jr__stage {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--atc-space-2);
+  }
+  .jr__dot { width: 20px; height: 20px; flex: none; box-sizing: border-box; }
+  .jr__dot--now {
+    border-radius: 50%;
+    background: var(--adel-graphite);
+    border: 2px solid var(--adel-mint-500);
+    display: grid;
+    place-items: center;
+  }
+  .jr__dot--now > span { width: 8px; height: 8px; border-radius: 50%; background: var(--adel-mint-500); }
+  .jr__dot--next { border-radius: 50%; border: 2px dashed rgba(255, 255, 255, 0.3); }
+
+  .jr__name {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--adel-white);
+  }
+  :global([lang='ar']) .jr__name { letter-spacing: normal; }
+  .jr__stage--next .jr__name { color: rgba(255, 255, 255, 0.45); }
+
+  .jr__state {
+    font-family: var(--adel-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  :global([lang='ar']) .jr__state {
+    font-family: var(--adel-font-text);
+    font-size: 12px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .jr__stage--next .jr__state { color: rgba(255, 255, 255, 0.45); }
+  .jr__stage--now .jr__state {
+    color: var(--adel-graphite);
+    background: var(--adel-mint-500);
+    padding: 3px var(--atc-space-3);
+    border-radius: var(--adel-radius-pill);
+  }
+
+  /* ---- mini: dots and names only, no track, for a featured card ---------- */
+  .jr--mini .jr__rail,
+  .jr--mini .jr__fill { display: none; }
+  .jr--mini .jr__stages { gap: var(--atc-space-2); }
+  .jr--mini .jr__dot { width: 14px; height: 14px; }
+  .jr--mini .jr__dot--now > span { width: 6px; height: 6px; }
+  .jr--mini .jr__name { font-size: 11px; font-weight: 600; }
+  .jr--mini .jr__state { display: none; }
+
+  /* ---- a rail on a light ground ----------------------------------------- */
+  .jr--light .jr__rail { background: var(--adel-border-hairline); }
+  .jr--light .jr__name { color: var(--adel-text-primary); }
+  .jr--light .jr__stage--next .jr__name { color: var(--adel-text-tertiary); }
+  .jr--light .jr__state { color: var(--adel-text-tertiary); }
+  .jr--light .jr__dot--next { border-color: var(--adel-border-strong); }
+  .jr--light .jr__dot--now { background: var(--adel-white); }
+
+  /* ---- mobile: a vertical list, never a compressed timeline ------------- */
+  @media (max-width: 767px) {
+    .jr__rail,
+    .jr__fill { display: none; }
+    .jr__stages { grid-template-columns: 1fr; gap: 0; }
+    .jr__stage {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--atc-space-4);
+      padding-block: 9px;
+    }
+    .jr__name { font-size: 14.5px; flex: 1; }
+    :global([lang='ar']) .jr__name { font-size: 14px; }
+    .jr__state { font-size: 11.5px; letter-spacing: normal; text-transform: none; }
+
+    /* The mini variant stays a single compact row of dots on mobile — it is a
+       glance, not a list, and it sits inside a card that has its own text. */
+    .jr--mini .jr__stages { grid-auto-flow: column; grid-template-columns: none; gap: var(--atc-space-3); }
+    .jr--mini .jr__stage { flex-direction: column; align-items: flex-start; padding-block: 0; }
+    .jr--mini .jr__name { font-size: 10px; }
+  }
+</style>

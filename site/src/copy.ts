@@ -35,6 +35,8 @@ export interface Copy {
   nav: {
     guides: string; topics: string; about: string; newsletter: string; playground: string;
     work: string;
+    /* IA v2.0 — the two content pillars */
+    vibeCoding: string; gear: string;
     /* Phase 1.1 */
     learn: string; series: string; useCases: string; videos: string; prompts: string;
     courses: string;
@@ -104,6 +106,91 @@ export interface Copy {
   topics: { title: string; intro: string; countLabel: (n: number) => string; empty: string };
   notFound: { title: string; body: string; guidesCta: string; learnCta: string };
   footer: { explore: string; brands: string; blurb: string; rights: string; signature: string };
+  /* ---- IA v2.0 · the two pillars, Learn, Playground and the personal close.
+     Every string below is the AUTHORED copy from the frozen designs of record,
+     English and Arabic each written for its own reader. The Arabic is Egyptian
+     colloquial, matching the frames, and is not a translation of the English. */
+  ia: {
+    nav: { vibeCoding: string; gear: string; learn: string; playground: string; about: string; subscribe: string };
+    /* Homepage §2 — Vibe Coding in the Real World */
+    realWorld: {
+      label: string; aside: string;
+      headBefore: string; headEm: string; headAfter: string;
+      support: string; ctaPrimary: string; ctaSecondary: string;
+      benchLabel: string; bench: string[];
+      featuredLabel: string; crossoverChip: string; statusChip: string;
+      journeyLabel: string; upNextLabel: string; upNextStrip: string;
+      slotNote: string; paneLabels: string[];
+      ruleVibe: string; ruleVibeNote: string; ruleGear: string; ruleGearNote: string;
+      ruleCross: string; ruleCrossNote: string;
+      empty: string;
+    };
+    /* Homepage §3 — Gear, currently testing */
+    gear: {
+      label: string; aside: string;
+      headBefore: string; headEm: string; headAfter: string;
+      support: string; ctaPrimary: string; ctaSecondary: string;
+      featuredLabel: string; crossoverChip: string; crossoverNote: string;
+      follow: string; alsoLabel: string;
+      ruleRatings: string; ruleRatingsNote: string; ruleCross: string; ruleCrossNote: string;
+      ruleBuild: string; ruleBuildNote: string;
+      empty: string;
+      hubKicker: string; hubTitle: string; hubIntro: string;
+      hiddenNote: (names: string) => string;
+      moreIn: (category: string) => string;
+      factsProduct: string; factsCategory: string; factsSince: string; factsStatus: string;
+      status: Record<'testing' | 'using' | 'concluded', string>;
+      label_: Record<'currently-testing' | 'workflow-test' | 'creator-test' | 'up-next' | 'worth-exploring', string>;
+      takeawayTitle: string; noVerdict: string; verdictLabel: string;
+      disclosure: string; read: string;
+    };
+    /* Homepage §4 — Learn */
+    learn: {
+      label: string; aside: string;
+      headBefore: string; headEm: string; headAfter: string;
+      support: string;
+      rows: Record<'guides' | 'useCases' | 'videos' | 'topics', { title: string; kicker?: string; body: string; cta: string }>;
+      allTopics: string;
+      panelStatus: string; panelTitle: string; panelBody: string; panelNote: string; panelCta: string;
+    };
+    /* Homepage §5 — Playground */
+    playground: {
+      label: string; aside: string;
+      headBefore: string; headEm: string; headAfter: string;
+      support: string; cta: string;
+      toolIndex: (n: number) => string;
+      status: Record<'live' | 'beta' | 'in-build' | 'up-next' | 'with-prompts', string>;
+      notify: string; open: string;
+      ruleFree: string; ruleFreeNote: string; rulePublic: string; rulePublicNote: string;
+      ruleDemos: string; ruleDemosNote: string;
+      empty: string;
+    };
+    /* Homepage §6 — About + Subscribe */
+    about: {
+      loop: string[];
+      headBefore: string; headEm: string; headAfter: string;
+      bio: string; socialLabel: string;
+      subTitle: string; subBody: string; subPlaceholder: string; subButton: string; subNote: string;
+      subLoading: string; subSuccess: string; subInvalid: string; subError: string; subAlready: string;
+    };
+    /* Footer */
+    footer: { umbrella: string; explore: string; more: string; promptLibrary: string; rights: string };
+    /* Build story + hub */
+    vc: {
+      hubKicker: string; hubTitle: string; hubIntro: string;
+      featuredLabel: string; groupBuilds: string; groupExperiments: string;
+      seriesLabel: string; seriesStrip: string;
+      status: Record<'exploring' | 'designing' | 'building' | 'testing' | 'launched' | 'paused', string>;
+      stage: Record<'idea' | 'explore' | 'design' | 'build' | 'test' | 'launch', string>;
+      stageState: Record<'done' | 'doneFirst' | 'now' | 'next', string>;
+      journeyLabel: string; toolsNote: string; seeLive: string; openInPlayground: string;
+      /* Structural section labels on the Build Story template. */
+      sessionTitle: string; toolsTitle: string; relatedTitle: string;
+      previous: string; next: string; read: string;
+      crossoverTitle: string; crossoverToGear: string; crossoverToBuild: string;
+      empty: string; footnote: string;
+    };
+  };
 }
 
 const en: Copy = {
@@ -111,6 +198,8 @@ const en: Copy = {
     guides: 'Guides',
     topics: 'Topics',
     about: 'About',
+    vibeCoding: 'Vibe Coding',
+    gear: 'Gear',
     newsletter: 'Newsletter',
     playground: 'Playground',
     work: 'Work with me',
@@ -359,12 +448,134 @@ const en: Copy = {
     rights: 'Adel',
     signature: 'Made by Adel.',
   },
+  /* ---- IA v2.0 — authored English, verbatim from the frozen frames ---- */
+  ia: {
+    nav: { vibeCoding: 'Vibe Coding', gear: 'Gear', learn: 'Learn', playground: 'Playground', about: 'About', subscribe: 'Subscribe' },
+    realWorld: {
+      label: 'Vibe Coding · in the real world',
+      aside: '// builds only — gear lives next door',
+      headBefore: 'What can I actually ', headEm: 'build', headAfter: ' with AI?',
+      support: 'Real experiments. Real builds. Sharing what works, what breaks, and what I learn along the way.',
+      ctaPrimary: 'Explore Vibe Coding', ctaSecondary: 'See all builds',
+      benchLabel: 'On the bench', bench: ['AI-assisted builds', 'Workflows & tools', 'Building in public'],
+      featuredLabel: 'Featured build', crossoverChip: 'Crossover · × Gear', statusChip: 'Build · in progress',
+      journeyLabel: 'This build’s journey',
+      upNextLabel: 'Up next', upNextStrip: 'Build 01 → 02 → 03 → …',
+      slotNote: 'Multitasking build workflow · slot is replaceable per featured build',
+      paneLabels: ['ChatGPT', 'Claude Code', 'Live site'],
+      ruleVibe: 'Vibe Coding', ruleVibeNote: '— building with AI, here',
+      ruleGear: 'Gear', ruleGearNote: '— using & testing tech, its own section',
+      ruleCross: 'Crossover', ruleCrossNote: '— only when the device enables the build',
+      empty: 'The first build goes up here as soon as there is something real to show.',
+    },
+    gear: {
+      label: 'Gear · currently testing', aside: '// use cases, not spec sheets',
+      headBefore: 'Tech I’m actually ', headEm: 'using', headAfter: '.',
+      support: 'Not just specs — what does this actually help me do?',
+      ctaPrimary: 'Explore Gear', ctaSecondary: 'See all gear',
+      featuredLabel: 'Currently testing', crossoverChip: 'Vibe Coding crossover',
+      crossoverNote: 'Crossover: this story also lives in Vibe Coding — the device enables the build.',
+      follow: 'Follow this test', alsoLabel: 'Also testing',
+      ruleRatings: 'No ratings, no scores', ruleRatingsNote: '— conclusions come after real testing',
+      ruleCross: 'Crossover chip', ruleCrossNote: '— only when the device enables the build',
+      ruleBuild: 'Building with AI', ruleBuildNote: '— lives in Vibe Coding, one section up',
+      empty: 'The first test goes up here once there is something real to report.',
+      hubKicker: 'Gear', hubTitle: 'Tech I’m actually using.',
+      hubIntro: 'A testing journal — what I use, what it changed, and what I would not buy again.',
+      hiddenNote: (names) => `Not yet published: ${names}.`,
+      moreIn: (category) => `More in ${category}`,
+      factsProduct: 'Product', factsCategory: 'Category', factsSince: 'Testing since', factsStatus: 'Status',
+      status: { testing: 'In testing', using: 'Using now', concluded: 'Concluded' },
+      label_: {
+        'currently-testing': 'Currently testing', 'workflow-test': 'Workflow test',
+        'creator-test': 'Creator test', 'up-next': 'Up next', 'worth-exploring': 'Worth exploring',
+      },
+      takeawayTitle: 'Takeaway',
+      noVerdict: 'No verdict yet — this one is still in testing. I will write it up when I have actually finished with it.',
+      verdictLabel: 'Concluded',
+      disclosure: 'If any link here ever earns me anything, it will say so on this line. Today: none are.',
+      read: 'Read',
+    },
+    learn: {
+      label: 'Learn · guides & prompts', aside: '// written up so you can use it',
+      headBefore: 'Learn what ', headEm: 'I learn', headAfter: '.',
+      support: 'Everything I figure out while testing and building — guides, use cases and prompts you can put to work today.',
+      rows: {
+        guides: { title: 'Guides', body: 'Step-by-step write-ups from real builds and real tests — nothing theoretical.', cta: 'Browse' },
+        useCases: { title: 'Use cases', body: '“What can this actually do for me?” — real scenarios, honest outcomes.', cta: 'Browse' },
+        videos: { title: 'Videos', body: 'The same experiments, on camera — over on AdelTechTalks.', cta: 'Watch' },
+        topics: { title: 'Topics', body: '', cta: 'All topics' },
+      },
+      allTopics: 'All topics',
+      panelStatus: 'Coming soon', panelTitle: 'Prompt Library',
+      panelBody: 'The exact prompts I use — copy, paste, adapt.',
+      panelNote: 'Every prompt earns its place in a real workflow first. Opening with the ones behind my current builds.',
+      panelCta: 'Get notified when it opens',
+    },
+    playground: {
+      label: 'Playground · try it yourself', aside: '// built with the same Vibe Coding workflow',
+      headBefore: 'Don’t just read it — ', headEm: 'try it', headAfter: '.',
+      support: 'Small interactive tools I’m building in public. Everything on this bench ships from the workflow you see in Vibe Coding.',
+      cta: 'Visit the Playground',
+      toolIndex: (n) => `Tool ${String(n).padStart(2, '0')}`,
+      status: { live: 'Live', beta: 'Beta', 'in-build': 'In build', 'up-next': 'Up next', 'with-prompts': 'With Prompt Library' },
+      notify: 'Get notified at launch', open: 'Open',
+      ruleFree: 'Free to try', ruleFreeNote: '— an account only when a tool saves your work',
+      rulePublic: 'Built in public', rulePublicNote: '— each tool’s build story lives in Vibe Coding',
+      ruleDemos: 'No fake demos', ruleDemosNote: '— a tool appears here only when you can actually open it',
+      empty: 'Nothing is open yet. The workbench is where the tools land first.',
+    },
+    about: {
+      loop: ['Learn', 'Test', 'Build', 'Share'],
+      headBefore: 'Hi, I’m Adel. I just really ', headEm: 'love tech', headAfter: '.',
+      bio: 'I turn ideas into launches with Vibe Coding, test the gear I actually use, and write up whatever surprises me along the way. Product manager by profession — tinkerer by default.',
+      socialLabel: 'AdelTechTalks on',
+      subTitle: 'Get what I learn — before I polish it.',
+      subBody: 'One email when something’s worth your time: a new build, a test that surprised me, a prompt that works.',
+      subPlaceholder: 'you@email.com', subButton: 'Subscribe',
+      subNote: 'No spam, no schedule pressure — unsubscribe anytime.',
+      subLoading: 'Subscribing…',
+      subSuccess: 'You’re in — check your inbox to confirm.',
+      subInvalid: 'That email doesn’t look right — mind checking it?',
+      subError: 'Something broke on my end — try again in a minute?',
+      subAlready: 'You’re already on the list — nice.',
+    },
+    footer: {
+      umbrella: 'How I use technology to build, create, and work smarter.',
+      explore: 'Explore', more: 'More', promptLibrary: 'Prompt Library · soon',
+      rights: '© 2026 Adel — built with Vibe Coding, obviously.',
+    },
+    vc: {
+      hubKicker: 'Vibe Coding', hubTitle: 'I turn ideas into launches.',
+      hubIntro: 'Every build in the open — the idea, the tools, what broke, and where it got to.',
+      featuredLabel: 'Now building', groupBuilds: 'Builds', groupExperiments: 'Experiments',
+      seriesLabel: 'Series · Building in public', seriesStrip: 'Part 01 → Part 02 → …',
+      status: {
+        exploring: 'Exploring', designing: 'Designing', building: 'Now building',
+        testing: 'Testing', launched: 'Launched', paused: 'Paused',
+      },
+      stage: { idea: 'Idea', explore: 'Explore', design: 'Design', build: 'Build', test: 'Test', launch: 'Launch' },
+      stageState: { done: 'Done', doneFirst: 'Done', now: 'Now', next: 'Next' },
+      journeyLabel: 'This build’s journey',
+      toolsNote: 'Only the tools I actually used — no unearned credit.',
+      sessionTitle: 'From the session', toolsTitle: 'What I built it with', relatedTitle: 'More builds',
+      seeLive: 'See it live', openInPlayground: 'Open it in Playground',
+      previous: 'Previous part', next: 'Next part', read: 'Read the build',
+      crossoverTitle: 'Crossover',
+      crossoverToGear: 'The device side of this build lives in Gear.',
+      crossoverToBuild: 'The build this device made possible lives in Vibe Coding.',
+      empty: 'The first build goes up here as soon as there is something real to show.',
+      footnote: 'Screenshots are real, or the story waits. Nothing here is a mock-up.',
+    },
+  },
 };
 
 const ar: Copy = {
   nav: {
     guides: 'الأدلة',
     topics: 'المواضيع',
+    vibeCoding: 'Vibe Coding',
+    gear: 'Gear',
     about: 'عن عادل',
     newsletter: 'النشرة',
     playground: 'الملعب',
@@ -610,6 +821,128 @@ const ar: Copy = {
     blurb: '[[Product Manager]] ومهتم بالـ[[AI]] وباني. أتعلّمها، أجرّبها، أبني بها، وأشاركها.',
     rights: 'عادل',
     signature: 'من صنع عادل.',
+  },
+  /* ---- IA v2.0 — authored Arabic, verbatim from the frozen AR frames.
+     Egyptian colloquial by design, and NOT a translation of the English above:
+     each language was written for its own reader. Do not rewrite. ---- */
+  ia: {
+    nav: { vibeCoding: 'Vibe Coding', gear: 'Gear', learn: 'اتعلم', playground: 'Playground', about: 'عن عادل', subscribe: 'اشترك' },
+    realWorld: {
+      label: 'Vibe Coding · in the real world',
+      aside: 'هنا البناء بس — الأجهزة ليها قسم [[Gear]]',
+      headBefore: 'إيه اللي أقدر أبنيه بالـ', headEm: 'AI', headAfter: '؟',
+      support: 'تجارب ومشاريع حقيقية ببنيها بالـ[[AI]] — وبشارك إيه اللي اشتغل، وإيه اللي ما اشتغلش، وإيه اللي اتعلمته في الطريق.',
+      ctaPrimary: 'استكشف الـ[[Vibe Coding]]', ctaSecondary: 'شوف كل المشاريع',
+      benchLabel: 'وعلى الترابيزة', bench: ['مشاريع بالـ[[AI]]', 'أدوات و[[workflows]]', 'بنبني في العلن'],
+      featuredLabel: 'Featured build', crossoverChip: 'Crossover · × Gear', statusChip: 'بناء · شغّال دلوقتي',
+      journeyLabel: 'رحلة الـ[[Build]] ده',
+      upNextLabel: 'الجاي بعده', upNextStrip: 'Build 01 → 02 → 03 → …',
+      slotNote: 'شاشة شغل حقيقية متعددة المهام — المكان بيتبدل مع كل [[Build]] جديد',
+      paneLabels: ['ChatGPT', 'Claude Code', 'Live site'],
+      ruleVibe: 'Vibe Coding', ruleVibeNote: '— بنبني بالـ[[AI]]، هنا',
+      ruleGear: 'Gear', ruleGearNote: '— بنستخدم ونجرّب الأجهزة، في قسمها',
+      ruleCross: 'Crossover', ruleCrossNote: '— بس لما الجهاز نفسه يخلّي البناء ممكن',
+      empty: 'أول [[build]] هيتنشر هنا أول ما يبقى في حاجة حقيقية تتعرض.',
+    },
+    gear: {
+      label: 'Gear · currently testing', aside: 'مش مواصفات — استخدام حقيقي',
+      headBefore: 'تكنولوجيا بستخدمها ', headEm: 'فعلاً', headAfter: '.',
+      support: 'مش المواصفات وبس — إيه اللي الجهاز ده بيساعدني أعمله فعلاً؟',
+      ctaPrimary: 'استكشف الـ[[Gear]]', ctaSecondary: 'شوف كل الـ[[Gear]]',
+      featuredLabel: 'بجرّبه دلوقتي', crossoverChip: 'Vibe Coding crossover',
+      crossoverNote: 'Crossover: القصة دي موجودة كمان في [[Vibe Coding]] — الجهاز نفسه هو اللي بيخلّي البناء ممكن.',
+      follow: 'تابع التجربة', alsoLabel: 'بجرّب كمان',
+      ruleRatings: 'من غير تقييمات ولا نجوم', ruleRatingsNote: '— الخلاصة بتيجي بعد تجربة حقيقية',
+      ruleCross: 'علامة الـ[[Crossover]]', ruleCrossNote: '— بس لما الجهاز نفسه يخلّي البناء ممكن',
+      ruleBuild: 'البناء بالـ[[AI]]', ruleBuildNote: '— مكانه قسم [[Vibe Coding]] فوق',
+      empty: 'أول تجربة هتتنشر هنا أول ما يبقى في حاجة حقيقية أقولها.',
+      hubKicker: 'Gear', hubTitle: 'تكنولوجيا بستخدمها فعلاً.',
+      hubIntro: 'دفتر تجارب — إيه اللي بستخدمه، وإيه اللي غيّره، وإيه اللي مش هشتريه تاني.',
+      hiddenNote: (names) => `لسه ما اتنشرش: ${names}.`,
+      moreIn: (category) => `كمان في ${category}`,
+      factsProduct: 'المنتج', factsCategory: 'القسم', factsSince: 'بجرّبه من', factsStatus: 'الحالة',
+      status: { testing: 'تحت التجربة', using: 'بستخدمه دلوقتي', concluded: 'خلصت التجربة' },
+      label_: {
+        'currently-testing': 'بجرّبه دلوقتي', 'workflow-test': 'Workflow test',
+        'creator-test': 'Creator test', 'up-next': 'الجاي', 'worth-exploring': 'يستاهل التجربة',
+      },
+      takeawayTitle: 'الخلاصة',
+      noVerdict: 'لسه مفيش حكم — التجربة شغّالة. هكتب الخلاصة لما أكون خلّصت فعلاً.',
+      verdictLabel: 'خلصت التجربة',
+      disclosure: 'لو أي رابط هنا كسّبني حاجة، السطر ده هيقولها. النهارده: ولا واحد.',
+      read: 'اقرأ',
+    },
+    learn: {
+      label: 'Learn · guides & prompts', aside: 'مكتوب عشان تستخدمه',
+      headBefore: 'اتعلم اللي أنا ', headEm: 'بتعلّمه', headAfter: '.',
+      support: 'كل اللي بكتشفه وأنا بجرّب وببني — أدلة و[[use cases]] و[[prompts]] تقدر تستخدمها من النهارده.',
+      rows: {
+        guides: { title: 'أدلة عملية', kicker: 'Guides', body: 'خطوة بخطوة من تجارب وبناء حقيقي — مفيش كلام نظري.', cta: 'تصفّح' },
+        useCases: { title: 'استخدامات حقيقية', kicker: 'Use cases', body: '«إيه اللي التكنولوجيا دي ممكن تعمله ليّا فعلاً؟» — سيناريوهات حقيقية ونتايج صريحة.', cta: 'تصفّح' },
+        videos: { title: 'فيديوهات', kicker: 'Videos', body: 'نفس التجارب بالصوت والصورة — على قناة [[AdelTechTalks]].', cta: 'اتفرّج' },
+        topics: { title: 'مواضيع', kicker: 'Topics', body: '', cta: 'كل المواضيع' },
+      },
+      allTopics: 'كل المواضيع',
+      panelStatus: 'قريباً', panelTitle: 'Prompt Library',
+      panelBody: 'نفس الـ[[prompts]] اللي بستخدمها — انسخ وعدّل واستخدم.',
+      panelNote: 'كل [[prompt]] بيثبت نفسه في [[workflow]] حقيقي الأول. هنبدأ باللي ورا مشاريعي الحالية.',
+      panelCta: 'ابعتلي لما يفتح',
+    },
+    playground: {
+      label: 'Playground · try it yourself', aside: 'مبني بنفس أسلوب الـ[[Vibe Coding]]',
+      headBefore: 'متقراش وبس — ', headEm: 'جرّب بنفسك', headAfter: '.',
+      support: 'أدوات تفاعلية صغيرة ببنيها قدامكم — كل حاجة على الترابيزة دي طالعة من نفس الـ[[workflow]] اللي بتشوفوه في [[Vibe Coding]].',
+      cta: 'افتح الـ[[Playground]]',
+      toolIndex: (n) => `Tool ${String(n).padStart(2, '0')}`,
+      status: { live: 'لايف', beta: 'Beta', 'in-build': 'قيد البناء', 'up-next': 'الجاي', 'with-prompts': 'With Prompt Library' },
+      notify: 'ابعتلي عند الإطلاق', open: 'افتح',
+      ruleFree: 'مجاني للتجربة', ruleFreeNote: '— حساب بس لو الأداة هتحفظ شغلك',
+      rulePublic: 'مبني قدامكم', rulePublicNote: '— قصة بناء كل أداة في [[Vibe Coding]]',
+      ruleDemos: 'من غير [[demos]] وهمية', ruleDemosNote: '— الأداة بتظهر هنا لما تقدر تفتحها فعلاً',
+      empty: 'لسه مفيش حاجة مفتوحة. الترابيزة هي أول مكان الأدوات بتنزل فيه.',
+    },
+    about: {
+      loop: ['Learn', 'Test', 'Build', 'Share'],
+      headBefore: 'أهلاً، أنا عادل. ببساطة ', headEm: 'بحب التكنولوجيا', headAfter: '.',
+      bio: 'بحوّل الأفكار لمشاريع حقيقية بالـ[[Vibe Coding]]، بجرّب الأجهزة اللي بستخدمها فعلاً، وبكتب عن كل حاجة تفاجئني في الطريق. [[Product Manager]] في شغلي — ومجرّب دايماً بطبيعتي.',
+      socialLabel: 'AdelTechTalks on',
+      subTitle: 'خد اللي بتعلّمه — قبل ما أظبّطه للنشر.',
+      subBody: 'إيميل واحد لما يبقى في حاجة تستاهل وقتك: مشروع جديد، تجربة مفاجئة، أو [[prompt]] شغّال.',
+      subPlaceholder: 'you@email.com', subButton: 'اشترك',
+      subNote: 'من غير [[spam]] — تقدر تلغي الاشتراك في أي وقت.',
+      subLoading: 'جاري الاشتراك…',
+      subSuccess: 'انت معانا — بص على إيميلك للتأكيد.',
+      subInvalid: 'الإيميل ده شكله مش مظبوط — تراجعه؟',
+      subError: 'في حاجة اتكسرت عندي — تجرب تاني بعد دقيقة؟',
+      subAlready: 'انت أصلاً في القايمة — تمام.',
+    },
+    footer: {
+      umbrella: 'إزاي بستخدم التكنولوجيا عشان أبني وأبدع وأشتغل أذكى.',
+      explore: 'استكشف', more: 'كمان', promptLibrary: 'Prompt Library · قريباً',
+      rights: '© 2026 عادل — متبني بالـVibe Coding، طبعاً.',
+    },
+    vc: {
+      hubKicker: 'Vibe Coding', hubTitle: 'بحوّل الأفكار لمشاريع حقيقية.',
+      hubIntro: 'كل [[build]] في العلن — الفكرة، الأدوات، إيه اللي اتكسر، ووصل لفين.',
+      featuredLabel: 'ببنيه دلوقتي', groupBuilds: 'Builds', groupExperiments: 'Experiments',
+      seriesLabel: 'Series · بنبني في العلن', seriesStrip: 'Part 01 → Part 02 → …',
+      status: {
+        exploring: 'بستكشف', designing: 'بصمّم', building: 'ببنيه دلوقتي',
+        testing: 'بجرّب', launched: 'لايف', paused: 'متوقف مؤقتًا',
+      },
+      stage: { idea: 'الفكرة', explore: 'الاستكشاف', design: 'التصميم', build: 'البناء', test: 'التجربة', launch: 'الإطلاق' },
+      stageState: { done: 'تمّ', doneFirst: 'تمّت', now: 'دلوقتي', next: 'الجاي' },
+      journeyLabel: 'رحلة الـ[[Build]] ده',
+      toolsNote: 'بس الأدوات اللي استخدمتها فعلاً — من غير أي فضل مش ليا.',
+      sessionTitle: 'من الشغل نفسه', toolsTitle: 'بنيته بإيه', relatedTitle: 'مشاريع تانية',
+      seeLive: 'شوفه لايف', openInPlayground: 'افتحه في الـ[[Playground]]',
+      previous: 'الجزء اللي فات', next: 'الجزء الجاي', read: 'اقرأ الـ[[build]]',
+      crossoverTitle: 'Crossover',
+      crossoverToGear: 'الجزء بتاع الجهاز في القصة دي موجود في [[Gear]].',
+      crossoverToBuild: 'الـ[[build]] اللي الجهاز ده خلّاه ممكن موجود في [[Vibe Coding]].',
+      empty: 'أول [[build]] هيتنشر هنا أول ما يبقى في حاجة حقيقية تتعرض.',
+      footnote: 'الصور حقيقية، أو القصة تستنى. مفيش حاجة هنا [[mock-up]].',
+    },
   },
 };
 

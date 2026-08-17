@@ -1,0 +1,441 @@
+---
+/* =============================================================================
+   Homepage §2 — Vibe Coding in the Real World
+   =============================================================================
+   The first pillar section under the hero, and the one that carries the site's
+   single dark moment: a graphite panel holding the featured build, its journey
+   rail and the multitasking workspace frame.
+
+   Frozen order inside the section:
+
+     kicker + aside → headline → support → bench chips → featured build panel
+     → Up Next strip → the three pillar rules → the two CTAs
+
+   ── HONEST COLLAPSE ─────────────────────────────────────────────────────────
+   A build becomes visible only once a real screenshot of something live exists
+   (lib/pillars.ts). So on the day this ships there is nothing to feature, and
+   the section must say so rather than draw an empty workspace.
+
+   With zero published builds it renders: kicker, headline, support, one honest
+   line, and the three pillar rules — which are editorial statements about what
+   this section IS, and stay true with nothing in it. What it does NOT render:
+
+     · the featured panel, the rail, the workspace frame — no fabricated UI
+     · the bench chips — "on the bench" is a claim about work in progress
+     · the Up Next strip — nothing is next when nothing is first
+     · the "Explore Vibe Coding" CTA — the hub is still navigable from the
+       header and the footer, but a CTA here is a promise of MORE, and the
+       honest line directly above it has just said there is not any yet
+
+   Everything returns by itself the moment a build publishes. Nothing here is
+   ever substituted, generated or stubbed to fill the gap.
+
+   ── UP NEXT NAMES REAL BUILDS ───────────────────────────────────────────────
+   `ia.realWorld.upNextStrip` in copy.ts is a STRUCTURAL ladder — "Build 01 →
+   02 → 03 → …" — and it is deliberately not rendered here. On the Vibe Coding
+   Hub the equivalent string is correct, because there it labels a series whose
+   parts genuinely exist. On the homepage it would be a promise of three builds
+   drawn before any of them is written.
+
+   So the strip lists the real other builds by their real questions, and does
+   not render at all when there are none. The copy key is left in place: the
+   day a numbered series is the right thing to show, it is already authored in
+   both languages.
+
+   ── CROSSOVER ───────────────────────────────────────────────────────────────
+   The crossover chip appears only when the featured build names a Gear story
+   that is genuinely published in this language — an unpublished counterpart
+   means no chip, because the chip is a link and a link is a promise.
+   ========================================================================== */
+
+import Rich from '../Rich.astro';
+import StatusPill from '../ia/StatusPill.astro';
+import JourneyRail from '../ia/JourneyRail.astro';
+import WorkspaceFrame from '../ia/WorkspaceFrame.astro';
+import { useCopy } from '../../copy';
+import { featuredBuild, getBuilds, crossoverGear, BUILD_STATUS_TONE } from '../../lib/pillars';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+const t = c.ia.realWorld;
+
+const featured = await featuredBuild(lang);
+const all = await getBuilds(lang);
+/* The featured build is on screen already; "up next" is what comes after it. */
+const upNext = all.filter((b) => b.slug !== featured?.slug).slice(0, 3);
+const gearSide = featured ? await crossoverGear(lang, featured) : undefined;
+
+const arrow = lang === 'ar' ? '←' : '→';
+---
+
+<section class="container section rw" aria-labelledby="rw-title" data-vb>
+  <header class="rw__head">
+    <div class="rw__kickerRow" data-vb-reveal style="--vb-step:0">
+      {/* The label is a fixed English IA string in both languages. */}
+      <span class="rw__kicker" dir="ltr">{t.label}</span>
+      <span class="rw__aside"><Rich text={t.aside} /></span>
+    </div>
+
+    <h2 class="rw__title ar-hero" id="rw-title" data-vb-reveal style="--vb-step:1">
+      <Rich text={t.headBefore} as="span" />
+      <em class="rw__em"><Rich text={t.headEm} /></em>
+      <Rich text={t.headAfter} as="span" />
+    </h2>
+
+    <Rich text={t.support} as="p" class="rw__support" data-vb-reveal style="--vb-step:2" />
+  </header>
+
+  {featured ? (
+    <>
+      <ul class="rw__bench" data-vb-reveal style="--vb-step:3">
+        <li class="rw__benchLabel">{t.benchLabel}</li>
+        {t.bench.map((item) => (
+          <li class="rw__benchItem"><Rich text={item} /></li>
+        ))}
+      </ul>
+
+      {/* ---- the featured build: the page's one graphite panel ---- */}
+      <article class="rw__panel" data-vb-reveal style="--vb-step:4" aria-labelledby="rw-featured">
+        <div class="rw__panelText">
+          <div class="rw__chips">
+            <StatusPill label={t.featuredLabel} tone="neutral" onDark />
+            <StatusPill
+              label={c.ia.vc.status[featured.status]}
+              tone={BUILD_STATUS_TONE[featured.status]}
+              dot={featured.status === 'building'}
+              onDark
+            />
+            {gearSide && (
+              <a class="rw__crossChip" href={gearSide.href}>
+                <StatusPill label={t.crossoverChip} tone="blue" onDark />
+              </a>
+            )}
+          </div>
+
+          <Rich text={featured.question} as="h3" class="rw__q ar-heading" id="rw-featured" />
+          {featured.context && <Rich text={featured.context} as="p" class="rw__context" />}
+
+          <JourneyRail
+            lang={lang}
+            stage={featured.stage}
+            label={t.journeyLabel}
+            paused={featured.status === 'paused'}
+            class="rw__rail"
+          />
+
+          <div class="rw__actions">
+            <a class="rw__cta" href={featured.href}>
+              <Rich text={c.ia.vc.read} />
+              <span class="rw__arrow" aria-hidden="true">{arrow}</span>
+            </a>
+            {featured.liveUrl && (
+              <a class="rw__alt" href={featured.liveUrl} rel="noopener" target="_blank">
+                <Rich text={c.ia.vc.seeLive} />
+                <span aria-hidden="true">↗</span>
+              </a>
+            )}
+          </div>
+        </div>
+
+        <div class="rw__panelMedia">
+          <WorkspaceFrame
+            url={featured.liveUrl ?? 'adeltechtalks.com'}
+            heroShot={featured.heroShot}
+            heroShotAlt={featured.heroShotAlt}
+            heroLabel={t.paneLabels[2] ?? 'Live site'}
+            panes={[
+              { src: featured.sessionShot, alt: featured.sessionShotAlt, label: t.paneLabels[1] ?? 'Claude Code' },
+            ]}
+            note={t.slotNote}
+          />
+        </div>
+      </article>
+
+      {/* ---- Up Next: real builds, named. Never a fabricated ladder ---- */}
+      {upNext.length > 0 && (
+        <div class="rw__upNext" data-vb-reveal style="--vb-step:5">
+          <span class="rw__upNextLabel"><Rich text={t.upNextLabel} /></span>
+          <ul class="rw__upNextList">
+            {upNext.map((story) => (
+              <li>
+                <a class="rw__upNextLink" href={story.href}>
+                  <Rich text={story.question} />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div class="rw__actions rw__actions--section" data-vb-reveal style="--vb-step:6">
+        <a class="rw__ctaGhost" href={localizePath('/vibe-coding', lang)}>
+          <Rich text={t.ctaPrimary} />
+          <span class="rw__arrow" aria-hidden="true">{arrow}</span>
+        </a>
+      </div>
+    </>
+  ) : (
+    <p class="rw__empty" data-vb-reveal style="--vb-step:3"><Rich text={t.empty} /></p>
+  )}
+
+  {/* The pillar boundary, stated in the section that owns it. True with or
+      without content, so it renders in both states. */}
+  <dl class="rw__rules">
+    <div class="rw__rule">
+      <dt dir="ltr">{t.ruleVibe}</dt>
+      <dd><Rich text={t.ruleVibeNote} /></dd>
+    </div>
+    <div class="rw__rule">
+      <dt dir="ltr">{t.ruleGear}</dt>
+      <dd><Rich text={t.ruleGearNote} /></dd>
+    </div>
+    <div class="rw__rule">
+      <dt dir="ltr">{t.ruleCross}</dt>
+      <dd><Rich text={t.ruleCrossNote} /></dd>
+    </div>
+  </dl>
+</section>
+
+<style>
+  .rw__head { display: flex; flex-direction: column; gap: var(--atc-space-4); max-width: 56ch; }
+  .rw__kickerRow { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--atc-space-4); }
+  .rw__kicker {
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--adel-signature-blue);
+    unicode-bidi: isolate;
+  }
+  .rw__aside {
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    color: var(--adel-text-tertiary);
+  }
+  :global([lang='ar']) .rw__aside { font-family: var(--adel-font-text); font-size: 12.5px; }
+
+  .rw__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(30px, 4.5vw, 48px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+    text-wrap: balance;
+  }
+  :global([lang='ar']) .rw__title { letter-spacing: normal; unicode-bidi: plaintext; }
+  /* The accent word in the headline is an <em> for structure, not for emphasis
+     — the colour is what marks it. `[lang='ar'] em` in tokens/adel-type.css
+     gives emphasis a weight of 600, which is right in Readex prose and wrong
+     inside a Ghorab hero: Ghorab ships ONE style, so 600 is synthesised (TY
+     v2.0). Inheriting the headline's own weight is correct in both languages —
+     800 on the Latin hero, 400 on the Arabic one. */
+  .rw__em { font-style: normal; font-weight: inherit; color: var(--adel-signature-blue); }
+
+  .rw__support { margin: 0; font-size: var(--adel-text-lg); line-height: 1.6; color: var(--adel-text-secondary); }
+  :global([lang='ar']) .rw__support { line-height: 1.85; }
+
+  /* ---- bench chips ---- */
+  .rw__bench {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--atc-space-3);
+    margin: var(--atc-space-8) 0 0;
+    padding: 0;
+  }
+  .rw__benchLabel {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+  }
+  :global([lang='ar']) .rw__benchLabel {
+    font-family: var(--adel-font-text);
+    font-size: 12px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .rw__benchItem {
+    padding: 4px var(--atc-space-4);
+    border: 1px solid var(--adel-border-hairline);
+    border-radius: var(--adel-radius-pill);
+    font-size: var(--adel-text-sm);
+    color: var(--adel-text-secondary);
+  }
+
+  /* ---- the graphite panel ---- */
+  .rw__panel {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: var(--atc-space-12);
+    align-items: center;
+    margin-top: var(--atc-space-10);
+    padding: var(--atc-space-12);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-inverse);
+    color: var(--adel-text-inverse);
+  }
+  .rw__panelText { display: flex; flex-direction: column; align-items: flex-start; gap: var(--atc-space-4); min-width: 0; }
+  .rw__panelMedia { min-width: 0; }
+
+  .rw__chips { display: flex; flex-wrap: wrap; gap: var(--atc-space-2); }
+  .rw__crossChip { text-decoration: none; }
+
+  .rw__q {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(24px, 3vw, 34px);
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: inherit;
+  }
+  :global([lang='ar']) .rw__q { letter-spacing: normal; unicode-bidi: plaintext; }
+  .rw__context { margin: 0; font-size: var(--adel-text-base); line-height: 1.65; color: rgba(255, 255, 255, 0.68); }
+  :global([lang='ar']) .rw__context { line-height: 1.85; unicode-bidi: plaintext; }
+
+  .rw__rail { width: 100%; margin-top: var(--atc-space-2); }
+
+  .rw__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--atc-space-5); margin-top: var(--atc-space-2); }
+  .rw__actions--section { margin-top: var(--atc-space-10); }
+  .rw__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    height: var(--atc-control-lg);
+    padding-inline: var(--atc-space-6);
+    border-radius: var(--adel-radius-control);
+    background: var(--adel-blue-500);
+    color: var(--adel-white);
+    font-size: var(--adel-text-base);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .rw__cta:hover { background: var(--adel-blue-400); color: var(--adel-white); }
+  /* blue-700 fails on graphite, so a link on this panel steps up to blue-300. */
+  .rw__alt {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    color: var(--adel-blue-300);
+    text-decoration: none;
+  }
+  .rw__alt:hover { text-decoration: underline; }
+
+  /* CS-05 — the hero owns this page's one primary action, so the section-level
+     call to the hub is a ghost control, never a second filled button. */
+  .rw__ctaGhost {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    height: var(--atc-control-lg);
+    padding-inline: var(--atc-space-6);
+    border: 1px solid var(--adel-border-strong);
+    border-radius: var(--adel-radius-control);
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    color: var(--adel-text-primary);
+    text-decoration: none;
+  }
+  .rw__ctaGhost:hover { border-color: var(--adel-text-link); color: var(--adel-text-link); }
+
+  .rw__arrow { display: inline-block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .rw__arrow { transition: transform var(--atc-duration-fast) var(--atc-ease-move); }
+    .rw__cta:hover .rw__arrow,
+    .rw__ctaGhost:hover .rw__arrow { transform: translateX(var(--atc-distance-1)); }
+    :global([dir='rtl']) .rw__cta:hover .rw__arrow,
+    :global([dir='rtl']) .rw__ctaGhost:hover .rw__arrow { transform: translateX(calc(-1 * var(--atc-distance-1))); }
+  }
+
+  /* ---- Up Next ---- */
+  .rw__upNext {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--atc-space-4);
+    margin-top: var(--atc-space-10);
+    padding-top: var(--atc-space-5);
+    border-top: 1px solid var(--adel-border-hairline);
+  }
+  .rw__upNextLabel {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+    flex: none;
+  }
+  :global([lang='ar']) .rw__upNextLabel {
+    font-family: var(--adel-font-text);
+    font-size: 12px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .rw__upNextList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-2) var(--atc-space-6);
+  }
+  .rw__upNextLink { font-size: var(--adel-text-sm); color: var(--adel-text-secondary); text-decoration: none; }
+  .rw__upNextLink:hover { color: var(--adel-text-link); text-decoration: underline; }
+
+  .rw__empty {
+    margin: var(--atc-space-8) 0 0;
+    max-width: 60ch;
+    font-size: var(--adel-text-lg);
+    line-height: 1.7;
+    color: var(--adel-text-secondary);
+  }
+
+  /* ---- the pillar rules ---- */
+  .rw__rules {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-4) var(--atc-space-8);
+    margin: var(--atc-space-12) 0 0;
+    padding-top: var(--atc-space-5);
+    border-top: 1px solid var(--adel-border-hairline);
+  }
+  .rw__rule { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--atc-space-2); }
+  .rw__rule dt {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-primary);
+    unicode-bidi: isolate;
+  }
+  .rw__rule dd {
+    margin: 0;
+    font-size: var(--adel-text-sm);
+    line-height: 1.6;
+    color: var(--adel-text-tertiary);
+  }
+
+  @media (max-width: 1023px) {
+    .rw__panel { grid-template-columns: 1fr; gap: var(--atc-space-8); }
+  }
+  @media (max-width: 767px) {
+    .rw__panel { padding: var(--atc-space-6); }
+    .rw__rules { flex-direction: column; gap: var(--atc-space-3); }
+  }
+</style>

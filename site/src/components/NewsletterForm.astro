@@ -13,8 +13,9 @@
    ========================================================================== */
 
 import Button from './Button.astro';
+import Rich from './Rich.astro';
 import { services, site } from '../site.config';
-import { useCopy } from '../copy';
+import { plain, useCopy } from '../copy';
 import { DEFAULT_LANG, type Lang } from '../i18n';
 
 interface Props {
@@ -23,17 +24,45 @@ interface Props {
      which surface actually converts. */
   placement?: string;
   compact?: boolean;
+  /* `inverse` restyles the form for a graphite ground. It changes NOTHING
+     about the write path, the states or the live region — the closing section
+     on the homepage sits on the dark panel, and a second copy of this form
+     would be a second copy of the Supabase call to keep in sync. */
+  tone?: 'default' | 'inverse';
+  /* The homepage §6 panel authors its own placeholder, button and messages in
+     `ia.about`. Anything not overridden falls back to the shared newsletter
+     copy, so the /newsletter page is untouched by this. */
+  copy?: Partial<{
+    placeholder: string;
+    submit: string;
+    note: string;
+    sending: string;
+    success: string;
+    already: string;
+    invalid: string;
+    error: string;
+  }>;
   class?: string;
 }
 
-const { lang = DEFAULT_LANG, placement = 'page', compact = false, class: className } = Astro.props;
-const c = useCopy(lang);
+const {
+  lang = DEFAULT_LANG,
+  placement = 'page',
+  compact = false,
+  tone = 'default',
+  copy: overrides = {},
+  class: className,
+} = Astro.props;
+const base = useCopy(lang);
+/* One merged object, so every reference below reads the same way whether or
+   not the caller overrode anything. */
+const c = { ...base, newsletter: { ...base.newsletter, ...overrides } };
 
 const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
 const id = `nl-${placement}`;
 ---
 
-<div class:list={['nl', compact && 'nl--compact', className]} data-nl-root>
+<div class:list={['nl', compact && 'nl--compact', tone === 'inverse' && 'nl--inverse', className]} data-nl-root>
   {live ? (
     <form
       class="nl__form"
@@ -42,14 +71,18 @@ const id = `nl-${placement}`;
       data-supabase-key={services.supabaseAnonKey}
       data-lang={lang}
       data-placement={placement}
-      data-msg-ok={c.newsletter.success}
-      data-msg-already={c.newsletter.already}
-      data-msg-invalid={c.newsletter.invalid}
-      data-msg-error={c.newsletter.error}
-      data-msg-sending={c.newsletter.sending}
+      {/* §11 — every message below is written into an ATTRIBUTE and then set
+          as textContent by the script, so a [[term]] marker in it would ship
+          literal double brackets to the reader. `plain()` flattens the marker
+          the way Rich would render it. */}
+      data-msg-ok={plain(c.newsletter.success)}
+      data-msg-already={plain(c.newsletter.already)}
+      data-msg-invalid={plain(c.newsletter.invalid)}
+      data-msg-error={plain(c.newsletter.error)}
+      data-msg-sending={plain(c.newsletter.sending)}
       novalidate
     >
-      <label class="nl__label" for={id}>{c.newsletter.label}</label>
+      <label class="nl__label" for={id}><Rich text={c.newsletter.label} /></label>
       <div class="nl__row">
         <input
           class="nl__input"
@@ -60,12 +93,12 @@ const id = `nl-${placement}`;
           autocomplete="email"
           inputmode="email"
           spellcheck="false"
-          placeholder={c.newsletter.placeholder}
+          placeholder={plain(c.newsletter.placeholder)}
           aria-describedby={`${id}-status ${id}-consent`}
           data-nl-input
         />
         <Button variant="primary" size="md" type="submit" data-nl-submit>
-          {c.newsletter.submit}
+          <Rich text={c.newsletter.submit} />
         </Button>
       </div>
 
@@ -76,12 +109,12 @@ const id = `nl-${placement}`;
         <input id={`${id}-company`} type="text" name="company" tabindex="-1" autocomplete="off" />
       </div>
 
-      <p class="nl__note" id={`${id}-consent`}>{c.newsletter.consent}</p>
+      <Rich text={c.newsletter.consent} as="p" class="nl__note" id={`${id}-consent`} />
 
       {/* role=status is polite: it does not interrupt, but it is announced. */}
       <p class="nl__status" id={`${id}-status`} role="status" aria-live="polite" data-nl-status></p>
 
-      <p class="nl__note nl__note--fine">{c.newsletter.note}</p>
+      <Rich text={c.newsletter.note} as="p" class="nl__note nl__note--fine" />
 
       <noscript>
         <p class="nl__note">
@@ -283,6 +316,52 @@ const id = `nl-${placement}`;
   [data-state='sending'] .nl__status {
     animation: atc-indeterminate var(--atc-loop-indeterminate) infinite;
   }
+
+  /* ---------------------------------------------------------------------------
+     Inverse — the same form on a graphite ground
+     ---------------------------------------------------------------------------
+     Colour only. Every state, message, aria-live announcement and network call
+     is the default form's; this block just repaints them so they pass contrast
+     on ink-900, where the light-surface tokens do not.
+
+     The success and error grounds are re-derived rather than reused: the light
+     `--adel-status-*-bg` tokens are pale washes designed to sit on white, and
+     on graphite they read as a white box. A translucent tint of the same hue
+     keeps the state's MEANING and its contrast at once.
+     ------------------------------------------------------------------------ */
+  .nl--inverse .nl__input {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.22);
+    color: var(--adel-white);
+  }
+  .nl--inverse .nl__input::placeholder { color: rgba(255, 255, 255, 0.45); }
+  .nl--inverse .nl__input:hover { border-color: rgba(255, 255, 255, 0.4); }
+  .nl--inverse .nl__note { color: rgba(255, 255, 255, 0.62); }
+  .nl--inverse .nl__note--fine { color: rgba(255, 255, 255, 0.45); }
+  .nl--inverse .nl__note a { color: var(--adel-blue-300); }
+
+  .nl--inverse .nl__status {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .nl--inverse [data-state='ok'] .nl__status,
+  .nl--inverse [data-state='already'] .nl__status {
+    background: rgba(94, 234, 190, 0.14);
+    color: var(--adel-mint-500);
+  }
+  .nl--inverse [data-state='invalid'] .nl__status,
+  .nl--inverse [data-state='error'] .nl__status {
+    background: rgba(255, 138, 138, 0.14);
+    color: #ff9d9d;
+  }
+  .nl--inverse [data-state='invalid'] .nl__input { border-color: #ff9d9d; }
+
+  .nl--inverse .nl__pending {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.86);
+  }
+  .nl--inverse .nl__pending code { background: rgba(255, 255, 255, 0.12); }
 
   .nl__pending {
     padding: var(--atc-space-4);

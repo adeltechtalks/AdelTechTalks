@@ -1,0 +1,436 @@
+---
+/* =============================================================================
+   Gear Story — /gear/<category>/<slug> (IA v2.0)
+   =============================================================================
+   A TESTING JOURNAL entry, in the frozen order:
+
+     01  hero        the photograph, the label, Product → Question → Context
+     02  facts       product, category, testing since, status — four rows
+     03  video       the real test on camera, when one exists
+     04  the write-up (the Markdown body)
+     05  takeaway    the verdict, or the honest "no verdict yet"
+     06  crossover   the Vibe Coding side, when the device enabled a build
+     07  related     more from this category
+     08  disclosure
+
+   ── WHAT THIS PAGE MAY NEVER GROW ───────────────────────────────────────────
+   No rating. No score. No stars. No price. No spec table. No comparison
+   matrix. No retailer link. No affiliate control. The content model has no
+   field to hold any of them, so putting one here would take a schema change as
+   well as a design change — which is the friction that was wanted.
+
+   The facts block is four LABELLED FACTS, not a spec sheet: what it is, which
+   category it is filed under, how long it has been in use, and where the test
+   has got to. Every one of them is a fact about the TEST, not a claim about
+   the product.
+
+   ── WHAT REACHES THIS PAGE ──────────────────────────────────────────────────
+   Only a story that has cleared the publication gate: `getGear()` requires a
+   real photograph. A story without one has no route at all — the missing asset
+   blocks its own story and nothing else. Nothing below is ever substituted:
+   §03 renders only with a real video, §05 shows the verdict only once the test
+   has actually concluded.
+
+   ── THE TAKEAWAY IS ALLOWED TO SAY "NOT YET" ────────────────────────────────
+   A story still in testing gets `noVerdict` — a written sentence saying the
+   test is not finished — rather than an empty box or an early conclusion. That
+   is the section working, not the section missing.
+   ========================================================================== */
+
+import Base from '../../layouts/Base.astro';
+import Prose from '../editorial/Prose.astro';
+import Rich from '../Rich.astro';
+import StatusPill from '../ia/StatusPill.astro';
+import StoryRow from '../ia/StoryRow.astro';
+import { useCopy } from '../../copy';
+import { crossoverBuild, gearAlternates, relatedGear, type GearStory } from '../../lib/pillars';
+import { formatDate, localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+  story: GearStory;
+}
+
+const { lang, story } = Astro.props;
+const c = useCopy(lang);
+const t = c.ia.gear;
+
+const buildSide = await crossoverBuild(lang, story);
+const related = await relatedGear(lang, story);
+const alternateLinks = await gearAlternates(lang, story.slug);
+
+const arrow = lang === 'ar' ? '←' : '→';
+/* "Currently testing" is a claim about right now — only made when true. */
+const label = story.status === 'testing' ? t.featuredLabel : t.label_[story.label];
+
+/* The four facts. `testingSince` is optional, so its row simply is not there
+   when the file does not say — an empty value would be a worse answer. */
+const facts = [
+  { label: t.factsProduct, value: story.product, ltr: true },
+  { label: t.factsCategory, value: story.categoryName, ltr: true },
+  ...(story.testingSince
+    ? [{ label: t.factsSince, value: formatDate(story.testingSince, lang), ltr: false }]
+    : []),
+  { label: t.factsStatus, value: t.status[story.status], ltr: false },
+];
+---
+
+<Base
+  lang={lang}
+  title={story.question}
+  description={story.context}
+  ogType="article"
+  publishedTime={story.date.toISOString()}
+  alternateLinks={alternateLinks}
+>
+  <article class="container gst" data-vb>
+    {/* ---- 01 · hero ---- */}
+    <header class="gst__hero" data-vb-reveal style="--vb-step:0">
+      {/* Real photography only. The gate upstream guarantees there is one. */}
+      <div class="gst__photo">
+        <img src={story.photo} alt={story.photoAlt} loading="eager" decoding="async" />
+      </div>
+
+      <div class="gst__story">
+        <a class="gst__crumb" href={localizePath('/gear', lang)}>
+          <span aria-hidden="true">{lang === 'ar' ? '→' : '←'}</span>
+          <Rich text={t.hubKicker} />
+        </a>
+
+        <div class="gst__chips">
+          <StatusPill label={label} tone={story.status === 'testing' ? 'mint' : 'ghost'} />
+          {buildSide && <StatusPill label={t.crossoverChip} tone="blue" />}
+        </div>
+
+        {/* Product — the quiet label. Never the headline. */}
+        <span class="gst__product" dir="ltr">{story.categoryName} · {story.product}</span>
+        {/* Question — the H1, always. */}
+        <Rich text={story.question} as="h1" class="gst__q ar-hero" />
+        {/* Context — why it matters in a real workflow. */}
+        <Rich text={story.context} as="p" class="gst__context" />
+      </div>
+    </header>
+
+    {/* ---- 02 · facts about the TEST. Never a spec sheet ---- */}
+    <dl class="gst__facts">
+      {facts.map((fact) => (
+        <div class="gst__fact">
+          <dt><Rich text={fact.label} /></dt>
+          <dd dir={fact.ltr ? 'ltr' : undefined}>
+            {fact.ltr ? fact.value : <Rich text={fact.value} />}
+          </dd>
+        </div>
+      ))}
+    </dl>
+
+    {/* ---- 03 · the test on camera. Only with a real video ---- */}
+    {story.videoId && (
+      <section class="gst__video" aria-labelledby="gst-video">
+        <h2 class="gst__sectionTitle" id="gst-video"><Rich text={c.nav.videos} /></h2>
+        <div class="gst__videoFrame">
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${story.videoId}`}
+            title={`${story.product} — ${story.question}`}
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </section>
+    )}
+
+    {/* ---- 04 · the write-up ---- */}
+    <div class="gst__body">
+      <Prose>
+        <slot />
+      </Prose>
+    </div>
+
+    {/* ---- 05 · takeaway. A verdict only once there IS one ---- */}
+    <section class="gst__takeaway" aria-labelledby="gst-takeaway">
+      {/* `ar-heading` is required, not decoration: it is what swaps the Latin
+          display face for Ghorab at Ghorab's ONE real weight. Without it this
+          heading renders Arabic in a synthesised 700 (TY v2.0). */}
+      <h2 class="gst__takeawayTitle ar-heading" id="gst-takeaway"><Rich text={t.takeawayTitle} /></h2>
+      {story.status === 'concluded' && story.verdict ? (
+        <>
+          <span class="gst__verdictLabel">
+            <Rich text={t.verdictLabel} />
+            {story.concludedOn && <span class="gst__verdictDate"> · {formatDate(story.concludedOn, lang)}</span>}
+          </span>
+          <Rich text={story.verdict} as="p" class="gst__verdict" />
+        </>
+      ) : (
+        /* Still testing — say so in a sentence rather than leave a gap or
+           publish a conclusion that has not been earned. */
+        <Rich text={t.noVerdict} as="p" class="gst__verdict gst__verdict--pending" />
+      )}
+    </section>
+
+    {/* ---- 06 · crossover. A link and one line — never a retelling ---- */}
+    {buildSide && (
+      <aside class="gst__cross" aria-labelledby="gst-cross">
+        <span class="gst__crossLabel" id="gst-cross" dir="ltr">{c.ia.vc.crossoverTitle}</span>
+        <Rich text={c.ia.vc.crossoverToBuild} as="p" class="gst__crossBody" />
+        <a class="gst__crossLink" href={buildSide.href}>
+          <Rich text={buildSide.question} />
+          <span class="gst__arrow" aria-hidden="true">{arrow}</span>
+        </a>
+      </aside>
+    )}
+
+    {/* ---- 07 · more from this category ---- */}
+    {related.length > 0 && (
+      <section class="gst__related" aria-labelledby="gst-related">
+        <h2 class="gst__sectionTitle" id="gst-related">{t.moreIn(story.categoryName)}</h2>
+        <ul class="gst__relatedList">
+          {related.map((other, i) => (
+            <StoryRow
+              lang={lang}
+              href={other.href}
+              question={other.question}
+              context={other.context}
+              label={t.label_[other.label]}
+              tone={other.status === 'testing' ? 'mint' : 'ghost'}
+              thumb={other.photo}
+              thumbAlt={other.photoAlt}
+              cta={other.status === 'concluded' ? t.read : t.follow}
+              step={i}
+            />
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {/* ---- 08 · disclosure. The affiliate posture, stated on every story ---- */}
+    <p class="gst__disclosure"><Rich text={t.disclosure} /></p>
+  </article>
+</Base>
+
+<style>
+  .gst { max-width: 1160px; }
+
+  /* ---- 01 · hero ---- */
+  .gst__hero {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: var(--atc-space-12);
+    align-items: center;
+  }
+  /* The page's single Ice moment sits behind the photograph. */
+  .gst__photo {
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    border-radius: var(--adel-radius-media);
+    background: var(--adel-blue-100);
+  }
+  .gst__photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  .gst__story { display: flex; flex-direction: column; align-items: flex-start; gap: var(--atc-space-3); min-width: 0; }
+  .gst__crumb {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--adel-text-link);
+    text-decoration: none;
+  }
+  :global([lang='ar']) .gst__crumb {
+    font-family: var(--adel-font-text);
+    font-size: 13px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .gst__crumb:hover { text-decoration: underline; }
+
+  .gst__chips { display: flex; flex-wrap: wrap; gap: var(--atc-space-2); }
+  .gst__product {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+    unicode-bidi: isolate;
+  }
+  .gst__q {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+    text-wrap: balance;
+  }
+  :global([lang='ar']) .gst__q { letter-spacing: normal; unicode-bidi: plaintext; }
+  .gst__context { margin: 0; font-size: var(--adel-text-lg); line-height: 1.6; color: var(--adel-text-secondary); max-width: 56ch; }
+  :global([lang='ar']) .gst__context { line-height: 1.85; unicode-bidi: plaintext; }
+
+  /* ---- 02 · facts ---- */
+  .gst__facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--atc-space-6);
+    margin: var(--atc-space-16) 0 0;
+    padding-block: var(--atc-space-6);
+    border-block: 1px solid var(--adel-border-hairline);
+  }
+  .gst__fact { display: flex; flex-direction: column; gap: var(--atc-space-2); }
+  .gst__fact dt {
+    font-family: var(--adel-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+  }
+  :global([lang='ar']) .gst__fact dt {
+    font-family: var(--adel-font-text);
+    font-size: 12px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .gst__fact dd {
+    margin: 0;
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    color: var(--adel-text-primary);
+  }
+  .gst__fact dd[dir='ltr'] { unicode-bidi: isolate; }
+
+  /* ---- section titles ---- */
+  .gst__sectionTitle {
+    margin: 0 0 var(--atc-space-6);
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+  }
+  :global([lang='ar']) .gst__sectionTitle {
+    font-family: var(--adel-font-text);
+    font-size: 13px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  /* ---- 03 · video ---- */
+  .gst__video { margin-top: var(--atc-space-16); }
+  .gst__videoFrame {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--adel-radius-media);
+    background: var(--adel-surface-sunken);
+  }
+  .gst__videoFrame iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+  /* ---- 04 · the write-up ---- */
+  .gst__body { margin-top: var(--atc-space-16); }
+
+  /* ---- 05 · takeaway ---- */
+  .gst__takeaway {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--atc-space-3);
+    margin-top: var(--atc-space-16);
+    padding: var(--atc-space-8);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-raised);
+    border: 1px solid var(--adel-border-hairline);
+  }
+  .gst__takeawayTitle {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-text-primary);
+  }
+  :global([lang='ar']) .gst__takeawayTitle { letter-spacing: normal; }
+  .gst__verdictLabel {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+  }
+  :global([lang='ar']) .gst__verdictLabel {
+    font-family: var(--adel-font-text);
+    font-size: 12px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .gst__verdictDate { color: var(--adel-text-tertiary); }
+  .gst__verdict { margin: 0; font-size: var(--adel-text-lg); line-height: 1.7; color: var(--adel-text-primary); max-width: 64ch; }
+  :global([lang='ar']) .gst__verdict { line-height: 1.9; unicode-bidi: plaintext; }
+  /* No verdict yet is a written answer, so it is quieter but not hidden. */
+  .gst__verdict--pending { font-size: var(--adel-text-base); color: var(--adel-text-secondary); }
+
+  /* ---- 06 · crossover ---- */
+  .gst__cross {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--atc-space-3);
+    margin-top: var(--atc-space-16);
+    padding: var(--atc-space-8);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-blue-100);
+  }
+  .gst__crossLabel {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-blue-700);
+    unicode-bidi: isolate;
+  }
+  .gst__crossBody { margin: 0; font-size: var(--adel-text-base); line-height: 1.65; color: var(--adel-text-primary); max-width: 60ch; }
+  :global([lang='ar']) .gst__crossBody { line-height: 1.85; unicode-bidi: plaintext; }
+  .gst__crossLink {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-base);
+    font-weight: 700;
+    color: var(--adel-blue-700);
+    text-decoration: none;
+  }
+  .gst__crossLink:hover { text-decoration: underline; }
+
+  /* ---- 07 · related ---- */
+  .gst__related { margin-top: var(--atc-space-16); }
+  .gst__relatedList { list-style: none; margin: 0; padding: 0; }
+
+  /* ---- 08 · disclosure ---- */
+  .gst__disclosure {
+    margin: var(--atc-space-16) 0 0;
+    padding-top: var(--atc-space-5);
+    border-top: 1px solid var(--adel-border-hairline);
+    max-width: 64ch;
+    font-size: var(--adel-text-sm);
+    line-height: 1.65;
+    color: var(--adel-text-tertiary);
+  }
+
+  .gst__arrow { display: inline-block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .gst__arrow { transition: transform var(--atc-duration-fast) var(--atc-ease-move); }
+    .gst__crossLink:hover .gst__arrow { transform: translateX(var(--atc-distance-1)); }
+    :global([dir='rtl']) .gst__crossLink:hover .gst__arrow { transform: translateX(calc(-1 * var(--atc-distance-1))); }
+  }
+
+  @media (max-width: 767px) {
+    .gst__hero { grid-template-columns: 1fr; gap: var(--atc-space-6); }
+    .gst__photo { aspect-ratio: 4 / 3; }
+  }
+</style>

@@ -1,0 +1,236 @@
+---
+/* =============================================================================
+   Gear Hub — /gear (IA v2.0)
+   =============================================================================
+   The USING/TESTING pillar's index, from the frozen design of record
+   (proposals/Gear Hub - Final.html).
+
+   A testing journal, not a store. There is no rating, score, price, spec table,
+   comparison matrix or affiliate control anywhere on this page, and the content
+   model has no field to put one in — the disclosure line lives on story pages
+   only, per the frozen affiliate posture.
+
+   ── COLLAPSE RULES ──────────────────────────────────────────────────────────
+   A category renders only with at least one published story, and the ones with
+   nothing yet are NAMED in a hairline footnote rather than silently dropped —
+   an honest "not yet published" beats a page that pretends the taxonomy is
+   smaller than it is. With zero stories the page is a header plus that footnote.
+
+   `featuredGear()` never fakes testing: the mint "Currently testing" label is
+   only used when something really is in testing, otherwise the most recent
+   story takes the slot with its own honest label.
+   ========================================================================== */
+
+import Base from '../../layouts/Base.astro';
+import Rich from '../Rich.astro';
+import StatusPill from '../ia/StatusPill.astro';
+import StoryRow from '../ia/StoryRow.astro';
+import { useCopy } from '../../copy';
+import { featuredGear, gearByCategory, emptyGearCategories } from '../../lib/pillars';
+import type { Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+
+const featured = await featuredGear(lang);
+const groups = (await gearByCategory(lang)).map((g) => ({
+  ...g,
+  stories: g.stories.filter((s) => s.slug !== featured?.slug),
+})).filter((g) => g.stories.length > 0);
+const hidden = await emptyGearCategories(lang);
+
+const arrow = lang === 'ar' ? '←' : '→';
+const labelFor = (s: NonNullable<typeof featured>) =>
+  s.status === 'testing' ? c.ia.gear.featuredLabel : c.ia.gear.label_[s.label];
+---
+
+<Base lang={lang} title={c.ia.gear.hubKicker} description={c.ia.gear.hubIntro} noindex={!featured}>
+  <div class="container gh" data-vb>
+    <header class="gh__head" data-vb-reveal style="--vb-step:0">
+      <span class="gh__kicker">{c.ia.gear.hubKicker}</span>
+      <Rich text={c.ia.gear.hubTitle} as="h1" class="gh__title ar-hero" />
+      <Rich text={c.ia.gear.hubIntro} as="p" class="gh__intro" />
+    </header>
+
+    {featured ? (
+      <>
+        <section class="gh__featured" data-vb-reveal style="--vb-step:1" aria-labelledby="gh-featured">
+          <div class="gh__photo">
+            <img src={featured.photo} alt={featured.photoAlt} loading="eager" decoding="async" />
+          </div>
+
+          <div class="gh__story">
+            <div class="gh__chips">
+              <StatusPill label={labelFor(featured)} tone={featured.status === 'testing' ? 'mint' : 'ghost'} />
+              {featured.crossover && <StatusPill label={c.ia.gear.crossoverChip} tone="blue" />}
+            </div>
+            <span class="gh__product">{featured.categoryName} · {featured.product}</span>
+            <Rich text={featured.question} as="h2" class="gh__q ar-heading" id="gh-featured" />
+            <Rich text={featured.context} as="p" class="gh__context" />
+            {featured.crossover && <Rich text={c.ia.gear.crossoverNote} as="p" class="gh__crossNote" />}
+            <a class="gh__cta" href={featured.href}>
+              <Rich text={featured.status === 'concluded' ? c.ia.gear.read : c.ia.gear.follow} />
+              <span class="gh__arrow" aria-hidden="true">{arrow}</span>
+            </a>
+          </div>
+        </section>
+
+        {groups.map((group, gi) => (
+          <section class="gh__group" aria-labelledby={`gh-${group.id}`}>
+            {/* Category names stay English in Arabic — frozen non-translated rule. */}
+            <h2 class="gh__groupTitle" id={`gh-${group.id}`} dir="ltr" data-vb-reveal style={`--vb-step:${2 + gi}`}>
+              {group.name}
+            </h2>
+            <ul class="gh__rows">
+              {group.stories.map((story, i) => (
+                <StoryRow
+                  lang={lang}
+                  href={story.href}
+                  question={story.question}
+                  context={story.context}
+                  label={c.ia.gear.label_[story.label]}
+                  tone={story.status === 'testing' ? 'mint' : 'ghost'}
+                  thumb={story.photo}
+                  thumbAlt={story.photoAlt}
+                  cta={story.status === 'concluded' ? c.ia.gear.read : c.ia.gear.follow}
+                  step={i}
+                />
+              ))}
+            </ul>
+          </section>
+        ))}
+      </>
+    ) : (
+      <p class="gh__empty" data-vb-reveal style="--vb-step:1"><Rich text={c.ia.gear.empty} /></p>
+    )}
+
+    {/* The categories that exist but hold nothing yet, named rather than hidden. */}
+    {hidden.length > 0 && (
+      <p class="gh__hidden">{c.ia.gear.hiddenNote(hidden.join(' · '))}</p>
+    )}
+  </div>
+</Base>
+
+<style>
+  .gh { max-width: 1160px; }
+  .gh__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-4);
+    max-width: 46ch;
+    margin-bottom: var(--atc-space-16);
+  }
+  .gh__kicker {
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--adel-signature-blue);
+  }
+  .gh__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(30px, 4.5vw, 48px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+    text-wrap: balance;
+  }
+  .gh__intro { margin: 0; font-size: var(--adel-text-lg); line-height: 1.6; color: var(--adel-text-secondary); }
+
+  /* ---- featured story ---- */
+  .gh__featured {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: var(--atc-space-10);
+    align-items: center;
+  }
+  /* The page's single Ice moment sits behind the photograph. */
+  .gh__photo {
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    border-radius: var(--adel-radius-media);
+    background: var(--adel-blue-100);
+  }
+  .gh__photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  .gh__story { display: flex; flex-direction: column; align-items: flex-start; gap: var(--atc-space-3); }
+  .gh__chips { display: flex; flex-wrap: wrap; gap: var(--atc-space-2); }
+  .gh__product {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+    unicode-bidi: isolate;
+    direction: ltr;
+  }
+  .gh__q {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(24px, 3vw, 34px);
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+  }
+  :global([lang='ar']) .gh__q { letter-spacing: normal; unicode-bidi: plaintext; }
+  .gh__context { margin: 0; font-size: var(--adel-text-base); line-height: 1.65; color: var(--adel-text-secondary); max-width: 56ch; }
+  :global([lang='ar']) .gh__context { line-height: 1.85; unicode-bidi: plaintext; }
+  .gh__crossNote { margin: 0; font-size: var(--adel-text-sm); line-height: 1.6; color: var(--adel-text-tertiary); max-width: 56ch; }
+  :global([lang='ar']) .gh__crossNote { unicode-bidi: plaintext; }
+  .gh__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    margin-top: var(--atc-space-2);
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    color: var(--adel-text-link);
+    text-decoration: none;
+  }
+  .gh__arrow { display: inline-block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .gh__arrow { transition: transform var(--atc-duration-fast) var(--atc-ease-move); }
+    .gh__cta:hover .gh__arrow { transform: translateX(var(--atc-distance-1)); }
+    :global([dir='rtl']) .gh__cta:hover .gh__arrow { transform: translateX(calc(-1 * var(--atc-distance-1))); }
+  }
+
+  /* ---- category groups ---- */
+  .gh__group { margin-top: var(--atc-space-16); }
+  .gh__groupTitle {
+    margin: 0 0 var(--atc-space-4);
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+  }
+  /* The name stays LTR English; the column it heads still reads right-to-left. */
+  :global([dir='rtl']) .gh__groupTitle { text-align: end; }
+  .gh__rows { list-style: none; margin: 0; padding: 0; }
+
+  .gh__empty { margin: 0; max-width: 60ch; font-size: var(--adel-text-lg); line-height: 1.7; color: var(--adel-text-secondary); }
+  .gh__hidden {
+    margin: var(--atc-space-16) 0 0;
+    padding-top: var(--atc-space-5);
+    border-top: 1px solid var(--adel-border-hairline);
+    font-size: var(--adel-text-sm);
+    line-height: 1.65;
+    color: var(--adel-text-tertiary);
+  }
+
+  @media (max-width: 767px) {
+    .gh__featured { grid-template-columns: 1fr; gap: var(--atc-space-6); }
+    .gh__photo { aspect-ratio: 4 / 3; }
+    .gh__head { margin-bottom: var(--atc-space-10); }
+  }
+</style>

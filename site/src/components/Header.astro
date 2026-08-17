@@ -52,7 +52,14 @@ const items = nav
   .filter((item) => item.phase === 1)
   .map((item) => ({
     href: localizePath(item.path, lang),
-    label: (c.nav as Record<string, string>)[item.key] ?? item.key,
+    /* IA v2.0 labels come from the frozen `ia.nav` block, which is the
+       authored copy from the designs of record — Learn is "اتعلم" in Arabic
+       there, and Playground and the two pillar names stay English. Anything
+       not in that block (the Phase 1.5 routes) keeps its Phase 1.1 label. */
+    label:
+      (c.ia.nav as Record<string, string>)[item.key] ??
+      (c.nav as Record<string, string>)[item.key] ??
+      item.key,
     active: neutral === item.path || neutral.startsWith(item.path + '/'),
     /* An Arabic page linking to an English-only route has to announce the
        language change on the anchor, or a screen reader reads English words in
@@ -101,6 +108,12 @@ const homeHref = localizePath('/', lang);
     </nav>
 
     <div class="hdr__actions">
+      {/* IA v2.0: Subscribe is the one filled action in the chrome. It is a
+          nav destination like the rest — it just carries the weight, because
+          it is the only thing in the header asking for something. */}
+      <a class="hdr__subscribe" href={localizePath('/newsletter', lang)}>
+        <Rich text={c.ia.nav.subscribe} />
+      </a>
       <AuthNav lang={lang} />
       {/* The language switch is a link to the same page, not a dropdown: one
           tap, no menu, and it works with JavaScript switched off. `lang` and
@@ -276,6 +289,21 @@ const homeHref = localizePath('/', lang);
     gap: var(--atc-space-2);
     align-items: center;
   }
+  .hdr__subscribe {
+    display: inline-flex;
+    align-items: center;
+    height: var(--atc-control-sm);
+    padding-inline: var(--atc-space-4);
+    border-radius: var(--adel-radius-pill);
+    background: var(--adel-blue-500);
+    color: var(--adel-white);
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .hdr__subscribe:hover { background: var(--adel-blue-400); color: var(--adel-white); }
+
   .hdr__lang {
     padding: 8px 12px;
     border-radius: var(--adel-radius-control);

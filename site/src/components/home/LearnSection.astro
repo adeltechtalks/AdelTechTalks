@@ -1,0 +1,336 @@
+---
+/* =============================================================================
+   Homepage §4 — Learn
+   =============================================================================
+   A GATEWAY, not a library. Its job is to hand the reader to /learn and to the
+   four real surfaces underneath it — Guides, Use cases, Videos, Topics — and
+   then get out of the way. The library itself lives at /learn and has for two
+   phases; this section does not restate it.
+
+   ── IT COUNTS NOTHING IT CANNOT SEE ─────────────────────────────────────────
+   No invented statistics, no "40+ guides", no course catalogue, no episode
+   count. Every row here is driven by `countByKind()` over content that is
+   actually published in THIS language, and a row whose surface is empty does
+   not render — the same `emptySurfaces()` rule the footer already honours, so
+   a reader is never handed a link that lands on an empty index.
+
+   Courses are modelled (content.config.ts) and deliberately unrouted. They are
+   therefore absent from this gateway. When /courses exists, adding it is a row
+   in ROWS plus a copy key — no redesign.
+
+   The Prompt Library panel is the one forward-looking element, and it is
+   honest about it: it is labelled "coming soon", it carries no fake entry
+   count, and its only action subscribes you to hear when it opens. It renders
+   only while /prompts is genuinely closed — the day prompts publish, the panel
+   is replaced by a real row in the list above.
+   ========================================================================== */
+
+import Rich from '../Rich.astro';
+import { useCopy } from '../../copy';
+import { emptySurfaces } from '../../lib/content';
+import { topics } from '../../site.config';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+const t = c.ia.learn;
+
+const empty = await emptySurfaces(lang);
+
+/* The frozen row order. `key` is the surface's key in emptySurfaces(), so a
+   surface with nothing published in this language drops out by itself.
+
+   Note what is NOT on a row: a count. "12 guides" is a number that has to stay
+   true, reads as a boast the day it is small, and is the first thing anybody
+   is tempted to round up. The row says what the surface is for and lets the
+   index itself do the counting. */
+const ROWS = [
+  { key: 'guides', path: '/guides', copy: t.rows.guides },
+  { key: 'useCases', path: '/use-cases', copy: t.rows.useCases },
+  { key: 'videos', path: '/videos', copy: t.rows.videos },
+] as const;
+
+const rows = ROWS.filter((row) => !empty.has(row.key));
+
+/* Topics are a fixed taxonomy rather than a content surface, so the row is
+   driven by the taxonomy itself — but /topics is only worth linking to once
+   SOMETHING is filed under one of them, otherwise it is six empty shelves. */
+const hasTopics = topics.length > 0 && rows.length > 0;
+
+/* The panel is a promise about a closed surface. Once /prompts has something
+   in it, the promise has been kept and the panel goes away. */
+const promptsClosed = empty.has('prompts');
+
+const arrow = lang === 'ar' ? '←' : '→';
+const anything = rows.length > 0 || hasTopics;
+---
+
+<section class="container section ls" aria-labelledby="ls-title" data-vb>
+  <header class="ls__head">
+    <div class="ls__kickerRow" data-vb-reveal style="--vb-step:0">
+      <span class="ls__kicker" dir="ltr">{t.label}</span>
+      <span class="ls__aside"><Rich text={t.aside} /></span>
+    </div>
+
+    <h2 class="ls__title ar-hero" id="ls-title" data-vb-reveal style="--vb-step:1">
+      <Rich text={t.headBefore} as="span" />
+      <em class="ls__em"><Rich text={t.headEm} /></em>
+      <Rich text={t.headAfter} as="span" />
+    </h2>
+
+    <Rich text={t.support} as="p" class="ls__support" data-vb-reveal style="--vb-step:2" />
+  </header>
+
+  <div class="ls__body">
+    <div class="ls__rows">
+      {rows.map((row, i) => (
+        <a class="ls__row" href={localizePath(row.path, lang)} data-vb-stage style={`--vb-step:${i}`}>
+          <span class="ls__rowMain">
+            <span class="ls__rowTitle">
+              <Rich text={row.copy.title} />
+              {/* Arabic names the surface in Arabic and keeps the English IA
+                  term beside it, because that is the word people search. */}
+              {row.copy.kicker && <span class="ls__rowKicker" dir="ltr">{row.copy.kicker}</span>}
+            </span>
+            <Rich text={row.copy.body} as="span" class="ls__rowBody" />
+          </span>
+          <span class="ls__rowCta">
+            <Rich text={row.copy.cta} />
+            <span class="ls__arrow" aria-hidden="true">{arrow}</span>
+          </span>
+        </a>
+      ))}
+
+      {hasTopics && (
+        <a class="ls__row" href={localizePath('/topics', lang)} data-vb-stage style={`--vb-step:${rows.length}`}>
+          <span class="ls__rowMain">
+            <span class="ls__rowTitle">
+              <Rich text={t.rows.topics.title} />
+              {t.rows.topics.kicker && <span class="ls__rowKicker" dir="ltr">{t.rows.topics.kicker}</span>}
+            </span>
+            {/* The six real topics, named. Never a count, never a tag cloud. */}
+            <span class="ls__rowBody ls__topics">
+              {topics.map((topic) => <Rich text={topic[lang].name} as="span" class="ls__topic" />)}
+            </span>
+          </span>
+          <span class="ls__rowCta">
+            <Rich text={t.allTopics} />
+            <span class="ls__arrow" aria-hidden="true">{arrow}</span>
+          </span>
+        </a>
+      )}
+    </div>
+
+    {promptsClosed && (
+      <aside class="ls__panel" data-vb-reveal style="--vb-step:3" aria-labelledby="ls-panel-title">
+        <span class="ls__panelStatus"><Rich text={t.panelStatus} /></span>
+        <h3 class="ls__panelTitle" id="ls-panel-title" dir="ltr">{t.panelTitle}</h3>
+        <Rich text={t.panelBody} as="p" class="ls__panelBody" />
+        <Rich text={t.panelNote} as="p" class="ls__panelNote" />
+        <a class="ls__panelCta" href={localizePath('/newsletter', lang)}>
+          <Rich text={t.panelCta} />
+          <span class="ls__arrow" aria-hidden="true">{arrow}</span>
+        </a>
+      </aside>
+    )}
+  </div>
+
+  {anything && (
+    <div class="ls__actions">
+      <a class="ls__ctaGhost" href={localizePath('/learn', lang)}>
+        <Rich text={c.notFound.learnCta} />
+      </a>
+    </div>
+  )}
+</section>
+
+<style>
+  .ls__head { display: flex; flex-direction: column; gap: var(--atc-space-4); max-width: 56ch; }
+  .ls__kickerRow { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--atc-space-4); }
+  .ls__kicker {
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--adel-signature-blue);
+    unicode-bidi: isolate;
+  }
+  .ls__aside { font-family: var(--adel-font-mono); font-size: 11px; color: var(--adel-text-tertiary); }
+  :global([lang='ar']) .ls__aside { font-family: var(--adel-font-text); font-size: 12.5px; }
+
+  .ls__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(30px, 4.5vw, 48px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+    text-wrap: balance;
+  }
+  :global([lang='ar']) .ls__title { letter-spacing: normal; unicode-bidi: plaintext; }
+  /* Structure, not emphasis — see the note on .rw__em in RealWorld.astro. */
+  .ls__em { font-style: normal; font-weight: inherit; color: var(--adel-signature-blue); }
+
+  .ls__support { margin: 0; font-size: var(--adel-text-lg); line-height: 1.6; color: var(--adel-text-secondary); }
+  :global([lang='ar']) .ls__support { line-height: 1.85; }
+
+  .ls__body {
+    display: grid;
+    grid-template-columns: 1.4fr 0.85fr;
+    gap: var(--atc-space-12);
+    align-items: start;
+    margin-top: var(--atc-space-10);
+  }
+  /* No panel to sit beside — the rows take the whole width rather than
+     leaving a column standing empty. */
+  .ls__body:not(:has(.ls__panel)) { grid-template-columns: 1fr; }
+
+  /* ---- rows ---- */
+  .ls__rows { display: flex; flex-direction: column; }
+  .ls__row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--atc-space-6);
+    padding-block: var(--atc-space-6);
+    border-top: 1px solid var(--adel-border-hairline);
+    text-decoration: none;
+    color: inherit;
+  }
+  .ls__row:last-child { border-bottom: 1px solid var(--adel-border-hairline); }
+  .ls__rowMain { display: flex; flex-direction: column; gap: var(--atc-space-2); min-width: 0; }
+  .ls__rowTitle {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--atc-space-3);
+    font-family: var(--adel-font-display);
+    font-size: clamp(19px, 2.2vw, 24px);
+    line-height: 1.3;
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-text-primary);
+  }
+  :global([lang='ar']) .ls__rowTitle {
+    font-family: var(--adel-font-text);
+    font-size: 19px;
+    letter-spacing: normal;
+    line-height: 1.6;
+  }
+  .ls__row:hover .ls__rowTitle { color: var(--adel-text-link); }
+  .ls__rowKicker {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+    unicode-bidi: isolate;
+  }
+  .ls__rowBody { font-size: var(--adel-text-sm); line-height: 1.6; color: var(--adel-text-secondary); max-width: 62ch; }
+  :global([lang='ar']) .ls__rowBody { font-size: 14px; line-height: 1.85; unicode-bidi: plaintext; }
+
+  .ls__topics { display: flex; flex-wrap: wrap; gap: var(--atc-space-2) var(--atc-space-4); }
+  .ls__topic { color: var(--adel-text-tertiary); }
+  .ls__topic + .ls__topic::before { content: '·'; margin-inline-end: var(--atc-space-4); }
+
+  .ls__rowCta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+    color: var(--adel-text-link);
+    white-space: nowrap;
+  }
+
+  /* ---- the Prompt Library panel ---- */
+  .ls__panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--atc-space-3);
+    padding: var(--atc-space-8);
+    border: 1px dashed var(--adel-border-strong);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-canvas);
+  }
+  .ls__panelStatus {
+    font-family: var(--adel-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px var(--atc-space-3);
+    border-radius: var(--adel-radius-pill);
+    background: var(--adel-surface-sunken);
+    color: var(--adel-text-secondary);
+  }
+  :global([lang='ar']) .ls__panelStatus {
+    font-family: var(--adel-font-text);
+    font-size: 11.5px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .ls__panelTitle {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-text-primary);
+    unicode-bidi: isolate;
+  }
+  .ls__panelBody { margin: 0; font-size: var(--adel-text-base); line-height: 1.6; color: var(--adel-text-secondary); }
+  .ls__panelNote { margin: 0; font-size: var(--adel-text-sm); line-height: 1.6; color: var(--adel-text-tertiary); }
+  .ls__panelCta {
+    margin-top: var(--atc-space-2);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+    color: var(--adel-text-link);
+    text-decoration: none;
+  }
+  .ls__panelCta:hover { text-decoration: underline; }
+
+  .ls__actions { margin-top: var(--atc-space-10); }
+  .ls__ctaGhost {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    height: var(--atc-control-lg);
+    padding-inline: var(--atc-space-6);
+    border: 1px solid var(--adel-border-strong);
+    border-radius: var(--adel-radius-control);
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    color: var(--adel-text-primary);
+    text-decoration: none;
+  }
+  .ls__ctaGhost:hover { border-color: var(--adel-text-link); color: var(--adel-text-link); }
+
+  .ls__arrow { display: inline-block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .ls__arrow { transition: transform var(--atc-duration-fast) var(--atc-ease-move); }
+    .ls__row:hover .ls__arrow,
+    .ls__panelCta:hover .ls__arrow { transform: translateX(var(--atc-distance-1)); }
+    :global([dir='rtl']) .ls__row:hover .ls__arrow,
+    :global([dir='rtl']) .ls__panelCta:hover .ls__arrow { transform: translateX(calc(-1 * var(--atc-distance-1))); }
+  }
+
+  @media (max-width: 1023px) {
+    .ls__body { grid-template-columns: 1fr; gap: var(--atc-space-8); }
+  }
+  @media (max-width: 559px) {
+    .ls__row { grid-template-columns: 1fr; }
+    .ls__rowCta { grid-column: 1 / -1; }
+  }
+</style>

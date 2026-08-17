@@ -1,0 +1,276 @@
+---
+/* =============================================================================
+   Homepage §6 — About + Subscribe, the closing section
+   =============================================================================
+   The last thing on the page: who is writing all this, the loop it runs on
+   (Learn → Test → Build → Share), the channel's real social accounts, and one
+   subscribe form. Graphite ground, because a close should land.
+
+   ── THE FORM IS THE EXISTING FORM ───────────────────────────────────────────
+   This does NOT reimplement the newsletter. It renders `NewsletterForm` with
+   `tone="inverse"` and the §6 wording, so the Supabase write path, the
+   honeypot, the attribution capture, the validation and the aria-live region
+   are one implementation with one place to fix. The five approved UI states —
+   default · loading · success · duplicate · error — are that component's
+   states, driven by `data-state` on the form:
+
+     (none)     default   the resting form
+     sending    loading   "Subscribing…", submit marked aria-disabled
+     ok         success   "You're in — check your inbox to confirm."
+     already    duplicate "You're already on the list — nice."
+     invalid    error     bad address, caught before the network
+     error      error     the write failed
+
+   Every one of them is announced through `role="status"`, and each is carried
+   by wording and a glyph as well as by colour. No database change was needed:
+   `subscribe()` already distinguishes a duplicate from a failure by mapping
+   Postgres 23505 to 'already', which is what makes the duplicate state real
+   rather than a second success message.
+
+   ── THE SIGN-OFF ────────────────────────────────────────────────────────────
+   §8: the handwritten signature is a secondary editorial sign-off, never the
+   primary mark. The real signature renders when `photography.signature` is
+   set; until then the name is TYPESET in the display face. A handwriting font
+   is never used as a stand-in — a fake signature is a fake signature.
+   ========================================================================== */
+
+import Rich from '../Rich.astro';
+import Icon from '../Icon.astro';
+import NewsletterForm from '../NewsletterForm.astro';
+import { photography, site } from '../../site.config';
+import { useCopy } from '../../copy';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+const t = c.ia.about;
+
+const SOCIAL: Array<[keyof typeof site.social, string, string]> = [
+  ['youtube', 'youtube', 'YouTube'],
+  ['instagram', 'instagram', 'Instagram'],
+  ['tiktok', 'music', 'TikTok'],
+  ['linkedin', 'linkedin', 'LinkedIn'],
+  ['x', 'twitter', 'X'],
+];
+/* Only accounts that actually exist in the config get a link. */
+const socials = SOCIAL.filter(([key]) => site.social[key]);
+---
+
+<section class="container section as" aria-labelledby="as-title" data-vb>
+  <div class="as__panel">
+    <div class="as__about">
+      {/* The loop, as four fixed English IA words in both languages. */}
+      <ol class="as__loop" data-vb-reveal style="--vb-step:0" dir="ltr">
+        {t.loop.map((step) => <li class="as__loopStep">{step}</li>)}
+      </ol>
+
+      <h2 class="as__title ar-hero" id="as-title" data-vb-reveal style="--vb-step:1">
+        <Rich text={t.headBefore} as="span" />
+        <em class="as__em"><Rich text={t.headEm} /></em>
+        <Rich text={t.headAfter} as="span" />
+      </h2>
+
+      <Rich text={t.bio} as="p" class="as__bio" data-vb-reveal style="--vb-step:2" />
+
+      {socials.length > 0 && (
+        <div class="as__social" data-vb-reveal style="--vb-step:3">
+          {/* The CHANNEL is named here, beside its own links — never beside the
+              personal identity above it (§5). */}
+          <span class="as__socialLabel" dir="ltr">{t.socialLabel}</span>
+          <div class="as__socialRow">
+            {socials.map(([key, icon, label]) => (
+              <a
+                class="as__soc"
+                href={site.social[key]}
+                aria-label={`${site.showName} on ${label}`}
+                rel="me noopener"
+                target="_blank"
+              >
+                <Icon name={icon} size="md" />
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div class="as__sign" data-vb-reveal style="--vb-step:4">
+        {photography.signature ? (
+          <img class="as__signImg" src={photography.signature} alt={c.signoff.signature} />
+        ) : (
+          /* The approved typeset fallback — the name in the display face. */
+          <span class="as__signText ar-heading">{c.signoff.signature}</span>
+        )}
+        <a class="as__aboutLink" href={localizePath('/about', lang)}>
+          <Rich text={c.signoff.cta} />
+          <span aria-hidden="true">{lang === 'ar' ? '←' : '→'}</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="as__subscribe" data-vb-reveal style="--vb-step:5">
+      <h3 class="as__subTitle ar-heading"><Rich text={t.subTitle} /></h3>
+      <Rich text={t.subBody} as="p" class="as__subBody" />
+
+      <NewsletterForm
+        lang={lang}
+        placement="home-close"
+        tone="inverse"
+        copy={{
+          placeholder: t.subPlaceholder,
+          submit: t.subButton,
+          note: t.subNote,
+          sending: t.subLoading,
+          success: t.subSuccess,
+          already: t.subAlready,
+          invalid: t.subInvalid,
+          error: t.subError,
+        }}
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  .as__panel {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: var(--atc-space-16);
+    align-items: start;
+    padding: var(--atc-space-16) var(--atc-space-12);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-inverse);
+    color: var(--adel-text-inverse);
+  }
+  .as__about { display: flex; flex-direction: column; align-items: flex-start; gap: var(--atc-space-5); min-width: 0; }
+
+  /* ---- the loop ---- */
+  .as__loop {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--atc-space-2);
+    margin: 0;
+    padding: 0;
+  }
+  .as__loopStep {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.62);
+  }
+  .as__loopStep + .as__loopStep::before {
+    content: '→';
+    margin-inline-end: var(--atc-space-2);
+    color: var(--adel-blue-300);
+  }
+
+  .as__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: 1.14;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: inherit;
+    text-wrap: balance;
+  }
+  :global([lang='ar']) .as__title { letter-spacing: normal; unicode-bidi: plaintext; }
+  /* Structure, not emphasis — see the note on .rw__em in RealWorld.astro. */
+  .as__em { font-style: normal; font-weight: inherit; color: var(--adel-blue-300); }
+
+  .as__bio { margin: 0; font-size: var(--adel-text-lg); line-height: 1.65; color: rgba(255, 255, 255, 0.72); max-width: 54ch; }
+  :global([lang='ar']) .as__bio { line-height: 1.9; unicode-bidi: plaintext; }
+
+  /* ---- social ---- */
+  .as__social { display: flex; flex-direction: column; gap: var(--atc-space-2); }
+  .as__socialLabel {
+    font-family: var(--adel-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    unicode-bidi: isolate;
+  }
+  /* Pull the 44px targets back into line with the label above them. */
+  .as__socialRow { display: flex; flex-wrap: wrap; gap: 2px; margin-inline-start: -10px; }
+  .as__soc {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--adel-radius-control);
+    color: rgba(255, 255, 255, 0.72);
+    text-decoration: none;
+  }
+  .as__soc:hover { background: rgba(255, 255, 255, 0.08); color: var(--adel-white); }
+
+  /* ---- sign-off ---- */
+  .as__sign {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--atc-space-6);
+    margin-top: var(--atc-space-2);
+    padding-top: var(--atc-space-5);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    width: 100%;
+  }
+  .as__signImg { display: block; height: 44px; width: auto; }
+  .as__signText {
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-white);
+  }
+  :global([lang='ar']) .as__signText { letter-spacing: normal; }
+  .as__aboutLink {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+    color: var(--adel-blue-300);
+    text-decoration: none;
+  }
+  .as__aboutLink:hover { text-decoration: underline; }
+
+  /* ---- subscribe ---- */
+  .as__subscribe {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-4);
+    padding: var(--atc-space-8);
+    border-radius: var(--adel-radius-panel);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .as__subTitle {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-xl);
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-white);
+  }
+  :global([lang='ar']) .as__subTitle { letter-spacing: normal; unicode-bidi: plaintext; }
+  .as__subBody { margin: 0; font-size: var(--adel-text-sm); line-height: 1.65; color: rgba(255, 255, 255, 0.68); }
+  :global([lang='ar']) .as__subBody { line-height: 1.85; unicode-bidi: plaintext; }
+
+  @media (max-width: 1023px) {
+    .as__panel { grid-template-columns: 1fr; gap: var(--atc-space-10); }
+  }
+  @media (max-width: 767px) {
+    .as__panel { padding: var(--atc-space-8) var(--atc-space-6); }
+    .as__subscribe { padding: var(--atc-space-6); }
+  }
+</style>

@@ -1,0 +1,144 @@
+---
+/* =============================================================================
+   The multitasking workspace frame — homepage §2's featured-build media
+   =============================================================================
+   The frozen design shows the featured build as a WORKSPACE rather than a
+   single screenshot: the assistant panes on one side, the thing being built on
+   the other, the way the work actually looks while it is happening.
+
+   ── THE PANE IS THE PUBLICATION GATE ────────────────────────────────────────
+   A pane renders when, and only when, a real screenshot exists for it. There is
+   no mock-up pane, no "ChatGPT" chrome drawn around an empty rectangle and no
+   stock UI. A build reaches this component having already cleared the hero-shot
+   gate, so the live pane is always real; the session pane appears the day a
+   real session screenshot lands and the layout absorbs it without moving
+   anything else.
+
+   That means the component has exactly two shapes:
+
+     one real shot   → the browser frame alone, full width of the slot
+     two real shots  → the session rail beside it, 0.85fr / 1.15fr
+
+   Both are the frozen composition. Neither invents a third pane to fill the
+   grid, because a labelled empty pane is a claim that a tool was used.
+   ========================================================================== */
+
+import BrowserFrame from './BrowserFrame.astro';
+import Rich from '../Rich.astro';
+
+interface Pane {
+  /** Real screenshot. A pane with no `src` is never rendered. */
+  src?: string;
+  alt?: string;
+  /** The app the shot came from — a real name, never decoration. */
+  label: string;
+}
+
+interface Props {
+  /** The live product: URL bar + hero screenshot. Always real by the time we get here. */
+  url: string;
+  heroShot: string;
+  heroShotAlt?: string;
+  heroLabel: string;
+  /** Working-session panes. Any without a screenshot drop out silently. */
+  panes?: Pane[];
+  /** The hairline caption under the frame. */
+  note?: string;
+  priority?: boolean;
+  class?: string;
+}
+
+const {
+  url,
+  heroShot,
+  heroShotAlt = '',
+  heroLabel,
+  panes = [],
+  note,
+  priority = false,
+  class: className,
+} = Astro.props;
+
+const real = panes.filter((p) => Boolean(p.src));
+---
+
+<figure class:list={['wf', real.length > 0 && 'wf--split', className]}>
+  <div class="wf__stage">
+    {real.length > 0 && (
+      <div class="wf__rail">
+        {real.map((pane) => (
+          <div class="wf__pane">
+            {/* An app name is a proper noun in every language. */}
+            <span class="wf__paneLabel" dir="ltr">{pane.label}</span>
+            <div class="wf__paneShot">
+              <img src={pane.src} alt={pane.alt ?? ''} loading={priority ? 'eager' : 'lazy'} decoding="async" />
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <div class="wf__live">
+      <span class="wf__paneLabel" dir="ltr">{heroLabel}</span>
+      <BrowserFrame url={url} src={heroShot} alt={heroShotAlt} priority={priority} />
+    </div>
+  </div>
+
+  {note && <figcaption class="wf__note"><Rich text={note} /></figcaption>}
+</figure>
+
+<style>
+  .wf { margin: 0; }
+  .wf__stage { display: grid; gap: var(--atc-space-5); }
+  /* One shot: the browser frame owns the whole slot. Two: the session rail
+     takes the narrower column, because the live product is the point. */
+  .wf--split .wf__stage { grid-template-columns: 0.85fr 1.15fr; align-items: center; }
+
+  .wf__rail { display: grid; gap: var(--atc-space-5); align-content: center; }
+  .wf__pane,
+  .wf__live { display: flex; flex-direction: column; gap: var(--atc-space-2); min-width: 0; }
+
+  .wf__paneLabel {
+    font-family: var(--adel-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    unicode-bidi: isolate;
+  }
+
+  .wf__paneShot {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  }
+  .wf__paneShot img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  .wf__note {
+    margin: var(--atc-space-5) 0 0;
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    line-height: 1.6;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.42);
+  }
+  /* Arabic has no uppercase and is never letter-spaced; a caption is prose. */
+  :global([lang='ar']) .wf__note {
+    font-family: var(--adel-font-text);
+    font-size: 12.5px;
+    letter-spacing: normal;
+  }
+
+  /* The rail stacks above the live pane rather than squeezing beside it. */
+  @media (max-width: 1023px) {
+    .wf--split .wf__stage { grid-template-columns: 1fr; }
+    .wf__rail { grid-auto-flow: column; grid-auto-columns: 1fr; }
+  }
+  @media (max-width: 559px) {
+    .wf__rail { grid-auto-flow: row; }
+  }
+</style>

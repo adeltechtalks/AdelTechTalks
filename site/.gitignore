@@ -3,3 +3,22 @@ dist/
 .astro/
 .DS_Store
 *.log
+
+# QA fixtures — never committable, by design.
+#
+# Exercising the Vibe Coding and Gear story templates needs a story that has
+# cleared the publication gate, and the gate is real: no screenshot, no route.
+# So a QA pass creates a throwaway story, builds, sweeps it, and throws it away.
+#
+# The danger is obvious — a fixture is DEMO CONTENT, and demo content that gets
+# committed becomes a published claim about a product that was never tested or
+# a build that was never made. This rule means it cannot happen by accident:
+# name a fixture `qa-fixture-*` and git will not offer to commit it.
+#
+# A fixture should also carry `draft: true` when it is not actively being used,
+# so it cannot publish even while it is sitting in the working tree.
+src/content/*/qa-fixture-*
+
+# Throwaway diagnostic scripts. `scripts/qa.mjs` and `scripts/qa-browser.mjs`
+# are the real ones and are committed.
+scripts/_*.mjs

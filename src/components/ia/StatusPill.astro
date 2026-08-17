@@ -1,0 +1,66 @@
+---
+/* One pill component, three tones, taxonomies supplied per surface.
+
+   The reuse map names this as a single component precisely so the mint budget
+   can be reasoned about in one place: `mint` is the ONLY tone that says
+   "happening right now", every surface may use it at most once, and nothing
+   else on the site is allowed to reach for it. */
+
+import Rich from '../Rich.astro';
+
+interface Props {
+  label: string;
+  tone?: 'mint' | 'blue' | 'ghost' | 'neutral';
+  /** A leading dot, for the "live right now" reading. */
+  dot?: boolean;
+  /** Pills on a graphite ground need the reversed treatment. */
+  onDark?: boolean;
+  class?: string;
+}
+
+const { label, tone = 'ghost', dot = false, onDark = false, class: className } = Astro.props;
+---
+
+<span class:list={['sp', `sp--${tone}`, onDark && 'sp--dark', className]}>
+  {dot && <span class="sp__dot" aria-hidden="true"></span>}
+  <Rich text={label} />
+</span>
+
+<style>
+  .sp {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-family: var(--adel-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px var(--atc-space-3);
+    border-radius: var(--adel-radius-pill);
+    white-space: nowrap;
+  }
+  /* Arabic is never letter-spaced and has no uppercase — and a status word is
+     prose, so it takes the body family rather than the mono one. */
+  :global([lang='ar']) .sp {
+    font-family: var(--adel-font-text);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  .sp__dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+
+  /* The one "right now" tone. */
+  .sp--mint { background: var(--adel-mint-500); color: var(--adel-graphite); }
+  .sp--blue { background: var(--adel-blue-100); color: var(--adel-blue-700); }
+  .sp--ghost { border: 1px solid var(--adel-border-hairline); color: var(--adel-text-secondary); }
+  .sp--neutral { background: var(--adel-surface-sunken); color: var(--adel-text-secondary); }
+
+  /* blue-700 fails on ink-900, so links and chips on graphite step up to
+     blue-300 — the dark-surface token rule from the Playground handoff. */
+  .sp--dark.sp--blue { background: rgba(147, 180, 255, 0.14); color: var(--adel-blue-300); }
+  .sp--dark.sp--ghost { border-color: rgba(255, 255, 255, 0.18); color: rgba(255, 255, 255, 0.8); }
+  .sp--dark.sp--neutral { background: rgba(255, 255, 255, 0.06); color: rgba(255, 255, 255, 0.72); }
+</style>

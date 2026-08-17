@@ -45,15 +45,27 @@ export const site = {
    so the shape of the future navigation is already decided and visible.
    -------------------------------------------------------------------------- */
 export const nav: Array<{ key: string; path: string; phase: number }> = [
-  /* Phase 1.1: Learn is the hub, and the flagship Series sits beside it. Guides,
-     Use Cases, Videos, Prompts and Topics are all reachable one level in, from
-     /learn and from the footer — they stay routed at exactly the URLs they had,
-     they are simply no longer each competing for a slot in a header of five. */
+  /* IA v2.0 (frozen): Vibe Coding · Gear · Learn · Playground · About, with
+     Subscribe rendered separately as the one filled pill.
+
+     The order is the frozen one and is used in three places from this single
+     list — the header, the mobile menu and the footer's Explore column — so
+     the three can never drift apart.
+
+     Vibe Coding and Gear are the two content pillars: building with AI, and
+     using/testing technology. Everything else routed in Phase 1.1 is still
+     live at exactly the URL it had; those routes simply reach the reader
+     through /learn and the footer rather than competing for a header slot. */
+  { key: 'vibeCoding', path: '/vibe-coding', phase: 1 },
+  { key: 'gear', path: '/gear', phase: 1 },
   { key: 'learn', path: '/learn', phase: 1 },
-  { key: 'series', path: '/series/vibe-coding', phase: 1 },
   { key: 'playground', path: '/playground', phase: 1 },
   { key: 'about', path: '/about', phase: 1 },
-  { key: 'newsletter', path: '/newsletter', phase: 1 },
+  /* Rendered as the Subscribe pill by the header, not as a plain nav link. */
+  { key: 'newsletter', path: '/newsletter', phase: 1.2 },
+  /* The Phase 1.1 series page keeps its URL and its readers; /vibe-coding is
+     the pillar hub that now carries the nav slot. */
+  { key: 'series', path: '/series/vibe-coding', phase: 1.5 },
   /* ---- routed and live, surfaced through /learn rather than the header ---- */
   { key: 'guides', path: '/guides', phase: 1.5 },
   { key: 'useCases', path: '/use-cases', phase: 1.5 },

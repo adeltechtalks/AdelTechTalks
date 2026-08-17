@@ -58,18 +58,46 @@ const check = (ok, label) => {
   else failures.push(label);
 };
 
+/* The two pillar HUBS are always routed and are listed here. The two pillar
+   STORY templates are not: a story only exists once its asset has landed (a
+   real screenshot for a build, a real photograph for a gear test), so there is
+   no fixed story URL to name. `PILLAR_STORIES` below discovers whatever has
+   actually been published and sweeps that — zero stories is a correct state
+   and passes, one is checked like any other route. */
 const ROUTES = [
   /* No guide detail route is listed: the Phase 1 demo guide is held back as a
      draft, so /guides renders its designed empty state until Adel writes one. */
-  '/', '/learn/', '/series/vibe-coding/', '/guides/',
+  '/', '/learn/', '/series/vibe-coding/', '/guides/', '/vibe-coding/', '/gear/',
   '/use-cases/', '/use-cases/gearnest/', '/prompts/', '/prompts/spec-before-you-build/',
   '/videos/', '/topics/', '/topics/building/', '/about/', '/newsletter/',
   '/playground/', '/login/', '/profile/', '/work-with-me/', '/contact/',
   '/ar/', '/ar/learn/', '/ar/series/vibe-coding/', '/ar/guides/',
   '/ar/use-cases/', '/ar/use-cases/gearnest-ar/', '/ar/prompts/',
   '/ar/prompts/spec-before-you-build-ar/', '/ar/videos/', '/ar/topics/',
-  '/ar/about/', '/ar/newsletter/',
+  '/ar/about/', '/ar/newsletter/', '/ar/vibe-coding/', '/ar/gear/',
 ];
+
+/* Whatever pillar stories are actually published, in both languages, found by
+   walking dist/ rather than hard-coded — so this keeps working the day the
+   first real build or gear test goes up, and stays silent until then. */
+function findPillarStories() {
+  const out = [];
+  const walk = (dir, base) => {
+    if (!existsSync(dir)) return;
+    for (const name of readdirSync(dir)) {
+      const full = join(dir, name);
+      if (!statSync(full).isDirectory()) continue;
+      if (existsSync(join(full, 'index.html'))) out.push(`${base}${name}/`);
+      walk(full, `${base}${name}/`);
+    }
+  };
+  walk(join(DIST, 'vibe-coding'), '/vibe-coding/');
+  walk(join(DIST, 'gear'), '/gear/');
+  walk(join(DIST, 'ar', 'vibe-coding'), '/ar/vibe-coding/');
+  walk(join(DIST, 'ar', 'gear'), '/ar/gear/');
+  return out;
+}
+ROUTES.push(...findPillarStories());
 
 await new Promise((r) => server.listen(PORT, r));
 
@@ -248,6 +276,75 @@ try {
     await mobile.close();
   }
 
+  /* ---- 6b. IA v2.0: the homepage renders the frozen section order ---------
+     The order is an argument and it runs in one direction, so getting it wrong
+     is a content bug rather than a layout one — invisible to every other check
+     here. Each section is identified by the id its heading carries, and the
+     hero is identified by its own landmark, so this reads the DOM order rather
+     than trusting the source order of an import list.
+
+     Sections 2 and 3 collapse when nothing is published, but they collapse to
+     a HEADER plus an honest line — the heading and its id are always there —
+     so the expected order is the same in both states. */
+  {
+    const EXPECTED = ['rw-title', 'gs-title', 'ls-title', 'ps-title', 'as-title'];
+    for (const route of ['/', '/ar/']) {
+      const page = await ctx.newPage();
+      await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'domcontentloaded' });
+
+      const order = await page.evaluate((ids) => {
+        const found = [...document.querySelectorAll('[id]')]
+          .map((el) => el.id)
+          .filter((id) => ids.includes(id));
+        return found;
+      }, EXPECTED);
+      check(
+        order.join(' → ') === EXPECTED.join(' → '),
+        `${route} homepage is in the frozen section order (got ${order.join(' → ') || 'nothing'})`
+      );
+
+      /* The hero comes first, above all five. */
+      const heroFirst = await page.evaluate(() => {
+        const hero = document.querySelector('.hero, [data-hero]');
+        const first = document.querySelector('#rw-title');
+        if (!hero || !first) return false;
+        return hero.compareDocumentPosition(first) & Node.DOCUMENT_POSITION_FOLLOWING;
+      });
+      check(Boolean(heroFirst), `${route} hero sits above the pillar sections`);
+
+      /* The closing section carries a working subscribe form — the same
+         component and the same Supabase path as /newsletter. */
+      check(
+        (await page.locator('[data-nl-form][data-placement="home-close"]').count()) === 1,
+        `${route} closing section has exactly one subscribe form`
+      );
+      await page.close();
+    }
+  }
+
+  /* ---- 6c. the pillar surfaces survive both directions at both sizes ------
+     The hubs and the story templates are the widest new layouts on the site —
+     a graphite panel with a browser frame in it, and a story row with a fixed
+     thumbnail column. Both are exactly the shape that overflows in RTL. Story
+     URLs are discovered, so this stays correct whether or not anything is
+     published yet. */
+  {
+    const surfaces = ['/vibe-coding/', '/gear/', '/ar/vibe-coding/', '/ar/gear/', ...findPillarStories()];
+    const mobile = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    for (const route of surfaces) {
+      for (const [context, size] of [[ctx, 'desktop'], [mobile, 'mobile']]) {
+        const page = await context.newPage();
+        await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'domcontentloaded' });
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
+        );
+        check(!overflow, `${route} has no horizontal overflow (${size})`);
+        await page.close();
+      }
+    }
+    await mobile.close();
+  }
+
   /* ---- 7. TY v2.0: the Arabic display face obeys its own rules ------------
      KO Ghorab ships ONE style, is never letter-spaced, and never renders below
      24px. Those are the three ways an Arabic display face gets quietly abused —
@@ -262,6 +359,12 @@ try {
     const routes = [
       '/ar/', '/ar/learn/', '/ar/about/', '/ar/series/vibe-coding/', '/ar/prompts/',
       '/ar/newsletter/', '/ar/topics/', '/ar/use-cases/',
+      /* The IA v2.0 Arabic surfaces. Every heading that reaches for the display
+         face has to carry `ar-heading` / `ar-hero` or it renders Arabic in a
+         synthesised Latin weight — which is the exact failure this checks for,
+         and it is invisible unless you already read the script. */
+      '/ar/vibe-coding/', '/ar/gear/',
+      ...findPillarStories().filter((route) => route.startsWith('/ar/')),
     ];
     const page = await ctx.newPage();
     const violations = [];

@@ -1,0 +1,276 @@
+---
+/* =============================================================================
+   Homepage §5 — Playground
+   =============================================================================
+   The interactive bench. It surfaces the REAL tracks that exist in
+   `playground.tracks` (site.config.ts) and links straight into them — the
+   Playground, its games, its badges and the account layer behind them are all
+   Phase 1.1 functionality that keeps working exactly as it did.
+
+   ── NOTHING HERE IS UNRELEASED ──────────────────────────────────────────────
+   A tool appears on this bench only when a reader can actually open it, so
+   every card carries the `live` status and a working link. There is no
+   "in build" card, no "up next" card and no notify-me row standing in for a
+   tool that does not exist — the copy has labels for those states because the
+   frozen design allows for them, and they stay unused until something really
+   is in that state.
+
+   The `live` chip is BLUE, not mint. Mint is the one "happening right now"
+   tone and the mint budget is spent, once, on the two pillar sections above —
+   a bench of three mint chips would drown the single fact it exists to carry.
+
+   ── ENGLISH-ONLY, HONESTLY ──────────────────────────────────────────────────
+   /playground is on the ENGLISH_ONLY list in i18n/index.ts: the games are
+   authored in English and have no Arabic build. So on the Arabic homepage the
+   links carry `lang`/`hreflang="en"` and point at the English page, which is
+   the honest behaviour — the page is real, it is simply in the other language.
+   ========================================================================== */
+
+import Rich from '../Rich.astro';
+import StatusPill from '../ia/StatusPill.astro';
+import { useCopy } from '../../copy';
+import { playground } from '../../site.config';
+import { isEnglishOnly, localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+const t = c.ia.playground;
+
+/* Real, openable tracks only — the bench is what is on the bench. */
+const tracks = playground.tracks.slice(0, 3);
+
+const arrow = lang === 'ar' ? '←' : '→';
+/* The Playground has no Arabic build, so an Arabic page links out to English
+   and says so in the markup rather than inventing an /ar/ URL. */
+const outbound = lang !== 'en' && isEnglishOnly('/playground');
+const hrefFor = (path: string) => (outbound ? path : localizePath(path, lang));
+const langAttrs = outbound ? { lang: 'en', hreflang: 'en' } : {};
+---
+
+<section class="container section ps" aria-labelledby="ps-title" data-vb>
+  <header class="ps__head">
+    <div class="ps__kickerRow" data-vb-reveal style="--vb-step:0">
+      <span class="ps__kicker" dir="ltr">{t.label}</span>
+      <span class="ps__aside"><Rich text={t.aside} /></span>
+    </div>
+
+    <h2 class="ps__title ar-hero" id="ps-title" data-vb-reveal style="--vb-step:1">
+      <Rich text={t.headBefore} as="span" />
+      <em class="ps__em"><Rich text={t.headEm} /></em>
+      <Rich text={t.headAfter} as="span" />
+    </h2>
+
+    <Rich text={t.support} as="p" class="ps__support" data-vb-reveal style="--vb-step:2" />
+  </header>
+
+  {tracks.length > 0 ? (
+    <>
+      <ul class="ps__bench">
+        {tracks.map((track, i) => (
+          <li class="ps__tool" data-vb-stage style={`--vb-step:${i}`}>
+            <a class="ps__toolLink" href={hrefFor(`/playground/${track.slug}`)} {...langAttrs}>
+              <span class="ps__toolHead">
+                <span class="ps__toolIndex" dir="ltr">{t.toolIndex(i + 1)}</span>
+                {/* Every track on this bench is openable right now. */}
+                <StatusPill label={t.status.live} tone="blue" />
+              </span>
+              {/* Track names are authored in English in site.config.ts. */}
+              <span class="ps__toolName" dir="ltr">{track.name}</span>
+              <span class="ps__toolBody" dir="ltr">{track.body}</span>
+              <span class="ps__toolCta">
+                <Rich text={t.open} />
+                <span class="ps__arrow" aria-hidden="true">{arrow}</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div class="ps__actions" data-vb-reveal style="--vb-step:3">
+        <a class="ps__ctaGhost" href={hrefFor('/playground')} {...langAttrs}>
+          <Rich text={t.cta} />
+          <span class="ps__arrow" aria-hidden="true">{arrow}</span>
+        </a>
+      </div>
+    </>
+  ) : (
+    <p class="ps__empty" data-vb-reveal style="--vb-step:3"><Rich text={t.empty} /></p>
+  )}
+
+  <dl class="ps__rules">
+    <div class="ps__rule">
+      <dt><Rich text={t.ruleFree} /></dt>
+      <dd><Rich text={t.ruleFreeNote} /></dd>
+    </div>
+    <div class="ps__rule">
+      <dt><Rich text={t.rulePublic} /></dt>
+      <dd><Rich text={t.rulePublicNote} /></dd>
+    </div>
+    <div class="ps__rule">
+      <dt><Rich text={t.ruleDemos} /></dt>
+      <dd><Rich text={t.ruleDemosNote} /></dd>
+    </div>
+  </dl>
+</section>
+
+<style>
+  .ps__head { display: flex; flex-direction: column; gap: var(--atc-space-4); max-width: 56ch; }
+  .ps__kickerRow { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--atc-space-4); }
+  .ps__kicker {
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--adel-signature-blue);
+    unicode-bidi: isolate;
+  }
+  .ps__aside { font-family: var(--adel-font-mono); font-size: 11px; color: var(--adel-text-tertiary); }
+  :global([lang='ar']) .ps__aside { font-family: var(--adel-font-text); font-size: 12.5px; }
+
+  .ps__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(30px, 4.5vw, 48px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+    text-wrap: balance;
+  }
+  :global([lang='ar']) .ps__title { letter-spacing: normal; unicode-bidi: plaintext; }
+  /* Structure, not emphasis — see the note on .rw__em in RealWorld.astro. */
+  .ps__em { font-style: normal; font-weight: inherit; color: var(--adel-signature-blue); }
+
+  .ps__support { margin: 0; font-size: var(--adel-text-lg); line-height: 1.6; color: var(--adel-text-secondary); }
+  :global([lang='ar']) .ps__support { line-height: 1.85; }
+
+  /* ---- the bench ---- */
+  .ps__bench {
+    list-style: none;
+    margin: var(--atc-space-10) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--atc-space-6);
+  }
+  .ps__tool { display: flex; }
+  .ps__toolLink {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-3);
+    width: 100%;
+    padding: var(--atc-space-8);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-raised);
+    border: 1px solid var(--adel-border-hairline);
+    text-decoration: none;
+    color: inherit;
+  }
+  .ps__toolLink:hover { border-color: var(--adel-text-link); }
+  .ps__toolHead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--atc-space-3); }
+  .ps__toolIndex {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+    unicode-bidi: isolate;
+  }
+  /* A track name is authored in English in site.config.ts and rendered LTR, so
+     it takes the LATIN display face explicitly rather than `--adel-font-display`
+     — which resolves to Ghorab on an Arabic page and would put an English
+     string in the Arabic display face at a weight Ghorab does not have. */
+  .ps__toolName {
+    font-family: var(--adel-font-latin);
+    font-size: var(--adel-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-text-primary);
+    unicode-bidi: isolate;
+  }
+  .ps__toolLink:hover .ps__toolName { color: var(--adel-text-link); }
+  .ps__toolBody {
+    font-size: var(--adel-text-sm);
+    line-height: 1.6;
+    color: var(--adel-text-secondary);
+    unicode-bidi: isolate;
+  }
+  .ps__toolCta {
+    margin-top: auto;
+    padding-top: var(--atc-space-3);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+    color: var(--adel-text-link);
+  }
+
+  .ps__actions { margin-top: var(--atc-space-10); }
+  .ps__ctaGhost {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    height: var(--atc-control-lg);
+    padding-inline: var(--atc-space-6);
+    border: 1px solid var(--adel-border-strong);
+    border-radius: var(--adel-radius-control);
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    color: var(--adel-text-primary);
+    text-decoration: none;
+  }
+  .ps__ctaGhost:hover { border-color: var(--adel-text-link); color: var(--adel-text-link); }
+
+  .ps__arrow { display: inline-block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .ps__arrow { transition: transform var(--atc-duration-fast) var(--atc-ease-move); }
+    .ps__toolLink:hover .ps__arrow,
+    .ps__ctaGhost:hover .ps__arrow { transform: translateX(var(--atc-distance-1)); }
+    :global([dir='rtl']) .ps__toolLink:hover .ps__arrow,
+    :global([dir='rtl']) .ps__ctaGhost:hover .ps__arrow { transform: translateX(calc(-1 * var(--atc-distance-1))); }
+  }
+
+  .ps__empty {
+    margin: var(--atc-space-8) 0 0;
+    max-width: 60ch;
+    font-size: var(--adel-text-lg);
+    line-height: 1.7;
+    color: var(--adel-text-secondary);
+  }
+
+  .ps__rules {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-4) var(--atc-space-8);
+    margin: var(--atc-space-12) 0 0;
+    padding-top: var(--atc-space-5);
+    border-top: 1px solid var(--adel-border-hairline);
+  }
+  .ps__rule { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--atc-space-2); }
+  .ps__rule dt {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-primary);
+  }
+  :global([lang='ar']) .ps__rule dt {
+    font-family: var(--adel-font-text);
+    font-size: 13px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .ps__rule dd { margin: 0; font-size: var(--adel-text-sm); line-height: 1.6; color: var(--adel-text-tertiary); }
+
+  @media (max-width: 767px) {
+    .ps__rules { flex-direction: column; gap: var(--atc-space-3); }
+  }
+</style>

@@ -257,6 +257,131 @@ const courses = defineCollection({
   }),
 });
 
+/* -----------------------------------------------------------------------------
+   GEAR STORIES (IA v2.0)
+   -----------------------------------------------------------------------------
+   A Gear story is a TESTING JOURNAL entry, not a review. The frozen spec is
+   explicit about what that means, and the schema enforces the parts a schema
+   can enforce:
+
+     · The H1 is always the QUESTION, never the product name. So `question` is
+       required and `product` is a separate, quieter field.
+     · There is no rating, score, price, retailer link or spec table — and no
+       field here to put one in. Adding one later would be a design change,
+       which is exactly the friction that is wanted.
+     · A story cannot publish without real photography. `photo` is required by
+       `publishable()` in lib/gear.ts rather than by Zod, so a story can be
+       drafted and committed while the photograph is still being taken.
+
+   The crossover to a Build story is earned, not automatic: it is set only when
+   the device itself is what makes the build possible.
+   -------------------------------------------------------------------------- */
+const GEAR_CATEGORIES = [
+  'mobile-computing',
+  'creator-gear',
+  'cameras',
+  'gaming-setup',
+  'ai-gear',
+] as const;
+
+const gear = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/gear' }),
+  schema: z.object({
+    ...editorial,
+    category: z.enum(GEAR_CATEGORIES),
+    /* The product being tested. Shown as a quiet mono label, never as the
+       headline. */
+    product: z.string(),
+    /* The headline. Always a real use case, always a question. */
+    question: z.string(),
+    /* One sentence on why it matters in Adel's workflow. */
+    context: z.string(),
+    /* Where the test has got to. 'testing' is the only value that may carry
+       the mint label, and only one story site-wide should hold it. */
+    status: z.enum(['testing', 'using', 'concluded']).default('testing'),
+    /* Editorial label instead of a score. */
+    label: z
+      .enum(['currently-testing', 'workflow-test', 'creator-test', 'up-next', 'worth-exploring'])
+      .default('workflow-test'),
+    testingSince: z.coerce.date().optional(),
+    /* Real photography. Required before publication — see lib/gear.ts. */
+    photo: z.string().optional(),
+    photoAlt: z.string().optional(),
+    /* The verdict, and only once the test has actually concluded. A story with
+       `status: 'concluded'` and no verdict renders the in-testing takeaway,
+       which is the honest fallback rather than an empty box. */
+    verdict: z.string().optional(),
+    concludedOn: z.coerce.date().optional(),
+    /* The Build story this device makes possible. Set ONLY when the device
+       enables the build — never for a general product review. */
+    crossover: z.string().optional(),
+    /* A real video of the test. Absent ⇒ section 03 does not render. */
+    videoId: z.string().optional(),
+  }),
+});
+
+/* -----------------------------------------------------------------------------
+   BUILD STORIES (IA v2.0)
+   -----------------------------------------------------------------------------
+   A Build story is the narrative of making something with AI. It is the other
+   half of the frozen pillar rule: Vibe Coding is BUILDING, Gear is USING, and
+   each side links to the other rather than retelling it.
+
+   `journey` is the frozen six-stage rail. It is per-story rather than global,
+   because two builds are at different points at the same time — but the stage
+   VOCABULARY is fixed in lib/journey.ts so the rail cannot grow a seventh
+   stage or invent its own labels.
+
+   `tools` names only what was actually used. There is no logo, no version and
+   no link field: the spec calls for quiet mono rows with one role line each,
+   and a schema that cannot hold a logo cannot grow a logo wall.
+   -------------------------------------------------------------------------- */
+const BUILD_STAGES = ['idea', 'explore', 'design', 'build', 'test', 'launch'] as const;
+
+const builds = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/builds' }),
+  schema: z.object({
+    ...editorial,
+    /* Build = aims at a launched product. Experiment = a question tried out
+       loud, which may end without shipping. Both are publishable outcomes. */
+    kind: z.enum(['build', 'experiment']).default('build'),
+    /* The frozen taxonomy. 'building' is the only status that may carry mint,
+       and the hub features at most one. 'paused' is dimmed but never hidden —
+       a paused build that disappears is a rewritten history. */
+    status: z
+      .enum(['exploring', 'designing', 'building', 'testing', 'launched', 'paused'])
+      .default('exploring'),
+    /* The headline question. */
+    question: z.string(),
+    context: z.string().optional(),
+    /* Where the six-stage rail has got to. Everything before it is done,
+       everything after is next — so one value describes the whole rail and it
+       cannot contradict itself. */
+    stage: z.enum(BUILD_STAGES).default('idea'),
+    /* Series membership. Structural only: a number and an order, never an
+       episode title or a publication date in the nav. */
+    series: z.enum(SERIES).optional(),
+    part: z.number().int().positive().optional(),
+    /* The live product, once there is one. */
+    liveUrl: z.string().url().optional(),
+    /* Hero screenshot of the live product, shown in the browser-chrome frame.
+       Required before publication — see lib/builds.ts. Never fabricated UI. */
+    heroShot: z.string().optional(),
+    heroShotAlt: z.string().optional(),
+    /* A real working-session screenshot for section 03. Absent ⇒ no section. */
+    sessionShot: z.string().optional(),
+    sessionShotAlt: z.string().optional(),
+    /* Only tools actually used, one role line each. */
+    tools: z
+      .array(z.object({ name: z.string(), role: z.string() }))
+      .default([]),
+    /* The Gear story for the device that enabled this build, when one did. */
+    crossover: z.string().optional(),
+    /* A launched build's tool in the Playground. */
+    playgroundTool: z.string().optional(),
+  }),
+});
+
 export const collections = {
   guides,
   articles,
@@ -264,4 +389,6 @@ export const collections = {
   prompts,
   videos: videosCollection,
   courses,
+  gear,
+  builds,
 };
