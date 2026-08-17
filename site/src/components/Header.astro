@@ -52,7 +52,14 @@ const items = nav
   .filter((item) => item.phase === 1)
   .map((item) => ({
     href: localizePath(item.path, lang),
-    label: (c.nav as Record<string, string>)[item.key] ?? item.key,
+    /* IA v2.0 labels come from the frozen `ia.nav` block, which is the
+       authored copy from the designs of record — Learn is "اتعلم" in Arabic
+       there, and Playground and the two pillar names stay English. Anything
+       not in that block (the Phase 1.5 routes) keeps its Phase 1.1 label. */
+    label:
+      (c.ia.nav as Record<string, string>)[item.key] ??
+      (c.nav as Record<string, string>)[item.key] ??
+      item.key,
     active: neutral === item.path || neutral.startsWith(item.path + '/'),
     /* An Arabic page linking to an English-only route has to announce the
        language change on the anchor, or a screen reader reads English words in
