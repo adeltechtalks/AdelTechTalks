@@ -1,0 +1,29 @@
+---
+/* Build Story — /ar/vibe-coding/<slug>, Arabic.
+
+   A separate FILE, not a machine translation: `getBuilds('ar')` only returns
+   builds actually authored in Arabic, so the Arabic site shows Arabic builds
+   and nothing else. The publication gate applies identically — an Arabic build
+   still waiting on its screenshot has no page either. */
+
+import BuildStory from '../../../components/pages/BuildStory.astro';
+import { getBuilds } from '../../../lib/pillars';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const stories = await getBuilds('ar');
+  if (stories.length === 0) return [];
+  const entries = await getCollection('builds');
+  return stories.map((story) => ({
+    params: { slug: story.slug },
+    props: { story, entry: entries.find((e) => e.id === story.slug)! },
+  }));
+};
+
+const { story, entry } = Astro.props;
+const { Content } = await render(entry);
+---
+<BuildStory lang="ar" story={story}>
+  <Content />
+</BuildStory>

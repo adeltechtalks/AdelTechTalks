@@ -184,6 +184,8 @@ export interface Copy {
       stage: Record<'idea' | 'explore' | 'design' | 'build' | 'test' | 'launch', string>;
       stageState: Record<'done' | 'doneFirst' | 'now' | 'next', string>;
       journeyLabel: string; toolsNote: string; seeLive: string; openInPlayground: string;
+      /* Structural section labels on the Build Story template. */
+      sessionTitle: string; toolsTitle: string; relatedTitle: string;
       previous: string; next: string; read: string;
       crossoverTitle: string; crossoverToGear: string; crossoverToBuild: string;
       empty: string; footnote: string;
@@ -556,6 +558,7 @@ const en: Copy = {
       stageState: { done: 'Done', doneFirst: 'Done', now: 'Now', next: 'Next' },
       journeyLabel: 'This build’s journey',
       toolsNote: 'Only the tools I actually used — no unearned credit.',
+      sessionTitle: 'From the session', toolsTitle: 'What I built it with', relatedTitle: 'More builds',
       seeLive: 'See it live', openInPlayground: 'Open it in Playground',
       previous: 'Previous part', next: 'Next part', read: 'Read the build',
       crossoverTitle: 'Crossover',
@@ -931,6 +934,7 @@ const ar: Copy = {
       stageState: { done: 'تمّ', doneFirst: 'تمّت', now: 'دلوقتي', next: 'الجاي' },
       journeyLabel: 'رحلة الـ[[Build]] ده',
       toolsNote: 'بس الأدوات اللي استخدمتها فعلاً — من غير أي فضل مش ليا.',
+      sessionTitle: 'من الشغل نفسه', toolsTitle: 'بنيته بإيه', relatedTitle: 'مشاريع تانية',
       seeLive: 'شوفه لايف', openInPlayground: 'افتحه في الـ[[Playground]]',
       previous: 'الجزء اللي فات', next: 'الجزء الجاي', read: 'اقرأ الـ[[build]]',
       crossoverTitle: 'Crossover',

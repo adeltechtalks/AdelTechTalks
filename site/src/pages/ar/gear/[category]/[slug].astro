@@ -1,0 +1,30 @@
+---
+/* Gear Story — /ar/gear/<category>/<slug>, Arabic.
+
+   The category SEGMENT stays the English slug in both languages, deliberately:
+   it is a stable identifier that keeps the two language trees mirror-images of
+   each other, and the category NAME is displayed in English anyway under the
+   frozen non-translated rule. The story itself is a separately authored Arabic
+   file — nothing here is machine-translated. */
+
+import GearStory from '../../../../components/pages/GearStory.astro';
+import { getGear } from '../../../../lib/pillars';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const stories = await getGear('ar');
+  if (stories.length === 0) return [];
+  const entries = await getCollection('gear');
+  return stories.map((story) => ({
+    params: { category: story.category, slug: story.slug },
+    props: { story, entry: entries.find((e) => e.id === story.slug)! },
+  }));
+};
+
+const { story, entry } = Astro.props;
+const { Content } = await render(entry);
+---
+<GearStory lang="ar" story={story}>
+  <Content />
+</GearStory>

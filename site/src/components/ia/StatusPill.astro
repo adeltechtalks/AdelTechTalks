@@ -18,10 +18,12 @@ interface Props {
   class?: string;
 }
 
-const { label, tone = 'ghost', dot = false, onDark = false, class: className } = Astro.props;
+/* `...rest` forwards Astro's scope attribute — see the note in Rich.astro.
+   Without it a parent's `.foo__pill { … }` rule never matches this element. */
+const { label, tone = 'ghost', dot = false, onDark = false, class: className, ...rest } = Astro.props;
 ---
 
-<span class:list={['sp', `sp--${tone}`, onDark && 'sp--dark', className]}>
+<span class:list={['sp', `sp--${tone}`, onDark && 'sp--dark', className]} {...rest}>
   {dot && <span class="sp__dot" aria-hidden="true"></span>}
   <Rich text={label} />
 </span>

@@ -1,0 +1,33 @@
+---
+/* Gear Story — /gear/<category>/<slug>, English.
+
+   The category is a real path segment rather than a query or a flat slug: it
+   is how the hub groups the journal, and it means a story's URL says which
+   shelf it is on. The segment comes from the story's own `category`, so it can
+   only ever be one of the five in the frozen taxonomy.
+
+   The route only exists for a story that has cleared the publication gate:
+   `getGear()` requires a real photograph, so a story still waiting on one
+   generates no page. The missing asset blocks its own story and nothing else. */
+
+import GearStory from '../../../components/pages/GearStory.astro';
+import { getGear } from '../../../lib/pillars';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const stories = await getGear('en');
+  if (stories.length === 0) return [];
+  const entries = await getCollection('gear');
+  return stories.map((story) => ({
+    params: { category: story.category, slug: story.slug },
+    props: { story, entry: entries.find((e) => e.id === story.slug)! },
+  }));
+};
+
+const { story, entry } = Astro.props;
+const { Content } = await render(entry);
+---
+<GearStory lang="en" story={story}>
+  <Content />
+</GearStory>

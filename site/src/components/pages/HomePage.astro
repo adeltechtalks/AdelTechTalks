@@ -1,22 +1,52 @@
 ---
 /* =============================================================================
-   The homepage (§14) — one implementation, two languages
+   The homepage — one implementation, two languages
    =============================================================================
    Both `/` and `/ar/` render this. The alternative — two 300-line page files —
    guarantees they drift apart, and a drifted Arabic homepage is exactly the
    "visual afterthought" §10 forbids.
 
-   Section order is the order §14 lists them, with one Phase 1.1 insertion:
+   ── THE FROZEN ORDER (IA v2.0) ──────────────────────────────────────────────
 
-     Hero → What I Explore → [Vibe Coding series] → Latest → Guides →
-     Prompt Library → What I'm Building → Latest Videos → GearNest →
-     Newsletter → Sign-Off
+     1. Hero
+     2. Vibe Coding in the Real World
+     3. Gear — Currently Testing
+     4. Learn
+     5. Playground
+     6. About + Subscribe
+     7. Footer                          (Base.astro)
 
-   The series band goes after "What I Explore" and before the library strips,
-   because it is the thing happening right now rather than another category of
-   thing. It sits BELOW the hero, deliberately: the hero carries "I ❤️ Tech",
-   which is still the master brand expression, and Vibe Coding is the current
-   series underneath it — not a replacement for it.
+   That order is an argument, and it runs in one direction: what I build, what
+   I use to build it, what I wrote down about it, what you can try yourself,
+   and who is saying all this. The two pillars lead because they are the two
+   pillars; everything the reader can DO comes after everything the reader can
+   READ; and the personal close is last because a close should be last.
+
+   ── WHAT THIS REPLACED ──────────────────────────────────────────────────────
+   The Phase 1.1 order — What I Explore · series band · Latest · Guides ·
+   Prompt teaser · What I'm Building · Videos · GearNest · Newsletter · Sign-Off
+   — was a LIBRARY laid out by content type. IA v2.0 lays the page out by
+   pillar, so the ten strips collapse into five sections and each surface is
+   reached through the one that owns it:
+
+     Explore · Latest · Guides · Prompts · Videos → §4 Learn, and /learn
+     series band                                  → §2, the featured build
+     What I'm Building                            → §2 and /vibe-coding
+     GearNest                                     → the footer's separate-brand
+                                                     row (a separate business,
+                                                     linked, never merged in)
+     Newsletter + Sign-Off                        → §6, as one closing section
+
+   Nothing was deleted. Every Phase 1.1 route is still live at exactly the URL
+   it had, and the components that served those strips still serve /learn and
+   the surface indexes. This page stopped being their index, that is all.
+
+   ── EVERY SECTION COLLAPSES ON ITS OWN ──────────────────────────────────────
+   §2 and §3 are gated on real assets (a build needs a real screenshot, a gear
+   story needs a real photograph), §4 drops any surface with nothing published,
+   §5 lists only tools you can actually open. With an empty content directory
+   this page is a hero, four honest lines and a close — which is the correct
+   state, not a broken one.
 
    CS-05: exactly one primary action on this page, and it is the hero's. Every
    other action below is secondary, ghost or a plain link.
@@ -24,18 +54,11 @@
 
 import Base from '../../layouts/Base.astro';
 import Hero from '../home/Hero.astro';
-import Explore from '../home/Explore.astro';
-import SeriesBand from '../home/SeriesBand.astro';
-import Latest from '../home/Latest.astro';
-import GuidesStrip from '../home/GuidesStrip.astro';
-import PromptTeaser from '../home/PromptTeaser.astro';
-import Building from '../home/Building.astro';
-import Videos from '../home/Videos.astro';
-import GearNest from '../home/GearNest.astro';
-import SignOff from '../home/SignOff.astro';
-import NewsletterCTA from '../editorial/NewsletterCTA.astro';
-import Divider from '../editorial/Divider.astro';
-import { getLatest, getGuides, getVideoPages, getVideos, countByTopic } from '../../lib/content';
+import RealWorld from '../home/RealWorld.astro';
+import GearSection from '../home/GearSection.astro';
+import LearnSection from '../home/LearnSection.astro';
+import PlaygroundSection from '../home/PlaygroundSection.astro';
+import AboutSubscribe from '../home/AboutSubscribe.astro';
 import { site } from '../../site.config';
 import type { Lang } from '../../i18n';
 
@@ -45,46 +68,27 @@ interface Props {
 
 const { lang } = Astro.props;
 
-const latest = await getLatest(lang, 6);
-const guides = (await getGuides(lang)).slice(0, 3);
-/* Structured video pages first, then anything that only exists as a config
-   link-out. Both render identically in the strip. */
-const videos = [...(await getVideoPages(lang)), ...getVideos()].slice(0, 3);
-const counts = await countByTopic(lang);
-
 const description = lang === 'ar' ? site.descriptionAr : site.description;
 ---
 
 <Base lang={lang} padded={false} description={description}>
+  {/* 1 — Hero. The approved implementation, unchanged. */}
   <Hero lang={lang} />
 
-  <Explore lang={lang} counts={counts} />
+  {/* 2 — Vibe Coding in the Real World. Building with AI. */}
+  <RealWorld lang={lang} />
 
-  <SeriesBand lang={lang} />
+  {/* 3 — Gear. Using and testing technology. */}
+  <GearSection lang={lang} />
 
-  <div class="container home__rule"><Divider /></div>
+  {/* 4 — Learn. The gateway to the library, not the library. */}
+  <LearnSection lang={lang} />
 
-  <Latest lang={lang} entries={latest} />
+  {/* 5 — Playground. Only what you can actually open. */}
+  <PlaygroundSection lang={lang} />
 
-  <GuidesStrip lang={lang} guides={guides} />
+  {/* 6 — About + Subscribe. The close. */}
+  <AboutSubscribe lang={lang} />
 
-  <PromptTeaser lang={lang} />
-
-  <Building lang={lang} />
-
-  <Videos lang={lang} entries={videos} />
-
-  <GearNest lang={lang} />
-
-  <section class="container section">
-    <NewsletterCTA lang={lang} placement="home" />
-  </section>
-
-  <SignOff lang={lang} />
+  {/* 7 — Footer, from Base.astro. */}
 </Base>
-
-<style>
-  .home__rule {
-    margin-top: var(--atc-space-24);
-  }
-</style>

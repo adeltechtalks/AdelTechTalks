@@ -281,3 +281,89 @@ export async function crossoverBuild(lang: Lang, story: GearStory) {
 export async function crossoverGear(lang: Lang, story: BuildStory) {
   return story.crossover ? findGear(lang, story.crossover) : undefined;
 }
+
+/* -----------------------------------------------------------------------------
+   RELATED — more of the same pillar, without repeating the story you are on
+   -------------------------------------------------------------------------- */
+
+/** Other builds, newest first, excluding this one. */
+export async function relatedBuilds(lang: Lang, slug: string, limit = 2) {
+  return (await getBuilds(lang)).filter((b) => b.slug !== slug).slice(0, limit);
+}
+
+/** Other Gear stories, preferring the same category, excluding this one. */
+export async function relatedGear(lang: Lang, story: GearStory, limit = 2) {
+  const others = (await getGear(lang)).filter((g) => g.slug !== story.slug);
+  const sameCategory = others.filter((g) => g.category === story.category);
+  /* Same category first, then anything else, de-duplicated by slug. */
+  const seen = new Set<string>();
+  return [...sameCategory, ...others]
+    .filter((g) => (seen.has(g.slug) ? false : (seen.add(g.slug), true)))
+    .slice(0, limit);
+}
+
+/* -----------------------------------------------------------------------------
+   TRANSLATIONS — hreflang for the two pillar templates
+   -----------------------------------------------------------------------------
+   `translationsOf()` in lib/content.ts covers the five editorial kinds and is
+   keyed by their route bases. A Gear story's URL carries its CATEGORY segment,
+   which does not fit that shape, so the two pillars resolve their own
+   alternates here.
+
+   The rule is the same one the rest of the site uses (§26): a story advertises
+   only the languages it ACTUALLY exists in. An English build with no Arabic
+   file returns one entry — itself — because an hreflang pointing at a 404 is a
+   worse signal than no hreflang at all. Publication gates apply, so a story
+   whose screenshot has not landed in the other language is correctly absent.
+   -------------------------------------------------------------------------- */
+
+interface Alternate {
+  lang: Lang;
+  href: string;
+}
+
+/** Every language a story is genuinely published in, itself included. */
+async function alternatesFor<T extends { slug: string; lang: Lang; href: string }>(
+  lang: Lang,
+  slug: string,
+  load: (l: Lang) => Promise<T[]>,
+  translationOf: (slug: string, l: Lang) => Promise<string | undefined>
+): Promise<Alternate[]> {
+  const LANGS: Lang[] = ['en', 'ar'];
+  const self = (await load(lang)).find((s) => s.slug === slug);
+  if (!self) return [];
+
+  /* The English slug is the hub both sides point at: an Arabic file names it
+     in `translationOf`, and an English file is named by one. */
+  const hub = (await translationOf(slug, lang)) ?? slug;
+
+  const found: Alternate[] = [{ lang, href: self.href }];
+  for (const other of LANGS.filter((l) => l !== lang)) {
+    for (const story of await load(other)) {
+      const linked = story.slug === hub || (await translationOf(story.slug, other)) === hub;
+      if (!linked) continue;
+      found.push({ lang: other, href: story.href });
+      break;
+    }
+  }
+  return found;
+}
+
+/** What a story's file declares as its English counterpart, if anything. */
+async function declaredTranslation(
+  collection: 'gear' | 'builds',
+  slug: string,
+  lang: Lang
+): Promise<string | undefined> {
+  if (!HAS[collection === 'builds' ? 'builds' : 'gear']) return undefined;
+  const items = await getCollection(collection);
+  return items.find((i) => i.id === slug && i.data.lang === lang)?.data.translationOf;
+}
+
+export function buildAlternates(lang: Lang, slug: string) {
+  return alternatesFor(lang, slug, getBuilds, (s, l) => declaredTranslation('builds', s, l));
+}
+
+export function gearAlternates(lang: Lang, slug: string) {
+  return alternatesFor(lang, slug, getGear, (s, l) => declaredTranslation('gear', s, l));
+}

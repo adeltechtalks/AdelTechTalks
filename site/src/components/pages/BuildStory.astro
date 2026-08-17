@@ -1,0 +1,476 @@
+---
+/* =============================================================================
+   Build Story — /vibe-coding/<slug> (IA v2.0)
+   =============================================================================
+   The narrative of making something with AI, in the frozen order:
+
+     01  hero        the question, the status, the live product in its frame
+     02  journey     the six-stage rail, full variant
+     03  session     a real working-session screenshot, when one exists
+     04  tools       what was actually used, one role line each
+     05  the write-up (the Markdown body)
+     06  crossover   the Gear side of this story, when the device enabled it
+     07  series      previous / next part, when it belongs to a series
+     08  related     other builds
+
+   ── WHAT REACHES THIS PAGE ──────────────────────────────────────────────────
+   Only a build that has cleared the publication gate: `getBuilds()` requires a
+   real hero screenshot of something live. A build without one is drafted,
+   committed, reviewable — and has no route at all. That is the gate working:
+   the missing asset blocks ITS OWN story, and nothing else.
+
+   So there is no fabricated UI anywhere below. Section 03 renders only when a
+   real session screenshot exists; the "see it live" action renders only when
+   there is a live URL; the tools list renders only what the file names.
+
+   ── CROSSOVER WITHOUT DUPLICATION ───────────────────────────────────────────
+   §06 LINKS to the Gear story and states the relationship in one line. It does
+   not restate the test, quote its verdict or reproduce its photograph — each
+   side links, neither retells, and the canonical text lives on exactly one
+   page. The link appears only when the counterpart is genuinely published in
+   THIS language.
+   ========================================================================== */
+
+import Base from '../../layouts/Base.astro';
+import Prose from '../editorial/Prose.astro';
+import Rich from '../Rich.astro';
+import StatusPill from '../ia/StatusPill.astro';
+import JourneyRail from '../ia/JourneyRail.astro';
+import BrowserFrame from '../ia/BrowserFrame.astro';
+import StoryRow from '../ia/StoryRow.astro';
+import { useCopy } from '../../copy';
+import {
+  BUILD_STATUS_TONE,
+  buildAlternates,
+  crossoverGear,
+  relatedBuilds,
+  seriesNeighbours,
+  type BuildStory,
+} from '../../lib/pillars';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+  story: BuildStory;
+}
+
+const { lang, story } = Astro.props;
+const c = useCopy(lang);
+const t = c.ia.vc;
+
+const gearSide = await crossoverGear(lang, story);
+const { previous, next } = await seriesNeighbours(lang, story);
+const related = await relatedBuilds(lang, story.slug);
+const alternateLinks = await buildAlternates(lang, story.slug);
+
+const arrow = lang === 'ar' ? '←' : '→';
+---
+
+<Base
+  lang={lang}
+  title={story.question}
+  description={story.context ?? t.hubIntro}
+  ogType="article"
+  publishedTime={story.date.toISOString()}
+  alternateLinks={alternateLinks}
+>
+  <article class="container bs" data-vb>
+    {/* ---- 01 · hero ---- */}
+    <header class="bs__hero" data-vb-reveal style="--vb-step:0">
+      <div class="bs__heroText">
+        <a class="bs__crumb" href={localizePath('/vibe-coding', lang)}>
+          <span aria-hidden="true">{lang === 'ar' ? '→' : '←'}</span>
+          <Rich text={t.hubKicker} />
+        </a>
+
+        <div class="bs__chips">
+          <StatusPill
+            label={t.status[story.status]}
+            tone={BUILD_STATUS_TONE[story.status]}
+            dot={story.status === 'building'}
+            onDark
+          />
+          {gearSide && <StatusPill label={c.ia.gear.crossoverChip} tone="blue" onDark />}
+        </div>
+
+        {/* The H1 is the QUESTION, always. Never the product name. */}
+        <Rich text={story.question} as="h1" class="bs__q ar-hero" />
+        {story.context && <Rich text={story.context} as="p" class="bs__context" />}
+
+        <div class="bs__actions">
+          {story.liveUrl && (
+            <a class="bs__cta" href={story.liveUrl} rel="noopener" target="_blank">
+              <Rich text={t.seeLive} />
+              <span aria-hidden="true">↗</span>
+            </a>
+          )}
+          {story.playgroundTool && (
+            <a class="bs__alt" href={`/playground/${story.playgroundTool}/`} lang="en" hreflang="en">
+              <Rich text={t.openInPlayground} />
+              <span class="bs__arrow" aria-hidden="true">{arrow}</span>
+            </a>
+          )}
+        </div>
+      </div>
+
+      <div class="bs__heroMedia">
+        <BrowserFrame
+          url={story.liveUrl ?? 'adeltechtalks.com'}
+          src={story.heroShot}
+          alt={story.heroShotAlt}
+          priority
+        />
+      </div>
+    </header>
+
+    {/* ---- 02 · the journey ---- */}
+    <section class="bs__journey" aria-labelledby="bs-journey">
+      <h2 class="bs__sectionTitle bs__sectionTitle--dark" id="bs-journey">
+        <Rich text={t.journeyLabel} />
+      </h2>
+      <JourneyRail lang={lang} stage={story.stage} paused={story.status === 'paused'} />
+    </section>
+
+    {/* ---- 03 · the working session. Only with a real screenshot ---- */}
+    {story.sessionShot && (
+      <section class="bs__session" data-vb-reveal aria-labelledby="bs-session">
+        <h2 class="bs__sectionTitle" id="bs-session"><Rich text={t.sessionTitle} /></h2>
+        <figure class="bs__sessionFig">
+          <img src={story.sessionShot} alt={story.sessionShotAlt} loading="lazy" decoding="async" />
+        </figure>
+      </section>
+    )}
+
+    {/* ---- 04 · the tools actually used ---- */}
+    {story.tools.length > 0 && (
+      <section class="bs__tools" aria-labelledby="bs-tools">
+        <h2 class="bs__sectionTitle" id="bs-tools"><Rich text={t.toolsTitle} /></h2>
+        <ul class="bs__toolList">
+          {story.tools.map((tool, i) => (
+            <li class="bs__tool" data-vb-stage style={`--vb-step:${i}`}>
+              {/* Tool names are proper nouns in every language. */}
+              <span class="bs__toolName" dir="ltr">{tool.name}</span>
+              <Rich text={tool.role} as="span" class="bs__toolRole" />
+            </li>
+          ))}
+        </ul>
+        <Rich text={t.toolsNote} as="p" class="bs__toolsNote" />
+      </section>
+    )}
+
+    {/* ---- 05 · the write-up ---- */}
+    <div class="bs__body">
+      <Prose>
+        <slot />
+      </Prose>
+    </div>
+
+    {/* ---- 06 · crossover. A link and one line — never a retelling ---- */}
+    {gearSide && (
+      <aside class="bs__cross" aria-labelledby="bs-cross">
+        <span class="bs__crossLabel" id="bs-cross" dir="ltr">{t.crossoverTitle}</span>
+        <Rich text={t.crossoverToGear} as="p" class="bs__crossBody" />
+        <a class="bs__crossLink" href={gearSide.href}>
+          <Rich text={gearSide.question} />
+          <span class="bs__arrow" aria-hidden="true">{arrow}</span>
+        </a>
+      </aside>
+    )}
+
+    {/* ---- 07 · series ---- */}
+    {(previous || next) && (
+      <nav class="bs__series" aria-label={c.series.label}>
+        {previous && (
+          <a class="bs__seriesLink" href={previous.href}>
+            <span class="bs__seriesLabel"><Rich text={t.previous} /></span>
+            <Rich text={previous.question} as="span" class="bs__seriesQ" />
+          </a>
+        )}
+        {next && (
+          <a class="bs__seriesLink bs__seriesLink--next" href={next.href}>
+            <span class="bs__seriesLabel"><Rich text={t.next} /></span>
+            <Rich text={next.question} as="span" class="bs__seriesQ" />
+          </a>
+        )}
+      </nav>
+    )}
+
+    {/* ---- 08 · related builds ---- */}
+    {related.length > 0 && (
+      <section class="bs__related" aria-labelledby="bs-related">
+        <h2 class="bs__sectionTitle" id="bs-related"><Rich text={t.relatedTitle} /></h2>
+        <ul class="bs__relatedList">
+          {related.map((other, i) => (
+            <StoryRow
+              lang={lang}
+              href={other.href}
+              question={other.question}
+              context={other.context}
+              label={t.status[other.status]}
+              tone={BUILD_STATUS_TONE[other.status]}
+              dimmed={other.status === 'paused'}
+              cta={t.read}
+              step={i}
+            />
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <p class="bs__footnote"><Rich text={t.footnote} /></p>
+  </article>
+</Base>
+
+<style>
+  .bs { max-width: 1160px; }
+
+  /* ---- 01 · hero: graphite, the page's one dark moment ---- */
+  .bs__hero {
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: var(--atc-space-16);
+    align-items: center;
+    padding: var(--atc-space-12);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-inverse);
+    color: var(--adel-text-inverse);
+  }
+  .bs__heroText { display: flex; flex-direction: column; align-items: flex-start; gap: var(--atc-space-4); min-width: 0; }
+  .bs__heroMedia { min-width: 0; }
+
+  .bs__crumb {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--adel-blue-300);
+    text-decoration: none;
+  }
+  :global([lang='ar']) .bs__crumb {
+    font-family: var(--adel-font-text);
+    font-size: 13px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .bs__crumb:hover { text-decoration: underline; }
+
+  .bs__chips { display: flex; flex-wrap: wrap; gap: var(--atc-space-2); }
+
+  .bs__q {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: inherit;
+    text-wrap: balance;
+  }
+  :global([lang='ar']) .bs__q { letter-spacing: normal; unicode-bidi: plaintext; }
+  .bs__context { margin: 0; font-size: var(--adel-text-lg); line-height: 1.6; color: rgba(255, 255, 255, 0.68); }
+  :global([lang='ar']) .bs__context { line-height: 1.85; unicode-bidi: plaintext; }
+
+  .bs__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--atc-space-5); margin-top: var(--atc-space-2); }
+  .bs__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    height: var(--atc-control-lg);
+    padding-inline: var(--atc-space-6);
+    border-radius: var(--adel-radius-control);
+    background: var(--adel-blue-500);
+    color: var(--adel-white);
+    font-size: var(--adel-text-base);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .bs__cta:hover { background: var(--adel-blue-400); color: var(--adel-white); }
+  /* blue-700 fails on graphite, so links on this panel step up to blue-300. */
+  .bs__alt {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    color: var(--adel-blue-300);
+    text-decoration: none;
+  }
+  .bs__alt:hover { text-decoration: underline; }
+
+  /* ---- 02 · journey, on its own graphite band ---- */
+  .bs__journey {
+    margin-top: var(--atc-space-8);
+    padding: var(--atc-space-10) var(--atc-space-12);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-inverse);
+    color: var(--adel-text-inverse);
+  }
+
+  /* ---- section titles ---- */
+  .bs__sectionTitle {
+    margin: 0 0 var(--atc-space-6);
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+  }
+  .bs__sectionTitle--dark { color: rgba(255, 255, 255, 0.5); }
+  :global([lang='ar']) .bs__sectionTitle {
+    font-family: var(--adel-font-text);
+    font-size: 13px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  /* ---- 03 · session ---- */
+  .bs__session { margin-top: var(--atc-space-16); }
+  .bs__sessionFig {
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--adel-radius-media);
+    border: 1px solid var(--adel-border-hairline);
+    background: var(--adel-surface-sunken);
+  }
+  .bs__sessionFig img { display: block; width: 100%; height: auto; }
+
+  /* ---- 04 · tools ---- */
+  .bs__tools { margin-top: var(--atc-space-16); }
+  .bs__toolList { list-style: none; margin: 0; padding: 0; }
+  .bs__tool {
+    display: grid;
+    grid-template-columns: minmax(140px, 0.28fr) 1fr;
+    gap: var(--atc-space-6);
+    align-items: baseline;
+    padding-block: var(--atc-space-4);
+    border-top: 1px solid var(--adel-border-hairline);
+  }
+  .bs__tool:last-child { border-bottom: 1px solid var(--adel-border-hairline); }
+  .bs__toolName {
+    font-family: var(--adel-font-mono);
+    font-size: var(--adel-text-sm);
+    font-weight: 700;
+    color: var(--adel-text-primary);
+    unicode-bidi: isolate;
+  }
+  .bs__toolRole { font-size: var(--adel-text-sm); line-height: 1.6; color: var(--adel-text-secondary); }
+  :global([lang='ar']) .bs__toolRole { line-height: 1.85; unicode-bidi: plaintext; }
+  .bs__toolsNote {
+    margin: var(--atc-space-4) 0 0;
+    max-width: 60ch;
+    font-size: var(--adel-text-sm);
+    line-height: 1.6;
+    color: var(--adel-text-tertiary);
+  }
+
+  /* ---- 05 · the write-up ---- */
+  .bs__body { margin-top: var(--atc-space-16); }
+
+  /* ---- 06 · crossover ---- */
+  .bs__cross {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--atc-space-3);
+    margin-top: var(--atc-space-16);
+    padding: var(--atc-space-8);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-blue-100);
+  }
+  .bs__crossLabel {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-blue-700);
+    unicode-bidi: isolate;
+  }
+  .bs__crossBody { margin: 0; font-size: var(--adel-text-base); line-height: 1.65; color: var(--adel-text-primary); max-width: 60ch; }
+  :global([lang='ar']) .bs__crossBody { line-height: 1.85; unicode-bidi: plaintext; }
+  .bs__crossLink {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-base);
+    font-weight: 700;
+    color: var(--adel-blue-700);
+    text-decoration: none;
+  }
+  .bs__crossLink:hover { text-decoration: underline; }
+
+  /* ---- 07 · series ---- */
+  .bs__series {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--atc-space-6);
+    margin-top: var(--atc-space-16);
+  }
+  .bs__seriesLink {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-2);
+    padding: var(--atc-space-6);
+    border: 1px solid var(--adel-border-hairline);
+    border-radius: var(--adel-radius-panel);
+    text-decoration: none;
+    color: inherit;
+  }
+  .bs__seriesLink:hover { border-color: var(--adel-text-link); }
+  /* "Next" sits at the end of the reading direction, in both languages. */
+  .bs__seriesLink--next { text-align: end; grid-column: 2; }
+  .bs__seriesLabel {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+  }
+  :global([lang='ar']) .bs__seriesLabel {
+    font-family: var(--adel-font-text);
+    font-size: 12px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .bs__seriesQ { font-size: var(--adel-text-base); font-weight: 600; color: var(--adel-text-primary); }
+
+  /* ---- 08 · related ---- */
+  .bs__related { margin-top: var(--atc-space-16); }
+  .bs__relatedList { list-style: none; margin: 0; padding: 0; }
+
+  .bs__footnote {
+    margin: var(--atc-space-16) 0 0;
+    padding-top: var(--atc-space-5);
+    border-top: 1px solid var(--adel-border-hairline);
+    max-width: 64ch;
+    font-size: var(--adel-text-sm);
+    line-height: 1.65;
+    color: var(--adel-text-tertiary);
+  }
+
+  .bs__arrow { display: inline-block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .bs__arrow { transition: transform var(--atc-duration-fast) var(--atc-ease-move); }
+    .bs__alt:hover .bs__arrow,
+    .bs__crossLink:hover .bs__arrow { transform: translateX(var(--atc-distance-1)); }
+    :global([dir='rtl']) .bs__alt:hover .bs__arrow,
+    :global([dir='rtl']) .bs__crossLink:hover .bs__arrow { transform: translateX(calc(-1 * var(--atc-distance-1))); }
+  }
+
+  @media (max-width: 1023px) {
+    .bs__hero { grid-template-columns: 1fr; gap: var(--atc-space-8); }
+  }
+  @media (max-width: 767px) {
+    .bs__hero { padding: var(--atc-space-6); }
+    .bs__journey { padding: var(--atc-space-8) var(--atc-space-6); }
+    .bs__tool { grid-template-columns: 1fr; gap: var(--atc-space-1); }
+    .bs__series { grid-template-columns: 1fr; }
+    .bs__seriesLink--next { grid-column: 1; text-align: start; }
+  }
+</style>

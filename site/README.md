@@ -33,6 +33,8 @@ that was live before the v2.0 migration is still at the same address.
 | Page | English | Arabic |
 |---|---|---|
 | Home | `/` | `/ar/` |
+| **Vibe Coding** | `/vibe-coding`, `/vibe-coding/<slug>` | `/ar/vibe-coding`, `/ar/vibe-coding/<slug>` |
+| **Gear** | `/gear`, `/gear/<category>/<slug>` | `/ar/gear`, `/ar/gear/<category>/<slug>` |
 | **Learn Hub** | `/learn` | `/ar/learn` |
 | **Series** | `/series/<id>` | `/ar/series/<id>` |
 | About | `/about` | `/ar/about` |
@@ -60,13 +62,59 @@ Reserved but not built: `/courses`, `/projects`, `/podcast`, `/services`,
 `/resume`. They are already declared in `nav` in `src/site.config.ts` with a
 `phase` above 1, so switching one on is a page plus a one-word change.
 
+A pillar story only gets a URL once its asset exists — a Build story needs a
+real screenshot of something live, a Gear story needs a real photograph. Until
+then the file is drafted and committed but generates no page. See **Publication
+is a gate** below.
+
 ### The header holds five items
 
-`Learn · Vibe Coding · Playground · About · Newsletter`. Guides, Use Cases,
-Videos, Prompts and Topics all keep the URLs they had — they are reached from
-`/learn`, which is an index of the whole library, and from the footer, which
-lists every one of them. That is what lets the ecosystem grow without the
-navigation growing with it.
+`Vibe Coding · Gear · Learn · Playground · About`, plus Subscribe as the one
+filled pill. Guides, Use Cases, Videos, Prompts and Topics all keep the URLs
+they had — they are reached from `/learn`, which is an index of the whole
+library, and from the footer's second column, which lists every one of them.
+That is what lets the ecosystem grow without the navigation growing with it.
+
+The order lives in one place, `nav` in `src/site.config.ts`, and the header,
+the mobile menu and the footer all read from it, so the three cannot drift.
+
+### The homepage is in pillar order
+
+    1. Hero
+    2. Vibe Coding in the Real World      building with AI
+    3. Gear — Currently Testing           using and testing technology
+    4. Learn                              the gateway to the library
+    5. Playground                         only what you can actually open
+    6. About + Subscribe                  the close
+    7. Footer
+
+Every section collapses on its own. §2 and §3 are gated on real assets, §4
+drops any surface with nothing published in that language, §5 lists only tools
+a reader can open right now. With an empty content directory the homepage is a
+hero, four honest lines and a close — which is the correct state, not a broken
+one.
+
+### Publication is a gate, not a schema rule
+
+`src/lib/pillars.ts` draws a hard line between IMPLEMENTATION and PUBLICATION.
+The system ships complete with zero real assets, and a missing asset only keeps
+its OWN story unpublished:
+
+| Pillar | Required before publication |
+|---|---|
+| Gear (`src/content/gear/`) | a real photograph — `photo` |
+| Vibe Coding (`src/content/builds/`) | a real screenshot of something live — `heroShot` |
+
+The check is at read time, not in the Zod schema, so a story missing its asset
+is drafted, committed and reviewable — and invisible. It appears the moment the
+asset lands, with no other change. Nothing is ever substituted, generated or
+stubbed to fill the gap: no placeholder screenshot, no stock photograph, no
+demo story standing in for a real one.
+
+The same rule runs the featured slots. "Currently testing" and "Now building"
+are claims about right now, so they are only made when something really is in
+that state; otherwise the most recent story takes the slot carrying its own
+honest label.
 
 ## Editing content
 
@@ -97,10 +145,25 @@ ever shows content actually written in it.
 | `prompts/` | `/prompts/<slug>` | One reusable prompt, plus what it gets wrong | copy an existing prompt |
 | `videos/` | `/videos/<slug>` | A video with chapters and takeaways | `videos/_template.md` |
 | `articles/` | `/articles/<slug>` | Written to be read | `articles/_template.md` |
+| `builds/` | `/vibe-coding/<slug>` | Making something with AI, in the open | `builds/_example-build.md` |
+| `gear/` | `/gear/<category>/<slug>` | A testing journal entry — never a review | `gear/_example-fold.md` |
 | `courses/` | *nothing yet* | Model only — no route, by design | `courses/_template.md` |
 
 A file starting with `_` never publishes, so the templates are safe to leave in
 place.
+
+**The two pillars have one extra rule each.** A Gear story's headline is always
+the QUESTION — `product` is a separate, quieter field — and there is no
+rating, score, price, spec table or retailer field in the schema to put one in.
+A Build story declares one `stage` from the frozen six (Idea · Explore · Design
+· Build · Test · Launch) and the rail derives the rest, so it cannot contradict
+itself. Neither publishes without its asset.
+
+**Crossover** is earned, not automatic. Set `crossover:` on a Gear story to a
+Build slug — or the reverse — ONLY when the device itself is what makes the
+build possible. Each side then links to the other and states the relationship
+in one line; neither retells the other's story, so the canonical text lives on
+exactly one page.
 
 **Series.** A piece joins the current build narrative by adding two lines of
 frontmatter:

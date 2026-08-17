@@ -60,3 +60,51 @@
     animation: none;
   }
 }
+
+/* =============================================================================
+   The IA v2.0 surfaces — the same charter, one step lighter
+   =============================================================================
+   `data-reveal` above is the Hero's numbered sequence, authored by hand. The
+   pillar surfaces (homepage sections, the two hubs, the two story templates)
+   need the same entrance applied to a variable number of items, so they mark
+   the stagger with `--vb-step` — a 0-based index within the block — instead of
+   a hand-written `--reveal-index`.
+
+   Two markers, one behaviour:
+
+     [data-vb-reveal]  a block that enters as a whole (a header, a card)
+     [data-vb-stage]   an item in a list (a story row, a rail stage)
+
+   `data-vb` on the container is a scoping hook only; it carries no animation
+   itself so a section can opt in without its own box being animated.
+
+   Same Motion Charter numbers as above — 300ms, --atc-ease-enter, 70ms
+   stagger, 16px — and the stagger is CAPPED at eight steps. A long list must
+   not push the last row past the 1200ms marketing sequence ceiling, and a row
+   twenty items down is below the fold anyway.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-vb-reveal],
+  [data-vb-stage] {
+    opacity: var(--atc-opacity-hidden, 0);
+    transform: translateY(var(--atc-distance-3, 16px));
+    animation: adel-reveal var(--atc-duration-moderate, 300ms) var(--atc-ease-enter, ease-out) both;
+    animation-delay: calc(min(var(--vb-step, 0), 8) * var(--atc-stagger-marketing, 70ms));
+  }
+  /* A row travels a shorter distance than a whole block — --atc-distance-2 is
+     the list-item value in the charter. */
+  [data-vb-stage] {
+    transform: translateY(var(--atc-distance-2, 8px));
+  }
+}
+
+/* Full replacement, exactly as for [data-reveal]: present, not faded-in-fast. */
+@media (prefers-reduced-motion: reduce) {
+  [data-vb-reveal],
+  [data-vb-stage] {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}

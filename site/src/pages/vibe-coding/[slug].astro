@@ -1,0 +1,29 @@
+---
+/* Build Story — /vibe-coding/<slug>, English.
+
+   The route only exists for a build that has cleared the publication gate:
+   `getBuilds()` requires a real hero screenshot of something live, so a build
+   still waiting on its screenshot generates no page at all. That is the gate
+   doing its job — the missing asset blocks its own story and nothing else. */
+
+import BuildStory from '../../components/pages/BuildStory.astro';
+import { getBuilds } from '../../lib/pillars';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const stories = await getBuilds('en');
+  if (stories.length === 0) return [];
+  const entries = await getCollection('builds');
+  return stories.map((story) => ({
+    params: { slug: story.slug },
+    props: { story, entry: entries.find((e) => e.id === story.slug)! },
+  }));
+};
+
+const { story, entry } = Astro.props;
+const { Content } = await render(entry);
+---
+<BuildStory lang="en" story={story}>
+  <Content />
+</BuildStory>

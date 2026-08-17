@@ -1,0 +1,328 @@
+---
+/* =============================================================================
+   Homepage §3 — Gear · Currently Testing
+   =============================================================================
+   The USING/TESTING pillar on the homepage. A testing journal entry, never a
+   product card: the headline is the QUESTION, the product name is a quiet mono
+   label above it, and the context line says why it matters in a real workflow.
+
+   Product → Question → Context, in that reading order, is the frozen shape and
+   it is preserved here exactly as the hub preserves it.
+
+   ── WHAT THIS SECTION MAY NEVER GROW ────────────────────────────────────────
+   No rating, no score, no star, no price, no spec table, no comparison matrix,
+   no retailer link, no affiliate control. The content model has no field to
+   hold one (content.config.ts), so adding one would be a schema change as well
+   as a design change — which is exactly the friction that was wanted.
+
+   ── HONEST COLLAPSE ─────────────────────────────────────────────────────────
+   A Gear story is invisible until a real photograph of the thing exists. With
+   none published, the section renders its header, one honest line and the
+   pillar rules — and nothing else. Specifically NOT:
+
+     · a "Currently testing" claim with no test behind it
+     · a structural or demo story standing in for a real one
+     · a grey rectangle where a photograph should be
+     · a CTA into an empty /gear
+
+   `featuredGear()` never fakes activity either: the mint "Currently testing"
+   label is used only when something really is in testing, otherwise the most
+   recent story takes the slot carrying its OWN honest label.
+   ========================================================================== */
+
+import Rich from '../Rich.astro';
+import StatusPill from '../ia/StatusPill.astro';
+import { useCopy } from '../../copy';
+import { featuredGear, getGear, crossoverBuild } from '../../lib/pillars';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+const t = c.ia.gear;
+
+const featured = await featuredGear(lang);
+const also = (await getGear(lang)).filter((g) => g.slug !== featured?.slug).slice(0, 3);
+const buildSide = featured ? await crossoverBuild(lang, featured) : undefined;
+
+const arrow = lang === 'ar' ? '←' : '→';
+/* "Currently testing" is a claim about right now, so it is only made when the
+   story really is in testing. Otherwise the story's own label is used. */
+const featuredLabel =
+  featured && featured.status === 'testing' ? t.featuredLabel : featured ? t.label_[featured.label] : '';
+---
+
+<section class="container section gs" aria-labelledby="gs-title" data-vb>
+  <header class="gs__head">
+    <div class="gs__kickerRow" data-vb-reveal style="--vb-step:0">
+      <span class="gs__kicker" dir="ltr">{t.label}</span>
+      <span class="gs__aside"><Rich text={t.aside} /></span>
+    </div>
+
+    <h2 class="gs__title ar-hero" id="gs-title" data-vb-reveal style="--vb-step:1">
+      <Rich text={t.headBefore} as="span" />
+      <em class="gs__em"><Rich text={t.headEm} /></em>
+      <Rich text={t.headAfter} as="span" />
+    </h2>
+
+    <Rich text={t.support} as="p" class="gs__support" data-vb-reveal style="--vb-step:2" />
+  </header>
+
+  {featured ? (
+    <>
+      <article class="gs__featured" data-vb-reveal style="--vb-step:3" aria-labelledby="gs-featured">
+        {/* Real photography only. The gate upstream guarantees there is one. */}
+        <div class="gs__photo">
+          <img src={featured.photo} alt={featured.photoAlt} loading="lazy" decoding="async" />
+        </div>
+
+        <div class="gs__story">
+          <div class="gs__chips">
+            <StatusPill label={featuredLabel} tone={featured.status === 'testing' ? 'mint' : 'ghost'} />
+            {buildSide && (
+              <a class="gs__crossChip" href={buildSide.href}>
+                <StatusPill label={t.crossoverChip} tone="blue" />
+              </a>
+            )}
+          </div>
+
+          {/* Product — the quiet label. Never the headline. */}
+          <span class="gs__product" dir="ltr">{featured.categoryName} · {featured.product}</span>
+          {/* Question — the headline, always. */}
+          <Rich text={featured.question} as="h3" class="gs__q ar-heading" id="gs-featured" />
+          {/* Context — why it matters in a real workflow. */}
+          <Rich text={featured.context} as="p" class="gs__context" />
+
+          {buildSide && <Rich text={t.crossoverNote} as="p" class="gs__crossNote" />}
+
+          <a class="gs__cta" href={featured.href}>
+            <Rich text={featured.status === 'concluded' ? t.read : t.follow} />
+            <span class="gs__arrow" aria-hidden="true">{arrow}</span>
+          </a>
+        </div>
+      </article>
+
+      {also.length > 0 && (
+        <div class="gs__also" data-vb-reveal style="--vb-step:4">
+          <span class="gs__alsoLabel"><Rich text={t.alsoLabel} /></span>
+          <ul class="gs__alsoList">
+            {also.map((story) => (
+              <li>
+                <a class="gs__alsoLink" href={story.href}>
+                  <Rich text={story.question} />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div class="gs__actions" data-vb-reveal style="--vb-step:5">
+        <a class="gs__ctaGhost" href={localizePath('/gear', lang)}>
+          <Rich text={t.ctaPrimary} />
+          <span class="gs__arrow" aria-hidden="true">{arrow}</span>
+        </a>
+      </div>
+    </>
+  ) : (
+    <p class="gs__empty" data-vb-reveal style="--vb-step:3"><Rich text={t.empty} /></p>
+  )}
+
+  <dl class="gs__rules">
+    <div class="gs__rule">
+      <dt><Rich text={t.ruleRatings} /></dt>
+      <dd><Rich text={t.ruleRatingsNote} /></dd>
+    </div>
+    <div class="gs__rule">
+      <dt><Rich text={t.ruleCross} /></dt>
+      <dd><Rich text={t.ruleCrossNote} /></dd>
+    </div>
+    <div class="gs__rule">
+      <dt><Rich text={t.ruleBuild} /></dt>
+      <dd><Rich text={t.ruleBuildNote} /></dd>
+    </div>
+  </dl>
+</section>
+
+<style>
+  .gs__head { display: flex; flex-direction: column; gap: var(--atc-space-4); max-width: 56ch; }
+  .gs__kickerRow { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--atc-space-4); }
+  .gs__kicker {
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--adel-signature-blue);
+    unicode-bidi: isolate;
+  }
+  .gs__aside { font-family: var(--adel-font-mono); font-size: 11px; color: var(--adel-text-tertiary); }
+  :global([lang='ar']) .gs__aside { font-family: var(--adel-font-text); font-size: 12.5px; }
+
+  .gs__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(30px, 4.5vw, 48px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+    text-wrap: balance;
+  }
+  :global([lang='ar']) .gs__title { letter-spacing: normal; unicode-bidi: plaintext; }
+  .gs__em { font-style: normal; color: var(--adel-signature-blue); }
+
+  .gs__support { margin: 0; font-size: var(--adel-text-lg); line-height: 1.6; color: var(--adel-text-secondary); }
+  :global([lang='ar']) .gs__support { line-height: 1.85; }
+
+  /* ---- featured story ---- */
+  .gs__featured {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: var(--atc-space-10);
+    align-items: center;
+    margin-top: var(--atc-space-10);
+  }
+  /* The section's single Ice moment sits behind the photograph. */
+  .gs__photo {
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    border-radius: var(--adel-radius-media);
+    background: var(--adel-blue-100);
+  }
+  .gs__photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  .gs__story { display: flex; flex-direction: column; align-items: flex-start; gap: var(--atc-space-3); min-width: 0; }
+  .gs__chips { display: flex; flex-wrap: wrap; gap: var(--atc-space-2); }
+  .gs__crossChip { text-decoration: none; }
+
+  .gs__product {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+    unicode-bidi: isolate;
+  }
+  .gs__q {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(24px, 3vw, 34px);
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+  }
+  :global([lang='ar']) .gs__q { letter-spacing: normal; unicode-bidi: plaintext; }
+  .gs__context { margin: 0; font-size: var(--adel-text-base); line-height: 1.65; color: var(--adel-text-secondary); max-width: 56ch; }
+  :global([lang='ar']) .gs__context { line-height: 1.85; unicode-bidi: plaintext; }
+  .gs__crossNote { margin: 0; font-size: var(--adel-text-sm); line-height: 1.6; color: var(--adel-text-tertiary); max-width: 56ch; }
+  :global([lang='ar']) .gs__crossNote { unicode-bidi: plaintext; }
+
+  .gs__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    margin-top: var(--atc-space-2);
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    color: var(--adel-text-link);
+    text-decoration: none;
+  }
+  .gs__ctaGhost {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    height: var(--atc-control-lg);
+    padding-inline: var(--atc-space-6);
+    border: 1px solid var(--adel-border-strong);
+    border-radius: var(--adel-radius-control);
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    color: var(--adel-text-primary);
+    text-decoration: none;
+  }
+  .gs__ctaGhost:hover { border-color: var(--adel-text-link); color: var(--adel-text-link); }
+  .gs__actions { display: flex; flex-wrap: wrap; gap: var(--atc-space-5); margin-top: var(--atc-space-10); }
+
+  .gs__arrow { display: inline-block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .gs__arrow { transition: transform var(--atc-duration-fast) var(--atc-ease-move); }
+    .gs__cta:hover .gs__arrow,
+    .gs__ctaGhost:hover .gs__arrow { transform: translateX(var(--atc-distance-1)); }
+    :global([dir='rtl']) .gs__cta:hover .gs__arrow,
+    :global([dir='rtl']) .gs__ctaGhost:hover .gs__arrow { transform: translateX(calc(-1 * var(--atc-distance-1))); }
+  }
+
+  /* ---- also testing ---- */
+  .gs__also {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--atc-space-4);
+    margin-top: var(--atc-space-10);
+    padding-top: var(--atc-space-5);
+    border-top: 1px solid var(--adel-border-hairline);
+  }
+  .gs__alsoLabel {
+    flex: none;
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+  }
+  :global([lang='ar']) .gs__alsoLabel {
+    font-family: var(--adel-font-text);
+    font-size: 12px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .gs__alsoList { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--atc-space-2) var(--atc-space-6); }
+  .gs__alsoLink { font-size: var(--adel-text-sm); color: var(--adel-text-secondary); text-decoration: none; }
+  .gs__alsoLink:hover { color: var(--adel-text-link); text-decoration: underline; }
+
+  .gs__empty {
+    margin: var(--atc-space-8) 0 0;
+    max-width: 60ch;
+    font-size: var(--adel-text-lg);
+    line-height: 1.7;
+    color: var(--adel-text-secondary);
+  }
+
+  .gs__rules {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-4) var(--atc-space-8);
+    margin: var(--atc-space-12) 0 0;
+    padding-top: var(--atc-space-5);
+    border-top: 1px solid var(--adel-border-hairline);
+  }
+  .gs__rule { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--atc-space-2); }
+  .gs__rule dt {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-primary);
+  }
+  :global([lang='ar']) .gs__rule dt {
+    font-family: var(--adel-font-text);
+    font-size: 13px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .gs__rule dd { margin: 0; font-size: var(--adel-text-sm); line-height: 1.6; color: var(--adel-text-tertiary); }
+
+  @media (max-width: 767px) {
+    .gs__featured { grid-template-columns: 1fr; gap: var(--atc-space-6); }
+    .gs__photo { aspect-ratio: 4 / 3; }
+    .gs__rules { flex-direction: column; gap: var(--atc-space-3); }
+  }
+</style>

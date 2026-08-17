@@ -34,7 +34,13 @@ interface Props {
   class?: string;
 }
 
-const { lang, stage, variant = 'full', paused = false, label, class: className } = Astro.props;
+/* `...rest` is load-bearing, not tidiness — see the same note in Rich.astro.
+   Astro scopes a parent's styles by stamping `data-astro-cid-XXXX` onto the
+   elements in its own template, and hands that attribute to a child component
+   as an ordinary prop. A child that does not forward it renders a root the
+   parent's stylesheet cannot see, so a parent rule like `.rw__rail { width:
+   100% }` is silently dead. */
+const { lang, stage, variant = 'full', paused = false, label, class: className, ...rest } = Astro.props;
 const c = useCopy(lang);
 
 const activeIndex = BUILD_STAGES.indexOf(stage);
@@ -59,7 +65,7 @@ const stateLabel = (state: string, i: number) =>
         : c.ia.vc.stageState.done;
 ---
 
-<div class:list={['jr', `jr--${variant}`, className]}>
+<div class:list={['jr', `jr--${variant}`, className]} {...rest}>
   {label && <span class="jr__label" data-vb-reveal><Rich text={label} /></span>}
 
   <div class="jr__track">
