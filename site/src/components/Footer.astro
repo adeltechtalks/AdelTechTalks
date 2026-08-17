@@ -99,7 +99,15 @@ const supporting = SUPPORTING.map((key) => nav.find((item) => item.key === key))
   .filter((item) => !empty.has(item.key))
   .map((item) => ({
     href: localizePath(item.path, lang),
-    label: (c.nav as Record<string, string>)[item.key] ?? item.key,
+    /* `nav.series` is labelled "Vibe Coding" — it was the Phase 1.1 name for
+       the build narrative, back when the series WAS the pillar. Now that
+       /vibe-coding is the pillar and sits in the column above, reusing that
+       label here would print "Vibe Coding" twice in one footer, pointing at
+       two different pages. The series takes its own name instead. */
+    label:
+      item.key === 'series'
+        ? c.series.label
+        : (c.nav as Record<string, string>)[item.key] ?? item.key,
   }));
 
 /* The Prompt Library is named, unlinked, while it is genuinely closed — the
