@@ -101,6 +101,12 @@ const homeHref = localizePath('/', lang);
     </nav>
 
     <div class="hdr__actions">
+      {/* IA v2.0: Subscribe is the one filled action in the chrome. It is a
+          nav destination like the rest — it just carries the weight, because
+          it is the only thing in the header asking for something. */}
+      <a class="hdr__subscribe" href={localizePath('/newsletter', lang)}>
+        <Rich text={c.ia.nav.subscribe} />
+      </a>
       <AuthNav lang={lang} />
       {/* The language switch is a link to the same page, not a dropdown: one
           tap, no menu, and it works with JavaScript switched off. `lang` and
@@ -276,6 +282,21 @@ const homeHref = localizePath('/', lang);
     gap: var(--atc-space-2);
     align-items: center;
   }
+  .hdr__subscribe {
+    display: inline-flex;
+    align-items: center;
+    height: var(--atc-control-sm);
+    padding-inline: var(--atc-space-4);
+    border-radius: var(--adel-radius-pill);
+    background: var(--adel-blue-500);
+    color: var(--adel-white);
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .hdr__subscribe:hover { background: var(--adel-blue-400); color: var(--adel-white); }
+
   .hdr__lang {
     padding: 8px 12px;
     border-radius: var(--adel-radius-control);

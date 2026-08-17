@@ -1,0 +1,293 @@
+---
+/* =============================================================================
+   Vibe Coding Hub — /vibe-coding (IA v2.0)
+   =============================================================================
+   The BUILDING pillar's index. Implemented from the frozen design of record
+   (proposals/Vibe Coding Hub - Final.html) and its handoff panel.
+
+   Structure: page header → featured build → series hairline → Builds group →
+   Experiments group → honesty footnote. Never a portfolio grid, never a
+   tech-stack badge wall.
+
+   ── EVERY PART OF IT COLLAPSES ──────────────────────────────────────────────
+   Nothing here is required. With zero published builds the page is a header, an
+   honest empty line and the footnote — which is the correct state on the day it
+   ships, because a build only becomes visible once there is a real screenshot
+   of something live. A group with no entries does not render at all.
+
+   `featuredBuild()` never fakes activity: "Now building" is claimed only when
+   something really is being built, otherwise the most recent build takes the
+   slot carrying its own real status.
+   ========================================================================== */
+
+import Base from '../../layouts/Base.astro';
+import Rich from '../Rich.astro';
+import StatusPill from '../ia/StatusPill.astro';
+import JourneyRail from '../ia/JourneyRail.astro';
+import BrowserFrame from '../ia/BrowserFrame.astro';
+import StoryRow from '../ia/StoryRow.astro';
+import { useCopy } from '../../copy';
+import { buildGroups, featuredBuild, BUILD_STATUS_TONE } from '../../lib/pillars';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+
+const featured = await featuredBuild(lang);
+const groups = await buildGroups(lang);
+/* The featured build is already shown above, so it does not appear again in a
+   group underneath itself. */
+const grouped = groups
+  .map((g) => ({ ...g, stories: g.stories.filter((s) => s.slug !== featured?.slug) }))
+  .filter((g) => g.stories.length > 0);
+
+const hasAnything = Boolean(featured);
+const arrow = lang === 'ar' ? '←' : '→';
+---
+
+<Base lang={lang} title={c.ia.vc.hubKicker} description={c.ia.vc.hubIntro} noindex={!hasAnything}>
+  <div class="container vch" data-vb>
+    <header class="vch__head" data-vb-reveal style="--vb-step:0">
+      <span class="vch__kicker">{c.ia.vc.hubKicker}</span>
+      <Rich text={c.ia.vc.hubTitle} as="h1" class="vch__title ar-hero" />
+      <Rich text={c.ia.vc.hubIntro} as="p" class="vch__intro" />
+    </header>
+
+    {featured ? (
+      <>
+        <section class="vch__featured" data-vb-reveal style="--vb-step:1" aria-labelledby="vch-featured">
+          <div class="vch__featuredText">
+            <StatusPill
+              label={c.ia.vc.status[featured.status]}
+              tone={BUILD_STATUS_TONE[featured.status]}
+              dot={featured.status === 'building'}
+              onDark
+            />
+            <Rich text={featured.question} as="h2" class="vch__featuredQ ar-heading" id="vch-featured" />
+            {featured.context && <Rich text={featured.context} as="p" class="vch__featuredBody" />}
+
+            <JourneyRail lang={lang} stage={featured.stage} variant="mini" paused={featured.status === 'paused'} />
+
+            <div class="vch__featuredActions">
+              <a class="vch__cta" href={featured.href}>
+                <Rich text={c.ia.vc.read} />
+                <span class="vch__arrow" aria-hidden="true">{arrow}</span>
+              </a>
+              {featured.playgroundTool && (
+                <a class="vch__alt" href={localizePath(`/playground/${featured.playgroundTool}`, lang)}>
+                  <Rich text={c.ia.vc.openInPlayground} />
+                  <span class="vch__arrow" aria-hidden="true">{arrow}</span>
+                </a>
+              )}
+            </div>
+          </div>
+
+          <div class="vch__featuredMedia">
+            <BrowserFrame
+              url={featured.liveUrl ?? 'adeltechtalks.com'}
+              src={featured.heroShot}
+              alt={featured.heroShotAlt}
+            />
+          </div>
+        </section>
+
+        {/* Structural labels only — no episode titles, dates or counts. */}
+        {featured.series && (
+          <div class="vch__series" data-vb-reveal style="--vb-step:2">
+            <span class="vch__seriesLabel"><Rich text={c.ia.vc.seriesLabel} /></span>
+            <span class="vch__parts" dir="ltr">{c.ia.vc.seriesStrip}</span>
+          </div>
+        )}
+
+        {grouped.map((group, gi) => (
+          <section class="vch__group" aria-labelledby={`vch-${group.id}`}>
+            <h2 class="vch__groupTitle" id={`vch-${group.id}`} data-vb-reveal style={`--vb-step:${3 + gi}`}>
+              {group.id === 'builds' ? c.ia.vc.groupBuilds : c.ia.vc.groupExperiments}
+            </h2>
+            <ul class="vch__rows">
+              {group.stories.map((story, i) => (
+                <StoryRow
+                  lang={lang}
+                  href={story.href}
+                  question={story.question}
+                  context={story.context}
+                  label={c.ia.vc.status[story.status]}
+                  tone={BUILD_STATUS_TONE[story.status]}
+                  dimmed={story.status === 'paused'}
+                  cta={c.ia.vc.read}
+                  step={i}
+                />
+              ))}
+            </ul>
+          </section>
+        ))}
+      </>
+    ) : (
+      /* Zero published builds. An honest line, not an empty page and not a
+         fabricated "coming soon" roadmap. */
+      <p class="vch__empty" data-vb-reveal style="--vb-step:1"><Rich text={c.ia.vc.empty} /></p>
+    )}
+
+    <p class="vch__footnote"><Rich text={c.ia.vc.footnote} /></p>
+  </div>
+</Base>
+
+<style>
+  .vch { max-width: 1160px; }
+  .vch__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-4);
+    max-width: 46ch;
+    margin-bottom: var(--atc-space-16);
+  }
+  .vch__kicker {
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--adel-signature-blue);
+  }
+  .vch__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(30px, 4.5vw, 48px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--adel-text-primary);
+    text-wrap: balance;
+  }
+  .vch__intro {
+    margin: 0;
+    font-size: var(--adel-text-lg);
+    line-height: 1.6;
+    color: var(--adel-text-secondary);
+  }
+
+  /* ---- featured build: graphite, the page's one dark moment -------------- */
+  .vch__featured {
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: var(--atc-space-16);
+    align-items: center;
+    padding: var(--atc-space-12);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-surface-inverse);
+    color: var(--adel-text-inverse);
+  }
+  .vch__featuredText { display: flex; flex-direction: column; align-items: flex-start; gap: var(--atc-space-4); }
+  .vch__featuredQ {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(24px, 3vw, 34px);
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: inherit;
+  }
+  :global([lang='ar']) .vch__featuredQ { letter-spacing: normal; unicode-bidi: plaintext; }
+  .vch__featuredBody {
+    margin: 0;
+    font-size: var(--adel-text-base);
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.68);
+  }
+  :global([lang='ar']) .vch__featuredBody { line-height: 1.85; unicode-bidi: plaintext; }
+  .vch__featuredActions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--atc-space-5); margin-top: var(--atc-space-2); }
+  .vch__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    height: var(--atc-control-lg);
+    padding-inline: var(--atc-space-6);
+    border-radius: var(--adel-radius-control);
+    background: var(--adel-blue-500);
+    color: var(--adel-white);
+    font-size: var(--adel-text-base);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .vch__cta:hover { background: var(--adel-blue-400); color: var(--adel-white); }
+  /* blue-700 fails on graphite, so links on this panel step up to blue-300. */
+  .vch__alt {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    color: var(--adel-blue-300);
+    text-decoration: none;
+  }
+  .vch__alt:hover { text-decoration: underline; }
+
+  /* ---- series hairline: structure, never episode history ---------------- */
+  .vch__series {
+    display: flex;
+    align-items: baseline;
+    gap: var(--atc-space-4);
+    flex-wrap: wrap;
+    border-top: 1px solid var(--adel-border-hairline);
+    padding-top: var(--atc-space-5);
+    margin-top: var(--atc-space-12);
+  }
+  .vch__seriesLabel,
+  .vch__parts {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .vch__seriesLabel { color: var(--adel-text-tertiary); }
+  .vch__parts { color: var(--adel-signature-blue); unicode-bidi: isolate; }
+  :global([lang='ar']) .vch__seriesLabel {
+    font-family: var(--adel-font-text);
+    font-size: 12px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  /* ---- groups ---- */
+  .vch__group { margin-top: var(--atc-space-16); }
+  .vch__groupTitle {
+    margin: 0 0 var(--atc-space-6);
+    font-family: var(--adel-font-display);
+    font-size: clamp(24px, 3vw, 30px);
+    font-weight: 700;
+    letter-spacing: var(--adel-tracking-tight);
+    color: var(--adel-text-primary);
+  }
+  :global([lang='ar']) .vch__groupTitle { letter-spacing: normal; }
+  .vch__rows { list-style: none; margin: 0; padding: 0; }
+
+  .vch__empty {
+    margin: 0;
+    max-width: 60ch;
+    font-size: var(--adel-text-lg);
+    line-height: 1.7;
+    color: var(--adel-text-secondary);
+  }
+  .vch__footnote {
+    margin: var(--atc-space-16) 0 0;
+    padding-top: var(--atc-space-5);
+    border-top: 1px solid var(--adel-border-hairline);
+    max-width: 64ch;
+    font-size: var(--adel-text-sm);
+    line-height: 1.65;
+    color: var(--adel-text-tertiary);
+  }
+
+  @media (max-width: 1023px) {
+    .vch__featured { grid-template-columns: 1fr; gap: var(--atc-space-8); }
+  }
+  @media (max-width: 767px) {
+    .vch__featured { padding: var(--atc-space-6); }
+    .vch__head { margin-bottom: var(--atc-space-10); }
+  }
+</style>

@@ -35,6 +35,8 @@ export interface Copy {
   nav: {
     guides: string; topics: string; about: string; newsletter: string; playground: string;
     work: string;
+    /* IA v2.0 — the two content pillars */
+    vibeCoding: string; gear: string;
     /* Phase 1.1 */
     learn: string; series: string; useCases: string; videos: string; prompts: string;
     courses: string;
@@ -194,6 +196,8 @@ const en: Copy = {
     guides: 'Guides',
     topics: 'Topics',
     about: 'About',
+    vibeCoding: 'Vibe Coding',
+    gear: 'Gear',
     newsletter: 'Newsletter',
     playground: 'Playground',
     work: 'Work with me',
@@ -567,6 +571,8 @@ const ar: Copy = {
   nav: {
     guides: 'الأدلة',
     topics: 'المواضيع',
+    vibeCoding: 'Vibe Coding',
+    gear: 'Gear',
     about: 'عن عادل',
     newsletter: 'النشرة',
     playground: 'الملعب',
