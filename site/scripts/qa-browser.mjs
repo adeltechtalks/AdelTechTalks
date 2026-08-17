@@ -359,6 +359,12 @@ try {
     const routes = [
       '/ar/', '/ar/learn/', '/ar/about/', '/ar/series/vibe-coding/', '/ar/prompts/',
       '/ar/newsletter/', '/ar/topics/', '/ar/use-cases/',
+      /* The IA v2.0 Arabic surfaces. Every heading that reaches for the display
+         face has to carry `ar-heading` / `ar-hero` or it renders Arabic in a
+         synthesised Latin weight — which is the exact failure this checks for,
+         and it is invisible unless you already read the script. */
+      '/ar/vibe-coding/', '/ar/gear/',
+      ...findPillarStories().filter((route) => route.startsWith('/ar/')),
     ];
     const page = await ctx.newPage();
     const violations = [];

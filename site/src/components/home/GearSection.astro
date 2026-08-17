@@ -173,7 +173,9 @@ const featuredLabel =
     text-wrap: balance;
   }
   :global([lang='ar']) .gs__title { letter-spacing: normal; unicode-bidi: plaintext; }
-  .gs__em { font-style: normal; color: var(--adel-signature-blue); }
+  /* Structure, not emphasis — see the note on .rw__em in RealWorld.astro.
+     Inheriting the headline weight keeps Ghorab at its one real style. */
+  .gs__em { font-style: normal; font-weight: inherit; color: var(--adel-signature-blue); }
 
   .gs__support { margin: 0; font-size: var(--adel-text-lg); line-height: 1.6; color: var(--adel-text-secondary); }
   :global([lang='ar']) .gs__support { line-height: 1.85; }

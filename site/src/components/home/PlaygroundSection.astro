@@ -143,7 +143,8 @@ const langAttrs = outbound ? { lang: 'en', hreflang: 'en' } : {};
     text-wrap: balance;
   }
   :global([lang='ar']) .ps__title { letter-spacing: normal; unicode-bidi: plaintext; }
-  .ps__em { font-style: normal; color: var(--adel-signature-blue); }
+  /* Structure, not emphasis — see the note on .rw__em in RealWorld.astro. */
+  .ps__em { font-style: normal; font-weight: inherit; color: var(--adel-signature-blue); }
 
   .ps__support { margin: 0; font-size: var(--adel-text-lg); line-height: 1.6; color: var(--adel-text-secondary); }
   :global([lang='ar']) .ps__support { line-height: 1.85; }
@@ -181,8 +182,12 @@ const langAttrs = outbound ? { lang: 'en', hreflang: 'en' } : {};
     color: var(--adel-text-tertiary);
     unicode-bidi: isolate;
   }
+  /* A track name is authored in English in site.config.ts and rendered LTR, so
+     it takes the LATIN display face explicitly rather than `--adel-font-display`
+     — which resolves to Ghorab on an Arabic page and would put an English
+     string in the Arabic display face at a weight Ghorab does not have. */
   .ps__toolName {
-    font-family: var(--adel-font-display);
+    font-family: var(--adel-font-latin);
     font-size: var(--adel-text-xl);
     font-weight: 700;
     letter-spacing: var(--adel-tracking-tight);

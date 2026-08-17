@@ -148,7 +148,10 @@ const facts = [
 
     {/* ---- 05 · takeaway. A verdict only once there IS one ---- */}
     <section class="gst__takeaway" aria-labelledby="gst-takeaway">
-      <h2 class="gst__takeawayTitle" id="gst-takeaway"><Rich text={t.takeawayTitle} /></h2>
+      {/* `ar-heading` is required, not decoration: it is what swaps the Latin
+          display face for Ghorab at Ghorab's ONE real weight. Without it this
+          heading renders Arabic in a synthesised 700 (TY v2.0). */}
+      <h2 class="gst__takeawayTitle ar-heading" id="gst-takeaway"><Rich text={t.takeawayTitle} /></h2>
       {story.status === 'concluded' && story.verdict ? (
         <>
           <span class="gst__verdictLabel">

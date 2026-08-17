@@ -182,7 +182,8 @@ const socials = SOCIAL.filter(([key]) => site.social[key]);
     text-wrap: balance;
   }
   :global([lang='ar']) .as__title { letter-spacing: normal; unicode-bidi: plaintext; }
-  .as__em { font-style: normal; color: var(--adel-blue-300); }
+  /* Structure, not emphasis — see the note on .rw__em in RealWorld.astro. */
+  .as__em { font-style: normal; font-weight: inherit; color: var(--adel-blue-300); }
 
   .as__bio { margin: 0; font-size: var(--adel-text-lg); line-height: 1.65; color: rgba(255, 255, 255, 0.72); max-width: 54ch; }
   :global([lang='ar']) .as__bio { line-height: 1.9; unicode-bidi: plaintext; }

@@ -231,7 +231,13 @@ const arrow = lang === 'ar' ? '←' : '→';
     text-wrap: balance;
   }
   :global([lang='ar']) .rw__title { letter-spacing: normal; unicode-bidi: plaintext; }
-  .rw__em { font-style: normal; color: var(--adel-signature-blue); }
+  /* The accent word in the headline is an <em> for structure, not for emphasis
+     — the colour is what marks it. `[lang='ar'] em` in tokens/adel-type.css
+     gives emphasis a weight of 600, which is right in Readex prose and wrong
+     inside a Ghorab hero: Ghorab ships ONE style, so 600 is synthesised (TY
+     v2.0). Inheriting the headline's own weight is correct in both languages —
+     800 on the Latin hero, 400 on the Arabic one. */
+  .rw__em { font-style: normal; font-weight: inherit; color: var(--adel-signature-blue); }
 
   .rw__support { margin: 0; font-size: var(--adel-text-lg); line-height: 1.6; color: var(--adel-text-secondary); }
   :global([lang='ar']) .rw__support { line-height: 1.85; }

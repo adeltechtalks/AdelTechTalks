@@ -174,7 +174,8 @@ const anything = rows.length > 0 || hasTopics;
     text-wrap: balance;
   }
   :global([lang='ar']) .ls__title { letter-spacing: normal; unicode-bidi: plaintext; }
-  .ls__em { font-style: normal; color: var(--adel-signature-blue); }
+  /* Structure, not emphasis — see the note on .rw__em in RealWorld.astro. */
+  .ls__em { font-style: normal; font-weight: inherit; color: var(--adel-signature-blue); }
 
   .ls__support { margin: 0; font-size: var(--adel-text-lg); line-height: 1.6; color: var(--adel-text-secondary); }
   :global([lang='ar']) .ls__support { line-height: 1.85; }
