@@ -274,6 +274,34 @@ export const projects = [
 ];
 
 /* -----------------------------------------------------------------------------
+   THE BUILD JOURNEY (Design System v3 — "Vibe Coding Section, Final Direction")
+   -----------------------------------------------------------------------------
+   Six stages, in order, with exactly one marked `now`. The names and the status
+   words are copy and live in `building.stage` / `building.stageState` in
+   src/copy.ts, in both languages; what lives here is the STRUCTURE — which
+   stages exist, in what order, and where the build has got to.
+
+   Moving the build on is a one-line change: set the finished stage to 'done'
+   and the next one to 'now'. The track fill under the row is computed from that
+   position, so it follows automatically and cannot drift out of sync with the
+   dots the way a hard-coded percentage would.
+
+   `state` is deliberately not a free-form string: 'done' | 'now' | 'next' are
+   the only three treatments the design defines, and a fourth would be a new
+   design rather than new data.
+   -------------------------------------------------------------------------- */
+export type StageId = 'idea' | 'research' | 'brand' | 'design' | 'build' | 'launch';
+
+export const buildJourney: { id: StageId; state: 'done' | 'now' | 'next' }[] = [
+  { id: 'idea', state: 'done' },
+  { id: 'research', state: 'done' },
+  { id: 'brand', state: 'done' },
+  { id: 'design', state: 'done' },
+  { id: 'build', state: 'now' },
+  { id: 'launch', state: 'next' },
+];
+
+/* -----------------------------------------------------------------------------
    PHOTOGRAPHY (§15)
    -----------------------------------------------------------------------------
    Real photographs of Adel only. Drop the files into site/public/photos/ and
@@ -292,6 +320,16 @@ export const photography = {
   aboutPhoto: '',
   /* Adel's real handwritten signature as an SVG or transparent PNG. */
   signature: '',
+  /* The GearNest screen inside the browser frame on the homepage. A REAL
+     screenshot of the live site only — the homepage, the product or the
+     marketplace UI once it exists. Never a mock-up, never the Launching-Soon
+     holding page, never recoloured into Adel's palette.
+
+     The frame is a fixed 16/10 box (4/3 on mobile) with `object-fit: cover`, so
+     dropping a file in here swaps the picture without moving a single pixel of
+     the layout around it. Until then the frame renders a calm empty screen. */
+  gearnestShot: '',
+  gearnestShotMobile: '',
 };
 
 /* -----------------------------------------------------------------------------

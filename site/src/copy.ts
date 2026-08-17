@@ -86,7 +86,34 @@ export interface Copy {
     category: Record<'product' | 'building' | 'research' | 'writing' | 'automation', string>;
   };
   courses: { title: string; body: string; note: string };
-  building: { title: string; intro: string; visit: string };
+  building: {
+    title: string; intro: string; visit: string;
+    /* The Vibe Coding / What I'm Building band (Design System v3, "Final
+       Direction"). Stage NAMES and STATUS words are here; the stage order and
+       which one is active are structure, and live in `buildJourney` in
+       site.config.ts. */
+    badge: string;
+    aside: string;
+    headlineBefore: string;
+    headlineAfter: string;
+    story: string;
+    ctaPrimary: string;
+    ctaSecondary: string;
+    benchLabel: string;
+    bench: string[];
+    projectTitle: string;
+    projectStatus: string;
+    projectStatusShort: string;
+    slotNote: string;
+    journeyLabel: string;
+    stage: Record<'idea' | 'research' | 'brand' | 'design' | 'build' | 'launch', string>;
+    stageState: Record<'done' | 'doneFirst' | 'now' | 'next', string>;
+    seriesLabel: string;
+    seriesParts: string;
+    seriesPartsShort: string;
+    seriesNote: string;
+    seriesNoteShort: string;
+  };
   videos: {
     title: string; intro: string; watch: string; empty: string;
     indexTitle: string; indexIntro: string;
@@ -286,6 +313,36 @@ const en: Copy = {
     title: 'What I’m building',
     intro: 'Side projects that started as an itch and turned into something real.',
     visit: 'Visit',
+
+    badge: 'Building in public',
+    aside: '// receipts on screen',
+    headlineBefore: 'Can ',
+    headlineAfter: ' build a real business?',
+    story:
+      'I’m building GearNest from idea to launch — and sharing what works, what breaks, and what I learn along the way.',
+    ctaPrimary: 'Follow the build',
+    ctaSecondary: 'All build updates',
+    benchLabel: 'Also on the bench',
+    bench: ['AI experiments', 'Automations & tools', 'Next projects'],
+    projectTitle: 'Building GearNest. Out loud.',
+    projectStatus: 'Build · in progress',
+    projectStatusShort: 'Build · now',
+    slotNote: 'Real screenshot slot · layout never changes when swapped',
+    journeyLabel: 'The build journey',
+    stage: {
+      idea: 'Idea',
+      research: 'Research',
+      brand: 'Brand',
+      design: 'Design',
+      build: 'Build',
+      launch: 'Launch',
+    },
+    stageState: { done: 'Done', doneFirst: 'Done', now: 'Now', next: 'Next' },
+    seriesLabel: 'The series',
+    seriesParts: 'Part 01 → Part 02 → Part 03 → …',
+    seriesPartsShort: 'Part 01 → Part 02 → …',
+    seriesNote: 'every build update ships as a numbered part of the Vibe Coding series',
+    seriesNoteShort: 'every build update ships as a numbered part',
   },
   videos: {
     title: 'Latest videos',
@@ -538,6 +595,41 @@ const ar: Copy = {
     title: 'ما أبنيه',
     intro: 'مشاريع بدأت كفكرة مزعجة في رأسي ثم صارت شيئاً حقيقياً.',
     visit: 'زيارة',
+
+    /* Authored Arabic from the approved final Design frame (2c / 2d), verbatim.
+       Not translated here and not to be rewritten: it is Egyptian colloquial to
+       match the rest of the site's Arabic voice, and the English technical
+       terms stay English by design (§11). */
+    badge: 'بنبني في العلن',
+    aside: '// receipts on screen',
+    headlineBefore: 'هل يقدر الـ',
+    headlineAfter: ' يبني بيزنس حقيقي؟',
+    story:
+      'ببني [[GearNest]] من الفكرة للإطلاق — وبشارك اللي بينجح، واللي بيتكسر، وكل حاجة بتعلمها في الطريق.',
+    ctaPrimary: 'تابع البناء',
+    ctaSecondary: 'كل تحديثات البناء',
+    benchLabel: 'وعلى الترابيزة كمان',
+    bench: ['تجارب [[AI]]', 'أتمتة وأدوات', 'مشاريع جاية'],
+    projectTitle: 'ببني [[GearNest]]. قدّام الكل.',
+    projectStatus: 'البناء · شغّال دلوقتي',
+    projectStatusShort: 'البناء · دلوقتي',
+    slotNote: 'مكان لصورة حقيقية — التصميم مش بيتغير لما الصورة تتبدل',
+    journeyLabel: 'رحلة البناء',
+    stage: {
+      idea: 'الفكرة',
+      research: 'البحث',
+      brand: 'البراند',
+      design: 'التصميم',
+      build: 'البناء',
+      launch: 'الإطلاق',
+    },
+    /* "الفكرة" is feminine and takes تمّت; the other three take تمّ. */
+    stageState: { done: 'تمّ', doneFirst: 'تمّت', now: 'دلوقتي', next: 'الجاي' },
+    seriesLabel: 'السلسلة',
+    seriesParts: 'Part 01 → Part 02 → Part 03 → …',
+    seriesPartsShort: 'Part 01 → Part 02 → …',
+    seriesNote: 'كل تحديث بناء بينزل كجزء مرقّم من سلسلة الـ[[Vibe Coding]]',
+    seriesNoteShort: 'كل تحديث بناء بينزل كجزء مرقّم',
   },
   videos: {
     title: 'أحدث الفيديوهات',

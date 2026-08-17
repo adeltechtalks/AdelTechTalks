@@ -1,21 +1,48 @@
 ---
-/* "What I'm Building" (§14)
-   -----------------------------------------------------------------------------
-   Driven by the `projects` list in site.config.ts, never by a GearNest special
-   case: "Do not hard-code the architecture so only GearNest can exist."
+/* =============================================================================
+   Vibe Coding / What I'm Building — Design System v3, "Final Direction"
+   =============================================================================
+   Implemented from proposals/Vibe Coding Section - Final.html (frames 2a–2d)
+   and the implementation handoff printed beneath the mobiles. The composition,
+   ratios, colour treatment and motion are the design's; the routes, copy
+   plumbing and bilingual handling are this site's.
 
-   A project marked `separate: true` is NOT listed here. Separate brands get
-   their own cross-link band (§5, §14 "Keep GearNest visually separate"), and
-   listing GearNest in both places would say the same thing twice. So this
-   section holds Adel's OWN projects and stays hidden until there is one —
-   which is honest, and is why the list is data-driven rather than a GearNest
-   special case. Add a project to `projects` and the section appears. */
+   ── WHAT THIS SECTION IS ────────────────────────────────────────────────────
+   The handoff places it as a replacement for `Building()`, and in the design's
+   own Home.jsx there is no separate GearNest section — GearNest lives INSIDE
+   this band, together with the three "also on the bench" chips that used to be
+   the old Building() right-hand column. So this one section now carries what
+   was previously split across Building.astro (which rendered nothing, because
+   every project is `separate: true`) and GearNest.astro.
 
-import SectionIntro from '../editorial/SectionIntro.astro';
+   §5 still holds: GearNest is not merged into Adel's identity. It keeps its own
+   frame, its own real domain in the chrome, and its own screenshot slot, and
+   none of Adel's brand colour is used to dress it up as his — the blue here
+   belongs to the question being asked, not to GearNest's branding.
+
+   ── THE STRUCTURE ───────────────────────────────────────────────────────────
+     · Full-bleed graphite band, inner container 1160px / 40px gutters,
+       96px top and 84px bottom (64/56 on mobile).
+     · Two columns, 0.95fr / 1.05fr, 72px apart, centred on each other.
+     · Left: badge → headline → story → actions → bench chips.
+     · Right: project headline + status pill → browser frame → slot note.
+     · Below both: the six-stage journey, then the series hairline.
+     · Mobile stacks it and the journey becomes a vertical list — the handoff
+       is explicit that the horizontal track must not be compressed.
+
+   ── MINT DISCIPLINE ─────────────────────────────────────────────────────────
+   CS v2.0 caps Fresh Mint at ~3%. Here it appears exactly three times, all of
+   them saying the same thing — this is live right now: the status pill, the
+   active stage's ring and dot, and the "Now" pill. The lock glyph in the
+   browser chrome is the one non-status use, and it is 11px.
+   ========================================================================== */
+
 import Rich from '../Rich.astro';
-import { projects } from '../../site.config';
 import { useCopy } from '../../copy';
-import type { Lang } from '../../i18n';
+import { buildJourney, photography, projects } from '../../site.config';
+import { flagshipSeries, seriesPath } from '../../lib/series';
+import { findByHubSlug } from '../../lib/content';
+import { localizePath, type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
@@ -23,103 +50,783 @@ interface Props {
 
 const { lang } = Astro.props;
 const c = useCopy(lang);
-const own = projects.filter((p) => !p.separate);
+
+const gearnest = projects.find((p) => p.id === 'gearnest');
+const flagship = flagshipSeries();
+
+/* "Follow the build" goes to the case study when it exists in this language —
+   that is the thing being followed — and falls back to the series itself.
+   "All build updates" is always the series index. Neither can land on an empty
+   page: both targets are resolved, not assumed. */
+const caseStudy = gearnest?.caseStudy
+  ? await findByHubSlug('use-case', gearnest.caseStudy, lang)
+  : undefined;
+const seriesHref = flagship ? localizePath(seriesPath(flagship.id), lang) : null;
+const primaryHref = caseStudy?.href ?? seriesHref;
+const secondaryHref = seriesHref;
+
+/* The track under the six dots is filled to the CENTRE of the active stage, so
+   it always lines up with the mint ring however many stages there are. The
+   design's 74% is exactly that for a six-stage journey with `build` fifth:
+   (4 + 0.5) / 6 = 75%, less half a gap. Computing it keeps the fill honest when
+   the journey moves on. */
+const activeIndex = Math.max(0, buildJourney.findIndex((s) => s.state === 'now'));
+const fillPercent = ((activeIndex + 0.5) / buildJourney.length) * 100;
+
+/* Arabic marks the first stage's "done" differently — الفكرة is feminine and
+   takes تمّت where the other three take تمّ. English uses one word for both. */
+const stateLabel = (state: string, index: number) =>
+  state === 'now'
+    ? c.building.stageState.now
+    : state === 'next'
+      ? c.building.stageState.next
+      : index === 0
+        ? c.building.stageState.doneFirst
+        : c.building.stageState.done;
+
+const shot = photography.gearnestShot;
+const shotMobile = photography.gearnestShotMobile || shot;
+
+/* The arrow points the way the language reads (§29). */
+const arrow = lang === 'ar' ? '←' : '→';
 ---
 
-{own.length > 0 && (
-  <section class="container section" aria-labelledby="building-title">
-    <SectionIntro title={c.building.title} intro={c.building.intro} />
-    <ul class="bd__list">
-      {own.map((p) => (
-        <li class:list={['bd__item', p.separate && 'bd__item--separate']}>
-          <div class="bd__head">
-            <Rich text={p[lang].name} as="h3" class="bd__name ar-heading" />
-            <span class:list={['bd__status', `bd__status--${p.status}`]}>{p.status}</span>
+{gearnest && (
+<section class="vb" aria-labelledby="vb-title" data-vb>
+  <div class="vb__inner">
+
+    {/* ---- eyebrow row ---- */}
+    <div class="vb__top" data-vb-reveal style="--vb-step:0">
+      <span class="vb__badge"><Rich text={c.building.badge} /></span>
+      <span class="vb__aside" dir="ltr">{c.building.aside}</span>
+    </div>
+
+    <div class="vb__grid">
+
+      {/* ---- the question ---- */}
+      <div class="vb__text" data-vb-reveal style="--vb-step:1">
+        <h2 class="vb__title ar-heading" id="vb-title">
+          {c.building.headlineBefore}<span class="term vb__term">Vibe Coding</span>{c.building.headlineAfter}
+        </h2>
+
+        <Rich text={c.building.story} as="p" class="vb__story" />
+
+        <div class="vb__actions">
+          {primaryHref && (
+            <a class="vb__cta" href={primaryHref}>
+              {c.building.ctaPrimary}
+              <span class="vb__arrow" aria-hidden="true">{arrow}</span>
+            </a>
+          )}
+          {secondaryHref && (
+            <a class="vb__alt" href={secondaryHref}>
+              {c.building.ctaSecondary}
+              <span class="vb__arrow" aria-hidden="true">{arrow}</span>
+            </a>
+          )}
+        </div>
+
+        <div class="vb__bench">
+          <span class="vb__benchLabel"><Rich text={c.building.benchLabel} /></span>
+          {c.building.bench.map((chip) => (
+            <span class="vb__chip"><Rich text={chip} /></span>
+          ))}
+        </div>
+      </div>
+
+      {/* ---- the project ---- */}
+      <div class="vb__media" data-vb-reveal style="--vb-step:2">
+        <div class="vb__mediaHead">
+          <Rich text={c.building.projectTitle} as="span" class="vb__project" />
+          <span class="vb__status">
+            <Rich text={c.building.projectStatus} class="vb__statusLong" />
+            <Rich text={c.building.projectStatusShort} class="vb__statusShort" />
+          </span>
+        </div>
+
+        {/* Browser chrome is fixed layout and always LTR — a URL bar does not
+            mirror, in any language. The domain is the real one, read from
+            `projects[].url` like every other GearNest link on the site. */}
+        <div class="vb__chrome" dir="ltr">
+          <div class="vb__bar">
+            <span class="vb__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="vb__url">
+              <svg class="vb__lock" width="11" height="11" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <rect x="4" y="10" width="16" height="11" rx="2"></rect>
+                <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+              </svg>
+              {gearnest.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+            </span>
           </div>
-          <Rich text={p[lang].body} as="p" class="bd__body" />
-          <a class="bd__link" href={p.url} rel="noopener" target="_blank">
-            {c.building.visit}
-            <span class="bd__arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-      ))}
-    </ul>
-  </section>
+
+          {/* The slot. A real screenshot or nothing — never a mock-up, never
+              the holding page. Empty, it is a quiet screen rather than a dashed
+              box with a picture glyph, which would read as a failed image. */}
+          <div class="vb__screen">
+            {shot ? (
+              <picture>
+                {shotMobile !== shot && <source media="(max-width: 767px)" srcset={shotMobile} />}
+                <img class="vb__shot" src={shot} alt="" loading="lazy" decoding="async" />
+              </picture>
+            ) : (
+              <span class="vb__empty" aria-hidden="true"></span>
+            )}
+          </div>
+        </div>
+
+        <span class="vb__slotNote"><Rich text={c.building.slotNote} /></span>
+      </div>
+    </div>
+
+    {/* ---- the journey ---- */}
+    <div class="vb__journey">
+      <span class="vb__journeyLabel" data-vb-reveal style="--vb-step:3">
+        <Rich text={c.building.journeyLabel} />
+      </span>
+
+      <div class="vb__track">
+        <span class="vb__rail" aria-hidden="true"></span>
+        <span class="vb__fill" aria-hidden="true" data-vb-fill style={`--vb-fill:${fillPercent}%`}></span>
+
+        <ol class="vb__stages">
+          {buildJourney.map((stage, i) => (
+            <li class:list={['vb__stage', `vb__stage--${stage.state}`]} data-vb-stage style={`--vb-step:${i}`}>
+              {stage.state === 'done' ? (
+                <svg class="vb__dot" viewBox="0 0 20 20" aria-hidden="true">
+                  <circle cx="10" cy="10" r="9" fill="var(--adel-blue-500)"></circle>
+                  <path d="M6 10.2l2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"></path>
+                </svg>
+              ) : stage.state === 'now' ? (
+                <span class="vb__dot vb__dot--now" aria-hidden="true"><span></span></span>
+              ) : (
+                <span class="vb__dot vb__dot--next" aria-hidden="true"></span>
+              )}
+              <span class="vb__stageName"><Rich text={c.building.stage[stage.id]} /></span>
+              <span class="vb__stageState"><Rich text={stateLabel(stage.state, i)} /></span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      {/* ---- the series layer: structure only, never episode titles ---- */}
+      <div class="vb__series" data-vb-reveal style="--vb-step:4">
+        <span class="vb__seriesLabel"><Rich text={c.building.seriesLabel} /></span>
+        <span class="vb__parts vb__partsLong" dir="ltr">{c.building.seriesParts}</span>
+        <span class="vb__parts vb__partsShort" dir="ltr">{c.building.seriesPartsShort}</span>
+        <span class="vb__seriesNote"><Rich text={c.building.seriesNote} /></span>
+        <span class="vb__seriesNoteShort"><Rich text={c.building.seriesNoteShort} /></span>
+      </div>
+    </div>
+  </div>
+</section>
 )}
 
 <style>
-  .bd__list {
-    list-style: none;
-    margin: var(--atc-space-10) 0 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--atc-space-6);
+  /* ---- the band ---------------------------------------------------------- */
+  .vb {
+    margin-top: var(--atc-space-24);
+    background: var(--adel-surface-inverse);
+    color: var(--adel-text-inverse);
   }
-  .bd__item {
+  .vb__inner {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: var(--atc-space-24) var(--atc-space-10) var(--atc-space-20);
+  }
+
+  /* ---- eyebrow ---- */
+  .vb__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--atc-space-4);
+    margin-bottom: var(--atc-space-10);
+  }
+  .vb__badge {
+    display: inline-flex;
+    align-items: center;
+    height: var(--atc-control-sm);
+    padding-inline: var(--atc-space-4);
+    border-radius: var(--adel-radius-pill);
+    border: 1px solid rgba(147, 180, 255, 0.35);
+    background: rgba(255, 255, 255, 0.04);
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--adel-blue-300);
+    white-space: nowrap;
+  }
+  /* Arabic has no uppercase and is never letter-spaced, and the badge is body
+     copy rather than display — Readex, not Ghorab (TY v2.0). */
+  :global([lang='ar']) .vb__badge {
+    font-family: var(--adel-font-text);
+    font-size: var(--adel-text-xs);
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .vb__aside {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  /* ---- the two columns ---- */
+  .vb__grid {
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    /* The design's 72px is exactly between two steps on the 4px scale; 64 is
+       chosen over 80 because it keeps the left column wide enough to hold the
+       bench chips on one line, the way the approved frame does. */
+    gap: var(--atc-space-16);
+    align-items: center;
+  }
+  .vb__text {
     display: flex;
     flex-direction: column;
-    gap: var(--atc-space-3);
-    padding: var(--atc-space-8);
-    border-radius: var(--adel-radius-panel);
-    background: var(--adel-surface-raised);
-    border: 1px solid var(--adel-border-hairline);
+    gap: var(--atc-space-6);
   }
-  /* A separate brand does not sit inside Adel's surface treatment. The dashed
-     edge is the visual equivalent of "this belongs to someone else". */
-  .bd__item--separate {
-    background: var(--adel-surface-canvas);
-    border-style: dashed;
-    border-color: var(--adel-border-strong);
-  }
-  .bd__head {
-    display: flex;
-    align-items: baseline;
-    gap: var(--atc-space-3);
-    flex-wrap: wrap;
-  }
-  .bd__name {
+
+  .vb__title {
     margin: 0;
     font-family: var(--adel-font-display);
-    font-size: var(--adel-text-xl);
+    font-size: clamp(33px, 3.6vw, 52px);
+    line-height: 1.06;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    color: inherit;
+    text-wrap: balance;
+  }
+  .vb__term { color: var(--adel-blue-300); }
+  /* The Arabic headline is Ghorab: one weight, sized by the AR display scale,
+     and `plaintext` so الـ stays welded to the Latin term it introduces. */
+  :global([lang='ar']) .vb__title {
+    font-size: clamp(30px, 3.1vw, 44px);
+    unicode-bidi: plaintext;
+  }
+  :global([lang='ar']) .vb__term {
+    font-family: var(--adel-font-latin);
+    font-size: calc(1em * var(--adel-type-ar-latin-scale));
     font-weight: 700;
-    letter-spacing: var(--adel-tracking-tight);
-    color: var(--adel-text-primary);
   }
-  .bd__status {
-    font-size: var(--adel-text-xs);
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: var(--adel-radius-pill);
-    background: var(--adel-surface-sunken);
-    color: var(--adel-text-secondary);
-    /* Status names are a fixed English vocabulary in the config, so they stay
-       LTR even on the Arabic page. */
-    direction: ltr;
-    unicode-bidi: isolate;
-  }
-  .bd__status--live {
-    background: var(--adel-status-success-bg);
-    color: var(--adel-status-success-text);
-  }
-  .bd__body {
+
+  .vb__story {
     margin: 0;
-    font-size: var(--adel-text-sm);
-    line-height: 1.65;
-    color: var(--adel-text-secondary);
+    font-size: var(--adel-text-lg);
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.68);
+    max-width: 46ch;
   }
-  .bd__link {
-    margin-top: auto;
-    padding-top: var(--atc-space-3);
+  :global([lang='ar']) .vb__story { line-height: 1.8; unicode-bidi: plaintext; }
+
+  /* ---- actions ---- */
+  .vb__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-6);
+    flex-wrap: wrap;
+  }
+  .vb__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-3);
+    height: var(--atc-control-lg);
+    padding-inline: var(--atc-space-6);
+    border-radius: var(--adel-radius-control);
+    background: var(--adel-blue-500);
+    color: var(--adel-white);
+    font-size: var(--adel-text-base);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .vb__cta:hover { background: var(--adel-blue-400); color: var(--adel-white); }
+  .vb__alt {
     display: inline-flex;
     align-items: center;
     gap: var(--atc-space-2);
-    align-self: flex-start;
-    font-size: var(--adel-text-sm);
-    font-weight: 500;
-    color: var(--adel-text-link);
+    font-size: var(--adel-text-base);
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
     text-decoration: none;
   }
-  .bd__link:hover { text-decoration: underline; }
-  :global([dir='rtl']) .bd__arrow { display: inline-block; transform: scaleX(-1); }
+  .vb__alt:hover { color: var(--adel-white); text-decoration: underline; }
+
+  /* ---- bench chips ---- */
+  .vb__bench {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-3);
+    flex-wrap: wrap;
+    margin-top: var(--atc-space-3);
+  }
+  .vb__benchLabel {
+    font-family: var(--adel-font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+  }
+  :global([lang='ar']) .vb__benchLabel {
+    font-family: var(--adel-font-text);
+    font-size: var(--adel-text-xs);
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .vb__chip {
+    font-family: var(--adel-font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 5px var(--atc-space-3);
+    border-radius: var(--adel-radius-pill);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+  :global([lang='ar']) .vb__chip {
+    font-family: var(--adel-font-text);
+    font-size: 11.5px;
+    letter-spacing: normal;
+    text-transform: none;
+    unicode-bidi: plaintext;
+  }
+
+  /* ---- the project column ---- */
+  .vb__media {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-4);
+  }
+  .vb__mediaHead {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--atc-space-3);
+  }
+  /* Secondary to the section headline, never its equal — 19px against 52px. */
+  .vb__project {
+    font-family: var(--adel-font-display);
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: inherit;
+  }
+  /* Not Ghorab: at 18px this is below the 24px floor, so Arabic sets it in
+     Readex at the design's own weight (TY v2.0). */
+  :global([lang='ar']) .vb__project {
+    font-family: var(--adel-font-text);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: normal;
+    unicode-bidi: plaintext;
+  }
+  .vb__status {
+    flex: none;
+    font-family: var(--adel-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-graphite);
+    background: var(--adel-mint-500);
+    padding: 5px var(--atc-space-3);
+    border-radius: var(--adel-radius-pill);
+    white-space: nowrap;
+  }
+  :global([lang='ar']) .vb__status {
+    font-family: var(--adel-font-text);
+    font-size: 11.5px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .vb__statusShort { display: none; }
+
+  /* ---- browser chrome ---- */
+  .vb__chrome {
+    background: var(--adel-white);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  }
+  .vb__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-4);
+    height: 44px;
+    padding-inline: var(--atc-space-4);
+    background: #252b3d;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .vb__dots { display: flex; gap: 6px; flex: none; }
+  .vb__dots i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+  }
+  .vb__url {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    height: 28px;
+    padding-inline: var(--atc-space-4);
+    border-radius: var(--adel-radius-pill);
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: var(--adel-font-mono);
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .vb__lock { flex: none; color: var(--adel-mint-500); }
+
+  /* A fixed box: the picture is swapped, the layout never moves. */
+  .vb__screen { aspect-ratio: 16 / 10; }
+  .vb__screen picture { display: block; height: 100%; }
+  .vb__shot {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* No screenshot yet. A calm empty screen — no dashed border, no glyph and no
+     production note, none of which a visitor should be shown. */
+  .vb__empty {
+    display: block;
+    height: 100%;
+    background: linear-gradient(180deg, #f7f8fa 0%, #eceff4 100%);
+  }
+  .vb__slotNote {
+    align-self: flex-end;
+    font-family: var(--adel-font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+  }
+  :global([lang='ar']) .vb__slotNote {
+    font-family: var(--adel-font-text);
+    font-size: 11px;
+    letter-spacing: normal;
+    text-transform: none;
+    unicode-bidi: plaintext;
+  }
+
+  /* ---- the journey ------------------------------------------------------- */
+  .vb__journey { margin-top: var(--atc-space-20); } /* design 72px → 80px */
+  .vb__journeyLabel {
+    display: block;
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  :global([lang='ar']) .vb__journeyLabel {
+    font-family: var(--adel-font-text);
+    font-size: 13px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  .vb__track { position: relative; margin-top: var(--atc-space-6); }
+  /* The rail and its fill are logical, so the whole row mirrors in Arabic
+     without a second set of rules. */
+  .vb__rail,
+  .vb__fill {
+    position: absolute;
+    top: 9px;
+    height: 2px;
+    inset-inline-start: 9px;
+  }
+  .vb__rail { inset-inline-end: 9px; background: rgba(255, 255, 255, 0.12); }
+  .vb__fill { width: var(--vb-fill); background: var(--adel-blue-400); }
+
+  .vb__stages {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--atc-space-4);
+  }
+  .vb__stage {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--atc-space-2);
+  }
+  .vb__dot { width: 20px; height: 20px; flex: none; box-sizing: border-box; }
+  .vb__dot--now {
+    border-radius: 50%;
+    background: var(--adel-graphite);
+    border: 2px solid var(--adel-mint-500);
+    display: grid;
+    place-items: center;
+  }
+  .vb__dot--now > span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--adel-mint-500);
+  }
+  .vb__dot--next {
+    border-radius: 50%;
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+  }
+  .vb__stageName {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--adel-white);
+  }
+  :global([lang='ar']) .vb__stageName { letter-spacing: normal; }
+  .vb__stage--next .vb__stageName { color: rgba(255, 255, 255, 0.45); }
+  .vb__stageState {
+    font-family: var(--adel-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  :global([lang='ar']) .vb__stageState {
+    font-family: var(--adel-font-text);
+    font-size: 12px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .vb__stage--next .vb__stageState { color: rgba(255, 255, 255, 0.45); }
+  .vb__stage--now .vb__stageState {
+    color: var(--adel-graphite);
+    background: var(--adel-mint-500);
+    padding: 3px var(--atc-space-3);
+    border-radius: var(--adel-radius-pill);
+  }
+
+  /* ---- the series hairline ---- */
+  .vb__series {
+    display: flex;
+    align-items: baseline;
+    gap: var(--atc-space-4);
+    flex-wrap: wrap;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: var(--atc-space-5);
+    margin-top: var(--atc-space-8);
+  }
+  .vb__seriesLabel {
+    font-family: var(--adel-font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+  }
+  :global([lang='ar']) .vb__seriesLabel {
+    font-family: var(--adel-font-text);
+    font-size: 12px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  /* Structural labels only. There are no episode titles, dates or counts here
+     and there must never be — this says the series has parts, nothing more. */
+  .vb__parts {
+    font-family: var(--adel-font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    /* The frame sets this through its `.mono` class, which uppercases. The
+       content is Latin in both languages, so it uppercases on the Arabic page
+       too — TY v2.0's no-uppercase rule is about Arabic script, and there is
+       none here. */
+    text-transform: uppercase;
+    color: var(--adel-blue-300);
+    unicode-bidi: isolate;
+  }
+  .vb__seriesNote {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  :global([lang='ar']) .vb__seriesNote { font-size: 13px; unicode-bidi: plaintext; }
+  .vb__seriesNoteShort,
+  .vb__partsShort { display: none; }
+
+  /* ---- tablet ------------------------------------------------------------ */
+  @media (max-width: 1023px) {
+    .vb__grid { grid-template-columns: 1fr; gap: var(--atc-space-10); }
+    .vb__story { max-width: none; }
+  }
+
+  /* ---- mobile: stacked, and the journey becomes a vertical list ---------- */
+  @media (max-width: 767px) {
+    .vb__inner { padding: var(--atc-space-16) var(--atc-space-6) var(--atc-space-16); /* design 64/56 */ }
+    .vb__top { margin-bottom: var(--atc-space-6); }
+    .vb__aside { display: none; }
+    .vb__title { line-height: 1.1; letter-spacing: -0.03em; }
+    :global([lang='ar']) .vb__title { line-height: 1.5; }
+    .vb__story { font-size: 15.5px; }
+    :global([lang='ar']) .vb__story { font-size: 15px; }
+
+    /* Frame 2d's stacking order is badge → headline → story → project frame →
+       actions → journey → series → chips, and the chips genuinely belong last:
+       they are the aside, and on a phone an aside above the build journey reads
+       as more important than it is.
+
+       Getting there needs the grid and the text column to step out of the way
+       (`display: contents`) so that everything — including the journey, which
+       is a sibling of the grid rather than a child of it — becomes a direct
+       child of one flex column and can be ordered against everything else. */
+    .vb__inner {
+      display: flex;
+      flex-direction: column;
+      gap: var(--atc-space-5); /* design 22px */
+    }
+    .vb__grid,
+    .vb__text { display: contents; }
+    .vb__top { order: 0; }
+    .vb__title { order: 1; }
+    .vb__story { order: 2; }
+    .vb__media { order: 3; }
+    .vb__actions { order: 4; flex-direction: column; align-items: stretch; gap: var(--atc-space-3); }
+    .vb__bench { order: 6; margin-top: 0; }
+    .vb__cta { justify-content: center; }
+    .vb__alt { justify-content: center; }
+
+    .vb__project { font-size: 16px; }
+    :global([lang='ar']) .vb__project { font-size: 15px; }
+    .vb__statusLong { display: none; }
+    .vb__statusShort { display: inline; }
+    .vb__status { font-size: 9px; }
+    :global([lang='ar']) .vb__status { font-size: 10.5px; }
+    .vb__bar { height: 38px; }
+    .vb__url { height: 24px; font-size: 10.5px; }
+    .vb__screen { aspect-ratio: 4 / 3; }
+    .vb__slotNote { display: none; }
+    .vb__chip { font-size: 9px; }
+    :global([lang='ar']) .vb__chip { font-size: 10.5px; }
+
+    /* No compressed horizontal timeline: the track is gone and each stage is
+       a row, which is what the approved mobile frame does. */
+    .vb__journey { order: 5; margin-top: var(--atc-space-3); }
+    .vb__rail,
+    .vb__fill { display: none; }
+    .vb__track { margin-top: var(--atc-space-4); }
+    .vb__stages { grid-template-columns: 1fr; gap: 0; }
+    .vb__stage {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--atc-space-4);
+      padding-block: 9px;
+    }
+    .vb__stageName { font-size: 14.5px; flex: 1; }
+    :global([lang='ar']) .vb__stageName { font-size: 14px; }
+    .vb__stageState { font-size: 11.5px; letter-spacing: normal; text-transform: none; }
+
+    .vb__series { flex-direction: column; gap: var(--atc-space-2); padding-top: var(--atc-space-4); margin-top: var(--atc-space-5); }
+    .vb__seriesLabel { display: none; }
+    .vb__partsLong { display: none; }
+    .vb__partsShort { display: inline; }
+    .vb__seriesNote { display: none; }
+    .vb__seriesNoteShort { display: inline; font-size: 11.5px; color: rgba(255, 255, 255, 0.55); }
+    :global([lang='ar']) .vb__seriesNoteShort { font-size: 12px; unicode-bidi: plaintext; }
+  }
+
+  /* ---- motion ------------------------------------------------------------
+     The approved handoff, and nothing beyond it. Everything is opacity and a
+     short translate; the only scale is the status pill's 0.96→1. Nothing
+     loops and nothing pulses — the Motion Charter forbids both, and a "live"
+     indicator that throbs is exactly what it forbids them for.
+
+     The band is below the fold, so it is revealed on intersection rather than
+     on load: `data-vb-in` is set once by the observer in Base.astro and never
+     removed. Without JavaScript the section is simply visible, because the
+     hidden state is only ever applied to a section the observer has claimed
+     (`[data-vb][data-vb-armed]`). */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-vb][data-vb-armed] [data-vb-reveal],
+    [data-vb][data-vb-armed] [data-vb-stage] {
+      opacity: 0;
+    }
+    [data-vb][data-vb-armed] [data-vb-stage] {
+      transform: translateY(8px);
+    }
+    [data-vb][data-vb-armed] .vb__media { transform: translateY(24px); }
+    [data-vb][data-vb-armed] .vb__fill { transform: scaleX(0); transform-origin: left center; }
+    :global([dir='rtl']) [data-vb][data-vb-armed] .vb__fill { transform-origin: right center; }
+
+    /* revealed */
+    [data-vb][data-vb-in] [data-vb-reveal] {
+      opacity: 1;
+      transform: none;
+      transition:
+        opacity var(--atc-duration-moderate) var(--atc-ease-enter),
+        transform var(--atc-duration-slow) var(--atc-ease-enter);
+    }
+    /* The project frame follows the headline by 100ms. */
+    [data-vb][data-vb-in] .vb__media { transition-delay: 100ms; }
+
+    [data-vb][data-vb-in] [data-vb-stage] {
+      opacity: 1;
+      transform: none;
+      transition:
+        opacity var(--atc-duration-base) var(--atc-ease-enter),
+        transform var(--atc-duration-base) var(--atc-ease-enter);
+      transition-delay: calc(var(--vb-step) * var(--atc-stagger-marketing));
+    }
+    /* The track draws after the last stage has landed. */
+    [data-vb][data-vb-in] .vb__fill {
+      transform: none;
+      transition: transform var(--atc-duration-slow) var(--atc-ease-move);
+      transition-delay: calc(6 * var(--atc-stagger-marketing));
+    }
+    /* The status pill and the active dot are the last thing to arrive, and
+       then they stay put. */
+    [data-vb][data-vb-armed] .vb__status,
+    [data-vb][data-vb-armed] .vb__stage--now .vb__stageState { opacity: 0; transform: scale(0.96); }
+    [data-vb][data-vb-in] .vb__status,
+    [data-vb][data-vb-in] .vb__stage--now .vb__stageState {
+      opacity: 1;
+      transform: none;
+      transition:
+        opacity var(--atc-duration-slow) var(--atc-ease-enter),
+        transform var(--atc-duration-slow) var(--atc-ease-enter);
+      transition-delay: calc(6 * var(--atc-stagger-marketing));
+    }
+
+    /* Hover only, arrow only, direction-aware. */
+    .vb__arrow {
+      display: inline-block;
+      transition: transform var(--atc-duration-fast) var(--atc-ease-move);
+    }
+    .vb__cta:hover .vb__arrow,
+    .vb__alt:hover .vb__arrow { transform: translateX(var(--atc-distance-1)); }
+    :global([dir='rtl']) .vb__cta:hover .vb__arrow,
+    :global([dir='rtl']) .vb__alt:hover .vb__arrow {
+      transform: translateX(calc(-1 * var(--atc-distance-1)));
+    }
+  }
+
+  /* Reduced motion is a replacement, not a shortening: the final state, at
+     once, with a static hover arrow. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-vb] [data-vb-reveal],
+    [data-vb] [data-vb-stage],
+    [data-vb] .vb__status,
+    [data-vb] .vb__fill {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .vb__arrow { transition: none; }
+  }
 </style>

@@ -9,8 +9,14 @@
    Section order is the order §14 lists them, with one Phase 1.1 insertion:
 
      Hero → What I Explore → [Vibe Coding series] → Latest → Guides →
-     Prompt Library → What I'm Building → Latest Videos → GearNest →
+     Prompt Library → Vibe Coding / What I'm Building → Latest Videos →
      Newsletter → Sign-Off
+
+   The separate GearNest band is gone as of the v3 "Final Direction": that
+   design folds GearNest INTO the Vibe Coding band — same graphite ground, same
+   §5 separation, but one statement instead of two. Stacking both would have put
+   two graphite GearNest sections on one page saying the same thing. The band's
+   two actions carry what the old one did: the case study, and the series.
 
    The series band goes after "What I Explore" and before the library strips,
    because it is the thing happening right now rather than another category of
@@ -31,7 +37,6 @@ import GuidesStrip from '../home/GuidesStrip.astro';
 import PromptTeaser from '../home/PromptTeaser.astro';
 import Building from '../home/Building.astro';
 import Videos from '../home/Videos.astro';
-import GearNest from '../home/GearNest.astro';
 import SignOff from '../home/SignOff.astro';
 import NewsletterCTA from '../editorial/NewsletterCTA.astro';
 import Divider from '../editorial/Divider.astro';
@@ -73,8 +78,6 @@ const description = lang === 'ar' ? site.descriptionAr : site.description;
   <Building lang={lang} />
 
   <Videos lang={lang} entries={videos} />
-
-  <GearNest lang={lang} />
 
   <section class="container section">
     <NewsletterCTA lang={lang} placement="home" />

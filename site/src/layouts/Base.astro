@@ -169,6 +169,38 @@ const fontHref = `https://fonts.googleapis.com/css2?${families.join('&')}&displa
       <slot />
     </main>
     <Footer lang={lang} />
+
+    {/* Scroll reveal for sections that sit below the fold — currently the
+        Vibe Coding band, whose approved motion is specified as an
+        IntersectionObserver at threshold 0.2 that fires once.
+
+        The hidden state is deliberately NOT in the stylesheet by default. The
+        script stamps `data-vb-armed` first, so a reader with JavaScript off, or
+        one who arrives before this runs, sees the finished section rather than
+        an invisible one. Reduced motion never arms it at all — under that
+        preference the section is simply there, which is the charter's
+        replacement rather than a faster animation. */}
+    <script is:inline>
+      (function () {
+        var sections = document.querySelectorAll('[data-vb]');
+        if (!sections.length) return;
+        var still = window.matchMedia('(prefers-reduced-motion: reduce)');
+        if (still.matches || !('IntersectionObserver' in window)) return;
+
+        var seen = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            entry.target.setAttribute('data-vb-in', '');
+            seen.unobserve(entry.target);
+          });
+        }, { threshold: 0.2 });
+
+        sections.forEach(function (section) {
+          section.setAttribute('data-vb-armed', '');
+          seen.observe(section);
+        });
+      })();
+    </script>
   </body>
 </html>
 
