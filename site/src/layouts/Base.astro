@@ -50,8 +50,16 @@ const dir = LANG_DIR[lang];
 /* §11 — a [[term]] marker is an element in the body and plain text in an
    attribute. Everything below lands in <title>, a meta tag or an og property,
    so it is flattened once, here, rather than at forty call sites. */
+/* The CHANNEL carries the title, not the person: "Vibe Coding — AdelTechTalks",
+   "About Adel — AdelTechTalks", and "AdelTechTalks — I ❤️ Tech" on the pages
+   that supply no title of their own. AdelTechTalks is the identity a reader
+   recognises in a tab or a search result; Adel remains the site's subject.
+
+   Arabic pages take the same shape with their own authored page titles — "عن
+   عادل — AdelTechTalks" — because the brand half is a frozen name that is
+   never translated or transliterated. */
 const fullTitle = plain(
-  title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`
+  title ? `${title} — ${site.showName}` : `${site.showName} — ${site.tagline}`
 );
 const metaDescription = plain(description);
 const base = Astro.site ?? new URL(site.url);
@@ -142,7 +150,7 @@ const fontHref = `https://fonts.googleapis.com/css2?${families.join('&')}&displa
 
     {/* ---- Social sharing (§27) ---- */}
     <meta property="og:type" content={ogType} />
-    <meta property="og:site_name" content={site.name} />
+    <meta property="og:site_name" content={site.showName} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:url" content={canonical} />

@@ -466,7 +466,11 @@ const en: Copy = {
     signature: 'Adel',
   },
   about: {
-    title: 'About',
+    /* The document title, not the page's visible kicker — the About page
+       renders "About" as its overline from `ia.aboutPage.kicker`. In a tab or
+       a search result "About" alone says nothing, so the title names its
+       subject: "About Adel — AdelTechTalks". */
+    title: 'About Adel',
     intro: 'Who I am, what I work on, and why I keep writing it all down.',
     workTitle: 'How I work',
     contextTitle: 'Where I work',
@@ -666,7 +670,13 @@ const en: Copy = {
       hubKicker: 'Vibe Coding', hubTitle: 'I turn ideas into launches.',
       hubIntro: 'Every build in the open — the idea, the tools, what broke, and where it got to.',
       featuredLabel: 'Now building', groupBuilds: 'Builds', groupExperiments: 'Experiments',
-      seriesLabel: 'Series · Building in public', seriesStrip: 'Part 01 → Part 02 → …',
+      /* A STRUCTURAL label, per the Vibe Coding Hub's "series hairline
+         (structural labels only)". It used to read "Series · Building in
+         public"; Website Structure v2 retires "Building in public" as brand
+         language, and this was the last place it survived as visitor copy. It
+         renders only once a build publishes, which is why the built pages were
+         already clean of it — the string was live, just unreachable. */
+      seriesLabel: 'Series', seriesStrip: 'Part 01 → Part 02 → …',
       status: {
         exploring: 'Exploring', designing: 'Designing', building: 'Now building',
         testing: 'Testing', launched: 'Launched', paused: 'Paused',
@@ -1119,7 +1129,7 @@ const ar: Copy = {
       hubKicker: 'Vibe Coding', hubTitle: 'بحوّل الأفكار لمشاريع حقيقية.',
       hubIntro: 'كل [[build]] في العلن — الفكرة، الأدوات، إيه اللي اتكسر، ووصل لفين.',
       featuredLabel: 'ببنيه دلوقتي', groupBuilds: 'Builds', groupExperiments: 'Experiments',
-      seriesLabel: 'Series · بنبني في العلن', seriesStrip: 'Part 01 → Part 02 → …',
+      seriesLabel: 'Series', seriesStrip: 'Part 01 → Part 02 → …',
       status: {
         exploring: 'بستكشف', designing: 'بصمّم', building: 'ببنيه دلوقتي',
         testing: 'بجرّب', launched: 'لايف', paused: 'متوقف مؤقتًا',

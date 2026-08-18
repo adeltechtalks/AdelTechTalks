@@ -17,13 +17,34 @@ export const site = {
   name: 'Adel',
   /* The content identity. Used where the CHANNEL is being named, not the person. */
   showName: 'AdelTechTalks',
-  /* Shown in the browser tab and in Google results */
-  tagline: 'Product Manager · AI Enthusiast · Builder',
+  /* The site's default title is `showName — tagline`, so this is the second
+     half of "AdelTechTalks — I ❤️ Tech": the master brand expression, and the
+     only thing a reader should meet first in a browser tab, a search result or
+     a shared link.
+
+     What it REPLACED was "Product Manager · AI Enthusiast · Builder". That
+     line is a professional positioning, and a professional positioning is not
+     what this site leads with — it is credibility context, it belongs in the
+     About page's professional module, and it is barred from global SEO and
+     social metadata. Neither the role nor the employer appears in this block,
+     and neither may be added to it.
+
+     "I ❤️ Tech" is a frozen brand name: it is never translated or
+     transliterated, so the Arabic pages carry the identical title. */
+  tagline: 'I ❤️ Tech',
   /* One or two sentences. Used for social sharing when a page has none. */
   description:
-    'Adel is a Product Manager and AI enthusiast. He learns it, tests it, builds with it, and shares what actually worked.',
-  descriptionAr:
-    'عادل — Product Manager ومهتم بالـAI. يتعلّمها، يجرّبها، يبني بها، ويشارك ما نفع فعلاً.',
+    'Vibe Coding, Gear, prompts, use cases, and the tech I’m building, testing, and learning with.',
+  /* NOT a translation of the line above, and deliberately not a new sentence
+     written for this field either — ARABIC_VOICE_GUIDE.md is explicit that
+     Arabic copy is pulled from the approved authored source and never
+     generated, derived or MSA-corrected.
+
+     So this is the authored Arabic umbrella line from the design of record
+     (Website Structure v2, frame 2c, the footer): the one approved sentence
+     that says what the whole site is for. It reads as its own sentence in
+     Arabic rather than as an English list rendered in Arabic words. */
+  descriptionAr: 'إزاي بستخدم التكنولوجيا عشان أبني وأبدع وأشتغل أذكى.',
   url: 'https://adeltechtalks.com',
   email: 'hello@adeltechtalks.com',
   /* Delete any line you do not use */
