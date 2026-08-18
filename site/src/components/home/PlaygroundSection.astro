@@ -27,6 +27,7 @@
    ========================================================================== */
 
 import Rich from '../Rich.astro';
+import PillarIcon from '../PillarIcon.astro';
 import StatusPill from '../ia/StatusPill.astro';
 import { useCopy } from '../../copy';
 import { playground } from '../../site.config';
@@ -55,13 +56,11 @@ const langAttrs = outbound ? { lang: 'en', hreflang: 'en' } : {};
   <header class="ps__head">
     <div class="ps__kickerRow" data-vb-reveal style="--vb-step:0">
       <span class="ps__kicker" dir="ltr">{t.label}</span>
-      <span class="ps__aside"><Rich text={t.aside} /></span>
+      <span class="ps__icon"><PillarIcon name="playground" size={20} /></span>
     </div>
 
     <h2 class="ps__title ar-hero" id="ps-title" data-vb-reveal style="--vb-step:1">
-      <Rich text={t.headBefore} as="span" />
-      <em class="ps__em"><Rich text={t.headEm} /></em>
-      <Rich text={t.headAfter} as="span" />
+      <Rich text={t.headBefore} as="span" /><em class="ps__em"><Rich text={t.headEm} /></em><Rich text={t.headAfter} as="span" />
     </h2>
 
     <Rich text={t.support} as="p" class="ps__support" data-vb-reveal style="--vb-step:2" />
@@ -84,13 +83,20 @@ const langAttrs = outbound ? { lang: 'en', hreflang: 'en' } : {};
               <span class="ps__toolCta">
                 <Rich text={t.open} />
                 <span class="ps__arrow" aria-hidden="true">{arrow}</span>
+                {/* A fact about the tool, not a marketing line: it runs in the
+                    browser, there is nothing to install. */}
+                <Rich text={t.opensIn} as="span" class="ps__toolNote" />
               </span>
             </a>
           </li>
         ))}
       </ul>
 
-      <div class="ps__actions" data-vb-reveal style="--vb-step:3">
+      {playground.tracks.length > tracks.length && (
+        <p class="ps__more" data-vb-reveal style="--vb-step:3"><Rich text={t.moreTools} /></p>
+      )}
+
+      <div class="ps__actions" data-vb-reveal style="--vb-step:4">
         <a class="ps__ctaGhost" href={hrefFor('/playground')} {...langAttrs}>
           <Rich text={t.cta} />
           <span class="ps__arrow" aria-hidden="true">{arrow}</span>
@@ -101,20 +107,6 @@ const langAttrs = outbound ? { lang: 'en', hreflang: 'en' } : {};
     <p class="ps__empty" data-vb-reveal style="--vb-step:3"><Rich text={t.empty} /></p>
   )}
 
-  <dl class="ps__rules">
-    <div class="ps__rule">
-      <dt><Rich text={t.ruleFree} /></dt>
-      <dd><Rich text={t.ruleFreeNote} /></dd>
-    </div>
-    <div class="ps__rule">
-      <dt><Rich text={t.rulePublic} /></dt>
-      <dd><Rich text={t.rulePublicNote} /></dd>
-    </div>
-    <div class="ps__rule">
-      <dt><Rich text={t.ruleDemos} /></dt>
-      <dd><Rich text={t.ruleDemosNote} /></dd>
-    </div>
-  </dl>
 </section>
 
 <style>
@@ -129,8 +121,7 @@ const langAttrs = outbound ? { lang: 'en', hreflang: 'en' } : {};
     color: var(--adel-signature-blue);
     unicode-bidi: isolate;
   }
-  .ps__aside { font-family: var(--adel-font-mono); font-size: 11px; color: var(--adel-text-tertiary); }
-  :global([lang='ar']) .ps__aside { font-family: var(--adel-font-text); font-size: 12.5px; }
+  .ps__icon { display: block; color: var(--adel-signature-blue); }
 
   .ps__title {
     margin: 0;
@@ -245,32 +236,34 @@ const langAttrs = outbound ? { lang: 'en', hreflang: 'en' } : {};
     color: var(--adel-text-secondary);
   }
 
-  .ps__rules {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--atc-space-4) var(--atc-space-8);
-    margin: var(--atc-space-12) 0 0;
-    padding-top: var(--atc-space-5);
-    border-top: 1px solid var(--adel-border-hairline);
-  }
-  .ps__rule { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--atc-space-2); }
-  .ps__rule dt {
-    font-family: var(--adel-font-mono);
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--adel-text-primary);
-  }
-  :global([lang='ar']) .ps__rule dt {
+  /* The "opens in your browser" line sits under the tool CTA — a fact, in the
+     quiet tone facts get. */
+  .ps__toolNote {
+    display: block;
+    flex-basis: 100%;
+    margin-top: var(--atc-space-1);
     font-family: var(--adel-font-text);
-    font-size: 13px;
+    font-size: var(--adel-text-xs);
+    font-weight: 400;
     letter-spacing: normal;
     text-transform: none;
+    color: var(--adel-text-tertiary);
   }
-  .ps__rule dd { margin: 0; font-size: var(--adel-text-sm); line-height: 1.6; color: var(--adel-text-tertiary); }
+  .ps__toolCta { flex-wrap: wrap; }
 
-  @media (max-width: 767px) {
-    .ps__rules { flex-direction: column; gap: var(--atc-space-3); }
+  /* Rendered only when there genuinely are more tracks than the three shown. */
+  .ps__more {
+    margin: var(--atc-space-8) 0 0;
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+  }
+  :global(html[lang='ar']) .ps__more {
+    font-family: var(--adel-font-arabic);
+    font-size: var(--adel-text-sm);
+    letter-spacing: normal;
+    text-transform: none;
   }
 </style>

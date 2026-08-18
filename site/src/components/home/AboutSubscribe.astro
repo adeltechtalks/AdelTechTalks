@@ -35,6 +35,7 @@
    ========================================================================== */
 
 import Rich from '../Rich.astro';
+import LoveTech from '../LoveTech.astro';
 import Icon from '../Icon.astro';
 import NewsletterForm from '../NewsletterForm.astro';
 import { photography, site } from '../../site.config';
@@ -68,10 +69,11 @@ const socials = SOCIAL.filter(([key]) => site.social[key]);
         {t.loop.map((step) => <li class="as__loopStep">{step}</li>)}
       </ol>
 
+      {/* "Hi, I'm Adel. I ♥ Tech." — the greeting is authored per language, the
+          wordmark is the shared brand object and stays Latin in both. */}
       <h2 class="as__title ar-hero" id="as-title" data-vb-reveal style="--vb-step:1">
-        <Rich text={t.headBefore} as="span" />
-        <em class="as__em"><Rich text={t.headEm} /></em>
-        <Rich text={t.headAfter} as="span" />
+        <Rich text={t.greeting} as="span" />{' '}
+        <LoveTech class="as__love lovetech--onDark" />
       </h2>
 
       <Rich text={t.bio} as="p" class="as__bio" data-vb-reveal style="--vb-step:2" />
@@ -113,7 +115,7 @@ const socials = SOCIAL.filter(([key]) => site.social[key]);
 
     <div class="as__subscribe" data-vb-reveal style="--vb-step:5">
       <h3 class="as__subTitle ar-heading"><Rich text={t.subTitle} /></h3>
-      <Rich text={t.subBody} as="p" class="as__subBody" />
+      {t.subBody && <Rich text={t.subBody} as="p" class="as__subBody" />}
 
       <NewsletterForm
         lang={lang}
@@ -183,7 +185,9 @@ const socials = SOCIAL.filter(([key]) => site.social[key]);
   }
   :global([lang='ar']) .as__title { letter-spacing: normal; unicode-bidi: plaintext; }
   /* Structure, not emphasis — see the note on .rw__em in RealWorld.astro. */
-  .as__em { font-style: normal; font-weight: inherit; color: var(--adel-blue-300); }
+  /* The wordmark inside the closing headline: it inherits the heading's size
+     and sits on the baseline with it, rather than being a second type object. */
+  .as__love { font-size: 1em; }
 
   .as__bio { margin: 0; font-size: var(--adel-text-lg); line-height: 1.65; color: rgba(255, 255, 255, 0.72); max-width: 54ch; }
   :global([lang='ar']) .as__bio { line-height: 1.9; unicode-bidi: plaintext; }

@@ -78,6 +78,24 @@
      headline. Cairo is gone (retired in DS v2.1). */
   --adel-font-arabic-display: 'KO Ghorab', 'Montserrat', 'Readex Pro', Tahoma, sans-serif;
 
+  /* ---- the sketch layer's handwriting -------------------------------------
+     The About page's doodle annotations, and NOTHING else on the site. The
+     About Me Storyboard freeze is explicit that Caveat is "the ONLY font
+     addition, used exclusively for the sketch layer, EN only" — and equally
+     explicit that it is a placeholder:
+
+       "production replaces Caveat with real handwriting asset if/when supplied
+        (optional publish upgrade, not a gate)"
+
+     THIS TOKEN IS THAT SWAP-IN POINT. When Adel's real handwriting arrives, it
+     becomes an @font-face here and the first name in this stack. No component
+     and no page changes.
+
+     Note what this is NOT used for: the sign-off signature. A handwriting FONT
+     standing in for a person's signature is a fake signature, and §8 keeps the
+     approved typeset fallback there until the real asset exists. */
+  --adel-font-hand: 'Caveat', 'Segoe Script', cursive;
+
   /* Montserrat that is NEVER remapped by language. A wordmark is Latin on the
      Arabic site too, and so is an English term quoted inside an Arabic
      headline — neither may fall into the Arabic display stack. */

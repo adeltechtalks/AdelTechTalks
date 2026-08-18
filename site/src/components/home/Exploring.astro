@@ -1,0 +1,340 @@
+---
+/* =============================================================================
+   Homepage §2 — What I'm exploring now
+   =============================================================================
+   Design of record: Website Structure v2, frames 2a/2b/2c/2d.
+
+   Three orientation cards — Building · Testing · Learning — that answer "what
+   is this person doing right now" in one screen, and hand the reader to the
+   pillar that owns each answer. It is an ORIENTATION strip, not a dashboard:
+   no counts, no status feed, no live data. Three doors, named.
+
+   ── THE CARDS ARE DELIBERATELY NOT IDENTICAL ────────────────────────────────
+   From the handoff's card-system note, verbatim: "Orientation cards:
+   deliberately non-identical — Building = graphite + mono terminal line;
+   Testing = warm white + photography; Learning = ice + oversized type 'Aa'.
+   Whole card is the tap target."
+
+   So each card carries the surface of the section it points at, and the trio
+   reads as three different places rather than one component rendered three
+   times. The whole card is an anchor: one tap target, one hover state, and the
+   arrow moves rather than being a second link.
+
+   ── NO CONTENT DEPENDENCY ───────────────────────────────────────────────────
+   These three cards never collapse and never gate on published content. They
+   are navigation, and all three destinations — /vibe-coding, /gear, /learn —
+   have designed empty states of their own. The photograph on the Testing card
+   is the one optional part: absent, that card falls back to its warm-white
+   ground with the caption alone, which is the approved treatment rather than a
+   broken frame.
+   ========================================================================== */
+
+import Rich from '../Rich.astro';
+import PillarIcon from '../PillarIcon.astro';
+import { useCopy } from '../../copy';
+import { photography } from '../../site.config';
+import { localizePath, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = useCopy(lang);
+const t = c.ia.exploring;
+const arrow = lang === 'ar' ? '←' : '→';
+
+const desk = photography.deskDetail;
+---
+
+<section class="container section ex" aria-labelledby="ex-title" data-vb>
+  <header class="ex__head" data-vb-reveal style="--vb-step:0">
+    <span class="ex__kicker" dir="ltr">{t.kicker}</span>
+    <h2 class="ex__title ar-heading" id="ex-title"><Rich text={t.title} /></h2>
+  </header>
+
+  <div class="ex__grid">
+    {/* ---- Building → Vibe Coding · graphite + the mono terminal line ---- */}
+    <a
+      class="ex__card ex__card--building"
+      href={localizePath('/vibe-coding', lang)}
+      data-vb-reveal
+      style="--vb-step:1"
+    >
+      <span class="ex__marker" dir="ltr">{t.building.marker}</span>
+      <span class="ex__icon"><PillarIcon name="vibe-coding" size={24} /></span>
+      <h3 class="ex__name ar-heading"><Rich text={t.building.title} /></h3>
+      <Rich text={t.building.body} as="p" class="ex__body" />
+      {/* A structural label for the workflow, not a claim about a build. */}
+      <span class="ex__terminal" dir="ltr">{t.building.terminal}</span>
+      <span class="ex__cta">
+        <Rich text={t.building.cta} />
+        <span class="ex__arrow" aria-hidden="true">{arrow}</span>
+      </span>
+    </a>
+
+    {/* ---- Testing → Gear · warm white + photography ---- */}
+    <a
+      class="ex__card ex__card--testing"
+      href={localizePath('/gear', lang)}
+      data-vb-reveal
+      style="--vb-step:2"
+    >
+      <span class="ex__marker" dir="ltr">{t.testing.marker}</span>
+      <span class="ex__icon"><PillarIcon name="gear" size={24} /></span>
+      <h3 class="ex__name ar-heading"><Rich text={t.testing.title} /></h3>
+      <Rich text={t.testing.body} as="p" class="ex__body" />
+      {desk ? (
+        <span class="ex__photo">
+          <img src={desk} alt="" width="640" height="420" loading="lazy" decoding="async" />
+        </span>
+      ) : (
+        /* PH v1.0 — no stock, no generated stand-in, no empty dashed frame on a
+           live page. The caption carries the card on its own. */
+        <span class="ex__caption" dir="ltr">{t.testing.caption}</span>
+      )}
+      <span class="ex__cta">
+        <Rich text={t.testing.cta} />
+        <span class="ex__arrow" aria-hidden="true">{arrow}</span>
+      </span>
+    </a>
+
+    {/* ---- Learning → Learn · ice + the oversized "Aa" ---- */}
+    <a
+      class="ex__card ex__card--learning"
+      href={localizePath('/learn', lang)}
+      data-vb-reveal
+      style="--vb-step:3"
+    >
+      <span class="ex__marker" dir="ltr">{t.learning.marker}</span>
+      <span class="ex__icon"><PillarIcon name="learn" size={24} /></span>
+      <h3 class="ex__name ar-heading"><Rich text={t.learning.title} /></h3>
+      {/* Typographic ornament, not content: hidden from the accessibility tree
+          so it is never read out as the letters "A a". */}
+      <span class="ex__aa" aria-hidden="true" dir="ltr">Aa</span>
+      <Rich text={t.learning.body} as="p" class="ex__body" />
+      <span class="ex__cta">
+        <Rich text={t.learning.cta} />
+        <span class="ex__arrow" aria-hidden="true">{arrow}</span>
+      </span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .ex__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-2);
+    margin-bottom: var(--atc-space-8);
+  }
+  .ex__kicker {
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+    unicode-bidi: isolate;
+  }
+  .ex__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--adel-text-primary);
+  }
+
+  .ex__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--atc-space-6);
+  }
+
+  /* ---- the shared card skeleton; the three variants differ only in surface ---- */
+  .ex__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-3);
+    min-height: 340px;
+    padding: var(--atc-space-8);
+    border-radius: var(--adel-radius-card);
+    text-decoration: none;
+    box-sizing: border-box;
+    transition:
+      transform var(--atc-duration-fast) var(--atc-ease-move),
+      box-shadow var(--atc-duration-fast) var(--atc-ease-move);
+  }
+  .ex__card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--adel-elevation-2);
+  }
+  .ex__card:hover .ex__arrow {
+    transform: translateX(4px);
+  }
+  :global([dir='rtl']) .ex__card:hover .ex__arrow {
+    transform: translateX(-4px);
+  }
+
+  .ex__marker {
+    font-family: var(--adel-font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    unicode-bidi: isolate;
+  }
+  .ex__icon { display: block; }
+  .ex__name {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-2xl);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .ex__body {
+    margin: 0;
+    font-size: var(--adel-text-base);
+    line-height: 1.6;
+  }
+  .ex__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    margin-top: auto;
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+  }
+  .ex__arrow {
+    display: inline-block;
+    transition: transform var(--atc-duration-fast) var(--atc-ease-move);
+  }
+
+  /* ---- Building: graphite, mono terminal line -------------------------- */
+  .ex__card--building {
+    background: var(--adel-graphite);
+    color: var(--adel-white);
+  }
+  .ex__card--building .ex__marker { color: var(--adel-mint-300); }
+  .ex__card--building .ex__icon { color: var(--adel-blue-300); }
+  .ex__card--building .ex__name { color: var(--adel-white); }
+  .ex__card--building .ex__body { color: rgba(255, 255, 255, 0.76); }
+  .ex__card--building .ex__cta { color: var(--adel-blue-300); }
+  .ex__terminal {
+    display: block;
+    padding: var(--atc-space-3) var(--atc-space-4);
+    border-radius: var(--adel-radius-inline);
+    background: rgba(255, 255, 255, 0.06);
+    font-family: var(--adel-font-mono);
+    font-size: 12px;
+    color: var(--adel-mint-300);
+    unicode-bidi: isolate;
+    overflow-wrap: anywhere;
+  }
+
+  /* ---- Testing: warm white, photography -------------------------------- */
+  .ex__card--testing {
+    background: var(--adel-warm-white);
+    border: 1px solid var(--adel-border-hairline);
+    color: var(--adel-text-primary);
+  }
+  .ex__card--testing .ex__marker { color: var(--adel-text-tertiary); }
+  .ex__card--testing .ex__icon { color: var(--adel-signature-blue); }
+  .ex__card--testing .ex__body { color: var(--adel-text-secondary); }
+  .ex__card--testing .ex__cta { color: var(--adel-text-link); }
+  .ex__photo {
+    display: block;
+    margin-top: auto;
+    border-radius: var(--adel-radius-media);
+    overflow: hidden;
+    aspect-ratio: 3 / 2;
+  }
+  .ex__photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .ex__caption {
+    margin-top: auto;
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+    unicode-bidi: isolate;
+  }
+  /* With the photo present the CTA is the last row, so `margin-top:auto` on the
+     photo would push the CTA away from it. Reset it there. */
+  .ex__photo ~ .ex__cta { margin-top: var(--atc-space-4); }
+  .ex__caption ~ .ex__cta { margin-top: var(--atc-space-4); }
+
+  /* ---- Learning: ice, oversized Aa -------------------------------------- */
+  .ex__card--learning {
+    background: var(--adel-ice-blue);
+    color: var(--adel-deep-blue);
+  }
+  .ex__card--learning .ex__marker { color: var(--adel-blue-700); }
+  .ex__card--learning .ex__icon { color: var(--adel-signature-blue); }
+  .ex__card--learning .ex__name { color: var(--adel-deep-blue); }
+  .ex__card--learning .ex__body { color: var(--adel-blue-800); }
+  .ex__card--learning .ex__cta { color: var(--adel-deep-blue); }
+  .ex__aa {
+    /* A Latin typographic ornament in both languages — never the Arabic
+       display face, which has no Latin and a 24px floor this would clear only
+       by accident. */
+    font-family: var(--adel-font-latin);
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--adel-blue-200);
+    unicode-bidi: isolate;
+  }
+
+  /* ---- tablet: three across becomes three wide rows (RESPONSIVE spec) ---- */
+  @media (max-width: 1199px) and (min-width: 768px) {
+    .ex__grid { grid-template-columns: 1fr; }
+    .ex__card { min-height: 0; }
+    .ex__aa { font-size: 56px; }
+  }
+
+  /* ---- mobile: composed, not a shrunken desktop ------------------------- */
+  @media (max-width: 767px) {
+    .ex__grid { grid-template-columns: 1fr; gap: var(--atc-space-4); }
+    .ex__card { min-height: 0; padding: var(--atc-space-6); }
+    .ex__aa { font-size: 48px; }
+    .ex__photo { aspect-ratio: 16 / 9; }
+  }
+
+  /* ---- Arabic -----------------------------------------------------------
+     The display FACE and SIZE are not set here: `.ar-heading` in
+     tokens/adel-type.css already replaces the Latin weight-and-size treatment
+     with the Arabic display scale, and it outranks a component rule on
+     purpose. What a component still owns is its own Latin-only declarations —
+     and the one that must never survive into Arabic is letter-spacing.
+
+     `.ex__kicker`, `.ex__marker`, `.ex__caption`, `.ex__terminal` and `.ex__aa`
+     are deliberately NOT in this list: those five slots carry Latin strings in
+     both languages (frames 2c/2d keep "Right now", "Building", "Testing",
+     "Learning", "On the desk" and the terminal line in English), so the mono
+     tracking on them is tracking on Latin. */
+  :global(html[lang='ar']) .ex__title,
+  :global(html[lang='ar']) .ex__name,
+  :global(html[lang='ar']) .ex__body,
+  :global(html[lang='ar']) .ex__cta {
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  :global(html[lang='ar']) .ex__cta {
+    font-family: var(--adel-font-arabic);
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ex__card,
+    .ex__arrow { transition: none; }
+    .ex__card:hover { transform: none; }
+    .ex__card:hover .ex__arrow { transform: none; }
+  }
+</style>

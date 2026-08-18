@@ -397,6 +397,153 @@ try {
     await page.close();
   }
 
+  /* ---- 8. the navigation system opens, closes and stays keyboard-operable --
+     Website Structure v2 frame 2e specifies "hover-intent + click, 200ms
+     fade/8px rise, full keyboard nav, Esc closes" on desktop and a "full-screen
+     accordion, one pillar open at a time" on mobile. All of it is behaviour, so
+     none of it is visible to the static sweep — and a disclosure control that
+     opens but cannot be closed from the keyboard is an accessibility defect
+     that looks perfect in a screenshot. */
+  {
+    for (const route of ['/', '/ar/']) {
+      const page = await ctx.newPage();
+      await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'domcontentloaded' });
+
+      const chev = page.locator('.hdr__chev').first();
+      const panel = page.locator('.hdr__panel').first();
+      if ((await chev.count()) === 0) {
+        /* Every pillar menu is content-gated, so with nothing published there
+           is legitimately nothing to open. That is a pass, not a skip. */
+        check(true, `${route} no dropdown to test — every pillar menu is empty`);
+        await page.close();
+        continue;
+      }
+
+      await chev.click();
+      check(await panel.isVisible(), `${route} click opens the dropdown`);
+      check(
+        (await chev.getAttribute('aria-expanded')) === 'true',
+        `${route} the control reports itself expanded`
+      );
+
+      await page.keyboard.press('Escape');
+      check(!(await panel.isVisible()), `${route} Escape closes the dropdown`);
+      check(
+        await page.evaluate(() => document.activeElement?.classList.contains('hdr__chev')),
+        `${route} Escape returns focus to the control that opened it`
+      );
+
+      /* Hover-intent. The pointer has to LEAVE the item first — the click above
+         left the cursor inside it, and pointerenter does not fire twice. */
+      await page.mouse.move(700, 600);
+      await page.waitForTimeout(300);
+      await page.locator('.hdr__item').first().hover();
+      await page.waitForTimeout(300);
+      check(await panel.isVisible(), `${route} hover-intent opens the dropdown`);
+      await page.mouse.move(700, 600);
+      await page.waitForTimeout(350);
+      check(!(await panel.isVisible()), `${route} moving away closes it`);
+
+      const chevs = page.locator('.hdr__chev');
+      if ((await chevs.count()) > 1) {
+        await chevs.nth(0).click();
+        await chevs.nth(1).click();
+        const panels = page.locator('.hdr__panel');
+        check(
+          !(await panels.nth(0).isVisible()) && (await panels.nth(1).isVisible()),
+          `${route} only one dropdown is open at a time`
+        );
+      }
+      await page.close();
+    }
+
+    const mobile = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    for (const route of ['/', '/ar/']) {
+      const page = await mobile.newPage();
+      await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'domcontentloaded' });
+      await page.locator('.hdr__burger').click();
+      const chevs = page.locator('.hdr__mChev');
+      if ((await chevs.count()) > 1) {
+        await chevs.nth(0).click();
+        check(
+          await page.locator('.hdr__mList').nth(0).isVisible(),
+          `${route} the mobile accordion expands a pillar`
+        );
+        await chevs.nth(1).click();
+        check(
+          !(await page.locator('.hdr__mList').nth(0).isVisible()),
+          `${route} the mobile accordion keeps one pillar open at a time`
+        );
+      }
+      check(
+        await page.locator('.hdr__link--subscribe').isVisible(),
+        `${route} Subscribe is reachable from the mobile menu`
+      );
+      await page.close();
+    }
+    await mobile.close();
+  }
+
+  /* ---- 9. reduced motion means STATIC AND FULLY VISIBLE --------------------
+     The frozen charter: "reduced motion = static, fully visible content". The
+     reveal system starts every animated block at opacity 0 and 16px down, so a
+     dropped `prefers-reduced-motion` branch does not merely remove an
+     animation — it leaves the content permanently invisible. That failure is
+     silent in every other check on this page. */
+  {
+    const reduced = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+      reducedMotion: 'reduce',
+    });
+    for (const route of ['/', '/ar/', '/about/', '/ar/about/']) {
+      const page = await reduced.newPage();
+      await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'domcontentloaded' });
+      await page.waitForTimeout(300);
+      const stuck = await page.evaluate(() => {
+        const bad = [];
+        for (const el of document.querySelectorAll('[data-reveal],[data-vb-reveal],[data-vb-stage]')) {
+          const cs = getComputedStyle(el);
+          if (parseFloat(cs.opacity) < 0.99 || cs.transform !== 'none') {
+            bad.push(`${(el.className || el.tagName).toString().slice(0, 28)} opacity=${cs.opacity}`);
+          }
+        }
+        for (const el of document.querySelectorAll('.sk--path path')) {
+          if (getComputedStyle(el).animationName !== 'none') bad.push('sketch path still animates');
+        }
+        return bad;
+      });
+      check(
+        stuck.length === 0,
+        stuck.length === 0
+          ? `${route} is static and fully visible under reduced motion`
+          : `${route} hides content under reduced motion — ${stuck.slice(0, 4).join(', ')}`
+      );
+      await page.close();
+    }
+    await reduced.close();
+  }
+
+  /* ---- 10. the four frozen surfaces, both languages, both sizes ------------
+     "Do not treat mobile as simply stacked desktop" cuts both ways: the check
+     that matters mechanically is that neither composition overflows sideways,
+     in either script. A 100vw full-bleed trick or a fixed-width panel shows up
+     here and nowhere else. */
+  {
+    for (const [w, h, size] of [[1440, 1000, 'desktop'], [390, 844, 'mobile']]) {
+      const context = await browser.newContext({ viewport: { width: w, height: h } });
+      for (const route of ['/', '/ar/', '/about/', '/ar/about/']) {
+        const page = await context.newPage();
+        await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'domcontentloaded' });
+        const over = await page.evaluate(
+          () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
+        );
+        check(!over, `${route} has no horizontal overflow (${size})`);
+        await page.close();
+      }
+      await context.close();
+    }
+  }
+
   await ctx.close();
 } finally {
   await browser.close();

@@ -293,6 +293,88 @@ export const projects = [
    placeholder instead — that is intentional, and it is far better than a
    generated or stock image standing in for a real person.
    -------------------------------------------------------------------------- */
+/* =============================================================================
+   About — Storyboard Edition · the editable data behind the page
+   =============================================================================
+   Design of record: `About Me Storyboard - Final Proposal.html`, whose REAL
+   DATA RULE panel is the spec for this block, verbatim:
+
+     "Verified in this design: places lived (Egypt, Qatar, UAE, UK, USA —
+      supplied), Product as professional craft, Claude + ChatGPT as used tools,
+      studio photo, interests list (from brief).
+      Editable slots (dashed): CURRENT ROLE, COMPANY/FOCUS, extra TOOL chips.
+      Ship empty-collapsed until Adel supplies verified strings.
+      No invented employers, titles, dates, education, metrics, testimonials."
+
+   So every list here is DATA the page renders, not markup — adding a journey
+   stop is one more entry, and an empty slot removes its element from the page
+   rather than printing a placeholder. Nothing in this block may be filled in by
+   anyone but Adel: a plausible-looking job title is still an invented one.
+
+   The dashed "editable slot" frames in the design are ANNOTATIONS ON A DESIGN.
+   They are how a designer shows a reviewer where real data will go; they are
+   not a thing to render to a visitor. In production the slot is empty and the
+   element is absent.
+   ========================================================================== */
+export const aboutStory = {
+  /* Places lived, in order. `current: true` takes the mint pin. Adding a stop
+     is one more entry in this array and nothing else. The annotation beside
+     each stop is editorial flavour from the design of record — Adel confirms or
+     replaces each before publish. */
+  journey: [
+    { id: 'egypt', en: { place: 'Egypt', note: 'where it started' }, ar: { place: 'مصر', note: 'البداية من هنا' } },
+    { id: 'qatar', en: { place: 'Qatar', note: 'new horizons' }, ar: { place: 'قطر', note: 'دنيا جديدة' } },
+    { id: 'uae', en: { place: 'UAE', note: 'building years' }, ar: { place: 'الإمارات', note: 'سنين البناء' } },
+    { id: 'uk', en: { place: 'UK', note: 'studying & growing' }, ar: { place: 'بريطانيا', note: 'دراسة وتجربة' } },
+    { id: 'usa', en: { place: 'USA', note: 'home base — now' }, ar: { place: 'أمريكا', note: 'البيت دلوقتي' }, current: true },
+  ],
+
+  /* ---- the two editable slots from frame 3a --------------------------------
+     `role` and `company` are the dashed slots in the design. They are NOT empty
+     here, and that is deliberate: these two strings are already verified and
+     already published on this site — they were `about.context` in this same
+     config file before the storyboard page replaced the old About — so shipping
+     them empty would delete published, accurate information rather than avoid
+     inventing any. Nothing here is new.
+
+     `note` is the §13 disclosure that has always travelled with them: the
+     employer is credibility context, never an endorsement, and the line saying
+     so renders wherever the employer does. Clear `company` and the note goes
+     with it.
+
+     Empty any of the three and its element disappears. That is the mechanism
+     the design asks for, and it works in both directions. */
+  role: { en: 'Product Manager', ar: '[[Product Manager]]' },
+  company: { en: 'Amazon', ar: '[[Amazon]]' },
+  note: {
+    en: 'Professional context only. Everything on this site is written in a personal capacity and represents my own views, not my employer’s.',
+    ar: 'سياق مهني بس. كل اللي هنا مكتوب بصفة شخصية وبيعبّر عن رأيي أنا، مش رأي جهة شغلي.',
+  },
+
+  /* The "Professional experience →" destination — a CV or profile surface that
+     does not exist yet. Empty ⇒ the link is not rendered at all. */
+  experienceUrl: '',
+
+  /* Tools Adel actually uses. Two are verified in the design of record; a third
+     is added here only when it has genuinely earned a place in the workflow. */
+  tools: ['Claude', 'ChatGPT'] as string[],
+
+  /* Interests, from the brief. English terms stay English on the Arabic page
+     per the frozen non-translated list; only the genuinely Arabic ones differ. */
+  interests: [
+    { en: 'Vibe Coding', ar: 'Vibe Coding' },
+    { en: 'AI', ar: 'AI' },
+    { en: 'Automation', ar: 'Automation' },
+    { en: 'Gadgets', ar: 'Gadgets' },
+    { en: 'Cameras', ar: 'كاميرات' },
+    { en: 'Creator Tech', ar: 'Creator Tech' },
+    { en: 'Gaming', ar: 'Gaming' },
+    { en: 'Product thinking', ar: 'Product thinking' },
+    { en: 'Workflows', ar: 'Workflows' },
+    { en: 'New tech', ar: 'New tech' },
+  ],
+};
+
 export const photography = {
   /* Homepage hero portrait. PH v1.0 fixes the HERO ratio at 4:5.
      Supplied with Design System v2.1 and cropped to 4:5 at integration:
@@ -302,6 +384,16 @@ export const photography = {
   heroPortraitMobile: '/photos/adel-hero-mobile.jpg',
   /* Wider environmental shot for the About page. 3:2 or 16:9. */
   aboutPhoto: '',
+  /* The studio scene on the About page — a real desk shot wide enough for the
+     sketch annotations to point at the mic, the keyboard and the watch.
+     `assets/photos/adel-studio.jpeg` is supplied with the design package; drop
+     it into public/photos/ and name it here. Empty ⇒ the studio scene
+     collapses, which is the approved behaviour, not a broken frame. */
+  studioPhoto: '',
+  /* Homepage §2, the "Testing" orientation card: a real desk-detail photo.
+     PH v1.0 — real photography only. Empty ⇒ the card falls back to its
+     warm-white ground with the "On the desk" caption alone. */
+  deskDetail: '',
   /* Adel's real handwritten signature as an SVG or transparent PNG. */
   signature: '',
 };
@@ -355,52 +447,6 @@ export const videos: Array<{ id: string; title: string; topic: string; meta: str
    AboutPage still falls back to the approved hero positioning paragraph if this
    array is ever emptied, so the page can never render blank.
    -------------------------------------------------------------------------- */
-export const about = {
-  en: {
-    title: 'I learn it, I test it, I build with it, and I share it.',
-    /* Each line below becomes its own paragraph. */
-    body: [
-      'I’m Adel — a Product Manager at Amazon, AI enthusiast, builder, and someone who’s always experimenting with technology.',
-      'I learn by building. I test AI, Automation, products, creator tech, and whatever I’m curious about next — then I share what works, what breaks, and what I learn along the way.',
-      'Right now, I’m building GearNest and documenting a bigger experiment: **Can I build a real business from idea to launch using Vibe Coding?**',
-      'My goal here is simple: if I learn something useful, I want to make it easier for someone else to learn it too.',
-    ] as string[],
-    values: [
-      { title: 'Curious first', body: 'I open the thing and find out, rather than reading the spec sheet.' },
-      { title: 'Honest about limits', body: 'A claim, then the cost of the claim. If it is not worth it, I say so.' },
-      { title: 'Practical', body: 'Everything I publish should let you do something, not only read about it.' },
-      { title: 'Still learning', body: 'I would rather be corrected than be consistent. Being wrong in public is the fastest way to learn.' },
-    ],
-    /* §13 — professional context, used as credibility. Not an employee profile,
-       and not an endorsement. Leave `employer` empty to hide this entirely. */
-    context: {
-      role: 'Product Manager',
-      employer: 'Amazon',
-      note: 'Professional context only. Everything on this site is written in a personal capacity and represents my own views, not my employer’s.',
-    },
-  },
-  ar: {
-    title: 'أتعلّمها، أجرّبها، أبني بها، وأشاركها.',
-    body: [
-      'أنا عادل — [[Product Manager]] في [[Amazon]]، ومهتم جدًا بـ[[Tech]]، وخصوصًا [[AI]] و[[Automation]].',
-      'أنا بحب أتعلم وأنا ببني. بجرب [[tools]]، [[products]]، [[creator tech]]، وأي حاجة جديدة تثير فضولي — وبعدها أشارك إيه اللي اشتغل، إيه اللي ما اشتغلش، وإيه اللي اتعلمته في الطريق.',
-      'دلوقتي ببني [[GearNest]] وبوثق تجربة أكبر:',
-      '**هل أقدر أبني [[business]] حقيقي من مجرد فكرة لحد الـ[[launch]] باستخدام [[Vibe Coding]]؟**',
-      'هدفي هنا بسيط: أي حاجة مفيدة أتعلمها، أحب أخلي تعلمها أسهل على أي حد تاني.',
-    ] as string[],
-    values: [
-      { title: 'الفضول أولاً', body: 'أفتح الشيء وأكتشفه بنفسي بدل أن أقرأ ورقة المواصفات.' },
-      { title: 'صريح في الحدود', body: 'الميزة، ثم ثمنها. وإن لم تكن تستحق، أقولها.' },
-      { title: 'عملي', body: 'كل ما أنشره يجب أن يمكّنك من فعل شيء، لا أن تقرأ عنه فقط.' },
-      { title: 'ما زلت أتعلّم', body: 'أفضّل أن يُصحَّح لي على أن أبقى متسقاً. الخطأ أمام الناس أسرع طريق للتعلّم.' },
-    ],
-    context: {
-      role: '[[Product Manager]]',
-      employer: '[[Amazon]]',
-      note: 'سياق مهني فقط. كل ما في هذا الموقع مكتوب بصفة شخصية ويمثّل رأيي وحدي، لا رأي جهة عملي.',
-    },
-  },
-};
 
 /* -----------------------------------------------------------------------------
    WORK WITH ME — your brand partnership packages

@@ -2,59 +2,79 @@
 /* =============================================================================
    Footer — the frozen IA, and where the brand architecture is stated plainly
    =============================================================================
-   ── THE PRIMARY COLUMN IS THE FROZEN IA, IN ORDER ───────────────────────────
+   ── THREE COLUMNS, FROM THE DESIGN OF RECORD ────────────────────────────────
+   Website Structure v2 names them and fills them:
 
-     Vibe Coding · Gear · Learn · Playground · About · Subscribe
+     Explore         Vibe Coding · Gear · Learn · Playground
+     Learn           Use Cases · Prompt Library · Guides · Videos
+     AdelTechTalks   About · Subscribe · Contact
 
-   The same six the header carries, in the same order, from the same `nav` list
-   in site.config.ts — so the header, the mobile menu and this column cannot
-   drift apart. Subscribe is last here as it is last there.
+   The first column is the four PILLARS in the frozen nav order, from the same
+   `nav` list in site.config.ts the header reads, so the two cannot drift. It is
+   never filtered by content: all four are the site's navigation, all four have
+   designed empty states, and a footer that quietly dropped "Gear" on the day
+   nothing was published would contradict the header two screens above it.
 
-   ── SUPPORTING CONTENT KEEPS ITS PLACE ──────────────────────────────────────
-   Guides, Use cases, Videos, Prompts, Topics and the Vibe Coding series are all
-   still routed and still live at exactly the URLs they had. They are not
-   header items — they are reached through /learn — but the footer is precisely
-   where a reader goes looking for the thing that was not in the nav, so they
-   are listed in a SECOND column under "More". That is supporting content, not
-   restored legacy navigation: none of them re-enters the primary IA, and the
-   old four-item Explore/For brands/channel arrangement is gone.
+   The second column is different, and deliberately so. Guides, Use cases,
+   Videos and the Prompt Library are SURFACES: /guides with nothing in it is an
+   empty index rather than an answer, so a surface with nothing published in
+   this language is dropped until it leads somewhere. The Prompt Library keeps
+   its named-but-unlinked "· soon" treatment while it is genuinely closed — a
+   label is not a promise; a link would be.
 
-   A surface with nothing published in this language is dropped from that
-   column — a link is a promise, and this one would land on an empty index. It
-   returns by itself the day something publishes there.
+   The third column is the channel: the two chrome destinations that are not
+   pillars, plus the way to reach a human.
 
-   ── BRAND ARCHITECTURE (§5) ─────────────────────────────────────────────────
-   Adel is the site. AdelTechTalks is named as the channel, in the place where
-   you name a channel — beside its own social links, not beside the identity.
-   GearNest is a separate business: a link out, in its own row, with visible
-   distance from both. It is NOT a homepage section and NOT a dependency —
-   nothing on this site reads from it or breaks without it.
+   ── BRAND ARCHITECTURE ──────────────────────────────────────────────────────
+   Website Structure v2 puts the AdelTechTalks lockup in the footer's brand
+   slot, above the umbrella line, and names the third column after the channel.
+   Adel remains the site's subject; AdelTechTalks is the identity that carries
+   it, and it is the thing a reader recognises at the bottom of a page.
+
+   ── NO SEPARATE-BUSINESS ROW ────────────────────────────────────────────────
+   The footer previously carried a row linking out to a separate business. It is
+   gone, and with it the last place on any shared template that read from
+   `projects[]`: "No homepage or primary template may depend on it." The config
+   array and its rendering rules are untouched in site.config.ts — what changed
+   is that the chrome no longer requires an entry to exist.
    ========================================================================== */
 
-import AdelLogo from './AdelLogo.astro';
-import Icon from './Icon.astro';
+import Logo from './Logo.astro';
 import Rich from './Rich.astro';
-import { site, nav, projects } from '../site.config';
+import { nav } from '../site.config';
 import { emptySurfaces } from '../lib/content';
 import { useCopy } from '../copy';
-import { DEFAULT_LANG, isEnglishOnly, localizePath, type Lang } from '../i18n';
+import {
+  DEFAULT_LANG,
+  LANGS,
+  LANG_TAG,
+  isEnglishOnly,
+  localizePath,
+  neutralPath,
+  type Lang,
+} from '../i18n';
 
 interface Props {
   lang?: Lang;
+  /* The same two props the header takes, for the same reason: a page that
+     knows where its counterpart lives has to be able to say so, and a page with
+     no counterpart has to send the reader somewhere real. Base.astro passes the
+     identical values to both, so the two switches can never disagree. */
+  switchTo?: string;
+  switchToHome?: boolean;
 }
 
-const { lang = DEFAULT_LANG } = Astro.props;
+const { lang = DEFAULT_LANG, switchTo, switchToHome = false } = Astro.props;
 const c = useCopy(lang);
 const year = new Date().getFullYear();
 
-const SOCIAL: Array<[keyof typeof site.social, string, string]> = [
-  ['youtube', 'youtube', 'YouTube'],
-  ['instagram', 'instagram', 'Instagram'],
-  ['tiktok', 'music', 'TikTok'],
-  ['linkedin', 'linkedin', 'LinkedIn'],
-  ['x', 'twitter', 'X'],
-];
-const links = SOCIAL.filter(([key]) => site.social[key]);
+const other = LANGS.find((l) => l !== lang)!;
+const neutral = neutralPath(Astro.url.pathname.replace(/\/$/, '') || '/') || '/';
+const otherHref =
+  switchTo ??
+  (switchToHome || isEnglishOnly(neutral)
+    ? localizePath('/', other)
+    : localizePath(neutral, other));
 
 /* A surface with nothing in it is dropped — see the header comment. */
 const empty = await emptySurfaces(lang);
@@ -71,7 +91,7 @@ const empty = await emptySurfaces(lang);
    real page answering a real question. The supporting-content column below is
    different: /guides with nothing in it is an empty index, not an answer, so
    there the link is dropped until it leads somewhere. */
-const PRIMARY = ['vibeCoding', 'gear', 'learn', 'playground', 'about', 'newsletter'];
+const PRIMARY = ['vibeCoding', 'gear', 'learn', 'playground'];
 const primary = PRIMARY.map((key) => nav.find((item) => item.key === key))
   .filter((item): item is NonNullable<typeof item> => Boolean(item))
   .map((item) => ({
@@ -88,8 +108,8 @@ const primary = PRIMARY.map((key) => nav.find((item) => item.key === key))
           item.key,
   }));
 
-/* ---- column 2: supporting content, reached through /learn and from here ---- */
-const SUPPORTING = ['series', 'guides', 'useCases', 'videos', 'prompts', 'topics'];
+/* ---- column 2: the Learn surfaces, in the design of record's order ---- */
+const SUPPORTING = ['useCases', 'prompts', 'guides', 'videos', 'series', 'topics'];
 const supporting = SUPPORTING.map((key) => nav.find((item) => item.key === key))
   .filter((item): item is NonNullable<typeof item> => Boolean(item) && item!.phase <= 1.5)
   /* `series` is deliberately not gated here. It is not a content SURFACE with
@@ -114,13 +134,34 @@ const supporting = SUPPORTING.map((key) => nav.find((item) => item.key === key))
    frozen "· soon" treatment. A label is not a promise; a link would be. */
 const promptsClosed = empty.has('prompts');
 
-const separate = projects.filter((p) => p.separate);
+/* ---- column 3: the channel ---- */
+const CHANNEL = ['about', 'newsletter'];
+const channel = [
+  ...CHANNEL.map((key) => nav.find((item) => item.key === key))
+    .filter((item): item is NonNullable<typeof item> => Boolean(item))
+    .map((item) => ({
+      href: localizePath(item.path, lang),
+      outbound: false,
+      label:
+        item.key === 'newsletter'
+          ? c.ia.nav.subscribe
+          : (c.ia.nav as Record<string, string>)[item.key] ?? item.key,
+    })),
+  {
+    /* /contact is authored in English only, so an Arabic page links out to the
+       English page and says so on the anchor rather than advertising an /ar/
+       URL that was never generated. */
+    href: '/contact/',
+    outbound: lang !== DEFAULT_LANG,
+    label: c.ia.footer.contact,
+  },
+];
 ---
 
 <footer class="ftr">
   <div class="ftr__inner">
     <div class="ftr__brand">
-      <AdelLogo size={26} tone="default" />
+      <Logo size={26} tone="primary" />
       {/* The umbrella line — what this whole site is for, in one sentence. */}
       <Rich text={c.ia.footer.umbrella} as="p" class="ftr__blurb" />
     </div>
@@ -142,8 +183,8 @@ const separate = projects.filter((p) => p.separate);
 
     {/* ---- supporting content ---- */}
     {(supporting.length > 0 || promptsClosed) && (
-      <nav class="ftr__col" aria-label={c.ia.footer.more}>
-        <span class="ftr__title">{c.ia.footer.more}</span>
+      <nav class="ftr__col" aria-label={c.ia.footer.learn}>
+        <span class="ftr__title" dir="ltr">{c.ia.footer.learn}</span>
         {supporting.map((item) => (
           <a href={item.href} class="ftr__link"><Rich text={item.label} /></a>
         ))}
@@ -153,46 +194,37 @@ const separate = projects.filter((p) => p.separate);
       </nav>
     )}
 
-    {/* The channel is named HERE, beside its own links — not beside the
-        personal identity above. That separation is the whole of §5. */}
-    <div class="ftr__col">
-      <span class="ftr__title" dir="ltr">{site.showName}</span>
-      {links.length > 0 && (
-        <div class="ftr__social">
-          {links.map(([key, icon, label]) => (
-            <a
-              href={site.social[key]}
-              class="ftr__soc"
-              aria-label={`${site.showName} on ${label}`}
-              rel="me noopener"
-              target="_blank"
-            >
-              <Icon name={icon} size="md" />
-            </a>
-          ))}
-        </div>
-      )}
-      <a href={`mailto:${site.email}`} class="ftr__link" dir="ltr">{site.email}</a>
-    </div>
-  </div>
-
-  {/* A separate business, at a visible distance from both identities. */}
-  {separate.length > 0 && (
-    <div class="ftr__separate">
-      {separate.map((p) => (
-        <a class="ftr__sepLink" href={p.url} rel="noopener" target="_blank">
-          <Rich text={p[lang].name} class="ftr__sepName" />
-          <span class="ftr__sepArrow" aria-hidden="true">↗</span>
+    {/* The channel column. The social accounts are NOT repeated here: they are
+        rendered once, in the homepage close, beside the person whose accounts
+        they are. Two rows of the same five icons on one page is not redundancy
+        the reader benefits from. */}
+    <nav class="ftr__col" aria-label={c.ia.footer.channel}>
+      <span class="ftr__title" dir="ltr">{c.ia.footer.channel}</span>
+      {channel.map((item) => (
+        <a
+          href={item.href}
+          class="ftr__link"
+          lang={item.outbound ? DEFAULT_LANG : undefined}
+          hreflang={item.outbound ? DEFAULT_LANG : undefined}
+        >
+          <Rich text={item.label} />
         </a>
       ))}
-    </div>
-  )}
+    </nav>
+  </div>
 
   <div class="ftr__base">
-    <span>© {year} {c.footer.rights}</span>
-    {/* The editorial signature sits in the credit position, never the identity
-        position (§8 — the signature is a sign-off, not the brand mark). */}
-    <span class="ftr__sig">{c.footer.signature}</span>
+    <span dir="ltr">© {year} {c.ia.footer.rights}</span>
+    <span class="ftr__baseRight">
+      {/* The editorial signature sits in the credit position, never the
+          identity position (§8 — the signature is a sign-off, not the mark). */}
+      <span class="ftr__sig">{c.footer.signature}</span>
+      {/* The language pill shows the OTHER language, written in its own script.
+          The footer never animates, so this is a link and nothing more. */}
+      <a class="ftr__lang" href={otherHref} lang={LANG_TAG[other]} hreflang={LANG_TAG[other]}>
+        {c.common.languageSwitch}
+      </a>
+    </span>
   </div>
 </footer>
 
@@ -258,58 +290,6 @@ const separate = projects.filter((p) => p.separate);
     color: var(--adel-text-tertiary);
   }
 
-  .ftr__social {
-    display: flex;
-    gap: 2px;
-    flex-wrap: wrap;
-    /* pull the 44px targets back into line with the text above them */
-    margin-inline-start: -10px;
-  }
-  .ftr__soc {
-    width: 44px;
-    height: 44px;
-    display: grid;
-    place-items: center;
-    border-radius: var(--adel-radius-control);
-    color: var(--adel-text-secondary);
-    text-decoration: none;
-  }
-  .ftr__soc:hover {
-    background: var(--adel-surface-tint);
-    color: var(--adel-text-on-tint);
-  }
-
-  /* ---- separate brands: a row of their own, with air above and below ---- */
-  .ftr__separate {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: var(--atc-space-6) var(--atc-space-8);
-    border-top: 1px solid var(--adel-border-hairline);
-    display: flex;
-    gap: var(--atc-space-6);
-    flex-wrap: wrap;
-  }
-  .ftr__sepLink {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--atc-space-2);
-    font-size: var(--adel-text-sm);
-    color: var(--adel-text-secondary);
-    text-decoration: none;
-  }
-  .ftr__sepName {
-    font-weight: 600;
-    color: var(--adel-text-primary);
-  }
-  .ftr__sepLink:hover .ftr__sepName {
-    color: var(--adel-text-link);
-  }
-  /* ↗ points away from the reading direction on both sides. */
-  :global([dir='rtl']) .ftr__sepArrow {
-    display: inline-block;
-    transform: scaleX(-1);
-  }
-
   .ftr__base {
     max-width: 1200px;
     margin: 0 auto;
@@ -340,7 +320,6 @@ const separate = projects.filter((p) => p.separate);
       gap: var(--atc-space-8);
       padding: 48px var(--atc-space-5) 32px;
     }
-    .ftr__separate,
     .ftr__base {
       padding-inline: var(--atc-space-5);
     }

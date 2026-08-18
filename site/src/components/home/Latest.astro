@@ -1,45 +1,261 @@
 ---
-/* "Latest" (§14) — a flexible editorial index of everything Adel has
-   published, learned, tested, built or shared. Guides, articles and videos all
-   flow through the same list; adding a fourth type is a loader in
-   lib/content.ts, not a change here. */
+/* =============================================================================
+   Homepage §7 — Latest
+   =============================================================================
+   Design of record: Website Structure v2, frames 2a–2d and its handoff panel.
 
-import SectionIntro from '../editorial/SectionIntro.astro';
-import EntryList from '../editorial/EntryList.astro';
+   ── THE ONE RULE THAT MATTERS ───────────────────────────────────────────────
+   From the handoff, verbatim: "Latest: feed of published items (type + badge +
+   title + optional cover + link), max 3 on homepage, newest first; hidden
+   entirely below 2 items. Demo cards in this proposal must NOT be shipped."
+
+   The three cards in the proposal — a mobile build story, a code-review prompt,
+   a camera-AI test — are marked DEMO / STRUCTURAL in the frame itself. None of
+   them exists as content, so none of them is written down anywhere in this
+   file. What renders is `getLatest()`, which reads the content collections and
+   nothing else, and if the collections hold fewer than two published pieces in
+   this language the whole section is absent from the DOM rather than present
+   and apologetic.
+
+   That threshold is two, not one. A "Latest" strip containing a single card is
+   not a feed — it is one card wearing a section header, and it makes a young
+   site look emptier than a page that simply moves on.
+
+   ── BADGES ──────────────────────────────────────────────────────────────────
+   One primary, at most one secondary, both derived in lib/badges.ts. The card
+   never authors its own badge, so the same story is badged identically here,
+   on its hub and on its own page.
+   ========================================================================== */
+
+import Badge from '../Badge.astro';
+import Rich from '../Rich.astro';
+import { badgeFor, markerFor } from '../../lib/badges';
+import { getLatest } from '../../lib/content';
 import { useCopy } from '../../copy';
-import type { Lang } from '../../i18n';
-import type { Entry } from '../../lib/content';
+import { localizePath, type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
-  entries: Entry[];
 }
 
-const { lang, entries } = Astro.props;
+const { lang } = Astro.props;
 const c = useCopy(lang);
+const t = c.ia.latestFeed;
+const arrow = lang === 'ar' ? '←' : '→';
+
+const MAX = 3;
+const MIN_TO_RENDER = 2;
+
+const entries = (await getLatest(lang, MAX)).map((entry) => ({
+  entry,
+  badge: badgeFor(entry),
+  ...markerFor(entry, Date.now()),
+}));
+
+const show = entries.length >= MIN_TO_RENDER;
 ---
 
-<section class="container section" aria-labelledby="latest-title">
-  <SectionIntro title={c.latest.title} intro={c.latest.intro} />
+{show && (
+  <section class="container section lt" aria-labelledby="lt-title" data-vb>
+   <div class="lt__panel">
+    <header class="lt__head" data-vb-reveal style="--vb-step:0">
+      <div class="lt__headText">
+        <span class="lt__kicker" dir="ltr">{t.kicker}</span>
+        <h2 class="lt__title ar-heading" id="lt-title"><Rich text={t.title} /></h2>
+      </div>
+      <a class="lt__all" href={localizePath('/learn', lang)}>
+        <Rich text={t.viewAll} />
+        <span class="lt__allArrow" aria-hidden="true">{arrow}</span>
+      </a>
+    </header>
 
-  {entries.length > 0 ? (
-    <EntryList entries={entries} lang={lang} class="lt__list" />
-  ) : (
-    <p class="lt__empty">{c.latest.empty}</p>
-  )}
-</section>
+    <ul class="lt__grid">
+      {entries.map(({ entry, badge, marker, part }, i) => (
+        <li class="lt__item" data-vb-stage style={`--vb-step:${i + 1}`}>
+          <a
+            class:list={['lt__card', !entry.cover && 'lt__card--flat']}
+            href={entry.href}
+            rel={entry.external ? 'noopener' : undefined}
+            target={entry.external ? '_blank' : undefined}
+          >
+            {entry.cover && (
+              <span class="lt__cover">
+                <img
+                  src={entry.cover}
+                  alt={entry.coverAlt ?? ''}
+                  width="640"
+                  height="426"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </span>
+            )}
+            <span class="lt__meta">
+              <Badge kind={badge} />
+              {marker && <Badge marker={marker} />}
+              {typeof part === 'number' && <Badge part={part} />}
+            </span>
+            <Rich text={entry.title} as="h3" class="lt__name ar-heading" />
+            <span class="lt__cta">
+              <Rich text={c.common.readMore} />
+              <span class="lt__arrow" aria-hidden="true">{arrow}</span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+   </div>
+  </section>
+)}
 
 <style>
-  .lt__list {
-    margin-top: var(--atc-space-8);
-  }
-  .lt__empty {
-    margin: var(--atc-space-8) 0 0;
-    padding: var(--atc-space-8);
-    border: 1px dashed var(--adel-border-strong);
+  /* CS v2.0 rhythm: Ice ground, between the white Playground section and the
+     graphite close — "never two adjacent identical surfaces". It is an inset
+     panel rather than a full-bleed band, which is how every other tinted
+     surface on this site is built (see .rw__panel): one rounded rectangle
+     inside the container, no 100vw arithmetic, and therefore no horizontal
+     overflow to mask on mobile or in RTL. */
+  .lt__panel {
+    padding: var(--atc-space-10) var(--atc-space-10) var(--atc-space-12);
     border-radius: var(--adel-radius-panel);
-    font-size: var(--adel-text-base);
-    color: var(--adel-text-secondary);
-    text-align: center;
+    background: var(--adel-ice-blue);
+  }
+
+  .lt__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--atc-space-6);
+    margin-bottom: var(--atc-space-8);
+  }
+  .lt__headText { display: flex; flex-direction: column; gap: var(--atc-space-2); }
+  .lt__kicker {
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--adel-blue-700);
+    unicode-bidi: isolate;
+  }
+  .lt__title {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(26px, 3.4vw, 36px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--adel-deep-blue);
+  }
+  .lt__all {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    flex: none;
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+    color: var(--adel-text-link);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .lt__allArrow,
+  .lt__arrow {
+    display: inline-block;
+    transition: transform var(--atc-duration-fast) var(--atc-ease-move);
+  }
+  .lt__all:hover .lt__allArrow { transform: translateX(4px); }
+  :global([dir='rtl']) .lt__all:hover .lt__allArrow { transform: translateX(-4px); }
+
+  .lt__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--atc-space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .lt__item { display: flex; }
+
+  .lt__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-3);
+    width: 100%;
+    padding: var(--atc-space-5);
+    border-radius: var(--adel-radius-card);
+    background: var(--adel-white);
+    color: var(--adel-text-primary);
+    text-decoration: none;
+    box-sizing: border-box;
+    transition:
+      transform var(--atc-duration-fast) var(--atc-ease-move),
+      box-shadow var(--atc-duration-fast) var(--atc-ease-move);
+  }
+  .lt__card:hover { transform: translateY(-4px); box-shadow: var(--adel-elevation-2); }
+  .lt__card:hover .lt__arrow { transform: translateX(4px); }
+  :global([dir='rtl']) .lt__card:hover .lt__arrow { transform: translateX(-4px); }
+
+  .lt__cover {
+    display: block;
+    margin: calc(var(--atc-space-5) * -1) calc(var(--atc-space-5) * -1) 0;
+    border-radius: var(--adel-radius-card) var(--adel-radius-card) 0 0;
+    overflow: hidden;
+    aspect-ratio: 3 / 2;
+  }
+  .lt__cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  .lt__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--atc-space-2); }
+
+  .lt__name {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-lg);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  .lt__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    margin-top: auto;
+    padding-top: var(--atc-space-2);
+    font-family: var(--adel-font-display);
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+    color: var(--adel-text-link);
+  }
+
+  @media (max-width: 1199px) {
+    .lt__grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 767px) {
+    .lt__panel { padding: var(--atc-space-6); }
+    .lt__head { flex-direction: column; align-items: flex-start; gap: var(--atc-space-3); }
+    .lt__grid { gap: var(--atc-space-4); }
+  }
+
+  /* Arabic: face and size come from `.ar-heading`; what a component still owns
+     is its Latin letter-spacing, which must not survive into Arabic. */
+  :global(html[lang='ar']) .lt__title,
+  :global(html[lang='ar']) .lt__name,
+  :global(html[lang='ar']) .lt__cta,
+  :global(html[lang='ar']) .lt__all {
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  :global(html[lang='ar']) .lt__cta,
+  :global(html[lang='ar']) .lt__all {
+    font-family: var(--adel-font-arabic);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lt__card,
+    .lt__arrow,
+    .lt__allArrow { transition: none; }
+    .lt__card:hover { transform: none; }
+    .lt__card:hover .lt__arrow,
+    .lt__all:hover .lt__allArrow { transform: none; }
   }
 </style>

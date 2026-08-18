@@ -13,7 +13,14 @@ external:
   label: 'Visit GearNest'
   href: 'https://gearnest.ai'
 preview: 'GearNest is a separate brand with its own product, voice and roadmap. It is also the place where one question gets an honest answer: can I build a real business this way?'
-featured: true
+
+# NOT featured. Website Structure v2 is explicit that GearNest is never the
+# site's default featured project and that no homepage or shared template may
+# depend on it. This case study is real, authored work and stays exactly where
+# it is, at exactly the URL it had — it simply stops being promoted above
+# everything else. It appears in Latest when its date puts it there, like any
+# other published piece.
+featured: false
 
 # The figures are not published because they have not been measured, and an
 # estimate presented as a measurement would break rule 2 of the test below.

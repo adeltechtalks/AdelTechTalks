@@ -31,16 +31,10 @@
    ever substituted, generated or stubbed to fill the gap.
 
    ── UP NEXT NAMES REAL BUILDS ───────────────────────────────────────────────
-   `ia.realWorld.upNextStrip` in copy.ts is a STRUCTURAL ladder — "Build 01 →
-   02 → 03 → …" — and it is deliberately not rendered here. On the Vibe Coding
-   Hub the equivalent string is correct, because there it labels a series whose
-   parts genuinely exist. On the homepage it would be a promise of three builds
-   drawn before any of them is written.
-
-   So the strip lists the real other builds by their real questions, and does
-   not render at all when there are none. The copy key is left in place: the
-   day a numbered series is the right thing to show, it is already authored in
-   both languages.
+   The strip lists the real other builds by their real questions, and does not
+   render at all when there are none. It never draws a structural ladder
+   ("Build 01 → 02 → 03 → …") on the homepage: that would be a promise of three
+   builds made before any of them is written.
 
    ── CROSSOVER ───────────────────────────────────────────────────────────────
    The crossover chip appears only when the featured build names a Gear story
@@ -49,6 +43,7 @@
    ========================================================================== */
 
 import Rich from '../Rich.astro';
+import PillarIcon from '../PillarIcon.astro';
 import StatusPill from '../ia/StatusPill.astro';
 import JourneyRail from '../ia/JourneyRail.astro';
 import WorkspaceFrame from '../ia/WorkspaceFrame.astro';
@@ -76,15 +71,18 @@ const arrow = lang === 'ar' ? '←' : '→';
 <section class="container section rw" aria-labelledby="rw-title" data-vb>
   <header class="rw__head">
     <div class="rw__kickerRow" data-vb-reveal style="--vb-step:0">
-      {/* The label is a fixed English IA string in both languages. */}
+      {/* The label is a fixed English IA string in both languages. It is the
+          section's name and nothing else — the mono aside that used to sit
+          beside it ("// builds only — gear lives next door") was an editorial
+          RULE, and Website Structure v2 §"REMOVED" takes every internal rule
+          off the visitor-facing page. The rules still govern what publishes;
+          they are simply not addressed to the reader. */}
       <span class="rw__kicker" dir="ltr">{t.label}</span>
-      <span class="rw__aside"><Rich text={t.aside} /></span>
+      <span class="rw__icon"><PillarIcon name="vibe-coding" size={20} /></span>
     </div>
 
     <h2 class="rw__title ar-hero" id="rw-title" data-vb-reveal style="--vb-step:1">
-      <Rich text={t.headBefore} as="span" />
-      <em class="rw__em"><Rich text={t.headEm} /></em>
-      <Rich text={t.headAfter} as="span" />
+      <Rich text={t.headBefore} as="span" /><em class="rw__em"><Rich text={t.headEm} /></em><Rich text={t.headAfter} as="span" />
     </h2>
 
     <Rich text={t.support} as="p" class="rw__support" data-vb-reveal style="--vb-step:2" />
@@ -92,13 +90,9 @@ const arrow = lang === 'ar' ? '←' : '→';
 
   {featured ? (
     <>
-      <ul class="rw__bench" data-vb-reveal style="--vb-step:3">
-        <li class="rw__benchLabel">{t.benchLabel}</li>
-        {t.bench.map((item) => (
-          <li class="rw__benchItem"><Rich text={item} /></li>
-        ))}
-      </ul>
-
+      {/* The "on the bench" chip row is gone with the rest of the editorial
+          furniture: two of its three chips ("Building in public") were retired
+          brand language, and the third restated the headline. */}
       {/* ---- the featured build: the page's one graphite panel ---- */}
       <article class="rw__panel" data-vb-reveal style="--vb-step:4" aria-labelledby="rw-featured">
         <div class="rw__panelText">
@@ -183,22 +177,6 @@ const arrow = lang === 'ar' ? '←' : '→';
     <p class="rw__empty" data-vb-reveal style="--vb-step:3"><Rich text={t.empty} /></p>
   )}
 
-  {/* The pillar boundary, stated in the section that owns it. True with or
-      without content, so it renders in both states. */}
-  <dl class="rw__rules">
-    <div class="rw__rule">
-      <dt dir="ltr">{t.ruleVibe}</dt>
-      <dd><Rich text={t.ruleVibeNote} /></dd>
-    </div>
-    <div class="rw__rule">
-      <dt dir="ltr">{t.ruleGear}</dt>
-      <dd><Rich text={t.ruleGearNote} /></dd>
-    </div>
-    <div class="rw__rule">
-      <dt dir="ltr">{t.ruleCross}</dt>
-      <dd><Rich text={t.ruleCrossNote} /></dd>
-    </div>
-  </dl>
 </section>
 
 <style>
@@ -213,12 +191,7 @@ const arrow = lang === 'ar' ? '←' : '→';
     color: var(--adel-signature-blue);
     unicode-bidi: isolate;
   }
-  .rw__aside {
-    font-family: var(--adel-font-mono);
-    font-size: 11px;
-    color: var(--adel-text-tertiary);
-  }
-  :global([lang='ar']) .rw__aside { font-family: var(--adel-font-text); font-size: 12.5px; }
+  .rw__icon { display: block; color: var(--adel-signature-blue); }
 
   .rw__title {
     margin: 0;
@@ -241,38 +214,6 @@ const arrow = lang === 'ar' ? '←' : '→';
 
   .rw__support { margin: 0; font-size: var(--adel-text-lg); line-height: 1.6; color: var(--adel-text-secondary); }
   :global([lang='ar']) .rw__support { line-height: 1.85; }
-
-  /* ---- bench chips ---- */
-  .rw__bench {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--atc-space-3);
-    margin: var(--atc-space-8) 0 0;
-    padding: 0;
-  }
-  .rw__benchLabel {
-    font-family: var(--adel-font-mono);
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--adel-text-tertiary);
-  }
-  :global([lang='ar']) .rw__benchLabel {
-    font-family: var(--adel-font-text);
-    font-size: 12px;
-    letter-spacing: normal;
-    text-transform: none;
-  }
-  .rw__benchItem {
-    padding: 4px var(--atc-space-4);
-    border: 1px solid var(--adel-border-hairline);
-    border-radius: var(--adel-radius-pill);
-    font-size: var(--adel-text-sm);
-    color: var(--adel-text-secondary);
-  }
 
   /* ---- the graphite panel ---- */
   .rw__panel {
@@ -405,37 +346,11 @@ const arrow = lang === 'ar' ? '←' : '→';
     color: var(--adel-text-secondary);
   }
 
-  /* ---- the pillar rules ---- */
-  .rw__rules {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--atc-space-4) var(--atc-space-8);
-    margin: var(--atc-space-12) 0 0;
-    padding-top: var(--atc-space-5);
-    border-top: 1px solid var(--adel-border-hairline);
-  }
-  .rw__rule { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--atc-space-2); }
-  .rw__rule dt {
-    font-family: var(--adel-font-mono);
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--adel-text-primary);
-    unicode-bidi: isolate;
-  }
-  .rw__rule dd {
-    margin: 0;
-    font-size: var(--adel-text-sm);
-    line-height: 1.6;
-    color: var(--adel-text-tertiary);
-  }
 
   @media (max-width: 1023px) {
     .rw__panel { grid-template-columns: 1fr; gap: var(--atc-space-8); }
   }
   @media (max-width: 767px) {
     .rw__panel { padding: var(--atc-space-6); }
-    .rw__rules { flex-direction: column; gap: var(--atc-space-3); }
   }
 </style>

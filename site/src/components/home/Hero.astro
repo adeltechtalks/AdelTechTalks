@@ -11,12 +11,16 @@
      · Section ground is Ice Blue — the one Ice moment on the homepage.
      · Two columns, 1.1fr / 0.9fr, aligned to their BASELINE at the bottom, so
        the arch and the text column meet on one line.
-     · Left: badge → "I ❤ Tech" → the Vibe Coding line → the GearNest line →
-       actions. Deliberately unequal weight (TY v2.2): 800 display, then a full
-       step down to 700 at a smaller size, then supporting text.
+     · Left: "I ❤ Tech" → one supporting line → two actions. Deliberately
+       unequal weight (TY v2.2): 800 display, then a full step down to 700 at a
+       smaller size. Website Structure v2 removed the third line entirely — the
+       old one named a specific project, and the hero must work with no project
+       featured at all.
      · Right: the arch — a 4:5 portrait with a fully round top
-       (`border-radius: 999px 999px 0 0`), and one glass pill overlapping its
-       lower-left corner.
+       (`border-radius: 999px 999px 0 0`), and one glass chip overlapping its
+       lower-left corner. The chip names the KIND of work ("Vibe Coding · Real
+       builds"), which is where "Building in public" was retired as permanent
+       brand language.
 
    THE HEART IS SIGNATURE BLUE, NOT RED. It is a brand mark inside a wordmark,
    and the design draws it with `fill: var(--atc-blue-500)`.
@@ -30,10 +34,9 @@
 
 import Button from '../Button.astro';
 import Rich from '../Rich.astro';
-import { LOVE_TECH, useCopy } from '../../copy';
-import { emptySurfaces } from '../../lib/content';
+import LoveTech from '../LoveTech.astro';
+import { useCopy } from '../../copy';
 import { photography } from '../../site.config';
-import { flagshipSeries, seriesPath } from '../../lib/series';
 import { localizePath, type Lang } from '../../i18n';
 
 interface Props {
@@ -43,19 +46,16 @@ interface Props {
 const { lang } = Astro.props;
 const c = useCopy(lang);
 
-/* "I ❤️ Tech" is one brand expression; the heart is drawn, not typed, so it
-   takes the brand colour and a stable size instead of whatever the visitor's
-   emoji font decides. Splitting on the emoji keeps the string in copy.ts as the
-   single source of the wordmark. */
-const [beforeHeart, afterHeart] = LOVE_TECH.split('❤️');
+/* Website Structure v2: "See what I'm building →" / "Learn with me →".
 
-/* The primary action goes to the series — that IS "the build". The secondary
-   goes to the library. Both are real routes; neither can land on an empty
-   index, which is the rule the homepage has followed since Phase 1.1. */
-const flagship = flagshipSeries();
-const primaryHref = flagship ? seriesPath(flagship.id) : '/learn';
-const guidesEmpty = (await emptySurfaces(lang)).has('guides');
-const secondaryHref = guidesEmpty ? '/learn' : '/guides';
+   Both now point at PILLAR HUBS rather than at a series and an index. That is
+   the substantive change, not just new wording: the old primary went to the
+   flagship series, which made the hero's one primary action depend on a
+   particular narrative being live. /vibe-coding and /learn are permanent
+   surfaces with designed empty states, so the hero cannot land on a page that
+   has nothing to say — with or without published content. */
+const primaryHref = '/vibe-coding';
+const secondaryHref = '/learn';
 
 const portrait = photography.heroPortrait;
 const portraitMobile = photography.heroPortraitMobile;
@@ -64,25 +64,16 @@ const portraitMobile = photography.heroPortraitMobile;
 <section class="hero">
   <div class="hero__inner">
     <div class="hero__text">
-      <span class="hero__badge" data-reveal style="--reveal-index:1">
-        <Rich text={c.hero.badge} />
-      </span>
-
+      {/* The wordmark is one component now (LoveTech.astro), because three
+          surfaces render it — here, the homepage close and the About intro —
+          and three hand-rolled copies of the same lockup is how a lockup
+          drifts. The hero owns only its SIZE. */}
       <h1 class="hero__love" data-reveal style="--reveal-index:2">
-        <span class="hero__loveWord">{beforeHeart.trim()}</span>
-        <svg class="hero__heart" viewBox="0 0 24 24" role="img" aria-label="love" focusable="false">
-          <path
-            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-          />
-        </svg>
-        <span class="hero__loveWord">{afterHeart.trim()}</span>
+        <LoveTech />
       </h1>
 
       <p class="hero__line2 ar-heading" data-reveal style="--reveal-index:3">
         <Rich text={c.hero.line2} />
-      </p>
-      <p class="hero__line3" data-reveal style="--reveal-index:4">
-        <Rich text={c.hero.line3} />
       </p>
 
       <div class="hero__actions" data-reveal style="--reveal-index:5">
@@ -119,9 +110,14 @@ const portraitMobile = photography.heroPortraitMobile;
         )}
       </div>
 
+      {/* The photo chip. Website Structure v2 replaced the old project status
+          pill — "Currently building · <project>" — with a chip that names the
+          KIND of work rather than one build, so the hero stops depending on a
+          particular project being live. It carries no mint dot for the same
+          reason: mint means "happening right now", and a category is not an
+          event. */}
       <span class="hero__pill" data-reveal style="--reveal-index:7">
-        <span class="hero__dot" aria-hidden="true"></span>
-        <Rich text={c.hero.nowBuilding} />
+        <Rich text={c.hero.badge} />
       </span>
     </div>
   </div>
@@ -152,61 +148,24 @@ const portraitMobile = photography.heroPortraitMobile;
     padding-bottom: var(--atc-space-20); /* design 72px → 80px, nearest step */
   }
 
-  /* ---- badge — the only rotated element in the system, from the design ---- */
-  .hero__badge {
-    align-self: flex-start;
-    display: inline-flex;
-    align-items: center;
-    height: 32px;
-    padding: 0 14px;
-    border-radius: var(--adel-radius-pill);
-    background: var(--adel-white);
-    border: 1px solid var(--adel-blue-200);
-    color: var(--adel-blue-700);
-    font-family: var(--adel-font-mono);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    transform: rotate(-2deg);
-    white-space: nowrap;
-  }
-  /* Arabic is never letter-spaced and has no uppercase concept (TY v2.0), and
-     the tilt reads as a defect rather than a flourish in a connected script. */
-  :global([lang='ar']) .hero__badge {
-    letter-spacing: normal;
-    text-transform: none;
-    transform: none;
-    font-family: var(--adel-font-text);
-    font-size: var(--adel-text-xs);
-  }
-
-  /* ---- "I ❤ Tech" — Display XL, Montserrat 800 ---- */
+  /* ---- "I ❤ Tech" — Display XL ----
+     Face, weight, tracking, the drawn heart and the LTR isolation are all
+     LoveTech's. What is hero-specific, and all this rule sets, is the size. */
   .hero__love {
     margin: 0;
     display: flex;
-    align-items: center;
-    gap: 0.21em;
-    /* "I ❤ Tech" is a Latin lockup on the Arabic page too, so it is pinned to
-       Montserrat rather than inheriting the Arabic display face. */
-    font-family: var(--adel-font-latin);
     font-size: clamp(52px, 7.2vw, 84px);
     line-height: 1;
-    font-weight: 800;
-    letter-spacing: -0.04em;
     color: var(--adel-text-primary);
-    /* A Latin wordmark, so it stays LTR on the Arabic page. */
-    direction: ltr;
-    unicode-bidi: isolate;
+    /* The h1 ELEMENT is pinned Latin too, not just the lockup inside it. On the
+       Arabic page a bare h1 inherits the Arabic display face and a 700 weight
+       from the global heading rules — a weight KO Ghorab does not have, which
+       the TY v2.0 guard correctly refuses even when the visible glyphs all come
+       from the lockup's own Montserrat. A container for a Latin wordmark is
+       Latin. */
+    font-family: var(--adel-font-latin);
+    font-weight: 800;
   }
-  .hero__loveWord { display: inline-block; }
-  .hero__heart {
-    width: 0.76em;
-    height: 0.76em;
-    flex: 0 0 auto;
-    fill: var(--adel-blue-500);
-  }
-
   /* ---- the Vibe Coding line — a full step below the display ---- */
   .hero__line2 {
     margin: 0;
@@ -222,14 +181,6 @@ const portraitMobile = photography.heroPortraitMobile;
      the shared .ar-heading role in tokens/adel-type.css. Only the measure is
      hero-specific: Arabic sets denser, so the same line wants a shorter one. */
   :global([lang='ar']) .hero__line2 { max-width: 20ch; }
-
-  /* ---- supporting line ---- */
-  .hero__line3 {
-    margin: 0;
-    font-size: var(--adel-text-lg);
-    line-height: 1.6;
-    color: var(--adel-text-secondary);
-  }
 
   /* ---- actions ---- */
   .hero__actions {
@@ -322,15 +273,6 @@ const portraitMobile = photography.heroPortraitMobile;
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .hero__pill { background: var(--adel-white); }
   }
-  /* The 3% Mint moment: 8px, once, marking the thing that is genuinely live. */
-  .hero__dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--adel-accent);
-    flex: 0 0 auto;
-  }
-
   /* ---- responsive --------------------------------------------------------
      The design is authored at desktop. Below 900px the arch moves above the
      text so the headline still owns the first screen on a phone, and the pill

@@ -107,6 +107,11 @@ const families = [
   'family=Montserrat:wght@400..800',
   'family=Readex+Pro:wght@300..600',
   'family=JetBrains+Mono:wght@400..500',
+  /* Caveat is the About page's sketch-layer face and the only font this
+     revision adds. It is LATIN ONLY and English only — the Arabic sketch layer
+     uses KO Ghorab, which is self-hosted — so the Arabic pages do not request
+     it at all. 500/600 are the two weights frame 3e specifies. */
+  ...(lang === DEFAULT_LANG ? ['family=Caveat:wght@500;600'] : []),
 ];
 const fontHref = `https://fonts.googleapis.com/css2?${families.join('&')}&display=swap`;
 ---
@@ -168,7 +173,7 @@ const fontHref = `https://fonts.googleapis.com/css2?${families.join('&')}&displa
     <main id="main" class:list={[padded && 'main--padded']}>
       <slot />
     </main>
-    <Footer lang={lang} />
+    <Footer lang={lang} switchTo={switchTo} switchToHome={switchIsDeadEnd} />
   </body>
 </html>
 

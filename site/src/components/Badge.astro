@@ -1,0 +1,193 @@
+---
+/* =============================================================================
+   Badge — the frozen content identity, on the website
+   =============================================================================
+   Website Structure v2, frame 2f: "Badges: implement as one component:
+   primary (filled, pillar-colored) + optional secondary (outlined; mint
+   variant only for live states). Enforce 1+1 max."
+
+   ONE component, so the 1 + 1 ceiling is enforceable in one place rather than
+   trusted to every caller — asking for two secondary markers is a build error
+   below, not a review comment.
+
+   PRIMARY (filled) — content TYPE only, never a series or project name:
+     vibe-coding · gear · learn · prompt · use-case · guide · playground
+     build · review · workflow
+   Pillar colour coding per 2f: Signature Blue for the build/learn surfaces,
+   Graphite for Gear, Ice for the Learn sub-types, and Playground is the one
+   graphite-with-mint-text member of the family.
+
+   SECONDARY (outlined) — optional, at most one: new · testing · live ·
+   current · part · on-the-go · ai-powered · featured. Mint is reserved for
+   "happening now" and nothing else on the site reaches for it.
+
+   The labels are NOT translated. 2f: badges stay English/Montserrat — they are
+   the content taxonomy, and the taxonomy is one of the frozen non-translated
+   term sets.
+   ========================================================================== */
+
+import type { BadgeKind, BadgeMarker } from '../lib/badges';
+
+interface Props {
+  /** Filled, pillar-coloured. Exactly one per card. */
+  kind?: BadgeKind;
+  /** Outlined, optional, at most one. */
+  marker?: BadgeMarker;
+  /** Structural marker with a number — "Part 01", "Build 03". */
+  part?: number;
+  partLabel?: 'Part' | 'Build';
+  /** Sitting on graphite. */
+  onDark?: boolean;
+  class?: string;
+}
+
+const {
+  kind, marker, part, partLabel = 'Part', onDark = false, class: className, ...rest
+} = Astro.props;
+
+const KIND_LABEL: Record<BadgeKind, string> = {
+  'vibe-coding': 'Vibe Coding',
+  gear: 'Gear',
+  learn: 'Learn',
+  prompt: 'Prompt',
+  'use-case': 'Use Case',
+  guide: 'Guide',
+  playground: 'Playground',
+  build: 'Build',
+  review: 'Review',
+  workflow: 'Workflow',
+};
+
+const MARKER_LABEL: Record<BadgeMarker, string> = {
+  new: 'New',
+  testing: 'Testing',
+  live: 'Live',
+  current: 'Current',
+  'on-the-go': 'On the go',
+  'ai-powered': 'AI-powered',
+  featured: 'Featured',
+};
+
+/* Mint = "happening now" and only that. Three markers qualify; everything else
+   is the neutral outline. */
+const MINT = new Set<BadgeMarker>(['testing', 'live', 'current']);
+
+/* The frozen ceiling: one primary, one optional secondary. A structural
+   "Part 01" IS a secondary marker, so it cannot ride alongside another one. */
+if (marker && typeof part === 'number') {
+  throw new Error(
+    '<Badge> was given both `marker` and `part`. The frozen rule is 1 primary badge + at most 1 secondary marker — pick one.'
+  );
+}
+
+const structural = typeof part === 'number'
+  ? `${partLabel} ${String(part).padStart(2, '0')}`
+  : null;
+---
+
+{kind && (
+  <span class:list={['bdg', `bdg--${kind}`, onDark && 'bdg--dark', className]} dir="ltr" {...rest}>
+    {KIND_LABEL[kind]}
+  </span>
+)}
+{marker && (
+  <span
+    class:list={['mkr', MINT.has(marker) && 'mkr--now', onDark && 'mkr--dark', className]}
+    dir="ltr"
+    {...rest}
+  >
+    {MINT.has(marker) && <span class="mkr__dot" aria-hidden="true"></span>}
+    {MARKER_LABEL[marker]}
+  </span>
+)}
+{structural && (
+  <span class:list={['mkr', onDark && 'mkr--dark', className]} dir="ltr" {...rest}>
+    {structural}
+  </span>
+)}
+
+<style>
+  /* ---- primary: filled, pillar-coloured -------------------------------- */
+  .bdg {
+    display: inline-flex;
+    align-items: center;
+    /* 2f: "always English/Montserrat 800" — the badge taxonomy is one of the
+       frozen non-translated term sets, so this is the never-remapped Latin
+       token rather than the language-aware display one. */
+    font-family: var(--adel-font-latin);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1;
+    padding: 5px var(--atc-space-3);
+    border-radius: var(--adel-radius-pill);
+    white-space: nowrap;
+    unicode-bidi: isolate;
+  }
+  @media (max-width: 767px) {
+    .bdg { font-size: 9px; }
+  }
+
+  .bdg--vibe-coding,
+  .bdg--workflow { background: var(--adel-blue-500); color: var(--adel-white); }
+  .bdg--build { background: var(--adel-deep-blue); color: var(--adel-white); }
+  .bdg--gear,
+  .bdg--review { background: var(--adel-graphite); color: var(--adel-white); }
+  .bdg--learn,
+  .bdg--guide,
+  .bdg--use-case,
+  .bdg--prompt { background: var(--adel-ice-blue); color: var(--adel-deep-blue); }
+  /* The family's one mint fill-accent, per the Content Identity System. */
+  .bdg--playground { background: var(--adel-graphite); color: var(--adel-mint-500); }
+
+  /* On graphite the ice fills lose their ground, so those four step to a tinted
+     surface with the Ice foreground instead of inverting into a second accent. */
+  .bdg--dark.bdg--learn,
+  .bdg--dark.bdg--guide,
+  .bdg--dark.bdg--use-case,
+  .bdg--dark.bdg--prompt {
+    background: rgba(147, 180, 255, 0.16);
+    color: var(--adel-blue-300);
+  }
+  .bdg--dark.bdg--gear,
+  .bdg--dark.bdg--review {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--adel-white);
+  }
+
+  /* ---- secondary: outlined marker --------------------------------------- */
+  .mkr {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    font-family: var(--adel-font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1;
+    padding: 4px var(--atc-space-3);
+    border: 1px solid var(--adel-border-hairline);
+    border-radius: var(--adel-radius-pill);
+    color: var(--adel-text-secondary);
+    white-space: nowrap;
+    unicode-bidi: isolate;
+  }
+  @media (max-width: 767px) {
+    .mkr { font-size: 9px; }
+  }
+  .mkr__dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--adel-mint-500);
+    flex: none;
+  }
+  .mkr--now {
+    border-color: var(--adel-mint-300);
+    color: var(--adel-mint-700);
+  }
+  .mkr--dark { border-color: rgba(255, 255, 255, 0.2); color: rgba(255, 255, 255, 0.78); }
+  .mkr--dark.mkr--now { border-color: var(--adel-mint-500); color: var(--adel-mint-300); }
+</style>

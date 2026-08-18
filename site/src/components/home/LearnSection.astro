@@ -26,6 +26,7 @@
    ========================================================================== */
 
 import Rich from '../Rich.astro';
+import PillarIcon from '../PillarIcon.astro';
 import { useCopy } from '../../copy';
 import { emptySurfaces } from '../../lib/content';
 import { topics } from '../../site.config';
@@ -48,9 +49,13 @@ const empty = await emptySurfaces(lang);
    true, reads as a boast the day it is small, and is the first thing anybody
    is tempted to round up. The row says what the surface is for and lets the
    index itself do the counting. */
+/* Order is the design of record's, not alphabetical and not historical:
+   Use Cases → Guides → Videos, with the Prompt Library panel beside them and
+   Browse by Topic closing the list. A row whose surface has nothing published
+   in this language drops out and the rest close up. */
 const ROWS = [
-  { key: 'guides', path: '/guides', copy: t.rows.guides },
   { key: 'useCases', path: '/use-cases', copy: t.rows.useCases },
+  { key: 'guides', path: '/guides', copy: t.rows.guides },
   { key: 'videos', path: '/videos', copy: t.rows.videos },
 ] as const;
 
@@ -61,8 +66,14 @@ const rows = ROWS.filter((row) => !empty.has(row.key));
    SOMETHING is filed under one of them, otherwise it is six empty shelves. */
 const hasTopics = topics.length > 0 && rows.length > 0;
 
-/* The panel is a promise about a closed surface. Once /prompts has something
-   in it, the promise has been kept and the panel goes away. */
+/* The Prompt Library panel is the Learn gateway's single Ice tint and it is
+   ALWAYS present — the design of record puts it beside the rows in every frame,
+   because the Prompt Library is one of the five things Learn contains and a
+   gateway that hides it is not a gateway.
+
+   What changes is its state, not its existence: with prompts published it links
+   into the library; with none, it keeps the honest "coming soon" treatment and
+   a notify link instead of a dead one. */
 const promptsClosed = empty.has('prompts');
 
 const arrow = lang === 'ar' ? '←' : '→';
@@ -73,13 +84,11 @@ const anything = rows.length > 0 || hasTopics;
   <header class="ls__head">
     <div class="ls__kickerRow" data-vb-reveal style="--vb-step:0">
       <span class="ls__kicker" dir="ltr">{t.label}</span>
-      <span class="ls__aside"><Rich text={t.aside} /></span>
+      <span class="ls__icon"><PillarIcon name="learn" size={20} /></span>
     </div>
 
     <h2 class="ls__title ar-hero" id="ls-title" data-vb-reveal style="--vb-step:1">
-      <Rich text={t.headBefore} as="span" />
-      <em class="ls__em"><Rich text={t.headEm} /></em>
-      <Rich text={t.headAfter} as="span" />
+      <Rich text={t.headBefore} as="span" /><em class="ls__em"><Rich text={t.headEm} /></em><Rich text={t.headAfter} as="span" />
     </h2>
 
     <Rich text={t.support} as="p" class="ls__support" data-vb-reveal style="--vb-step:2" />
@@ -125,24 +134,33 @@ const anything = rows.length > 0 || hasTopics;
       )}
     </div>
 
-    {promptsClosed && (
-      <aside class="ls__panel" data-vb-reveal style="--vb-step:3" aria-labelledby="ls-panel-title">
-        <span class="ls__panelStatus"><Rich text={t.panelStatus} /></span>
-        <h3 class="ls__panelTitle" id="ls-panel-title" dir="ltr">{t.panelTitle}</h3>
-        <Rich text={t.panelBody} as="p" class="ls__panelBody" />
-        <Rich text={t.panelNote} as="p" class="ls__panelNote" />
-        <a class="ls__panelCta" href={localizePath('/newsletter', lang)}>
-          <Rich text={t.panelCta} />
-          <span class="ls__arrow" aria-hidden="true">{arrow}</span>
-        </a>
-      </aside>
-    )}
+    <aside class="ls__panel" data-vb-reveal style="--vb-step:3" aria-labelledby="ls-panel-title">
+      {promptsClosed && <span class="ls__panelStatus"><Rich text={t.panelStatus} /></span>}
+      <h3 class="ls__panelTitle" id="ls-panel-title" dir="ltr">{t.panelTitle}</h3>
+      <Rich text={t.panelBody} as="p" class="ls__panelBody" />
+      {/* The sample line is a specimen of the FORM a prompt takes, and it is
+          shown as one — a quoted opening, not a copyable prompt. The real copy
+          button lives on the real prompt page, which is where a copy button
+          can actually copy something. */}
+      <p class="ls__panelSample">
+        <Rich text={t.panelNote} as="span" class="ls__panelSampleText" />
+        {!promptsClosed && <span class="ls__panelCopy" dir="ltr" aria-hidden="true">{t.panelCopy}</span>}
+      </p>
+      <a
+        class="ls__panelCta"
+        href={localizePath(promptsClosed ? '/newsletter' : '/prompts', lang)}
+      >
+        <Rich text={promptsClosed ? t.panelCtaClosed : t.panelCta} />
+        <span class="ls__arrow" aria-hidden="true">{arrow}</span>
+      </a>
+    </aside>
   </div>
 
   {anything && (
     <div class="ls__actions">
       <a class="ls__ctaGhost" href={localizePath('/learn', lang)}>
-        <Rich text={c.notFound.learnCta} />
+        <Rich text={t.cta} />
+        <span class="ls__arrow" aria-hidden="true">{arrow}</span>
       </a>
     </div>
   )}
@@ -160,8 +178,7 @@ const anything = rows.length > 0 || hasTopics;
     color: var(--adel-signature-blue);
     unicode-bidi: isolate;
   }
-  .ls__aside { font-family: var(--adel-font-mono); font-size: 11px; color: var(--adel-text-tertiary); }
-  :global([lang='ar']) .ls__aside { font-family: var(--adel-font-text); font-size: 12.5px; }
+  .ls__icon { display: block; color: var(--adel-signature-blue); }
 
   .ls__title {
     margin: 0;
@@ -280,7 +297,9 @@ const anything = rows.length > 0 || hasTopics;
   }
   .ls__panelTitle {
     margin: 0;
-    font-family: var(--adel-font-display);
+    /* "Prompt Library" is a frozen non-translated brand name — Latin in both
+       languages, so the never-remapped token. */
+    font-family: var(--adel-font-latin);
     font-size: var(--adel-text-xl);
     font-weight: 700;
     letter-spacing: var(--adel-tracking-tight);
@@ -288,7 +307,37 @@ const anything = rows.length > 0 || hasTopics;
     unicode-bidi: isolate;
   }
   .ls__panelBody { margin: 0; font-size: var(--adel-text-base); line-height: 1.6; color: var(--adel-text-secondary); }
-  .ls__panelNote { margin: 0; font-size: var(--adel-text-sm); line-height: 1.6; color: var(--adel-text-tertiary); }
+  /* The specimen line — a quoted prompt opening on the panel's own ground. */
+  .ls__panelSample {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--atc-space-3);
+    margin: 0;
+    padding: var(--atc-space-3) var(--atc-space-4);
+    border-radius: var(--adel-radius-inline);
+    background: var(--adel-white);
+  }
+  .ls__panelSampleText {
+    font-family: var(--adel-font-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--adel-blue-800);
+    unicode-bidi: plaintext;
+    min-width: 0;
+  }
+  /* Decorative marker for the copy affordance that lives on the real prompt
+     page. `aria-hidden` above keeps it out of the accessibility tree, because a
+     screen reader must never be offered a button that does nothing. */
+  .ls__panelCopy {
+    flex: none;
+    font-family: var(--adel-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--adel-blue-700);
+  }
   .ls__panelCta {
     margin-top: var(--atc-space-2);
     display: inline-flex;
