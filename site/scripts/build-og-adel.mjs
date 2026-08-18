@@ -40,7 +40,11 @@ const GRAPHITE = token('graphite', '#171A1F');
 const SLATE = token('slate', '#667085');
 const WARM_WHITE = token('warm-white', '#FAFAF8');
 const SOFT_GRAY = token('soft-gray', '#E6E8EC');
-const HEART = '#E0342A';
+/* The heart is Signature Blue, not red — it is a brand mark inside a wordmark,
+   and CS v2.0 has no red in the palette. Reading the token rather than writing
+   the hex keeps this file's own rule: nothing here is a literal hex except
+   pure white. */
+const HEART = SIGNATURE;
 
 /* The site's own heart path, so the card and the hero draw the same glyph. */
 const HEART_PATH =

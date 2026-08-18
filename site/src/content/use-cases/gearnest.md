@@ -6,7 +6,7 @@ lang: en
 topic: building
 series: vibe-coding
 part: 1
-tags: ['vibe coding', 'gearnest', 'building in public']
+tags: ['vibe coding', 'gearnest']
 stage: building
 outcome: 'Being built in public. Every step is published here as it happens, including the ones that did not work.'
 external:

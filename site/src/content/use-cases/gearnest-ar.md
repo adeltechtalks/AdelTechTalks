@@ -7,7 +7,7 @@ translationOf: gearnest
 topic: building
 series: vibe-coding
 part: 1
-tags: ['vibe coding', 'gearnest', 'البناء أمام الناس']
+tags: ['vibe coding', 'gearnest']
 stage: building
 outcome: 'يُبنى أمام الناس. كل خطوة تُنشر هنا وقت حدوثها، بما فيها ما لم ينجح.'
 external:
