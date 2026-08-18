@@ -33,6 +33,9 @@ export interface Entry {
   coverAlt?: string;
   minutes?: number;
   featured: boolean;
+  /* Eligible for the homepage's Latest feed. False = published and linkable,
+     but no longer current editorial content. See content.config.ts. */
+  homepage: boolean;
   href: string;
   /* Phase 1.1 — which build narrative this belongs to, and its running order. */
   series?: string;
@@ -99,6 +102,7 @@ function toEntry(item: Editorial, kind: EntryKind, lang: Lang): Entry {
     coverAlt: item.data.coverAlt,
     minutes: item.data.minutes,
     featured: item.data.featured,
+    homepage: item.data.homepage,
     series: item.data.series,
     part: item.data.part,
     youtubeId: 'youtubeId' in item.data ? item.data.youtubeId : undefined,
@@ -169,6 +173,9 @@ export function getVideos(): Entry[] {
     topic: v.topic,
     tags: [],
     featured: false,
+    /* A video in the config array is a channel upload — current by
+       definition, and there is no front matter on it to say otherwise. */
+    homepage: true,
     youtubeId: v.id,
     href: `https://www.youtube.com/watch?v=${v.id}`,
     external: true,

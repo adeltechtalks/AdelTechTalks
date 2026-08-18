@@ -1,0 +1,75 @@
+---
+/* =============================================================================
+   "I ❤ Tech" — the master brand expression, drawn not typed
+   =============================================================================
+   Website Structure v2 (frozen): "Heart in 'I ♥ Tech' is the inline SVG heart
+   (Signature Blue), never the glyph/emoji."
+
+   Three surfaces render this wordmark — the homepage hero, the homepage close
+   and the About page intro — so it is one component rather than three copies of
+   the same split-on-the-emoji trick. The string still lives in copy.ts as
+   `LOVE_TECH`, which stays the single source of the words themselves.
+
+   It is a fixed brand object: `dir="ltr"` and isolated, so it reads left to
+   right on the Arabic site exactly as it does on the English one.
+   ========================================================================== */
+
+import { LOVE_TECH } from '../copy';
+
+interface Props {
+  /* Font size of the wordmark. Inherits by default, which is what a heading
+     wants; pass a value when the lockup sits on its own. */
+  size?: string;
+  class?: string;
+}
+
+const { size, class: className, ...rest } = Astro.props;
+
+const [before, after] = LOVE_TECH.split('❤️');
+---
+
+<span
+  class:list={['lovetech', className]}
+  style={size ? `font-size:${size}` : undefined}
+  dir="ltr"
+  {...rest}
+>
+  <span class="lovetech__word">{before.trim()}</span>
+  <svg class="lovetech__heart" viewBox="0 0 24 24" role="img" aria-label="love" focusable="false">
+    <path
+      d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+    />
+  </svg>
+  <span class="lovetech__word">{after.trim()}</span>
+</span>
+
+<style>
+  .lovetech {
+    display: inline-flex;
+    align-items: center;
+    /* The optical gap and heart size are the hero's measured values — the
+       lockup keeps the same proportions wherever it is set. */
+    gap: 0.21em;
+    unicode-bidi: isolate;
+    /* Latin standing alone → Montserrat, whatever the page language. This is
+       the never-remapped token on purpose: the wordmark must not fall into the
+       Arabic display stack on the Arabic site. */
+    font-family: var(--adel-font-latin);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .lovetech__heart {
+    width: 0.76em;
+    height: 0.76em;
+    /* CS v2.0: the heart is Signature Blue. It is a brand mark inside a
+       wordmark, not a red emoji. */
+    fill: var(--adel-signature-blue);
+    flex: 0 0 auto;
+  }
+  /* On a graphite or photographic ground the mark steps up to Ice so it keeps
+     its contrast without becoming a second accent colour. */
+  .lovetech--onDark .lovetech__heart {
+    fill: var(--adel-blue-300);
+  }
+</style>

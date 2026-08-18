@@ -31,6 +31,7 @@
    ========================================================================== */
 
 import Rich from '../Rich.astro';
+import PillarIcon from '../PillarIcon.astro';
 import StatusPill from '../ia/StatusPill.astro';
 import { useCopy } from '../../copy';
 import { featuredGear, getGear, crossoverBuild } from '../../lib/pillars';
@@ -59,13 +60,11 @@ const featuredLabel =
   <header class="gs__head">
     <div class="gs__kickerRow" data-vb-reveal style="--vb-step:0">
       <span class="gs__kicker" dir="ltr">{t.label}</span>
-      <span class="gs__aside"><Rich text={t.aside} /></span>
+      <span class="gs__icon"><PillarIcon name="gear" size={20} /></span>
     </div>
 
     <h2 class="gs__title ar-hero" id="gs-title" data-vb-reveal style="--vb-step:1">
-      <Rich text={t.headBefore} as="span" />
-      <em class="gs__em"><Rich text={t.headEm} /></em>
-      <Rich text={t.headAfter} as="span" />
+      <Rich text={t.headBefore} as="span" /><em class="gs__em"><Rich text={t.headEm} /></em><Rich text={t.headAfter} as="span" />
     </h2>
 
     <Rich text={t.support} as="p" class="gs__support" data-vb-reveal style="--vb-step:2" />
@@ -131,20 +130,6 @@ const featuredLabel =
     <p class="gs__empty" data-vb-reveal style="--vb-step:3"><Rich text={t.empty} /></p>
   )}
 
-  <dl class="gs__rules">
-    <div class="gs__rule">
-      <dt><Rich text={t.ruleRatings} /></dt>
-      <dd><Rich text={t.ruleRatingsNote} /></dd>
-    </div>
-    <div class="gs__rule">
-      <dt><Rich text={t.ruleCross} /></dt>
-      <dd><Rich text={t.ruleCrossNote} /></dd>
-    </div>
-    <div class="gs__rule">
-      <dt><Rich text={t.ruleBuild} /></dt>
-      <dd><Rich text={t.ruleBuildNote} /></dd>
-    </div>
-  </dl>
 </section>
 
 <style>
@@ -159,8 +144,7 @@ const featuredLabel =
     color: var(--adel-signature-blue);
     unicode-bidi: isolate;
   }
-  .gs__aside { font-family: var(--adel-font-mono); font-size: 11px; color: var(--adel-text-tertiary); }
-  :global([lang='ar']) .gs__aside { font-family: var(--adel-font-text); font-size: 12.5px; }
+  .gs__icon { display: block; color: var(--adel-signature-blue); }
 
   .gs__title {
     margin: 0;
@@ -297,34 +281,8 @@ const featuredLabel =
     color: var(--adel-text-secondary);
   }
 
-  .gs__rules {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--atc-space-4) var(--atc-space-8);
-    margin: var(--atc-space-12) 0 0;
-    padding-top: var(--atc-space-5);
-    border-top: 1px solid var(--adel-border-hairline);
-  }
-  .gs__rule { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--atc-space-2); }
-  .gs__rule dt {
-    font-family: var(--adel-font-mono);
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--adel-text-primary);
-  }
-  :global([lang='ar']) .gs__rule dt {
-    font-family: var(--adel-font-text);
-    font-size: 13px;
-    letter-spacing: normal;
-    text-transform: none;
-  }
-  .gs__rule dd { margin: 0; font-size: var(--adel-text-sm); line-height: 1.6; color: var(--adel-text-tertiary); }
-
   @media (max-width: 767px) {
     .gs__featured { grid-template-columns: 1fr; gap: var(--atc-space-6); }
     .gs__photo { aspect-ratio: 4 / 3; }
-    .gs__rules { flex-direction: column; gap: var(--atc-space-3); }
   }
 </style>

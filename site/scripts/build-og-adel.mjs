@@ -1,5 +1,13 @@
-/* Builds the default Adel share card — the image every page without its own
- * cover uses on LinkedIn, Facebook, X and WhatsApp (§27).
+/* Builds the default share card — the image every page without its own cover
+ * uses on LinkedIn, Facebook, X and WhatsApp (§27).
+ *
+ * The card carries the same positioning as the metadata beside it: the
+ * AdelTechTalks eyebrow, the I ❤ Tech lockup, and the approved hero line. The
+ * professional positioning it used to print — "Product Manager · AI Enthusiast
+ * · Builder · Lifelong Learner" — is off this card for the same reason it is
+ * off the <title>: the role is credibility context for the About page, never
+ * global social metadata. Regenerate with `npm run og` after editing, and
+ * commit the PNG.
  *
  * Run:  npm run og      (runs this and the AdelTechTalks badge cards)
  * Out:  public/og/adel-default.png  — commit it.
@@ -32,7 +40,11 @@ const GRAPHITE = token('graphite', '#171A1F');
 const SLATE = token('slate', '#667085');
 const WARM_WHITE = token('warm-white', '#FAFAF8');
 const SOFT_GRAY = token('soft-gray', '#E6E8EC');
-const HEART = '#E0342A';
+/* The heart is Signature Blue, not red — it is a brand mark inside a wordmark,
+   and CS v2.0 has no red in the palette. Reading the token rather than writing
+   the hex keeps this file's own rule: nothing here is a literal hex except
+   pure white. */
+const HEART = SIGNATURE;
 
 /* The site's own heart path, so the card and the hero draw the same glyph. */
 const HEART_PATH =
@@ -48,7 +60,7 @@ const card = () => `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height=
 
   <!-- identity -->
   <text x="100" y="150" font-family="${SANS}" font-size="30" font-weight="700"
-        letter-spacing="6" fill="${SIGNATURE}">ADEL</text>
+        letter-spacing="6" fill="${SIGNATURE}">ADELTECHTALKS</text>
 
   <!-- the expression -->
   <text x="100" y="300" font-family="${SANS}" font-size="112" font-weight="800"
@@ -60,8 +72,11 @@ const card = () => `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height=
         letter-spacing="-3" fill="${GRAPHITE}">Tech</text>
 
   <!-- positioning -->
-  <text x="100" y="372" font-family="${SANS}" font-size="34" font-weight="500"
-        fill="${SLATE}">Product Manager · AI Enthusiast · Builder · Lifelong Learner</text>
+  <!-- 28px, not the 34px the old positioning line used: the approved hero
+       sentence is longer than the four-word list it replaced, and at 34px it
+       ran off the right edge of the card. -->
+  <text x="100" y="372" font-family="${SANS}" font-size="28" font-weight="500"
+        fill="${SLATE}">I build, test, and learn with technology — then share what works.</text>
 
   <line x1="100" y1="440" x2="1100" y2="440" stroke="${SOFT_GRAY}" stroke-width="2"/>
 

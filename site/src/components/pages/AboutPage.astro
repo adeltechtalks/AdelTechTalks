@@ -1,19 +1,51 @@
 ---
-/* About (§18) — the long version of the sign-off.
-   §13: Amazon appears as professional context, in its own small block, worded
-   so it cannot read as an endorsement and cannot turn the page into an
-   employee profile. */
+/* =============================================================================
+   About — Storyboard Edition
+   =============================================================================
+   Design of record: `About Me Storyboard - Final Proposal.html` (frames 3a–3d,
+   the sketch spec 3e, and the four handoff panels — the panels are the spec).
+
+   ── THE ORDER, FROZEN ───────────────────────────────────────────────────────
+     1  Intro          Hi, I'm Adel · I ♥ Tech · no job title in the opening
+     2  My journey     Egypt → Qatar → UAE → UK → USA, current stop in mint
+     3  Two worlds     by day (Product) / after hours (builder & creator)
+     4  Toolbox        tools that earned a place, then what I'm into
+     5  The studio     a real photograph, annotated
+     6  The thread     Learn → Test → Build → Share
+     7  Closing        Still curious. Still building. + ecosystem + Subscribe
+
+   ── CLEAN EDITORIAL × SKETCHBOOK ────────────────────────────────────────────
+   The doodle layer is a SUPPORTING layer and the freeze states the test for it:
+   "page must work with all sketch elements removed". So every sketch element
+   here is decoration, hidden from the accessibility tree, and every fact it
+   gestures at is also written in prose. Density is capped at the specified two
+   sketch elements per viewport.
+
+   ── NOTHING ON THIS PAGE IS INVENTED ────────────────────────────────────────
+   Every fact comes from `aboutStory` in site.config.ts, and the REAL DATA RULE
+   panel governs what may go in it: places lived, Product as a craft, Claude and
+   ChatGPT as tools, the interests list. The role and company slots ship EMPTY
+   and their elements are absent until Adel supplies verified strings — the
+   dashed "editable slot" frames in the design are annotations for a reviewer,
+   not something a visitor is ever shown.
+
+   ── A RESPONSIVE PAGE, NOT AN INFOGRAPHIC ───────────────────────────────────
+   The journey is a horizontal dashed path on desktop and a vertical timeline on
+   mobile — the same list of stops, laid out twice, never a shrunken picture of
+   the desktop one. Everything mirrors in RTL through logical properties, and
+   the directional sketch marks flip with scaleX(-1).
+   ========================================================================== */
 
 import Base from '../../layouts/Base.astro';
-import Prose from '../editorial/Prose.astro';
-import PhotoFigure from '../editorial/PhotoFigure.astro';
-import PullQuote from '../editorial/PullQuote.astro';
-import Divider from '../editorial/Divider.astro';
-import NewsletterCTA from '../editorial/NewsletterCTA.astro';
 import Rich from '../Rich.astro';
-import { about, photography } from '../../site.config';
+import LoveTech from '../LoveTech.astro';
+import PillarIcon from '../PillarIcon.astro';
+import Sketch from '../about/Sketch.astro';
+import Annotation from '../about/Annotation.astro';
+import NewsletterCTA from '../editorial/NewsletterCTA.astro';
+import { aboutStory, photography } from '../../site.config';
 import { useCopy } from '../../copy';
-import type { Lang } from '../../i18n';
+import { localizePath, type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
@@ -21,196 +53,707 @@ interface Props {
 
 const { lang } = Astro.props;
 const c = useCopy(lang);
-const a = about[lang];
+const t = c.ia.aboutPage;
+const arrow = lang === 'ar' ? '←' : '→';
 
-/* The biography is the one thing on this site nobody can write for Adel, and
-   until he does, this page must still be a finished page rather than a form
-   with the word PLACEHOLDER in it.
+const stops = aboutStory.journey.map((stop, i) => ({
+  id: stop.id,
+  index: String(i + 1).padStart(2, '0'),
+  current: Boolean(stop.current),
+  ...stop[lang],
+}));
 
-   So when `about.body` is empty it falls back to the positioning paragraph that
-   is ALREADY approved and ALREADY published in the homepage hero, in both
-   languages. That is reuse of approved copy, not invented biography — it says
-   what Adel does, which is true and signed off, and it says nothing about where
-   he is from or how he got here, which is his to tell.
+/* The editable slots. Empty ⇒ the element is not rendered at all — the design's
+   dashed "slot" frames are a note to a reviewer, never something a visitor is
+   shown. */
+const role = aboutStory.role[lang].trim();
+const company = aboutStory.company[lang].trim();
+const contextNote = company ? aboutStory.note[lang].trim() : '';
+const experienceUrl = aboutStory.experienceUrl.trim();
 
-   Paste the real paragraphs into `about.body` in site.config.ts and they take
-   over here with no other change. */
-const paragraphs = a.body.length > 0 ? a.body : [c.hero.body];
-const usingFallback = a.body.length === 0;
+const tools = aboutStory.tools.filter((tool) => tool.trim().length > 0);
+const interests = aboutStory.interests.map((item) => item[lang]).filter(Boolean);
+
+/* PH v1.0 — a real photograph or nothing. Two DIFFERENT gates, on purpose.
+
+   The intro portrait is a portrait: `aboutPhoto` when one is supplied, and
+   otherwise the real photograph the homepage hero already uses. That is reuse
+   of an approved asset, not a stand-in.
+
+   The studio SCENE is a different picture and has its own gate. The design of
+   record asks for "a wider desk shot so annotations can point at mic/keyboard/
+   watch", and no such frame exists yet — the package's `adel-studio.jpeg` is
+   byte-identical to `adel-hero.jpeg`, the same portrait under a second name.
+   Rendering the portrait twice on one page, the second time captioned as a room,
+   would be dressing one asset up as two. So the scene collapses until a real
+   wide shot lands in `photography.studioPhoto`, which is the approved
+   graceful-empty behaviour and blocks nothing else on the page. */
+const portrait = photography.aboutPhoto || photography.heroPortrait;
+const studio = photography.studioPhoto;
+
+const glyphFor = (href: string) =>
+  href.includes('vibe-coding')
+    ? 'vibe-coding'
+    : href.includes('gear')
+      ? 'gear'
+      : href.includes('learn')
+        ? 'learn'
+        : 'playground';
 ---
 
-<Base lang={lang} title={c.about.title} description={c.about.intro}>
-  <article class="container ab">
-    <header class="ab__head">
-      <span class="overline ab__overline">{c.about.title}</span>
-      <Rich text={a.title} as="h1" class="ab__title ar-hero" />
-      <p class="ab__intro">{c.about.intro}</p>
-    </header>
+<Base lang={lang} title={c.about.title} description={t.lede.replace(/\[\[|\]\]/g, '')}>
+  <article class="ab" data-vb>
+    {/* ---- 1 · Intro ------------------------------------------------------ */}
+    <section class="container ab__intro">
+      <div class="ab__introText" data-vb-reveal style="--vb-step:0">
+        <span class="ab__kicker" dir="ltr">{t.kicker}</span>
+        <h1 class="ab__hello ar-hero"><Rich text={t.greeting} /></h1>
+        <LoveTech class="ab__love" size="clamp(38px, 6vw, 64px)" />
+        <p class="ab__lede"><Rich text={t.lede} /></p>
+      </div>
 
-    <div class:list={['ab__grid', !photography.aboutPhoto && 'ab__grid--solo']}>
-      {photography.aboutPhoto && (
-        <div class="ab__photo">
-          <PhotoFigure
-            src={photography.aboutPhoto}
+      {portrait && (
+        <div class="ab__portrait" data-vb-reveal style="--vb-step:1">
+          {/* Taped to the page, at the 3e tilt. */}
+          <Sketch kind="tape" class="ab__tape" />
+          <img
+            class="ab__portraitImg"
+            src={portrait}
             alt={c.hero.portraitAlt}
-            ratio="3 / 4"
-            ratioMobile="4 / 5"
-            slotNote="A photograph of Adel goes here."
+            width="720"
+            height="900"
+            loading="eager"
+            decoding="async"
           />
+          <span class="ab__portraitNote">
+            <Annotation text={t.photoNote} />
+            <Sketch kind="arrow" class="ab__portraitArrow" />
+          </span>
         </div>
       )}
+    </section>
 
-      <div class="ab__body">
-        <Prose>
-          {paragraphs.map((p) => <Rich text={p} as="p" class={usingFallback ? 'ab__lede' : undefined} />)}
-        </Prose>
+    {/* ---- 2 · My journey ------------------------------------------------- */}
+    <section class="container ab__section" aria-labelledby="ab-journey">
+      <header class="ab__head" data-vb-reveal style="--vb-step:0">
+        <span class="ab__kicker" dir="ltr">{t.journeyKicker}</span>
+        <h2 class="ab__h2 ar-heading" id="ab-journey"><Rich text={t.journeyTitle} /></h2>
+      </header>
+
+      <div class="ab__map">
+        {/* Desktop: one dashed path drawn behind the stops. Mobile: the rule
+            below turns the row into a column and this path is hidden — a
+            horizontal line has no meaning in a vertical timeline. */}
+        <Sketch kind="path" class="ab__mapPath" />
+        <ol class="ab__stops">
+          {stops.map((stop, i) => (
+            <li class:list={['ab__stop', stop.current && 'ab__stop--current']} data-vb-stage style={`--vb-step:${i}`}>
+              <span class="ab__stopIndex" dir="ltr">{stop.index}</span>
+              <Sketch kind="pin" current={stop.current} class="ab__stopPin" />
+              <span class="ab__stopPlace ar-heading"><Rich text={stop.place} /></span>
+              <span class="ab__stopNote"><Rich text={stop.note} /></span>
+            </li>
+          ))}
+        </ol>
       </div>
-    </div>
 
-    <PullQuote quote={c.hero.pattern.join(' ')} class="ab__quote" />
+      <p class="ab__mapNote" data-vb-reveal style="--vb-step:1">
+        <Rich text={t.journeyNote} />
+      </p>
+    </section>
 
-    <section class="ab__values" aria-labelledby="values-title">
-      <h2 class="ab__h2 ar-heading" id="values-title">{c.about.workTitle}</h2>
-      <ul class="ab__valueList">
-        {a.values.map((v) => (
-          <li class="ab__value">
-            <h3 class="ab__valueTitle">{v.title}</h3>
-            <p class="ab__valueBody">{v.body}</p>
+    {/* ---- 3 · Two worlds -------------------------------------------------- */}
+    <section class="container ab__section" aria-labelledby="ab-worlds">
+      <header class="ab__head" data-vb-reveal style="--vb-step:0">
+        <span class="ab__kicker" dir="ltr">{t.worldsKicker}</span>
+        <h2 class="ab__h2 ar-heading" id="ab-worlds"><Rich text={t.worldsTitle} /></h2>
+      </header>
+
+      <div class="ab__worlds">
+        <article class="ab__world" data-vb-reveal style="--vb-step:1">
+          <span class="ab__worldLabel"><Rich text={t.dayLabel} /> ☀</span>
+          <h3 class="ab__h3 ar-heading" dir="ltr">{t.dayTitle}</h3>
+          <p class="ab__worldLede"><Rich text={t.dayLede} /></p>
+          <p class="ab__worldBody"><Rich text={t.dayBody} /></p>
+
+          {/* The two editable slots. Absent until they hold verified strings —
+              a job title nobody supplied is a job title nobody has. */}
+          {(role || company) && (
+            <p class="ab__worldFacts">
+              {role && <Rich text={role} class="ab__worldRole" />}
+              {role && company && <span class="ab__worldSep" aria-hidden="true"> · </span>}
+              {company && <Rich text={company} />}
+            </p>
+          )}
+
+          {/* §13 — the employer is credibility context and this line is what
+              keeps it from reading as an endorsement. It renders wherever the
+              employer does, and disappears with it. */}
+          {contextNote && <Rich text={contextNote} as="p" class="ab__worldNote" />}
+
+          {experienceUrl && (
+            <a class="ab__worldCta" href={experienceUrl}>
+              <Rich text={t.dayCta} />
+              <span aria-hidden="true">{arrow}</span>
+            </a>
+          )}
+        </article>
+
+        <article class="ab__world ab__world--night" data-vb-reveal style="--vb-step:2">
+          <span class="ab__worldLabel"><Rich text={t.nightLabel} /> ☾</span>
+          <h3 class="ab__h3 ar-heading"><Rich text={t.nightTitle} /></h3>
+          <ul class="ab__nightList">
+            {t.nightItems.map((item) => (
+              <li class="ab__nightItem">
+                <Rich text={item.name} as="span" class="ab__nightName" />
+                <Rich text={item.body} as="span" class="ab__nightBody" />
+              </li>
+            ))}
+          </ul>
+          <a class="ab__worldCta ab__worldCta--night" href={localizePath('/vibe-coding', lang)}>
+            <Rich text={t.nightCta} />
+            <span aria-hidden="true">{arrow}</span>
+          </a>
+        </article>
+      </div>
+    </section>
+
+    {/* ---- 4 · Toolbox + what I'm into ------------------------------------- */}
+    <section class="container ab__section ab__two" aria-labelledby="ab-tools">
+      <div data-vb-reveal style="--vb-step:0">
+        <span class="ab__kicker" dir="ltr">{t.toolsKicker}</span>
+        <h2 class="ab__h2 ar-heading" id="ab-tools"><Rich text={t.toolsTitle} /></h2>
+        {tools.length > 0 && (
+          <ul class="ab__tools">
+            {tools.map((tool) => <li class="ab__tool" dir="ltr">{tool}</li>)}
+          </ul>
+        )}
+        <p class="ab__note"><Rich text={t.toolsNote} /></p>
+      </div>
+
+      <div data-vb-reveal style="--vb-step:1">
+        <span class="ab__kicker" dir="ltr">{t.interestsKicker}</span>
+        <h2 class="ab__h2 ar-heading"><Rich text={t.interestsTitle} /></h2>
+        {interests.length > 0 && (
+          <ul class="ab__chips">
+            {interests.map((item, i) => (
+              <li class="ab__chip" style={`--tilt:${(i % 3) - 1}deg`}><Rich text={item} /></li>
+            ))}
+          </ul>
+        )}
+        <p class="ab__annRow"><Annotation text={t.interestsNote} /></p>
+      </div>
+    </section>
+
+    {/* ---- 5 · The studio -------------------------------------------------- */}
+    {studio && (
+      <section class="container ab__section" aria-labelledby="ab-studio">
+        <div class="ab__studio">
+          <div class="ab__studioText" data-vb-reveal style="--vb-step:0">
+            <span class="ab__kicker" dir="ltr">{t.studioKicker}</span>
+            <h2 class="ab__h2 ar-heading" id="ab-studio"><Rich text={t.studioTitle} /></h2>
+            <p class="ab__lede ab__lede--sm"><Rich text={t.studioBody} /></p>
+            <a class="ab__worldCta" href={localizePath('/gear', lang)}>
+              <Rich text={t.studioCta} />
+              <span aria-hidden="true">{arrow}</span>
+            </a>
+          </div>
+
+          <figure class="ab__studioShot" data-vb-reveal style="--vb-step:1">
+            <img src={studio} alt={c.hero.portraitAlt} width="1200" height="800" loading="lazy" decoding="async" />
+            {/* Two annotations, which is the 3e density ceiling for one
+                viewport. Both are decoration: the paragraph beside them already
+                says what the room contains. */}
+            <figcaption class="ab__studioNotes">
+              {t.studioNotes.map((note) => <Annotation text={note} class="ab__studioNote" />)}
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+    )}
+
+    {/* ---- 6 · The thread -------------------------------------------------- */}
+    <section class="container ab__section" aria-labelledby="ab-thread">
+      <header class="ab__head" data-vb-reveal style="--vb-step:0">
+        <span class="ab__kicker" dir="ltr">{t.threadKicker}</span>
+      </header>
+      <ol class="ab__thread" id="ab-thread">
+        {t.thread.map((step, i) => (
+          <li class="ab__threadStep" data-vb-stage style={`--vb-step:${i}`}>
+            <Rich text={step.step} as="span" class="ab__threadName ar-heading" />
+            <Rich text={step.note} as="span" class="ab__threadNote" />
+          </li>
+        ))}
+      </ol>
+      <p class="ab__threadBody" data-vb-reveal style="--vb-step:1">
+        <Rich text={t.threadBody} />
+        <Sketch kind="underline" class="ab__underline" />
+      </p>
+    </section>
+
+    {/* ---- 7 · Closing ----------------------------------------------------- */}
+    <section class="container ab__section ab__closing" aria-labelledby="ab-closing">
+      <h2 class="ab__h2 ar-heading" id="ab-closing" data-vb-reveal style="--vb-step:0">
+        <Rich text={t.closingTitle} />
+      </h2>
+
+      <ul class="ab__cards">
+        {t.cards.map((card, i) => (
+          <li data-vb-stage style={`--vb-step:${i}`}>
+            <a class="ab__card" href={localizePath(card.href, lang)}>
+              <span class="ab__cardIcon"><PillarIcon name={glyphFor(card.href)} size={24} /></span>
+              <Rich text={card.name} as="span" class="ab__cardName" />
+              <Rich text={card.body} as="span" class="ab__cardBody" />
+              <span class="ab__cardArrow" aria-hidden="true">{arrow}</span>
+            </a>
           </li>
         ))}
       </ul>
+
+      <div class="ab__cta">
+        <NewsletterCTA lang={lang} placement="about" variant="plain" />
+      </div>
     </section>
-
-    {a.context.employer && (
-      <>
-        <div class="ab__divider"><Divider /></div>
-        <section class="ab__context" aria-labelledby="context-title">
-          <h2 class="ab__h3 ar-heading" id="context-title">{c.about.contextTitle}</h2>
-          <p class="ab__contextRole">
-            <Rich text={a.context.role} />
-            <span class="ab__at"> · </span>
-            <Rich text={a.context.employer} />
-          </p>
-          <Rich text={a.context.note} as="p" class="ab__contextNote" />
-        </section>
-      </>
-    )}
-
-    <div class="ab__cta">
-      <NewsletterCTA lang={lang} placement="about" variant="plain" />
-    </div>
   </article>
 </Base>
 
 <style>
-  .ab { max-width: 1000px; }
-  .ab__head {
-    display: flex;
-    flex-direction: column;
-    gap: var(--atc-space-4);
-    max-width: 40ch;
-    margin-bottom: var(--atc-space-12);
+  .ab { padding-block-start: var(--atc-space-16); }
+  .ab__section { margin-top: var(--atc-space-24); }
+
+  .ab__kicker {
+    display: block;
+    margin-bottom: var(--atc-space-2);
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+    unicode-bidi: isolate;
   }
-  .ab__overline { color: var(--adel-signature-blue); }
-  .ab__title {
+  .ab__head { margin-bottom: var(--atc-space-8); }
+
+  .ab__h2 {
     margin: 0;
     font-family: var(--adel-font-display);
-    font-size: clamp(32px, 4.5vw, 48px);
-    line-height: 1.12;
-    font-weight: 800;
-    letter-spacing: -0.03em;
+    font-size: clamp(26px, 3.4vw, 38px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
     color: var(--adel-text-primary);
     text-wrap: balance;
   }
-  .ab__intro {
-    margin: 0;
-    font-size: var(--adel-text-lg);
-    line-height: 1.6;
-    color: var(--adel-text-secondary);
-  }
-
-  .ab__grid {
-    display: grid;
-    grid-template-columns: 0.7fr 1.3fr;
-    gap: var(--atc-space-12);
-    align-items: start;
-  }
-  /* No approved photograph yet, so the column does not exist rather than
-     standing empty. Add `aboutPhoto` in site.config.ts and it comes back.
-     The prose keeps its own measure so it does not run the full width. */
-  .ab__grid--solo { grid-template-columns: 1fr; }
-  .ab__grid--solo .ab__body { max-width: var(--adel-measure); }
-  .ab__photo { position: sticky; top: 100px; }
-
-  /* A single paragraph carrying the column on its own is set one step up, so
-     the column reads as deliberate rather than as a page missing its text. */
-  .ab__lede {
-    font-size: var(--adel-text-lg);
-    line-height: 1.7;
-    color: var(--adel-text-primary);
-  }
-
-  .ab__quote { margin-block: var(--atc-space-16); }
-
-  .ab__h2 {
-    margin: 0 0 var(--atc-space-6);
-    font-family: var(--adel-font-display);
-    font-size: clamp(24px, 3vw, 30px);
-    font-weight: 700;
-    letter-spacing: var(--adel-tracking-tight);
-    color: var(--adel-text-primary);
-  }
   .ab__h3 {
-    margin: 0 0 var(--atc-space-3);
+    margin: 0;
     font-family: var(--adel-font-display);
     font-size: var(--adel-text-xl);
-    font-weight: 600;
+    font-weight: 700;
+    line-height: 1.25;
     color: var(--adel-text-primary);
   }
 
-  .ab__valueList {
+  /* ---- 1 · intro -------------------------------------------------------- */
+  .ab__intro {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: var(--atc-space-16);
+    align-items: center;
+  }
+  .ab__introText { display: flex; flex-direction: column; align-items: flex-start; gap: var(--atc-space-4); }
+  .ab__hello {
+    margin: 0;
+    font-family: var(--adel-font-display);
+    font-size: clamp(30px, 4.2vw, 46px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--adel-text-primary);
+  }
+  .ab__love { color: var(--adel-text-primary); }
+  .ab__lede {
+    margin: 0;
+    max-width: 44ch;
+    font-size: var(--adel-text-lg);
+    line-height: 1.65;
+    color: var(--adel-text-secondary);
+  }
+  .ab__lede--sm { font-size: var(--adel-text-base); }
+
+  .ab__portrait { position: relative; }
+  .ab__tape {
+    position: absolute;
+    top: -13px;
+    inset-inline-start: 24%;
+    z-index: 1;
+  }
+  .ab__portraitImg {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--adel-radius-media);
+    /* The taped-photo tilt from 3e — one entrance, no loop. */
+    transform: rotate(-2deg);
+  }
+  /* Under the photo, not over it. Hanging the note off the photo's inline
+     start put it on top of the picture in RTL (where that edge is the inner
+     one) and on top of the body text in LTR — and an annotation that covers
+     the thing it annotates is worse than no annotation. Below the frame it
+     reads the same in both directions and clips in neither. */
+  .ab__portraitNote {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-3);
+    margin-top: var(--atc-space-4);
+  }
+  .ab__portraitArrow { width: 64px; flex: none; }
+
+  /* ---- 2 · journey ------------------------------------------------------ */
+  .ab__map { position: relative; }
+  /* The path runs from the first pin to the LAST one, not to the edge of the
+     container: five stops in a five-column grid put the last pin at ~80%, so a
+     path spanning the full width trailed off into empty space past USA. It also
+     sits in the PIN band rather than across the place names — the pins draw
+     over it (they are z-index 1), which is what makes it read as a line the
+     pins are planted on. Logical insets, so it mirrors in RTL. */
+  .ab__mapPath {
+    position: absolute;
+    inset-inline-start: 1%;
+    inset-inline-end: 17%;
+    top: 20px;
+    height: 38px;
+    z-index: 0;
+  }
+  .ab__stops {
+    position: relative;
+    z-index: 1;
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--atc-space-8) var(--atc-space-12);
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--atc-space-6);
   }
-  .ab__value { display: flex; flex-direction: column; gap: var(--atc-space-2); }
-  .ab__valueTitle {
-    margin: 0;
-    font-size: var(--adel-text-base);
-    font-weight: 600;
+  .ab__stop {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--atc-space-2);
+  }
+  .ab__stopIndex {
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--adel-text-tertiary);
+    unicode-bidi: isolate;
+  }
+  .ab__stopPin { margin-inline-start: -2px; }
+  .ab__stopPlace {
+    /* Carries Arabic ("مصر", "قطر") at 20px — below Ghorab's 24px floor, so it
+       takes the small-display token, which falls to Readex Pro on the Arabic
+       page and stays Montserrat on the English one. */
+    font-family: var(--adel-font-display-sm);
+    font-size: var(--adel-text-lg);
+    font-weight: 700;
     color: var(--adel-text-primary);
   }
-  .ab__valueBody {
-    margin: 0;
+  .ab__stop--current .ab__stopPlace { color: var(--adel-deep-blue); }
+  .ab__stopNote {
     font-size: var(--adel-text-sm);
-    line-height: 1.65;
+    line-height: 1.55;
+    color: var(--adel-text-secondary);
+  }
+  .ab__mapNote {
+    margin: var(--atc-space-10) 0 0;
+    font-size: var(--adel-text-base);
     color: var(--adel-text-secondary);
   }
 
-  .ab__divider { margin-block: var(--atc-space-16); }
-  .ab__context { max-width: 60ch; }
-  .ab__contextRole {
-    margin: 0 0 var(--atc-space-2);
-    font-size: var(--adel-text-lg);
+  /* ---- 3 · two worlds --------------------------------------------------- */
+  .ab__worlds {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--atc-space-8);
+  }
+  .ab__world {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--atc-space-3);
+    padding: var(--atc-space-8);
+    border-radius: var(--adel-radius-panel);
+    background: var(--adel-warm-white);
+    border: 1px solid var(--adel-border-hairline);
+  }
+  .ab__world--night { background: var(--adel-ice-blue); border-color: transparent; }
+  .ab__worldLabel {
+    font-family: var(--adel-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+  }
+  .ab__world--night .ab__worldLabel { color: var(--adel-blue-700); }
+  .ab__worldLede { margin: 0; font-size: var(--adel-text-base); font-weight: 600; color: var(--adel-text-primary); }
+  .ab__worldBody { margin: 0; font-size: var(--adel-text-sm); line-height: 1.65; color: var(--adel-text-secondary); }
+  .ab__worldFacts { margin: 0; font-size: var(--adel-text-base); color: var(--adel-text-primary); }
+  .ab__worldRole { font-weight: 600; }
+  .ab__worldSep { color: var(--adel-text-tertiary); }
+  .ab__worldNote {
+    margin: 0;
+    font-size: var(--adel-text-xs);
+    line-height: 1.6;
+    color: var(--adel-text-tertiary);
+    max-width: 46ch;
+  }
+  .ab__worldCta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    margin-top: auto;
+    padding-top: var(--atc-space-3);
+    font-family: var(--adel-font-display-sm);
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+    color: var(--adel-text-link);
+    text-decoration: none;
+  }
+  .ab__worldCta:hover { text-decoration: underline; }
+  .ab__worldCta--night { color: var(--adel-deep-blue); }
+
+  .ab__nightList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--atc-space-3); }
+  .ab__nightItem { display: flex; flex-direction: column; gap: 2px; }
+  .ab__nightName { font-size: var(--adel-text-base); font-weight: 600; color: var(--adel-deep-blue); }
+  .ab__nightBody { font-size: var(--adel-text-sm); line-height: 1.6; color: var(--adel-blue-800); }
+
+  /* ---- 4 · toolbox + interests ------------------------------------------ */
+  .ab__two { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--atc-space-12); }
+  .ab__tools,
+  .ab__chips {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-3);
+    margin: var(--atc-space-6) 0 0;
+    padding: 0;
+  }
+  .ab__tool {
+    display: inline-flex;
+    align-items: center;
+    /* ≥44px hit area is a mobile rule for interactive chips; these are labels,
+       so they take the control height and no more. */
+    height: var(--atc-control-sm);
+    padding-inline: var(--atc-space-4);
+    border-radius: var(--adel-radius-pill);
+    border: 1px solid var(--adel-border-hairline);
+    background: var(--adel-white);
+    /* Tool names are product names: Latin in both languages. */
+    font-family: var(--adel-font-latin);
+    font-size: var(--adel-text-sm);
     font-weight: 600;
     color: var(--adel-text-primary);
+    unicode-bidi: isolate;
   }
-  .ab__at { color: var(--adel-text-tertiary); }
-  .ab__contextNote {
-    margin: 0;
+  .ab__chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 6px var(--atc-space-4);
+    border-radius: var(--adel-radius-pill);
+    background: var(--adel-blue-100);
+    color: var(--adel-blue-800);
+    font-size: var(--adel-text-sm);
+    /* 3e caps the rotation at ±2°. */
+    transform: rotate(var(--tilt, 0deg));
+  }
+  .ab__note {
+    margin: var(--atc-space-6) 0 0;
     font-size: var(--adel-text-sm);
     line-height: 1.65;
     color: var(--adel-text-tertiary);
+    max-width: 46ch;
+  }
+  .ab__annRow { margin: var(--atc-space-6) 0 0; }
+
+  /* ---- 5 · studio ------------------------------------------------------- */
+  .ab__studio { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: var(--atc-space-12); align-items: center; }
+  .ab__studioText { display: flex; flex-direction: column; align-items: flex-start; gap: var(--atc-space-3); }
+  .ab__studioShot { position: relative; margin: 0; }
+  .ab__studioShot img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--adel-radius-media);
+  }
+  .ab__studioNotes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--atc-space-4);
+    margin-top: var(--atc-space-3);
   }
 
-  .ab__cta { margin-top: var(--atc-space-20); }
+  /* ---- 6 · the thread --------------------------------------------------- */
+  .ab__thread {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--atc-space-6);
+  }
+  .ab__threadStep {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-1);
+    padding-top: var(--atc-space-4);
+    border-top: 2px solid var(--adel-blue-200);
+  }
+  .ab__threadName {
+    /* Arabic at 24px sits exactly on Ghorab's floor and would still be asked
+       for a 700 weight the face does not have. Small-display token. */
+    font-family: var(--adel-font-display-sm);
+    font-size: var(--adel-text-xl);
+    font-weight: 700;
+    color: var(--adel-text-primary);
+  }
+  .ab__threadNote { font-size: var(--adel-text-sm); color: var(--adel-text-secondary); }
+  .ab__threadBody {
+    position: relative;
+    margin: var(--atc-space-10) 0 0;
+    max-width: 62ch;
+    font-size: var(--adel-text-lg);
+    line-height: 1.7;
+    color: var(--adel-text-secondary);
+  }
+  .ab__underline {
+    position: absolute;
+    inset-inline-start: 0;
+    bottom: -10px;
+    width: 220px;
+  }
 
+  /* ---- 7 · closing ------------------------------------------------------ */
+  .ab__closing { padding-bottom: var(--atc-space-8); }
+  .ab__cards {
+    list-style: none;
+    margin: var(--atc-space-8) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--atc-space-4);
+  }
+  .ab__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--atc-space-2);
+    height: 100%;
+    padding: var(--atc-space-6);
+    border-radius: var(--adel-radius-card);
+    border: 1px solid var(--adel-border-hairline);
+    background: var(--adel-white);
+    text-decoration: none;
+    box-sizing: border-box;
+    transition:
+      transform var(--atc-duration-fast) var(--atc-ease-move),
+      box-shadow var(--atc-duration-fast) var(--atc-ease-move);
+  }
+  .ab__card:hover { transform: translateY(-4px); box-shadow: var(--adel-elevation-2); }
+  .ab__cardIcon { color: var(--adel-signature-blue); }
+  .ab__cardName {
+    font-family: var(--adel-font-display-sm);
+    font-size: var(--adel-text-base);
+    font-weight: 700;
+    color: var(--adel-text-primary);
+  }
+  .ab__cardBody { font-size: var(--adel-text-sm); line-height: 1.55; color: var(--adel-text-secondary); }
+  .ab__cardArrow {
+    margin-top: auto;
+    padding-top: var(--atc-space-2);
+    color: var(--adel-text-link);
+    transition: transform var(--atc-duration-fast) var(--atc-ease-move);
+  }
+  .ab__card:hover .ab__cardArrow { transform: translateX(4px); }
+  :global([dir='rtl']) .ab__card:hover .ab__cardArrow { transform: translateX(-4px); }
+
+  .ab__cta { margin-top: var(--atc-space-16); }
+
+  /* ---- tablet ------------------------------------------------------------
+     3e: "Tablet: map switches to vertical at <900px." */
   @media (max-width: 1023px) {
-    .ab__grid { grid-template-columns: 1fr; gap: var(--atc-space-8); }
-    .ab__photo { position: static; max-width: 420px; }
-    .ab__valueList { grid-template-columns: 1fr; gap: var(--atc-space-6); }
+    .ab__intro { grid-template-columns: 1fr; gap: var(--atc-space-10); }
+    .ab__portrait { max-width: 420px; }
+    .ab__worlds,
+    .ab__two,
+    .ab__studio { grid-template-columns: 1fr; gap: var(--atc-space-8); }
+    .ab__cards { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 899px) {
+    /* The journey becomes a real vertical timeline, not a squeezed map: the
+       horizontal path is meaningless once the stops stack, so it goes, and the
+       column carries its own rule instead. */
+    .ab__mapPath { display: none; }
+    .ab__stops { grid-template-columns: 1fr; gap: 0; }
+    .ab__stop {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      grid-template-areas: 'pin place' 'pin note';
+      column-gap: var(--atc-space-4);
+      row-gap: 2px;
+      padding-block: var(--atc-space-5);
+      border-inline-start: 2px dashed var(--adel-blue-200);
+      padding-inline-start: var(--atc-space-6);
+      margin-inline-start: var(--atc-space-3);
+    }
+    .ab__stopIndex { display: none; }
+    .ab__stopPin { grid-area: pin; align-self: center; }
+    .ab__stopPlace { grid-area: place; }
+    .ab__stopNote { grid-area: note; }
+  }
+
+  /* ---- mobile ----------------------------------------------------------- */
+  @media (max-width: 767px) {
+    .ab { padding-block-start: var(--atc-space-10); }
+    .ab__section { margin-top: var(--atc-space-16); }
+    .ab__thread { grid-template-columns: repeat(2, 1fr); }
+    .ab__cards { grid-template-columns: 1fr; }
+    .ab__world { padding: var(--atc-space-6); }
+    /* The arrow has no room to point at anything on a phone. */
+    .ab__portraitArrow { display: none; }
+  }
+
+  /* ---- Arabic ------------------------------------------------------------
+     Display face and size come from `.ar-hero` / `.ar-heading`; what a
+     component owns is its Latin-only declarations, and the one that must never
+     survive into Arabic is letter-spacing. `.ab__kicker`, `.ab__stopIndex` and
+     `.ab__worldLabel` are excluded on purpose — frames 3c/3d keep those slots
+     in English ("About", "My journey", "What I do", the stop numbers). */
+  :global(html[lang='ar']) .ab__hello,
+  :global(html[lang='ar']) .ab__h2,
+  :global(html[lang='ar']) .ab__h3,
+  :global(html[lang='ar']) .ab__stopPlace,
+  :global(html[lang='ar']) .ab__threadName,
+  :global(html[lang='ar']) .ab__cardName,
+  :global(html[lang='ar']) .ab__tool,
+  :global(html[lang='ar']) .ab__worldCta {
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  :global(html[lang='ar']) .ab__lede,
+  :global(html[lang='ar']) .ab__worldBody,
+  :global(html[lang='ar']) .ab__nightBody,
+  :global(html[lang='ar']) .ab__threadBody { line-height: 1.9; unicode-bidi: plaintext; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ab__card,
+    .ab__cardArrow { transition: none; }
+    .ab__card:hover { transform: none; }
+    .ab__card:hover .ab__cardArrow { transform: none; }
   }
 </style>

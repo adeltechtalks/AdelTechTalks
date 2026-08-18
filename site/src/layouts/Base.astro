@@ -50,8 +50,16 @@ const dir = LANG_DIR[lang];
 /* §11 — a [[term]] marker is an element in the body and plain text in an
    attribute. Everything below lands in <title>, a meta tag or an og property,
    so it is flattened once, here, rather than at forty call sites. */
+/* The CHANNEL carries the title, not the person: "Vibe Coding — AdelTechTalks",
+   "About Adel — AdelTechTalks", and "AdelTechTalks — I ❤️ Tech" on the pages
+   that supply no title of their own. AdelTechTalks is the identity a reader
+   recognises in a tab or a search result; Adel remains the site's subject.
+
+   Arabic pages take the same shape with their own authored page titles — "عن
+   عادل — AdelTechTalks" — because the brand half is a frozen name that is
+   never translated or transliterated. */
 const fullTitle = plain(
-  title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`
+  title ? `${title} — ${site.showName}` : `${site.showName} — ${site.tagline}`
 );
 const metaDescription = plain(description);
 const base = Astro.site ?? new URL(site.url);
@@ -107,6 +115,11 @@ const families = [
   'family=Montserrat:wght@400..800',
   'family=Readex+Pro:wght@300..600',
   'family=JetBrains+Mono:wght@400..500',
+  /* Caveat is the About page's sketch-layer face and the only font this
+     revision adds. It is LATIN ONLY and English only — the Arabic sketch layer
+     uses KO Ghorab, which is self-hosted — so the Arabic pages do not request
+     it at all. 500/600 are the two weights frame 3e specifies. */
+  ...(lang === DEFAULT_LANG ? ['family=Caveat:wght@500;600'] : []),
 ];
 const fontHref = `https://fonts.googleapis.com/css2?${families.join('&')}&display=swap`;
 ---
@@ -137,7 +150,7 @@ const fontHref = `https://fonts.googleapis.com/css2?${families.join('&')}&displa
 
     {/* ---- Social sharing (§27) ---- */}
     <meta property="og:type" content={ogType} />
-    <meta property="og:site_name" content={site.name} />
+    <meta property="og:site_name" content={site.showName} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:url" content={canonical} />
@@ -168,7 +181,7 @@ const fontHref = `https://fonts.googleapis.com/css2?${families.join('&')}&displa
     <main id="main" class:list={[padded && 'main--padded']}>
       <slot />
     </main>
-    <Footer lang={lang} />
+    <Footer lang={lang} switchTo={switchTo} switchToHome={switchIsDeadEnd} />
   </body>
 </html>
 

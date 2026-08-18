@@ -1,0 +1,134 @@
+---
+/* =============================================================================
+   The sketch layer — About Me Storyboard, frame 3e
+   =============================================================================
+   Five inline-SVG primitives, to the spec on the frame:
+
+     "Line system — 2.5px stroke, round caps, Signature Blue on light / Ice Blue
+      on Graphite · density: max 2 sketch elements per viewport"
+
+     "Rules — doodles are a supporting layer: page must work with all sketch
+      elements removed · annotations never carry primary information · Arabic
+      sketch layer uses KO Ghorab (no Latin cursive for Arabic text) ·
+      production replaces Caveat with real handwriting asset if/when supplied"
+
+   ── EVERY ONE OF THESE IS DECORATION ────────────────────────────────────────
+   `aria-hidden` is not a detail here, it is the contract. If a doodle ever
+   carried information a reader needs, deleting the layer would break the page —
+   and the spec says the page must work with the whole layer removed. So these
+   are hidden from the accessibility tree without exception, and the text they
+   annotate says the same thing in prose.
+
+   ── THEY MIRROR, BECAUSE THEY ARE DIRECTIONAL ───────────────────────────────
+   Arrows, the dashed path and the underline all point somewhere, so they flip
+   under `[dir='rtl']` with `scaleX(-1)`. The pin and the tape do not: a pin
+   points down and a piece of tape has no direction.
+   ========================================================================== */
+
+type SketchKind = 'arrow' | 'underline' | 'path' | 'pin' | 'tape';
+
+interface Props {
+  kind: SketchKind;
+  /** Pin only: the current stop takes mint. */
+  current?: boolean;
+  /** Sitting on graphite — the line steps from Signature Blue to Ice. */
+  onDark?: boolean;
+  class?: string;
+}
+
+const { kind, current = false, onDark = false, class: className, ...rest } = Astro.props;
+---
+
+{kind === 'arrow' && (
+  <svg class:list={['sk', 'sk--dir', onDark && 'sk--dark', className]} viewBox="0 0 88 40" aria-hidden="true" focusable="false" {...rest}>
+    <path d="M4 8c22 0 44 6 58 22" />
+    <path d="M52 32l12 -2 -6 -10" />
+  </svg>
+)}
+
+{kind === 'underline' && (
+  <svg class:list={['sk', 'sk--dir', onDark && 'sk--dark', className]} viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true" focusable="false" {...rest}>
+    <path d="M4 9C46 3 120 3 196 7" />
+  </svg>
+)}
+
+{kind === 'path' && (
+  /* The journey path. It is drawn once as the section enters, then it stays —
+     `stroke-dashoffset` animates from the full length to zero and stops. The
+     dash pattern that remains is the drawn line's own texture. */
+  <svg class:list={['sk', 'sk--dir', 'sk--path', onDark && 'sk--dark', className]} viewBox="0 0 1000 60" preserveAspectRatio="none" aria-hidden="true" focusable="false" {...rest}>
+    <path d="M10 40C160 8 280 52 430 26S700 8 830 38 970 26 990 22" stroke-dasharray="9 11" />
+  </svg>
+)}
+
+{kind === 'pin' && (
+  <svg class:list={['sk', 'sk--pin', current && 'sk--current', onDark && 'sk--dark', className]} viewBox="0 0 24 32" aria-hidden="true" focusable="false" {...rest}>
+    <path d="M12 30c6-9 9-13.5 9-18a9 9 0 10-18 0c0 4.5 3 9 9 18z" />
+    <circle cx="12" cy="12" r="3.4" />
+  </svg>
+)}
+
+{kind === 'tape' && (
+  <span class:list={['sk-tape', className]} aria-hidden="true" {...rest}></span>
+)}
+
+<style>
+  .sk {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    fill: none;
+    stroke: var(--adel-signature-blue);
+    /* 3e: 2.5px stroke, round caps. */
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    /* The whole layer is decoration and must never eat a tap. */
+    pointer-events: none;
+  }
+  .sk--dark { stroke: var(--adel-blue-300); }
+
+  /* Directional marks mirror; the pin does not. */
+  :global([dir='rtl']) .sk--dir { transform: scaleX(-1); }
+
+  .sk--pin { width: 24px; height: 32px; }
+  .sk--pin circle { fill: var(--adel-white); }
+  /* The current stop is the page's single mint moment. */
+  .sk--current { stroke: var(--adel-mint-500); }
+  .sk--current circle { fill: var(--adel-mint-100); }
+
+  /* A strip of Ice "tape" at a slight tilt, holding a photograph to the page. */
+  .sk-tape {
+    display: block;
+    width: 96px;
+    height: 26px;
+    background: var(--adel-ice-blue);
+    opacity: 0.85;
+    transform: rotate(-3deg);
+    pointer-events: none;
+  }
+
+  /* ---- draw-on ------------------------------------------------------------
+     800ms once, as the section enters. `stroke-dashoffset` is the only
+     animatable property involved and it settles at 0 — the line is drawn, not
+     looping. One entrance animation, per the frozen charter. */
+  @media (prefers-reduced-motion: no-preference) {
+    .sk--path path {
+      stroke-dasharray: 9 11;
+      animation: sk-draw var(--atc-duration-ceiling, 800ms) var(--atc-ease-enter, ease-out) both;
+    }
+  }
+  @keyframes sk-draw {
+    from { stroke-dashoffset: 400; opacity: 0; }
+    to { stroke-dashoffset: 0; opacity: 1; }
+  }
+
+  /* 3e: "Sketch annotations hide below 360px rather than shrink below 18px."
+     The whole layer goes, which is exactly what the layer being optional
+     means. */
+  @media (max-width: 359px) {
+    .sk,
+    .sk-tape { display: none; }
+  }
+</style>

@@ -1,0 +1,83 @@
+---
+/* =============================================================================
+   Pillar icon family — Website Structure v2, frame 2f
+   =============================================================================
+   "Icon family — 24px grid, 1.8px stroke, round caps, single color (Signature
+   Blue on light / Ice on dark) · never emoji."
+
+   Six glyphs, named by the thing they stand for rather than by their drawing:
+
+     vibe-coding  terminal        gear     camera / device
+     learn        notebook        playground  wand / spark
+     about        profile         subscribe   mail
+
+   These are hand-authored rather than pulled from Lucide because the family is
+   pinned at 1.8px on a 24px grid — Lucide's master is 2px, and Icon.astro
+   deliberately does not rewrite stroke widths. Icon.astro remains the right
+   component for everything that is NOT one of these six.
+
+   Decorative by default: the label beside a nav or section icon already says
+   what it is, so a second announcement is noise. Pass `label` on the rare
+   occasion the icon stands alone.
+   ========================================================================== */
+
+type PillarGlyph = 'vibe-coding' | 'gear' | 'learn' | 'playground' | 'about' | 'subscribe';
+
+interface Props {
+  name: PillarGlyph;
+  size?: number;
+  label?: string;
+  class?: string;
+}
+
+const { name, size = 24, label, class: className, ...rest } = Astro.props;
+
+/* Every path is drawn on the same 24×24 grid, stroked, never filled. */
+const PATHS: Record<PillarGlyph, string> = {
+  /* terminal — a prompt caret and a command line */
+  'vibe-coding': 'M3 5.5h18v13H3z M7 10l2.5 2L7 14 M12.5 14.5h4',
+  /* camera / device — a body, a lens and a shutter nub */
+  gear: 'M3 8h4l1.5-2.5h7L17 8h4v11H3z M12 16.5a3.2 3.2 0 100-6.4 3.2 3.2 0 000 6.4z',
+  /* notebook — a bound spine and two ruled lines */
+  learn: 'M6 3.5h13v17H6z M6 3.5a2 2 0 00-2 2v13a2 2 0 002 2 M9.5 8.5h6 M9.5 12.5h6',
+  /* wand / spark */
+  playground: 'M5 19l9-9 M12.5 8.5l3 3 M17 3v4 M15 5h4 M18.5 14v3 M17 15.5h3',
+  /* profile */
+  about: 'M12 11.5a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z M4.5 20.5a7.5 7.5 0 0115 0',
+  /* mail */
+  subscribe: 'M3 6h18v12H3z M3.5 6.7l8.5 6.3 8.5-6.3',
+};
+
+const d = PATHS[name];
+---
+
+<svg
+  class:list={['pico', className]}
+  viewBox="0 0 24 24"
+  width={size}
+  height={size}
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+  {...rest}
+>
+  <path d={d} />
+</svg>
+
+<style>
+  .pico {
+    display: block;
+    flex: 0 0 auto;
+    /* Single colour, inherited: Signature Blue on light grounds, Ice on dark —
+       set by whatever the icon sits inside, never by the icon. */
+    color: inherit;
+  }
+  /* The glyphs are pictograms of physical objects, not arrows or chevrons, so
+     they do NOT mirror in RTL. Only directional marks flip (§RTL). */
+</style>

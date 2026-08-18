@@ -53,9 +53,12 @@ export interface Copy {
     identity: string; loveTechGloss: string; positioning: string; body: string;
     pattern: string[]; primaryCta: string; primaryCtaAlt: string; secondaryCta: string;
     portraitAlt: string;
-    /* ---- DS v2.1 hero ---- */
-    badge: string; line2: string; line3: string;
-    ctaPrimary: string; ctaSecondary: string; nowBuilding: string;
+    /* ---- Website v2.x hero (frozen: Website Structure v2, frame 2a/2c) ----
+       Three visitor-facing strings and two actions. `line3` and `nowBuilding`
+       were the project-specific build line; the frozen hero has no such line,
+       so both are gone rather than left empty — see the note in Hero.astro. */
+    badge: string; line2: string;
+    ctaPrimary: string; ctaSecondary: string;
   };
   explore: { title: string; intro: string };
   latest: { title: string; intro: string; empty: string; kind: Record<'guide' | 'article' | 'video', string> };
@@ -112,28 +115,48 @@ export interface Copy {
      colloquial, matching the frames, and is not a translation of the English. */
   ia: {
     nav: { vibeCoding: string; gear: string; learn: string; playground: string; about: string; subscribe: string };
-    /* Homepage §2 — Vibe Coding in the Real World */
+    /* Desktop dropdowns + mobile accordion — Website Structure v2, frame 2e.
+       The taxonomy is frozen: these are the exact entries, in the exact order,
+       under the exact three pillars that carry a menu. */
+    menu: {
+      vibeCoding: { currentBuilds: string; experiments: string; buildStories: string; series: string; all: string };
+      gear: {
+        currentlyTesting: string; reviews: string; creatorGear: string;
+        mobileComputing: string; cameras: string; gamingSetup: string; aiGear: string; all: string;
+      };
+      learn: {
+        useCases: string; promptLibrary: string; guides: string; videos: string;
+        browseByTopic: string; all: string;
+      };
+    };
+    /* Homepage §2 — What I'm exploring now (orientation trio) */
+    exploring: {
+      kicker: string; title: string;
+      building: { marker: string; title: string; body: string; terminal: string; cta: string };
+      testing: { marker: string; title: string; body: string; caption: string; cta: string };
+      learning: { marker: string; title: string; body: string; cta: string };
+    };
+    /* Homepage §7 — Latest (real published content only) */
+    latestFeed: { kicker: string; title: string; viewAll: string };
+    /* Homepage §3 — Vibe Coding in the Real World */
     realWorld: {
-      label: string; aside: string;
+      label: string;
       headBefore: string; headEm: string; headAfter: string;
       support: string; ctaPrimary: string; ctaSecondary: string;
-      benchLabel: string; bench: string[];
+      foldLabel: string; foldStatus: string; foldJourney: string;
       featuredLabel: string; crossoverChip: string; statusChip: string;
-      journeyLabel: string; upNextLabel: string; upNextStrip: string;
+      journeyLabel: string; upNextLabel: string;
       slotNote: string; paneLabels: string[];
-      ruleVibe: string; ruleVibeNote: string; ruleGear: string; ruleGearNote: string;
-      ruleCross: string; ruleCrossNote: string;
       empty: string;
     };
     /* Homepage §3 — Gear, currently testing */
     gear: {
-      label: string; aside: string;
+      label: string;
       headBefore: string; headEm: string; headAfter: string;
       support: string; ctaPrimary: string; ctaSecondary: string;
+      deskLabel: string; deskQuestion: string; firstStory: string;
       featuredLabel: string; crossoverChip: string; crossoverNote: string;
       follow: string; alsoLabel: string;
-      ruleRatings: string; ruleRatingsNote: string; ruleCross: string; ruleCrossNote: string;
-      ruleBuild: string; ruleBuildNote: string;
       empty: string;
       hubKicker: string; hubTitle: string; hubIntro: string;
       hiddenNote: (names: string) => string;
@@ -146,35 +169,56 @@ export interface Copy {
     };
     /* Homepage §4 — Learn */
     learn: {
-      label: string; aside: string;
+      label: string;
       headBefore: string; headEm: string; headAfter: string;
-      support: string;
+      support: string; cta: string;
       rows: Record<'guides' | 'useCases' | 'videos' | 'topics', { title: string; kicker?: string; body: string; cta: string }>;
       allTopics: string;
-      panelStatus: string; panelTitle: string; panelBody: string; panelNote: string; panelCta: string;
+      panelStatus: string; panelTitle: string; panelBody: string; panelNote: string;
+      panelCta: string; panelCtaClosed: string; panelCopy: string;
     };
     /* Homepage §5 — Playground */
     playground: {
-      label: string; aside: string;
+      label: string;
       headBefore: string; headEm: string; headAfter: string;
       support: string; cta: string;
       toolIndex: (n: number) => string;
       status: Record<'live' | 'beta' | 'in-build' | 'up-next' | 'with-prompts', string>;
-      notify: string; open: string;
-      ruleFree: string; ruleFreeNote: string; rulePublic: string; rulePublicNote: string;
-      ruleDemos: string; ruleDemosNote: string;
+      notify: string; open: string; opensIn: string; moreTools: string;
       empty: string;
     };
     /* Homepage §6 — About + Subscribe */
     about: {
       loop: string[];
-      headBefore: string; headEm: string; headAfter: string;
-      bio: string; socialLabel: string;
+      greeting: string; bio: string; socialLabel: string;
       subTitle: string; subBody: string; subPlaceholder: string; subButton: string; subNote: string;
       subLoading: string; subSuccess: string; subInvalid: string; subError: string; subAlready: string;
     };
+    /* About page — Storyboard Edition */
+    aboutPage: {
+      kicker: string;
+      greeting: string; lede: string; photoNote: string;
+      journeyKicker: string; journeyTitle: string; journeyNote: string;
+      worldsKicker: string; worldsTitle: string;
+      dayLabel: string; dayTitle: string; dayLede: string; dayBody: string; dayCta: string;
+      nightLabel: string; nightTitle: string;
+      nightItems: Array<{ name: string; body: string }>;
+      nightCta: string;
+      toolsKicker: string; toolsTitle: string; toolsNote: string;
+      interestsKicker: string; interestsTitle: string; interestsNote: string;
+      studioKicker: string; studioTitle: string; studioBody: string; studioCta: string;
+      studioNotes: string[];
+      threadKicker: string;
+      thread: Array<{ step: string; note: string }>;
+      threadBody: string;
+      closingTitle: string;
+      cards: Array<{ name: string; body: string; href: string }>;
+    };
     /* Footer */
-    footer: { umbrella: string; explore: string; more: string; promptLibrary: string; rights: string };
+    footer: {
+      umbrella: string; explore: string; learn: string; channel: string;
+      contact: string; promptLibrary: string; rights: string;
+    };
     /* Build story + hub */
     vc: {
       hubKicker: string; hubTitle: string; hubIntro: string;
@@ -247,12 +291,10 @@ const en: Copy = {
     /* ---- DS v2.1 hero. Three lines, deliberately unequal weight: "I ❤ Tech"
        carries the 800 display presence, line2 sits a step below at 700, line3
        is supporting text. ---- */
-    badge: 'Vibe Coding · Building in public',
-    line2: 'I turn ideas into launches with [[Vibe Coding]].',
-    line3: 'Building GearNest. Sharing everything I learn.',
-    ctaPrimary: 'Explore the build',
-    ctaSecondary: 'Start with the library',
-    nowBuilding: 'Currently building · GearNest',
+    badge: 'Vibe Coding · Real builds',
+    line2: 'I build, test, and learn with technology — then share what works.',
+    ctaPrimary: 'See what I’m building',
+    ctaSecondary: 'Learn with me',
   },
   explore: {
     title: 'What I explore',
@@ -424,7 +466,11 @@ const en: Copy = {
     signature: 'Adel',
   },
   about: {
-    title: 'About',
+    /* The document title, not the page's visible kicker — the About page
+       renders "About" as its overline from `ia.aboutPage.kicker`. In a tab or
+       a search result "About" alone says nothing, so the title names its
+       subject: "About Adel — AdelTechTalks". */
+    title: 'About Adel',
     intro: 'Who I am, what I work on, and why I keep writing it all down.',
     workTitle: 'How I work',
     contextTitle: 'Where I work',
@@ -451,34 +497,63 @@ const en: Copy = {
   /* ---- IA v2.0 — authored English, verbatim from the frozen frames ---- */
   ia: {
     nav: { vibeCoding: 'Vibe Coding', gear: 'Gear', learn: 'Learn', playground: 'Playground', about: 'About', subscribe: 'Subscribe' },
+    menu: {
+      vibeCoding: {
+        currentBuilds: 'Current Builds', experiments: 'Experiments',
+        buildStories: 'Build Stories', series: 'Series', all: 'All Vibe Coding',
+      },
+      gear: {
+        currentlyTesting: 'Currently Testing', reviews: 'Reviews', creatorGear: 'Creator Gear',
+        mobileComputing: 'Mobile & Computing', cameras: 'Cameras',
+        gamingSetup: 'Gaming & Setup', aiGear: 'AI-Powered Gear', all: 'All Gear',
+      },
+      learn: {
+        useCases: 'Use Cases', promptLibrary: 'Prompt Library', guides: 'Guides',
+        videos: 'Videos', browseByTopic: 'Browse by Topic', all: 'All Learn',
+      },
+    },
+    exploring: {
+      kicker: 'Right now', title: 'What I’m exploring now.',
+      building: {
+        marker: 'Building', title: 'Vibe Coding',
+        body: 'Experiments, apps and workflows — built with AI, in the open.',
+        terminal: '$ idea → prompt → build → ship_', cta: 'Enter Vibe Coding',
+      },
+      testing: {
+        marker: 'Testing', title: 'Gear',
+        body: 'Gadgets and creator tech I actually use.',
+        caption: 'On the desk', cta: 'See the Gear',
+      },
+      learning: {
+        marker: 'Learning', title: 'Learn',
+        body: 'Prompts, techniques and lessons worth sharing.', cta: 'Start learning',
+      },
+    },
+    latestFeed: { kicker: 'Latest', title: 'Fresh from the workbench.', viewAll: 'View all' },
     realWorld: {
-      label: 'Vibe Coding · in the real world',
-      aside: '// builds only — gear lives next door',
+      label: 'Vibe Coding',
       headBefore: 'What can I actually ', headEm: 'build', headAfter: ' with AI?',
-      support: 'Real experiments. Real builds. Sharing what works, what breaks, and what I learn along the way.',
+      support: 'Real builds, shared while they happen.',
       ctaPrimary: 'Explore Vibe Coding', ctaSecondary: 'See all builds',
-      benchLabel: 'On the bench', bench: ['AI-assisted builds', 'Workflows & tools', 'Building in public'],
+      foldLabel: 'From idea → live', foldStatus: 'Current',
+      foldJourney: 'Idea → Prompt → Build → Ship',
       featuredLabel: 'Featured build', crossoverChip: 'Crossover · × Gear', statusChip: 'Build · in progress',
       journeyLabel: 'This build’s journey',
-      upNextLabel: 'Up next', upNextStrip: 'Build 01 → 02 → 03 → …',
-      slotNote: 'Multitasking build workflow · slot is replaceable per featured build',
-      paneLabels: ['ChatGPT', 'Claude Code', 'Live site'],
-      ruleVibe: 'Vibe Coding', ruleVibeNote: '— building with AI, here',
-      ruleGear: 'Gear', ruleGearNote: '— using & testing tech, its own section',
-      ruleCross: 'Crossover', ruleCrossNote: '— only when the device enables the build',
+      upNextLabel: 'Up next',
+      slotNote: 'Build workflow · slot is replaceable per featured build',
+      paneLabels: ['ChatGPT', 'Claude Code', 'Live build'],
       empty: 'The first build goes up here as soon as there is something real to show.',
     },
     gear: {
-      label: 'Gear · currently testing', aside: '// use cases, not spec sheets',
+      label: 'Gear',
       headBefore: 'Tech I’m actually ', headEm: 'using', headAfter: '.',
-      support: 'Not just specs — what does this actually help me do?',
-      ctaPrimary: 'Explore Gear', ctaSecondary: 'See all gear',
+      support: 'Not spec sheets — real use, real outcomes.',
+      ctaPrimary: 'Visit Gear', ctaSecondary: 'See all gear',
+      deskLabel: 'On the desk', deskQuestion: 'What does it help me do?',
+      firstStory: 'First story in testing',
       featuredLabel: 'Currently testing', crossoverChip: 'Vibe Coding crossover',
       crossoverNote: 'Crossover: this story also lives in Vibe Coding — the device enables the build.',
       follow: 'Follow this test', alsoLabel: 'Also testing',
-      ruleRatings: 'No ratings, no scores', ruleRatingsNote: '— conclusions come after real testing',
-      ruleCross: 'Crossover chip', ruleCrossNote: '— only when the device enables the build',
-      ruleBuild: 'Building with AI', ruleBuildNote: '— lives in Vibe Coding, one section up',
       empty: 'The first test goes up here once there is something real to report.',
       hubKicker: 'Gear', hubTitle: 'Tech I’m actually using.',
       hubIntro: 'A testing journal — what I use, what it changed, and what I would not buy again.',
@@ -497,59 +572,111 @@ const en: Copy = {
       read: 'Read',
     },
     learn: {
-      label: 'Learn · guides & prompts', aside: '// written up so you can use it',
+      label: 'Learn',
       headBefore: 'Learn what ', headEm: 'I learn', headAfter: '.',
-      support: 'Everything I figure out while testing and building — guides, use cases and prompts you can put to work today.',
+      support: 'Everything I figure out while testing and building — written up so you can use it today.',
+      cta: 'Explore the library',
       rows: {
-        guides: { title: 'Guides', body: 'Step-by-step write-ups from real builds and real tests — nothing theoretical.', cta: 'Browse' },
-        useCases: { title: 'Use cases', body: '“What can this actually do for me?” — real scenarios, honest outcomes.', cta: 'Browse' },
-        videos: { title: 'Videos', body: 'The same experiments, on camera — over on AdelTechTalks.', cta: 'Watch' },
-        topics: { title: 'Topics', body: '', cta: 'All topics' },
+        guides: { title: 'Guides', body: 'Step-by-step, written so you can use it today.', cta: 'Read' },
+        useCases: { title: 'Use Cases', body: '“What can this actually do for me?” — real scenarios, honest outcomes.', cta: 'Browse' },
+        videos: { title: 'Videos', body: 'Watch it happen — builds, tests, walkthroughs.', cta: 'Watch' },
+        topics: { title: 'Browse by Topic', body: '', cta: 'All topics' },
       },
       allTopics: 'All topics',
       panelStatus: 'Coming soon', panelTitle: 'Prompt Library',
-      panelBody: 'The exact prompts I use — copy, paste, adapt.',
-      panelNote: 'Every prompt earns its place in a real workflow first. Opening with the ones behind my current builds.',
-      panelCta: 'Get notified when it opens',
+      panelBody: 'Prompts I actually use — with context, not prompt dumps.',
+      panelNote: '“Act as my code reviewer…”',
+      panelCta: 'Open the library', panelCtaClosed: 'Get notified when it opens',
+      panelCopy: 'Copy',
     },
     playground: {
-      label: 'Playground · try it yourself', aside: '// built with the same Vibe Coding workflow',
+      label: 'Playground',
       headBefore: 'Don’t just read it — ', headEm: 'try it', headAfter: '.',
-      support: 'Small interactive tools I’m building in public. Everything on this bench ships from the workflow you see in Vibe Coding.',
-      cta: 'Visit the Playground',
+      support: 'Small tools you can open right now, built with the same workflow I share.',
+      cta: 'Open the Playground',
       toolIndex: (n) => `Tool ${String(n).padStart(2, '0')}`,
       status: { live: 'Live', beta: 'Beta', 'in-build': 'In build', 'up-next': 'Up next', 'with-prompts': 'With Prompt Library' },
-      notify: 'Get notified at launch', open: 'Open',
-      ruleFree: 'Free to try', ruleFreeNote: '— an account only when a tool saves your work',
-      rulePublic: 'Built in public', rulePublicNote: '— each tool’s build story lives in Vibe Coding',
-      ruleDemos: 'No fake demos', ruleDemosNote: '— a tool appears here only when you can actually open it',
+      notify: 'Get notified at launch', open: 'Try it',
+      opensIn: 'Opens in your browser', moreTools: 'More tools on the bench',
       empty: 'Nothing is open yet. The workbench is where the tools land first.',
     },
     about: {
       loop: ['Learn', 'Test', 'Build', 'Share'],
-      headBefore: 'Hi, I’m Adel. I just really ', headEm: 'love tech', headAfter: '.',
-      bio: 'I turn ideas into launches with Vibe Coding, test the gear I actually use, and write up whatever surprises me along the way. Product manager by profession — tinkerer by default.',
+      greeting: 'Hi, I’m Adel.',
+      bio: 'I learn, test, build — and share what actually works.',
       socialLabel: 'AdelTechTalks on',
-      subTitle: 'Get what I learn — before I polish it.',
-      subBody: 'One email when something’s worth your time: a new build, a test that surprised me, a prompt that works.',
+      subTitle: 'The best thing I learned, tested, or built — straight to your inbox.',
+      subBody: '',
       subPlaceholder: 'you@email.com', subButton: 'Subscribe',
-      subNote: 'No spam, no schedule pressure — unsubscribe anytime.',
+      subNote: 'One email when it’s worth your time. Unsubscribe anytime.',
       subLoading: 'Subscribing…',
       subSuccess: 'You’re in — check your inbox to confirm.',
       subInvalid: 'That email doesn’t look right — mind checking it?',
       subError: 'Something broke on my end — try again in a minute?',
       subAlready: 'You’re already on the list — nice.',
     },
+    aboutPage: {
+      kicker: 'About',
+      greeting: 'Hi, I’m Adel.',
+      lede: 'I build with technology, test what’s new, learn constantly, and share what works.',
+      photoNote: 'usually testing something',
+      journeyKicker: 'My journey', journeyTitle: 'A few places shaped how I think.',
+      journeyNote: 'Different places. Different lessons. Same curiosity.',
+      worldsKicker: 'What I do', worldsTitle: 'Two worlds, one curiosity.',
+      dayLabel: 'by day', dayTitle: 'Product',
+      dayLede: 'Turning messy problems into useful products',
+      dayBody: 'Strategy, discovery and shipping — the craft behind good experiences.',
+      dayCta: 'Professional experience',
+      nightLabel: 'after hours', nightTitle: 'Builder & creator',
+      nightItems: [
+        { name: 'Vibe Coding', body: 'Building ideas with AI-native tools — in the open.' },
+        { name: 'AdelTechTalks', body: 'Testing tech, creating content, sharing what I learn.' },
+        { name: 'AI & automation experiments', body: 'Exploring better ways to work and create.' },
+      ],
+      nightCta: 'See what I’m building',
+      toolsKicker: 'Tools I actually use', toolsTitle: 'The toolbox.',
+      toolsNote: 'Real tools only — added here as they earn a place in the workflow.',
+      interestsKicker: 'What I’m into', interestsTitle: 'Curiosity, mapped.',
+      interestsNote: 'gaming = recharge',
+      studioKicker: 'The studio', studioTitle: 'Where a lot of this happens.',
+      studioBody:
+        'Mic on, camera rolling, something half-built on the screen. The creator brain never really switches off.',
+      studioCta: 'The gear behind it',
+      studioNotes: ['the mic', 'keyboard of choice'],
+      threadKicker: 'The thread',
+      thread: [
+        { step: 'Learn', note: 'stay curious' },
+        { step: 'Test', note: 'try it for real' },
+        { step: 'Build', note: 'make something' },
+        { step: 'Share', note: 'pass it on' },
+      ],
+      threadBody:
+        'Learning beats pretending to know everything — so everything here is shared while it’s still being figured out.',
+      closingTitle: 'Still curious. Still building.',
+      cards: [
+        { name: 'Vibe Coding', body: 'See what I’m building', href: '/vibe-coding' },
+        { name: 'Gear', body: 'What’s on the desk', href: '/gear' },
+        { name: 'Learn', body: 'Explore what I’m learning', href: '/learn' },
+        { name: 'Playground', body: 'Try something', href: '/playground' },
+      ],
+    },
     footer: {
       umbrella: 'How I use technology to build, create, and work smarter.',
-      explore: 'Explore', more: 'More', promptLibrary: 'Prompt Library · soon',
-      rights: '© 2026 Adel — built with Vibe Coding, obviously.',
+      explore: 'Explore', learn: 'Learn', channel: 'AdelTechTalks',
+      contact: 'Contact', promptLibrary: 'Prompt Library · soon',
+      rights: 'AdelTechTalks',
     },
     vc: {
       hubKicker: 'Vibe Coding', hubTitle: 'I turn ideas into launches.',
       hubIntro: 'Every build in the open — the idea, the tools, what broke, and where it got to.',
       featuredLabel: 'Now building', groupBuilds: 'Builds', groupExperiments: 'Experiments',
-      seriesLabel: 'Series · Building in public', seriesStrip: 'Part 01 → Part 02 → …',
+      /* A STRUCTURAL label, per the Vibe Coding Hub's "series hairline
+         (structural labels only)". It used to read "Series · Building in
+         public"; Website Structure v2 retires "Building in public" as brand
+         language, and this was the last place it survived as visitor copy. It
+         renders only once a build publishes, which is why the built pages were
+         already clean of it — the string was live, just unreachable. */
+      seriesLabel: 'Series', seriesStrip: 'Part 01 → Part 02 → …',
       status: {
         exploring: 'Exploring', designing: 'Designing', building: 'Now building',
         testing: 'Testing', launched: 'Launched', paused: 'Paused',
@@ -621,12 +748,10 @@ const ar: Copy = {
     portraitAlt: 'عادل',
     /* DS v2.1 hero, Adel's own Egyptian-Arabic voice as supplied. English
        terms stay English per the non-translated list. */
-    badge: '[[Vibe Coding]] · بابني قدّام الناس',
-    line2: 'بحوّل الأفكار لمشاريع باستخدام [[Vibe Coding]].',
-    line3: 'ببني [[GearNest]] وبشارك كل حاجة بتعلمها.',
-    ctaPrimary: 'اكتشف الرحلة',
-    ctaSecondary: 'ابدأ من المكتبة',
-    nowBuilding: 'بابني دلوقتي · [[GearNest]]',
+    badge: '[[Vibe Coding]] · [[Real builds]]',
+    line2: 'ببني وبجرب وبتعلم بالـ[[Tech]] — وبعدين بشارك اللي بينجح.',
+    ctaPrimary: 'شوف اللي ببنيه',
+    ctaSecondary: 'اتعلم معايا',
   },
   explore: {
     title: 'ما أستكشفه',
@@ -826,35 +951,67 @@ const ar: Copy = {
      Egyptian colloquial by design, and NOT a translation of the English above:
      each language was written for its own reader. Do not rewrite. ---- */
   ia: {
-    nav: { vibeCoding: 'Vibe Coding', gear: 'Gear', learn: 'اتعلم', playground: 'Playground', about: 'عن عادل', subscribe: 'اشترك' },
+    /* The navbar labels are the authored AR strings from the design of record
+       (frame 2c): the two pillar names and Playground stay English, Learn and
+       About are Arabic. */
+    nav: { vibeCoding: 'Vibe Coding', gear: 'Gear', learn: 'اتعلم', playground: 'Playground', about: 'عنّي', subscribe: 'اشترك' },
+    menu: {
+      vibeCoding: {
+        currentBuilds: 'الـ[[Builds]] الحالية', experiments: 'تجارب',
+        buildStories: 'قصص الـ[[Build]]', series: 'سلاسل', all: 'كل الـ[[Vibe Coding]]',
+      },
+      gear: {
+        currentlyTesting: 'بجرّبه دلوقتي', reviews: 'مراجعات', creatorGear: '[[Creator Gear]]',
+        mobileComputing: 'موبايل وكمبيوتر', cameras: 'كاميرات',
+        gamingSetup: '[[Gaming]] و[[Setup]]', aiGear: '[[Gear]] بالـ[[AI]]', all: 'كل الـ[[Gear]]',
+      },
+      learn: {
+        useCases: '[[Use Cases]]', promptLibrary: '[[Prompt Library]]', guides: '[[Guides]]',
+        videos: 'فيديوهات', browseByTopic: 'تصفّح بالموضوع', all: 'كل اللي بتعلمه',
+      },
+    },
+    exploring: {
+      kicker: 'Right now', title: 'بجرب إيه دلوقتي؟',
+      building: {
+        marker: 'Building', title: 'Vibe Coding',
+        body: 'تجارب وتطبيقات و[[workflows]] — ببنيها بالـ[[AI]] قدام الناس.',
+        terminal: '$ idea → prompt → build → ship_', cta: 'ادخل [[Vibe Coding]]',
+      },
+      testing: {
+        marker: 'Testing', title: 'العتاد',
+        body: 'أجهزة و[[creator tech]] بستخدمها فعلًا.',
+        caption: 'On the desk', cta: 'شوف الـ[[Gear]]',
+      },
+      learning: {
+        marker: 'Learning', title: 'تعلّم',
+        body: '[[Prompts]] وطرق شغل ودروس تستاهل تتشارك.', cta: 'ابدأ من هنا',
+      },
+    },
+    latestFeed: { kicker: 'Latest', title: 'آخر حاجات من الورشة.', viewAll: 'شوف الكل' },
     realWorld: {
-      label: 'Vibe Coding · in the real world',
-      aside: 'هنا البناء بس — الأجهزة ليها قسم [[Gear]]',
+      label: 'Vibe Coding',
       headBefore: 'إيه اللي أقدر أبنيه بالـ', headEm: 'AI', headAfter: '؟',
-      support: 'تجارب ومشاريع حقيقية ببنيها بالـ[[AI]] — وبشارك إيه اللي اشتغل، وإيه اللي ما اشتغلش، وإيه اللي اتعلمته في الطريق.',
-      ctaPrimary: 'استكشف الـ[[Vibe Coding]]', ctaSecondary: 'شوف كل المشاريع',
-      benchLabel: 'وعلى الترابيزة', bench: ['مشاريع بالـ[[AI]]', 'أدوات و[[workflows]]', 'بنبني في العلن'],
+      support: '[[Builds]] حقيقية، بشاركها أول بأول.',
+      ctaPrimary: 'اكتشف الـ[[Vibe Coding]]', ctaSecondary: 'شوف كل المشاريع',
+      foldLabel: 'من الفكرة للإطلاق', foldStatus: 'حاليًا',
+      foldJourney: 'فكرة ← [[Prompt]] ← [[Build]] ← إطلاق',
       featuredLabel: 'Featured build', crossoverChip: 'Crossover · × Gear', statusChip: 'بناء · شغّال دلوقتي',
       journeyLabel: 'رحلة الـ[[Build]] ده',
-      upNextLabel: 'الجاي بعده', upNextStrip: 'Build 01 → 02 → 03 → …',
-      slotNote: 'شاشة شغل حقيقية متعددة المهام — المكان بيتبدل مع كل [[Build]] جديد',
-      paneLabels: ['ChatGPT', 'Claude Code', 'Live site'],
-      ruleVibe: 'Vibe Coding', ruleVibeNote: '— بنبني بالـ[[AI]]، هنا',
-      ruleGear: 'Gear', ruleGearNote: '— بنستخدم ونجرّب الأجهزة، في قسمها',
-      ruleCross: 'Crossover', ruleCrossNote: '— بس لما الجهاز نفسه يخلّي البناء ممكن',
+      upNextLabel: 'الجاي بعده',
+      slotNote: 'المكان بيتبدل مع كل [[Build]] جديد',
+      paneLabels: ['ChatGPT', 'Claude Code', 'Live build'],
       empty: 'أول [[build]] هيتنشر هنا أول ما يبقى في حاجة حقيقية تتعرض.',
     },
     gear: {
-      label: 'Gear · currently testing', aside: 'مش مواصفات — استخدام حقيقي',
-      headBefore: 'تكنولوجيا بستخدمها ', headEm: 'فعلاً', headAfter: '.',
-      support: 'مش المواصفات وبس — إيه اللي الجهاز ده بيساعدني أعمله فعلاً؟',
-      ctaPrimary: 'استكشف الـ[[Gear]]', ctaSecondary: 'شوف كل الـ[[Gear]]',
+      label: 'Gear',
+      headBefore: '[[Tech]] بستخدمها ', headEm: 'فعلًا', headAfter: '.',
+      support: 'مش مواصفات — استخدام حقيقي ونتايج حقيقية.',
+      ctaPrimary: 'شوف الـ[[Gear]]', ctaSecondary: 'شوف كل الـ[[Gear]]',
+      deskLabel: 'On the desk', deskQuestion: 'هتساعدني أعمل إيه؟',
+      firstStory: 'أول قصة تحت التجربة',
       featuredLabel: 'بجرّبه دلوقتي', crossoverChip: 'Vibe Coding crossover',
       crossoverNote: 'Crossover: القصة دي موجودة كمان في [[Vibe Coding]] — الجهاز نفسه هو اللي بيخلّي البناء ممكن.',
       follow: 'تابع التجربة', alsoLabel: 'بجرّب كمان',
-      ruleRatings: 'من غير تقييمات ولا نجوم', ruleRatingsNote: '— الخلاصة بتيجي بعد تجربة حقيقية',
-      ruleCross: 'علامة الـ[[Crossover]]', ruleCrossNote: '— بس لما الجهاز نفسه يخلّي البناء ممكن',
-      ruleBuild: 'البناء بالـ[[AI]]', ruleBuildNote: '— مكانه قسم [[Vibe Coding]] فوق',
       empty: 'أول تجربة هتتنشر هنا أول ما يبقى في حاجة حقيقية أقولها.',
       hubKicker: 'Gear', hubTitle: 'تكنولوجيا بستخدمها فعلاً.',
       hubIntro: 'دفتر تجارب — إيه اللي بستخدمه، وإيه اللي غيّره، وإيه اللي مش هشتريه تاني.',
@@ -873,59 +1030,106 @@ const ar: Copy = {
       read: 'اقرأ',
     },
     learn: {
-      label: 'Learn · guides & prompts', aside: 'مكتوب عشان تستخدمه',
-      headBefore: 'اتعلم اللي أنا ', headEm: 'بتعلّمه', headAfter: '.',
-      support: 'كل اللي بكتشفه وأنا بجرّب وببني — أدلة و[[use cases]] و[[prompts]] تقدر تستخدمها من النهارده.',
+      label: 'Learn',
+      headBefore: 'اتعلم اللي أنا ', headEm: 'بتعلمه', headAfter: '.',
+      support: 'كل اللي بكتشفه وأنا بجرّب وببني — مكتوب عشان تستخدمه من النهارده.',
+      cta: 'شوف المكتبة كلها',
       rows: {
-        guides: { title: 'أدلة عملية', kicker: 'Guides', body: 'خطوة بخطوة من تجارب وبناء حقيقي — مفيش كلام نظري.', cta: 'تصفّح' },
-        useCases: { title: 'استخدامات حقيقية', kicker: 'Use cases', body: '«إيه اللي التكنولوجيا دي ممكن تعمله ليّا فعلاً؟» — سيناريوهات حقيقية ونتايج صريحة.', cta: 'تصفّح' },
-        videos: { title: 'فيديوهات', kicker: 'Videos', body: 'نفس التجارب بالصوت والصورة — على قناة [[AdelTechTalks]].', cta: 'اتفرّج' },
-        topics: { title: 'مواضيع', kicker: 'Topics', body: '', cta: 'كل المواضيع' },
+        guides: { title: '[[Guides]]', body: 'خطوة بخطوة، من غير حشو.', cta: 'اقرا' },
+        useCases: { title: '[[Use Cases]]', body: '«الحاجة دي هتعمللي إيه فعلًا؟» — سيناريوهات حقيقية ونتايج صريحة.', cta: 'تصفّح' },
+        videos: { title: 'فيديوهات', body: 'اتفرج على البناء والتجارب والشرح — بالصوت والصورة.', cta: 'اتفرج' },
+        topics: { title: 'تصفّح بالموضوع', body: '', cta: 'كل المواضيع' },
       },
       allTopics: 'كل المواضيع',
       panelStatus: 'قريباً', panelTitle: 'Prompt Library',
-      panelBody: 'نفس الـ[[prompts]] اللي بستخدمها — انسخ وعدّل واستخدم.',
-      panelNote: 'كل [[prompt]] بيثبت نفسه في [[workflow]] حقيقي الأول. هنبدأ باللي ورا مشاريعي الحالية.',
-      panelCta: 'ابعتلي لما يفتح',
+      panelBody: '[[Prompts]] بستخدمها فعلًا — ومعاها إمتى وليه أستخدمها.',
+      panelNote: '"Act as my code reviewer…"',
+      panelCta: 'افتح المكتبة', panelCtaClosed: 'ابعتلي لما يفتح',
+      panelCopy: 'Copy',
     },
     playground: {
-      label: 'Playground · try it yourself', aside: 'مبني بنفس أسلوب الـ[[Vibe Coding]]',
-      headBefore: 'متقراش وبس — ', headEm: 'جرّب بنفسك', headAfter: '.',
-      support: 'أدوات تفاعلية صغيرة ببنيها قدامكم — كل حاجة على الترابيزة دي طالعة من نفس الـ[[workflow]] اللي بتشوفوه في [[Vibe Coding]].',
+      label: 'Playground',
+      headBefore: 'متقراش وبس — ', headEm: 'جرّبها بنفسك', headAfter: '.',
+      support: '[[Tools]] صغيرة تقدر تفتحها دلوقتي — مبنية بنفس الـ[[workflow]] اللي بشاركه.',
       cta: 'افتح الـ[[Playground]]',
       toolIndex: (n) => `Tool ${String(n).padStart(2, '0')}`,
       status: { live: 'لايف', beta: 'Beta', 'in-build': 'قيد البناء', 'up-next': 'الجاي', 'with-prompts': 'With Prompt Library' },
-      notify: 'ابعتلي عند الإطلاق', open: 'افتح',
-      ruleFree: 'مجاني للتجربة', ruleFreeNote: '— حساب بس لو الأداة هتحفظ شغلك',
-      rulePublic: 'مبني قدامكم', rulePublicNote: '— قصة بناء كل أداة في [[Vibe Coding]]',
-      ruleDemos: 'من غير [[demos]] وهمية', ruleDemosNote: '— الأداة بتظهر هنا لما تقدر تفتحها فعلاً',
+      notify: 'ابعتلي عند الإطلاق', open: 'جرّبها',
+      opensIn: 'بتشتغل من البراوزر', moreTools: 'في [[tools]] تانية في السكة',
       empty: 'لسه مفيش حاجة مفتوحة. الترابيزة هي أول مكان الأدوات بتنزل فيه.',
     },
     about: {
       loop: ['Learn', 'Test', 'Build', 'Share'],
-      headBefore: 'أهلاً، أنا عادل. ببساطة ', headEm: 'بحب التكنولوجيا', headAfter: '.',
-      bio: 'بحوّل الأفكار لمشاريع حقيقية بالـ[[Vibe Coding]]، بجرّب الأجهزة اللي بستخدمها فعلاً، وبكتب عن كل حاجة تفاجئني في الطريق. [[Product Manager]] في شغلي — ومجرّب دايماً بطبيعتي.',
+      greeting: 'أهلاً، أنا عادل.',
+      bio: 'بتعلم وبجرب وببني — وبشارك اللي بينجح فعلًا.',
       socialLabel: 'AdelTechTalks on',
-      subTitle: 'خد اللي بتعلّمه — قبل ما أظبّطه للنشر.',
-      subBody: 'إيميل واحد لما يبقى في حاجة تستاهل وقتك: مشروع جديد، تجربة مفاجئة، أو [[prompt]] شغّال.',
+      subTitle: 'أحسن حاجة اتعلمتها أو جربتها أو بنيتها — هبعتهالك على الإيميل.',
+      subBody: '',
       subPlaceholder: 'you@email.com', subButton: 'اشترك',
-      subNote: 'من غير [[spam]] — تقدر تلغي الاشتراك في أي وقت.',
+      subNote: 'إيميل واحد بس لما يكون في حاجة تستاهل وقتك. تقدر تلغي في أي وقت.',
+      /* The five form states, authored per ARABIC_VOICE_GUIDE §UI states. */
       subLoading: 'جاري الاشتراك…',
-      subSuccess: 'انت معانا — بص على إيميلك للتأكيد.',
+      subSuccess: 'تمام، إنت كده معانا.',
       subInvalid: 'الإيميل ده شكله مش مظبوط — تراجعه؟',
-      subError: 'في حاجة اتكسرت عندي — تجرب تاني بعد دقيقة؟',
-      subAlready: 'انت أصلاً في القايمة — تمام.',
+      subError: 'حصلت مشكلة. جرّب تاني كمان شوية.',
+      subAlready: 'إنت أصلًا في القايمة — تمام.',
+    },
+    aboutPage: {
+      kicker: 'About',
+      greeting: 'أهلاً، أنا عادل.',
+      lede: 'ببني بالـ[[Tech]]، وبجرب كل جديد، وبتعلم على طول — وبشارك اللي بينجح.',
+      photoNote: 'غالبًا بجرب حاجة',
+      journeyKicker: 'My journey', journeyTitle: 'شوية أماكن شكّلت طريقة تفكيري.',
+      journeyNote: 'أماكن مختلفة، ودروس مختلفة — والفضول هو هو.',
+      worldsKicker: 'What I do', worldsTitle: 'عالمين، وفضول واحد.',
+      dayLabel: 'بالنهار', dayTitle: 'Product',
+      dayLede: 'بحوّل المشاكل المعقدة لمنتجات مفيدة',
+      dayBody: 'استراتيجية واكتشاف وإطلاق — الشغل اللي ورا أي تجربة حلوة.',
+      dayCta: 'خبرتي المهنية',
+      nightLabel: 'بعد الشغل', nightTitle: 'ببني وبعمل content',
+      nightItems: [
+        { name: 'Vibe Coding', body: 'ببني الأفكار بأدوات [[AI]] — قدام الناس.' },
+        { name: 'AdelTechTalks', body: 'بجرب الـ[[Tech]] وبعمل [[content]] وبشارك اللي بتعلمه.' },
+        { name: 'تجارب [[AI]] و[[Automation]]', body: 'بدوّر على طرق أحسن للشغل والإبداع.' },
+      ],
+      nightCta: 'شوف اللي ببنيه',
+      toolsKicker: 'Tools I actually use', toolsTitle: 'شنطة العدة.',
+      toolsNote: '[[Tools]] حقيقية بس — بتدخل هنا لما تكسب مكانها في الـ[[workflow]].',
+      interestsKicker: 'What I’m into', interestsTitle: 'الحاجات اللي بحبها.',
+      interestsNote: 'الـ[[Gaming]] = شحن بطارية',
+      studioKicker: 'The studio', studioTitle: 'هنا بيحصل معظم الشغل.',
+      studioBody:
+        'المايك شغال، والكاميرا بتسجل، وحاجة نص مخلّصة على الشاشة. دماغ الـ[[creator]] مش بتقفل أصلًا.',
+      studioCta: 'الـ[[Gear]] ورا المشهد',
+      studioNotes: ['المايك', 'الكيبورد المفضل'],
+      threadKicker: 'The thread',
+      thread: [
+        { step: 'اتعلم', note: 'خليك فضولي' },
+        { step: 'جرّب', note: 'جرّبها بجد' },
+        { step: 'ابني', note: 'اعمل حاجة' },
+        { step: 'شارك', note: 'عدّيها للناس' },
+      ],
+      threadBody:
+        'إني أتعلم أحسن من إني أعمل نفسي عارف كل حاجة — عشان كده كل اللي هنا بيتشارك وهو لسه بيتاكتشف.',
+      closingTitle: 'لسه فضولي. ولسه ببني.',
+      cards: [
+        { name: 'Vibe Coding', body: 'شوف اللي ببنيه', href: '/vibe-coding' },
+        { name: 'Gear', body: 'إيه اللي على المكتب دلوقتي', href: '/gear' },
+        { name: 'اتعلم', body: 'شوف اللي بتعلمه', href: '/learn' },
+        { name: 'Playground', body: 'جرّب حاجة', href: '/playground' },
+      ],
     },
     footer: {
       umbrella: 'إزاي بستخدم التكنولوجيا عشان أبني وأبدع وأشتغل أذكى.',
-      explore: 'استكشف', more: 'كمان', promptLibrary: 'Prompt Library · قريباً',
-      rights: '© 2026 عادل — متبني بالـVibe Coding، طبعاً.',
+      explore: 'Explore', learn: 'Learn', channel: 'AdelTechTalks',
+      contact: 'كلمني', promptLibrary: 'Prompt Library · قريباً',
+      rights: 'AdelTechTalks',
     },
     vc: {
       hubKicker: 'Vibe Coding', hubTitle: 'بحوّل الأفكار لمشاريع حقيقية.',
       hubIntro: 'كل [[build]] في العلن — الفكرة، الأدوات، إيه اللي اتكسر، ووصل لفين.',
       featuredLabel: 'ببنيه دلوقتي', groupBuilds: 'Builds', groupExperiments: 'Experiments',
-      seriesLabel: 'Series · بنبني في العلن', seriesStrip: 'Part 01 → Part 02 → …',
+      seriesLabel: 'Series', seriesStrip: 'Part 01 → Part 02 → …',
       status: {
         exploring: 'بستكشف', designing: 'بصمّم', building: 'ببنيه دلوقتي',
         testing: 'بجرّب', launched: 'لايف', paused: 'متوقف مؤقتًا',

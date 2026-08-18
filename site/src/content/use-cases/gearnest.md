@@ -6,14 +6,25 @@ lang: en
 topic: building
 series: vibe-coding
 part: 1
-tags: ['vibe coding', 'gearnest', 'building in public']
+tags: ['vibe coding', 'gearnest']
 stage: building
 outcome: 'Being built in public. Every step is published here as it happens, including the ones that did not work.'
 external:
   label: 'Visit GearNest'
   href: 'https://gearnest.ai'
 preview: 'GearNest is a separate brand with its own product, voice and roadmap. It is also the place where one question gets an honest answer: can I build a real business this way?'
-featured: true
+
+# NOT featured, and NOT homepage content. Website Structure v2 is explicit
+# that GearNest is never the site's default featured project and that no
+# homepage or shared template may depend on it.
+#
+# This case study is real, authored work and nothing about it is deleted or
+# hidden: same URL, same place in the Use Cases index, still linked from the
+# Vibe Coding series, still in the sitemap. What the two flags below say is
+# only that it is no longer CURRENT — it is not pinned anywhere, and it does
+# not reach the homepage's Latest feed on the strength of its publish date.
+featured: false
+homepage: false
 
 # The figures are not published because they have not been measured, and an
 # estimate presented as a measurement would break rule 2 of the test below.

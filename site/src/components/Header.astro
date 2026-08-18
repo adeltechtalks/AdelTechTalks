@@ -17,8 +17,10 @@
 import Logo from './Logo.astro';
 import AuthNav from './AuthNav.astro';
 import Rich from './Rich.astro';
+import PillarIcon from './PillarIcon.astro';
 import { nav, site } from '../site.config';
 import { useCopy } from '../copy';
+import { navMenus } from '../lib/nav-menus';
 import {
   DEFAULT_LANG,
   LANGS,
@@ -51,6 +53,7 @@ const neutral = neutralPath(path) || '/';
 const items = nav
   .filter((item) => item.phase === 1)
   .map((item) => ({
+    key: item.key,
     href: localizePath(item.path, lang),
     /* IA v2.0 labels come from the frozen `ia.nav` block, which is the
        authored copy from the designs of record — Learn is "اتعلم" in Arabic
@@ -66,6 +69,26 @@ const items = nav
        an Arabic voice. */
     foreign: lang !== DEFAULT_LANG && isEnglishOnly(item.path),
   }));
+
+/* The three dropdowns, built once and rendered twice — desktop panel and
+   mobile accordion are two presentations of one menu (lib/nav-menus.ts). A
+   pillar with nothing published has no menu at all and stays a plain link. */
+const menus = await navMenus(lang, c);
+const menuFor = (key: string) => menus.find((m) => m.key === key);
+
+/* An `aria-label` is a plain string, so the [[term]] markers Rich understands
+   have to come off before the label reaches a screen reader. None of the three
+   pillar names carries one today; this is the guard that keeps that true if one
+   ever does. */
+const plain = (text: string) => text.replace(/\[\[|\]\]/g, '');
+
+const GLYPH = {
+  vibeCoding: 'vibe-coding',
+  gear: 'gear',
+  learn: 'learn',
+  playground: 'playground',
+  about: 'about',
+} as const;
 
 const other = LANGS.find((l) => l !== lang)!;
 /* Three cases, in order: the page told us where its counterpart is; the page
@@ -94,17 +117,69 @@ const homeHref = localizePath('/', lang);
       <Logo size={28} tone="reversed" />
     </a>
 
+    {/* ---- desktop navigation, with the three frozen dropdowns -------------
+         A pillar that has a menu renders TWO controls, not one: the label is
+         still an ordinary link to the hub, and a separate button opens the
+         panel. Folding both jobs into one element would mean either a link
+         that cannot be opened from the keyboard, or a hub that cannot be
+         reached at all — the design of record has "the logo returns home" and
+         the pillar names reaching their hubs, so the link has to stay a link.
+
+         Hover-intent opens the panel on a pointer; the button opens it on
+         click, Enter or Space; Escape closes it and returns focus. */}
     <nav class="hdr__nav" aria-label="Main">
-      {items.map((item) => (
-        <a
-          href={item.href}
-          class:list={['hdr__link', item.active && 'hdr__link--active']}
-          aria-current={item.active ? 'page' : undefined}
-          hreflang={item.foreign ? LANG_TAG[DEFAULT_LANG] : undefined}
-        >
-          <Rich text={item.label} />
-        </a>
-      ))}
+      {items.map((item) => {
+        const menu = menuFor(item.key);
+        return menu ? (
+          <div class="hdr__item" data-menu={item.key}>
+            <a
+              href={item.href}
+              class:list={['hdr__link', item.active && 'hdr__link--active']}
+              aria-current={item.active ? 'page' : undefined}
+              hreflang={item.foreign ? LANG_TAG[DEFAULT_LANG] : undefined}
+            >
+              <Rich text={item.label} />
+            </a>
+            <button
+              type="button"
+              class="hdr__chev"
+              aria-expanded="false"
+              aria-controls={`menu-${item.key}`}
+              aria-label={`${plain(item.label)} — ${c.common.menuOpen}`}
+            >
+              <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <path d="M4 6.5L8 10.5L12 6.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+
+            <div class="hdr__panel" id={`menu-${item.key}`} hidden>
+              <span class="hdr__panelIcon">
+                <PillarIcon name={GLYPH[item.key as keyof typeof GLYPH]} size={24} />
+              </span>
+              <ul class="hdr__panelList">
+                {menu.entries.map((entry) => (
+                  <li>
+                    <a class="hdr__panelLink" href={entry.href}><Rich text={entry.label} /></a>
+                  </li>
+                ))}
+              </ul>
+              <a class="hdr__panelAll" href={menu.allHref}>
+                <Rich text={menu.allLabel} />
+                <span aria-hidden="true">{lang === 'ar' ? '←' : '→'}</span>
+              </a>
+            </div>
+          </div>
+        ) : (
+          <a
+            href={item.href}
+            class:list={['hdr__link', item.active && 'hdr__link--active']}
+            aria-current={item.active ? 'page' : undefined}
+            hreflang={item.foreign ? LANG_TAG[DEFAULT_LANG] : undefined}
+          >
+            <Rich text={item.label} />
+          </a>
+        );
+      })}
     </nav>
 
     <div class="hdr__actions">
@@ -136,16 +211,55 @@ const homeHref = localizePath('/', lang);
     </button>
   </div>
 
+  {/* ---- mobile: full-screen accordion, one pillar open at a time --------
+       Same entries as the desktop panels, same order, from the same list. A
+       pillar with a menu gets a row split into a link and a disclosure button;
+       one without stays a single full-width link. */}
   <nav class="hdr__mobile" id="mobile-nav" aria-label="Main" hidden>
-    {items.map((item) => (
-      <a
-        href={item.href}
-        class:list={['hdr__link', item.active && 'hdr__link--active']}
-        hreflang={item.foreign ? LANG_TAG[DEFAULT_LANG] : undefined}
-      >
-        <Rich text={item.label} />
-      </a>
-    ))}
+    {items.map((item) => {
+      const menu = menuFor(item.key);
+      return menu ? (
+        <div class="hdr__mItem" data-m-menu={item.key}>
+          <div class="hdr__mRow">
+            <a
+              href={item.href}
+              class:list={['hdr__link', item.active && 'hdr__link--active']}
+              hreflang={item.foreign ? LANG_TAG[DEFAULT_LANG] : undefined}
+            >
+              <Rich text={item.label} />
+            </a>
+            <button
+              type="button"
+              class="hdr__mChev"
+              aria-expanded="false"
+              aria-controls={`m-menu-${item.key}`}
+              aria-label={`${plain(item.label)} — ${c.common.menuOpen}`}
+            >
+              <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <path d="M4 6.5L8 10.5L12 6.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
+          <ul class="hdr__mList" id={`m-menu-${item.key}`} hidden>
+            {menu.entries.map((entry) => (
+              <li><a class="hdr__mLink" href={entry.href}><Rich text={entry.label} /></a></li>
+            ))}
+            <li><a class="hdr__mLink hdr__mLink--all" href={menu.allHref}><Rich text={menu.allLabel} /></a></li>
+          </ul>
+        </div>
+      ) : (
+        <a
+          href={item.href}
+          class:list={['hdr__link', item.active && 'hdr__link--active']}
+          hreflang={item.foreign ? LANG_TAG[DEFAULT_LANG] : undefined}
+        >
+          <Rich text={item.label} />
+        </a>
+      );
+    })}
+    <a class="hdr__link hdr__link--subscribe" href={localizePath('/newsletter', lang)}>
+      <Rich text={c.ia.nav.subscribe} />
+    </a>
     <a href={localizePath('/login', lang)} class="hdr__link hdr__link--account" data-m-auth-out>
       {c.common.signIn}
     </a>
@@ -184,6 +298,101 @@ const homeHref = localizePath('/', lang);
   setScrolled();
   window.addEventListener('scroll', setScrolled, { passive: true });
 
+  /* ---- desktop dropdowns ------------------------------------------------
+     Hover-intent plus click, per the frozen interaction spec. The intent delay
+     is what stops a panel flashing open as the pointer crosses the bar on its
+     way somewhere else; the close delay is what lets the pointer travel the
+     gap between the label and the panel without the panel vanishing. */
+  const OPEN_DELAY = 120;
+  const CLOSE_DELAY = 180;
+
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.hdr__item'));
+
+  function closeAll(except?: HTMLElement) {
+    for (const item of items) {
+      if (item === except) continue;
+      const button = item.querySelector<HTMLButtonElement>('.hdr__chev');
+      const panel = item.querySelector<HTMLElement>('.hdr__panel');
+      if (!button || !panel || panel.hidden) continue;
+      panel.hidden = true;
+      button.setAttribute('aria-expanded', 'false');
+    }
+  }
+
+  for (const item of items) {
+    const button = item.querySelector<HTMLButtonElement>('.hdr__chev');
+    const panel = item.querySelector<HTMLElement>('.hdr__panel');
+    if (!button || !panel) continue;
+
+    let openTimer = 0;
+    let closeTimer = 0;
+
+    const open = () => {
+      closeAll(item);
+      panel.hidden = false;
+      button.setAttribute('aria-expanded', 'true');
+    };
+    const close = () => {
+      panel.hidden = true;
+      button.setAttribute('aria-expanded', 'false');
+    };
+
+    button.addEventListener('click', () => {
+      window.clearTimeout(openTimer);
+      window.clearTimeout(closeTimer);
+      panel.hidden ? open() : close();
+    });
+
+    /* Pointer only. A touch device fires no hover, and a keyboard user opens
+       the panel with the button — neither should be racing a timer. */
+    item.addEventListener('pointerenter', (event) => {
+      if ((event as PointerEvent).pointerType !== 'mouse') return;
+      window.clearTimeout(closeTimer);
+      openTimer = window.setTimeout(open, OPEN_DELAY);
+    });
+    item.addEventListener('pointerleave', (event) => {
+      if ((event as PointerEvent).pointerType !== 'mouse') return;
+      window.clearTimeout(openTimer);
+      closeTimer = window.setTimeout(close, CLOSE_DELAY);
+    });
+
+    /* Tabbing out of the whole item closes it. `focusout` fires before the new
+       element takes focus, so the check is deferred by one frame. */
+    item.addEventListener('focusout', () => {
+      requestAnimationFrame(() => {
+        if (!item.contains(document.activeElement)) close();
+      });
+    });
+  }
+
+  /* A click anywhere else closes whatever is open — the ordinary expectation
+     of a menu, and the thing that makes it usable on a hybrid touch laptop. */
+  document.addEventListener('click', (event) => {
+    const target = event.target as Node | null;
+    if (target && items.some((item) => item.contains(target))) return;
+    closeAll();
+  });
+
+  /* ---- mobile accordion: one pillar open at a time ---------------------- */
+  const mChevs = Array.from(document.querySelectorAll<HTMLButtonElement>('.hdr__mChev'));
+  for (const chev of mChevs) {
+    chev.addEventListener('click', () => {
+      const id = chev.getAttribute('aria-controls');
+      const list = id ? document.getElementById(id) : null;
+      if (!list) return;
+      const willOpen = list.hidden;
+      for (const other of mChevs) {
+        const otherId = other.getAttribute('aria-controls');
+        const otherList = otherId ? document.getElementById(otherId) : null;
+        if (!otherList) continue;
+        otherList.hidden = true;
+        other.setAttribute('aria-expanded', 'false');
+      }
+      list.hidden = !willOpen;
+      chev.setAttribute('aria-expanded', String(willOpen));
+    });
+  }
+
   burger?.addEventListener('click', () => {
     const open = burger.getAttribute('aria-expanded') === 'true';
     burger.setAttribute('aria-expanded', String(!open));
@@ -197,7 +406,23 @@ const homeHref = localizePath('/', lang);
   /* Escape closes it and returns focus to the button — a menu you can open
      with the keyboard has to be closable with the keyboard. */
   document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape' || !burger || !menu || menu.hidden) return;
+    if (event.key !== 'Escape') return;
+
+    /* An open dropdown is the innermost thing Escape should close, and focus
+       goes back to the control that opened it. */
+    const openItem = items.find(
+      (item) => item.querySelector<HTMLButtonElement>('.hdr__chev')?.getAttribute('aria-expanded') === 'true'
+    );
+    if (openItem) {
+      const button = openItem.querySelector<HTMLButtonElement>('.hdr__chev');
+      const panel = openItem.querySelector<HTMLElement>('.hdr__panel');
+      if (panel) panel.hidden = true;
+      button?.setAttribute('aria-expanded', 'false');
+      button?.focus();
+      return;
+    }
+
+    if (!burger || !menu || menu.hidden) return;
     menu.hidden = true;
     burger.setAttribute('aria-expanded', 'false');
     burger.setAttribute('aria-label', burger.dataset.labelOpen ?? '');
@@ -250,9 +475,86 @@ const homeHref = localizePath('/', lang);
   }
   .hdr__nav {
     display: flex;
+    align-items: center;
     gap: 2px;
     margin-inline-start: auto;
   }
+
+  /* ---- a pillar with a dropdown -----------------------------------------
+     The wrapper is the hover target: label, chevron and the panel below are
+     one region, so the pointer can travel between them without the panel
+     closing under it. */
+  .hdr__item { position: relative; display: flex; align-items: center; }
+  .hdr__chev {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 32px;
+    margin-inline-start: -8px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: var(--adel-radius-control);
+    color: var(--adel-nav-fg);
+    cursor: pointer;
+  }
+  .hdr__chev svg { width: 14px; height: 14px; display: block; transition: transform var(--atc-duration-fast) var(--atc-ease-move); }
+  .hdr__chev:hover { color: var(--adel-nav-fg-hover); }
+  .hdr__chev[aria-expanded='true'] { color: var(--adel-nav-fg-strong); }
+  .hdr__chev[aria-expanded='true'] svg { transform: rotate(180deg); }
+
+  /* The panel. 8px rise + fade over 200ms, per the frozen motion map. It is a
+     solid graphite surface rather than a second glass one — the header is the
+     site's ONE glass element and the budget is already spent on it. */
+  .hdr__panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    inset-inline-start: 0;
+    z-index: var(--atc-z-3);
+    min-width: 232px;
+    padding: var(--atc-space-4);
+    border-radius: var(--adel-radius-card);
+    background: var(--adel-graphite);
+    border: 1px solid var(--adel-glass-border);
+    box-shadow: var(--adel-elevation-3);
+    animation: hdr-drop var(--atc-duration-fast) var(--atc-ease-enter) both;
+  }
+  .hdr__panel[hidden] { display: none; }
+  @keyframes hdr-drop {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hdr__panel { animation: none; }
+    .hdr__chev svg { transition: none; }
+  }
+  .hdr__panelIcon { display: block; margin-bottom: var(--atc-space-3); color: var(--adel-blue-300); }
+  .hdr__panelList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .hdr__panelLink {
+    display: block;
+    padding: 8px 10px;
+    border-radius: var(--adel-radius-control);
+    font-size: var(--adel-text-sm);
+    color: var(--adel-nav-fg);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .hdr__panelLink:hover { background: var(--adel-nav-bg-hover); color: var(--adel-nav-fg-strong); }
+  .hdr__panelAll {
+    display: flex;
+    align-items: center;
+    gap: var(--atc-space-2);
+    margin-top: var(--atc-space-3);
+    padding: 10px;
+    border-top: 1px solid var(--adel-glass-edge);
+    font-size: var(--adel-text-sm);
+    font-weight: 600;
+    color: var(--adel-blue-300);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .hdr__panelAll:hover { color: var(--adel-white); }
   .hdr__link {
     position: relative;
     padding: 8px 12px;
@@ -341,6 +643,18 @@ const homeHref = localizePath('/', lang);
     height: 2px;
     border-radius: 1px;
     background: var(--adel-nav-fg-strong);
+    transition:
+      transform var(--atc-duration-fast) var(--atc-ease-move),
+      opacity var(--atc-duration-fast) var(--atc-ease-move);
+  }
+  /* Open, the three bars become the ✕ the design of record draws. It is driven
+     off `aria-expanded`, so the visual state and the announced state are the
+     same fact and cannot disagree. */
+  .hdr__burger[aria-expanded='true'] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hdr__burger[aria-expanded='true'] span:nth-child(2) { opacity: 0; }
+  .hdr__burger[aria-expanded='true'] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  @media (prefers-reduced-motion: reduce) {
+    .hdr__burger span { transition: none; }
   }
   /* The open menu is part of the bar, so it carries the bar's ground. A
      warm-white panel hanging off a graphite header reads as two components. */
@@ -355,6 +669,62 @@ const homeHref = localizePath('/', lang);
   .hdr__mobile .hdr__link {
     padding: 12px 14px;
   }
+
+  /* ---- mobile accordion -------------------------------------------------- */
+  .hdr__mItem { display: flex; flex-direction: column; }
+  .hdr__mRow { display: flex; align-items: center; }
+  .hdr__mRow .hdr__link { flex: 1; min-width: 0; }
+  .hdr__mChev {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* 44×44 touch target — the frozen mobile rule, whatever the glyph size. */
+    width: 44px;
+    height: 44px;
+    flex: none;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    color: var(--adel-nav-fg);
+    cursor: pointer;
+  }
+  .hdr__mChev svg { width: 16px; height: 16px; display: block; transition: transform var(--atc-duration-fast) var(--atc-ease-move); }
+  .hdr__mChev[aria-expanded='true'] { color: var(--adel-nav-fg-strong); }
+  .hdr__mChev[aria-expanded='true'] svg { transform: rotate(180deg); }
+  @media (prefers-reduced-motion: reduce) {
+    .hdr__mChev svg { transition: none; }
+  }
+  .hdr__mList {
+    list-style: none;
+    margin: 0 0 var(--atc-space-2);
+    padding: 0 0 var(--atc-space-2);
+    display: flex;
+    flex-direction: column;
+    border-inline-start: 2px solid var(--adel-glass-edge);
+    margin-inline-start: 14px;
+  }
+  .hdr__mList[hidden] { display: none; }
+  .hdr__mLink {
+    display: block;
+    padding: 12px 14px;
+    font-size: var(--adel-text-sm);
+    color: var(--adel-nav-fg);
+    text-decoration: none;
+  }
+  .hdr__mLink:hover { color: var(--adel-nav-fg-strong); }
+  .hdr__mLink--all { font-weight: 600; color: var(--adel-blue-300); }
+
+  /* Subscribe keeps its filled treatment inside the menu — it is the one thing
+     in the chrome asking for something, in either presentation. */
+  .hdr__link--subscribe {
+    margin-top: var(--atc-space-3);
+    background: var(--adel-blue-500);
+    color: var(--adel-white);
+    font-weight: 600;
+    text-align: center;
+    border-radius: var(--adel-radius-pill);
+  }
+  .hdr__link--subscribe:hover { background: var(--adel-blue-400); color: var(--adel-white); }
   .hdr__link--account,
   .hdr__link--lang {
     margin-top: var(--atc-space-2);
@@ -364,13 +734,15 @@ const homeHref = localizePath('/', lang);
   }
 
   /* ---- compact lockup -----------------------------------------------------
-     Below 480px the full lockup crowds the burger. The Design System's own
-     compact form is the mark standing alone, so the WORDMARK is dropped and the
-     mark is left at its published size — it stays at 28px, well clear of the
-     measured 24px floor where the counter closes. The mark is not shrunk and no
-     new compact artwork is invented. The link keeps its aria-label, so the
-     accessible name is unchanged. */
-  @media (max-width: 479px) {
+     The full AdelTechTalks lockup stays on a phone: frames 2b, 2d and the
+     mobile menu in 2e all carry the wordmark at 390px, and it fits — mark plus
+     wordmark is ~155px of a 390px bar with a 44px burger and 40px of padding.
+
+     The compact form — the mark standing alone, at its published size, never
+     shrunk and never redrawn — is held back for the genuinely narrow widths
+     where the bar does run out of room. The link keeps its aria-label either
+     way, so the accessible name never changes. */
+  @media (max-width: 359px) {
     .hdr__logo :global(.atc-logo__word) {
       display: none;
     }

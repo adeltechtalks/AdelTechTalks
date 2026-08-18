@@ -97,14 +97,22 @@ const runs: Run[] = text
   });
 ---
 
-<Tag class={className} {...rest}>
-  {runs.map((run) => {
-    const pieces = run.pieces.map((p) =>
-      p.term ? <span class:list={['term', p.wraps && 'term--wrap']}>{p.value}</span> : p.value
-    );
-    return run.bold ? <strong>{pieces}</strong> : pieces;
-  })}
-</Tag>
+{/* The tag opens and closes TIGHT around the map, for the same reason the
+    comment above gives for `>{value}</span>`: JSX preserves the whitespace
+    around an interpolation, so a newline after `<Tag>` and before `</Tag>`
+    becomes a real space inside the rendered element.
+
+    That space is never wanted and it is visible wherever a Rich run is
+    followed by punctuation — a section headline authored as
+    `headBefore + <em>headEm</em> + headAfter` rendered "actually using ."
+    with a gap before the full stop, on four homepage sections in both
+    languages. Same defect, same fix, one place. */}
+<Tag class={className} {...rest}>{runs.map((run) => {
+  const pieces = run.pieces.map((p) =>
+    p.term ? <span class:list={['term', p.wraps && 'term--wrap']}>{p.value}</span> : p.value
+  );
+  return run.bold ? <strong>{pieces}</strong> : pieces;
+})}</Tag>
 
 <style is:global>
   /* .term itself is defined in tokens/adel-type.css — it is a type rule, not a
