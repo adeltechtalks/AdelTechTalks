@@ -14,8 +14,9 @@ external:
   label: 'زيارة GearNest'
   href: 'https://gearnest.ai'
 preview: '[[GearNest]] علامة مستقلة بمنتجها وصوتها وخارطة طريقها. وهي أيضاً المكان الذي يجد فيه سؤال واحد إجابة صادقة: هل أستطيع بناء مشروع حقيقي بهذه الطريقة؟'
-# Not featured — see the note in gearnest.md.
+# Not featured and not current homepage content — see the note in gearnest.md.
 featured: false
+homepage: false
 
 # الأرقام غير منشورة لأنها لم تُقَس بعد. احذف هذا الحقل يوم تصير حقيقية.
 pending:

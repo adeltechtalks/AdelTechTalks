@@ -21,6 +21,13 @@
    not a feed — it is one card wearing a section header, and it makes a young
    site look emptier than a page that simply moves on.
 
+   ── AND ONLY CURRENT CONTENT ────────────────────────────────────────────────
+   Published is not the same as current. A piece carrying `homepage: false` in
+   its front matter is real, linkable, indexed work that is no longer what this
+   site is about right now — an archived project, a superseded experiment, a
+   de-emphasised case study. It keeps its URL and its place in its own index,
+   and it does not appear here.
+
    ── BADGES ──────────────────────────────────────────────────────────────────
    One primary, at most one secondary, both derived in lib/badges.ts. The card
    never authors its own badge, so the same story is badged identically here,
@@ -46,11 +53,24 @@ const arrow = lang === 'ar' ? '←' : '→';
 const MAX = 3;
 const MIN_TO_RENDER = 2;
 
-const entries = (await getLatest(lang, MAX)).map((entry) => ({
-  entry,
-  badge: badgeFor(entry),
-  ...markerFor(entry, Date.now()),
-}));
+/* Eligibility BEFORE the cut, not after.
+
+   `getLatest()` is a date sort, and a date sort on its own is not an editorial
+   decision — it will promote a piece to the front page for no better reason
+   than that it was published first. So the whole feed is read, filtered to
+   pieces that are still current editorial content, and only then cut to three.
+
+   Filtering after the slice would be worse than useless: it would silently
+   shrink the section to two cards, or to none, depending on what happened to
+   sort into the top three. */
+const entries = (await getLatest(lang))
+  .filter((entry) => entry.homepage)
+  .slice(0, MAX)
+  .map((entry) => ({
+    entry,
+    badge: badgeFor(entry),
+    ...markerFor(entry, Date.now()),
+  }));
 
 const show = entries.length >= MIN_TO_RENDER;
 ---

@@ -87,6 +87,24 @@ const editorial = {
   featured: z.boolean().default(false),
   draft: z.boolean().default(false),
 
+  /* Is this piece CURRENT editorial content, eligible for the homepage?
+
+     `draft` and `homepage` answer two different questions and both are needed.
+     `draft: true` means "nobody may read this"; it takes the piece off its own
+     index and out of the sitemap. `homepage: false` means "this is real,
+     published, linkable work that is no longer what AdelTechTalks is about
+     right now" — an archived project, a superseded experiment, a de-emphasised
+     case study. It stays at its URL, stays in its index, stays searchable, and
+     stops being promoted on the front page.
+
+     Without this field the homepage's Latest feed is nothing but a date sort,
+     so an old piece is promoted purely because its publish date happens to sort
+     first — which is how the GearNest case study ended up leading the homepage
+     while being explicitly de-emphasised everywhere else.
+
+     Default true: new work is current work. Set it to false deliberately. */
+  homepage: z.boolean().default(true),
+
   /* Slugs of related guides/articles, shown at the foot of the page. */
   related: z.array(z.string()).default([]),
 
