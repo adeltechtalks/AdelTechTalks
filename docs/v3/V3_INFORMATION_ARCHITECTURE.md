@@ -1,6 +1,7 @@
 # V3_INFORMATION_ARCHITECTURE
 
-**Status:** proposal. Companion to `V3_PRODUCT_BLUEPRINT.md`.
+**Status:** proposal. **Revised in v3.1** — §5 is rewritten to the
+BUILD → PLAY → LEARN → SHIP narrative. Companion to `V3_PRODUCT_BLUEPRINT.md`.
 
 ---
 
@@ -89,10 +90,13 @@ New routes are marked **NEW**. Everything unmarked exists today and keeps its UR
 /whats-new/                         NEW interpretation feed
   /whats-new/[slug]/                NEW single item
 
-/achievements/[verification-id]/    NEW public, crawlable, OG-carded
+/achievements/[verification-id]/    NEW public, crawlable, OG-carded.
+                                        One route, three achievement kinds.
 /badge/[id]/                            301 → /achievements/[id]/
 
-/api/*                              NEW server endpoints (never prerendered)
+/api/*                              NEW server endpoints (never prerendered).
+                                        Register: V3_API_SURFACE.md — a route
+                                        absent from it does not ship.
 /newsletter/  /contact/  /work-with-me/  /404/  /ask-index.json   retained
 ```
 
@@ -164,50 +168,117 @@ The pillar leaves the product, but the URLs were live and linked. A 301 to `/pro
 
 ---
 
-## 5 · Homepage composition
+## 5 · Homepage composition — four acts *(rewritten in v3.1)*
 
-Order is the narrative, and it runs from "who is this" to "what will I do".
+The v3 draft listed eleven sections in an order that ran reading-first. v3.1
+groups them into the four acts of the narrative (`V3_PRODUCT_BLUEPRINT.md` §2) and
+moves the one interactive thing on the page from position 5 to position 4 — above
+the reading list rather than below it.
 
-| # | section | collapse rule |
-|---|---|---|
-| 1 | **Hero** — I build with AI, test new tech, and teach what actually works | never |
-| 2 | **Now** — Now Building / Now Exploring / Now Testing | hides any strip with no live entry; hides entirely with none |
-| 3 | **What I'm Building** — visual build log, active projects | hides below 1 project |
-| 4 | **Learn With Me** — outcome rails | hides a rail with no content behind it |
-| 5 | **Learn by Playing** — an inline challenge, playable in place | hides with no live challenge |
-| 6 | **Prompt Library** — "Prompts I actually use" | hides below 3 published prompts |
-| 7 | **What's New** — what changed / why it matters / Adel's take / try it | hides below 1 item |
-| 8 | **Free Resources** | hides below 2 resources |
-| 9 | **Featured Courses** | hides below 1 published course |
-| 10 | **Tech I'm Testing** — inside use cases, never a review card | hides with none |
-| 11 | **Join Free** — membership CTA, newsletter as the secondary ask | never |
-| 12 | Footer | never |
+| # | act | section | collapse rule |
+|---|---|---|---|
+| 1 | — | **Hero** — I build with AI, test new tech, and teach what actually works | never |
+| 2 | **BUILD** | **Now** — Now Building / Now Testing / Now Exploring | hides any strip with no live entry; hides entirely with none |
+| 3 | **BUILD** | **What I'm Building** — visual build log, active projects | hides below 1 project |
+| 4 | **PLAY** | **Prompt Arena** — a real challenge, playable in place, signed out | hides with no live challenge — and Prompt Arena is a launch gate, so at launch it does not hide |
+| 5 | **PLAY** | **Recently earned** — real public achievements | hides below **3 real verifications**. Never seeded. Absent at launch |
+| 6 | **LEARN** | **Learn With Me** — outcome rails | hides a rail with no content behind it |
+| 7 | **LEARN** | **Prompt Library** — "Prompts I actually use" | hides below 3 published prompts |
+| 8 | **LEARN** | **What's New** — what changed / why it matters / Adel's take / try it | hides below 1 item |
+| 9 | **SHIP** | **Free Resources** | hides below 2 resources |
+| 10 | **SHIP** | **Featured Courses** | hides below 1 published course |
+| 11 | **SHIP** | **Tech I'm Testing** — inside use cases, never a review card | hides with none |
+| 12 | — | **Join Free** — membership CTA, newsletter as the secondary ask | never |
+| 13 | — | Footer | never |
 
-Eleven sections is a long page. It is a *narrative* page and each section earns its place by being a different kind of thing — but the collapse rules matter more here than anywhere in v2.x: at foundation launch, with Courses and Resources empty, the page renders 1–6, 7, 11, 12 and reads as complete rather than as a skeleton. **The page must be verified in its empty state before its full state.**
+**The one structural change worth defending.** Moving Prompt Arena to position 4
+puts a thing the visitor can *do* immediately after the evidence that Adel builds,
+and before any list of things to read. The v3 order asked a stranger to accept
+four reading sections before offering them anything to try. If Playground is a
+product rather than a bench — which is the whole of the v3.1 correction — it
+cannot sit below the fold behind a library.
+
+**Act boundaries are legible but quiet.** A thin Signature Blue rule and a small
+act label mark each transition; a four-stop indicator tracks progress through the
+page. Orientation, not decoration — and it renders complete and static under
+reduced motion (`V3_MOTION_SYSTEM.md` §2.5).
+
+**At foundation launch** — with Courses, Resources and public achievements empty —
+the page renders 1, 2, 3, 4, 6, 7, 8, 12, 13, and reads as a complete argument:
+here is what I build, here is something to try, here is how to learn it, here is
+how to join. **The page must be verified in its empty state before its full
+state.** That gate has not changed and it is what makes the collapse rules real.
 
 ### Hero
 
-Adel is visually dominant — real photography, the largest element on the screen. The positioning line carries the message; "I ❤️ Tech" remains the brand expression and the Signature Blue SVG heart is unchanged.
+Adel is visually dominant — real photography, the largest element on the screen.
+The positioning line carries the message; "I ❤️ Tech" remains the brand expression
+and the Signature Blue SVG heart is unchanged.
 
-Two actions: **Start Learning** (primary → `/learn/`) and **See What I'm Building** (secondary → `/projects/`). CS-05 holds: one primary action on the page.
+Two actions: **Try a challenge** (primary → the Arena section, in-page) and **See
+what I'm building** (secondary → `/projects/`). CS-05 holds: one primary action on
+the page.
 
-The **Now** modules are data, not decoration — they read from the Projects collection and the What's New feed, and each links to the thing it names. A Now module with nothing live does not render a placeholder; it is absent. "Now Building" claiming a project that has not been updated in 60 days is a lie the system should not be able to tell, so staleness hides it.
+This is a change from the v3 draft's *Start Learning*. "Start Learning" is a
+commitment to a reading list; "Try a challenge" is a thirty-second act with a
+result at the end of it, and it is the door the rest of the page depends on.
 
-### Learn With Me — outcome rails
+The **Now** modules are data, not decoration — they read from the Projects
+collection and the What's New feed, and each links to the thing it names. A Now
+module with nothing live does not render a placeholder; it is absent. "Now
+Building" claiming a project that has not been updated in 60 days is a lie the
+system should not be able to tell, so staleness hides it.
+
+### PLAY — the Arena section
+
+One challenge, embedded and playable without leaving the page.
+
+- **Signed out:** playable and scored. The attempt is stored against an opaque
+  browser key. On completion: *"You scored 84. Create a free account to keep it."*
+- **Signed in:** playable, scored, XP awarded, badge evaluated in place. On
+  completion: *"Next: {the next challenge in the track}"*.
+- **Create-format challenges are never the homepage challenge.** The inline slot
+  uses Choose or Repair, because those are server-scored and the score means
+  something. A self-assessed score is a poor first impression of a scoring system.
+
+The section carries one link out — **"Open Prompt Arena"** — and no second CTA.
+
+### PLAY — Recently earned
+
+Three to six real public achievements, most recent first, each linking to its
+verification page. Display name, achievement, date. No score comparison, no
+ranking, no count of members.
+
+**It is Absent until three real verifications exist, and it is never seeded.**
+There is no demonstration data in this section, in any environment that a visitor
+can reach. A wall of fabricated achievements would undercut the exact thing the
+achievement system exists to establish.
+
+### LEARN — outcome rails
 
 Six outcomes at launch, each a real path with real content behind it:
 
-`Get Better at Prompting` · `Build a Website` · `Vibe Code a Product` · `Design with AI` · `Automate My Work` · `Build a Business with AI`
+`Get Better at Prompting` · `Build a Website` · `Vibe Code a Product` · `Design
+with AI` · `Automate My Work` · `Build a Business with AI`
 
-A path is a curated ordered list of existing library items plus, later, course lessons. **A path with fewer than two items does not render** — an outcome promising one guide is worse than an outcome not offered.
+A path is a curated ordered list of existing library items plus, later, course
+lessons. **A path with fewer than two items does not render** — an outcome
+promising one guide is worse than an outcome not offered.
 
-### Learn by Playing
+### LEARN — What's New
 
-One challenge, embedded and playable without leaving the page: *"Can you turn this weak prompt into a 90+ prompt?"* Anonymous play is allowed and scored; saving the score, earning XP and keeping the badge require an account. That is the conversion mechanic, and it converts because the visitor has already done the work.
+Four slots, always in this order, never free prose: **What changed · Why it
+matters · Adel's take · Try it**. "Adel's take" is the differentiator and is
+mandatory — an item without it is not publishable. "Try it" links to a prompt, a
+challenge, or a guide, and prefers the challenge.
 
-### What's New — the editorial structure is the component
+### SHIP — Join Free
 
-Four slots, always in this order, never free prose: **What changed · Why it matters · Adel's take · Try it**. "Adel's take" is the differentiator and is mandatory — an item without it is not publishable. "Try it" links to a prompt, a challenge, or a guide.
+The membership CTA, and the **only** place on the homepage that asks for an
+account before the visitor has done anything. Everywhere else the ask is
+contextual and follows an action (`V3_GAMIFICATION.md` §6.5). The newsletter is
+offered here as the smaller, separate ask, and remains separate from account
+creation in both directions.
 
 ---
 

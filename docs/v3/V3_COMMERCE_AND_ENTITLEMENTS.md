@@ -1,6 +1,6 @@
 # V3_COMMERCE_AND_ENTITLEMENTS
 
-**Status:** proposal. Ships in Phase 3. Written now because the entitlement resolver is used from the foundation release onward and needs a stable shape.
+**Status:** proposal. **Hardened in v3.1** — §1, §3 and the new §9. Ships in Phase 3. Written now because the entitlement resolver is used from the foundation release onward and needs a stable shape.
 
 ---
 
@@ -10,7 +10,9 @@
 
 A visitor returning to `/courses/x/?session_id=...` proves nothing: the URL can be typed. Every "unlock on success page" implementation is a paywall with a hole in it, and it is the single most common way small course sites leak paid content.
 
-The success page therefore says *"Thanks — setting up your access"* and polls the entitlement endpoint. Access appears when the webhook has been received, verified and processed. Usually that is under two seconds; when it is not, the page says so honestly rather than guessing.
+The success page therefore says *"Thanks — setting up your access"* and polls `GET /api/entitlements/status`, which resolves from the `entitlements` table. Access appears when the webhook has been received, verified and processed. Usually that is under two seconds; when it is not, the page says so honestly rather than guessing.
+
+**No endpoint anywhere reads `session_id` from a redirect and grants anything on the strength of it** — not as a fast path, not as a fallback, not behind a flag. The success page may *display* a Stripe session id it was given; it may not *act* on one.
 
 ---
 
@@ -34,9 +36,15 @@ Supabase user_id  ←→  stripe_customer_id
 
 Held in `stripe_customers`, one row per user, created lazily on first checkout.
 
+**`/api/checkout` accepts a `product_key` and nothing else about money.** No
+amount, no currency, no `price_id`, no coupon value, no quantity above 1. The
+`stripe_price_id` is resolved server-side from the product's front matter. A
+client-supplied price is a discount the customer wrote themselves — and a request
+carrying one is rejected 400, not silently ignored.
+
 ```
 1. Signed-in user clicks Buy
-2. POST /api/checkout           { product_key }
+2. POST /api/checkout           { product_key }        ← and nothing else
 3. Server verifies the session (never trusts a client-supplied user_id)
 4. Look up or create the Stripe customer; persist the mapping
 5. Create a Checkout Session with:
@@ -155,3 +163,31 @@ Currency is USD at launch. Stripe handles presentment; no multi-currency logic i
 - **No refund UI.** Refunds happen in the Stripe dashboard; the webhook revokes access automatically.
 
 Each of these is a deliberate absence, recorded so it is not mistaken for an oversight.
+
+---
+
+## 9 · Secret handling — stated explicitly *(v3.1)*
+
+Not because it is novel, but because "we all know that" is exactly how a secret
+reaches a client bundle.
+
+| secret | where it lives | reachable from the browser |
+|---|---|---|
+| `STRIPE_SECRET_KEY` | Cloudflare **secret binding** | never |
+| `STRIPE_WEBHOOK_SECRET` | Cloudflare **secret binding** | never |
+| `STRIPE_PUBLISHABLE_KEY` | public config | yes, by design |
+
+- **Not `vars` in `wrangler.jsonc`.** `vars` are plaintext in the config file and
+  in the deployment. Secrets are bindings.
+- **Never `PUBLIC_`-prefixed**, and never read in a module reachable from a client
+  island. The `src/server/` import boundary is a build check, not a convention.
+- **The Stripe client is constructed in exactly one file**, which exports
+  functions rather than the client.
+- **The CI check greps built client output for secret *value* patterns** —
+  `sk_live`, `sk_test`, `whsec_`, and the service-role JWT shape. It does not grep
+  for binding *names*, which legitimately appear in `_worker.js`; a check that
+  fails on the name teaches people to rename the binding.
+- **No bypass flag exists in the webhook handler.** Local development forwards
+  real signed events with the Stripe CLI. A "skip signature verification in dev"
+  flag is a production backdoor waiting for a bad merge, and there is not one to
+  find.

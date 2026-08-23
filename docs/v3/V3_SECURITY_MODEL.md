@@ -1,6 +1,7 @@
 # V3_SECURITY_MODEL
 
-**Status:** proposal.
+**Status:** proposal. **Revised in v3.1** — §5 and the new §5.1 correct a defect
+in the v3 draft. See `V3.1_ARCHITECTURE_PATCH.md` §1.
 **Governing rule:** v3 must not weaken the production security posture. Today that posture is genuinely good *because the attack surface is small* — nothing is gated, no money moves, and the only writes are a person's own progress. v3 adds gated content, money and server endpoints, so the posture has to grow with it.
 
 ---
@@ -96,15 +97,18 @@ Applied per table, in the migration that creates it, never retrofitted.
 | table | anon | authenticated (self) | authenticated (others) | notes |
 |---|---|---|---|---|
 | `profiles` | — | select, update | — | insert via definer trigger only |
-| `saved_prompts` | — | all | — | |
-| `enrollments` | — | select | — | written server-side |
-| `lesson_progress` | — | all | — | |
-| `challenge_attempts` | — | select | — | **written server-side: scoring is server-side or a client posts itself a 100** |
+| `enrollments` | — | select | — | written server-side; `completed_at` set by the server |
+| `challenge_attempts` | — | select | — | **written server-side: scoring is server-side or a client posts itself a 100**. `scored_by` records whether the score is evidence |
+| `lesson_progress` | — | select | — | **v3.1: was `all`.** Completion is evidence for a course achievement |
+| `saved_prompts` | — | all | — | the one client-writable table: a bookmark, awards nothing |
 | `xp_events` | — | select | — | write = award yourself any level |
 | `xp_balances`, `skill_progress` | — | select | — | derived |
 | `badges` (catalogue) | **select** | select | select | public, non-sensitive |
 | `user_badges` | — | select | — | write = award yourself any badge |
-| `achievement_verifications` | **select** where not revoked | select, insert own, delete own | select | the deliberate public projection |
+| `achievement_verifications` | **select** where not revoked | **select only** | select | **v3.1: no client write of any kind.** See §5.1 |
+| `playground_track_badges` (legacy) | — | select | — | **v3.1: was `all`.** Retirement schedule in migration 07 |
+| `progress` (legacy) | — | select | — | **v3.1: was `all`.** Same schedule |
+| `schema_state` | — | — | — | no policy at all; service role only |
 | `entitlements`, `purchases`, `subscriptions` | — | select | — | webhook writes only |
 | `stripe_events` | — | — | — | **no policy at all**; service role only |
 | `subscribers` | **insert** | insert | — | unchanged from v2.x |
@@ -114,6 +118,81 @@ Two design notes worth stating because they are easy to get wrong:
 
 - **Read-only-to-self plus server-side writes** is the shape for anything that confers value. If a client can write it, a client can grant itself the thing.
 - The public `select` on `achievement_verifications` is scoped `where revoked_at is null` **in the policy**, not in application code. Un-publishing has to work even if a page forgets to filter.
+
+### The v3.1 policy test
+
+The v3 draft's rule was *"own rows only"*. That rule is not sufficient, and this
+document said so in the abstract while the migration set broke it in the
+concrete. The rule is now:
+
+> **A client may write a table only if writing it confers nothing.**
+
+A row that is *about you* can still be a row that *claims something untrue about
+you*. The question each policy must answer is not "whose row is this?" but **"if
+a client wrote this row itself, what could it then obtain?"** If the answer is
+XP, a level, a badge, a completion, an entitlement or a public verification, the
+table is server-written and there is no owner-write policy on it.
+
+Applying that test cost four policy changes: `achievement_verifications`,
+`lesson_progress`, `playground_track_badges` and `progress`.
+
+---
+
+## 5.1 · Public achievement verification — the defect and the fix
+
+**This section exists because the v3 draft got it wrong, and the shape of the
+mistake is worth keeping on the record.**
+
+`site/supabase/v3/03_achievements.sql` granted `authenticated` a direct insert:
+
+```sql
+create policy "own verification insert" on public.achievement_verifications
+  for insert to authenticated with check (auth.uid() = user_id);
+```
+
+That check proves the row is *about* the caller. It proves nothing about whether
+the caller earned the thing the row claims. Any signed-in person could insert a
+row naming any badge in the public catalogue and immediately hold a public,
+crawlable, OG-carded page asserting they had earned it — with the site's own
+branding on the share card vouching for it.
+
+It passed review three times because every individual statement around it was
+true: the table is a deliberate public projection; the row holds nothing
+sensitive; sharing is the user's own choice; `shares` worked this way in v2.x.
+The last one is where it came from and it is where the reasoning broke. In v2.x,
+`shares` was written by a client that had *already* written its own `badges` row
+client-side — the whole loop was self-asserted, and that was acceptable because a
+Playground track badge asserted nothing beyond "I clicked through a quiz". v3
+makes badges mean something: earned against server-scored challenges, tied to
+course completion, tied to XP thresholds. **The moment a badge means something,
+the ability to self-issue one stops being harmless.** The v2.x precedent was
+carried across without re-asking whether its premise still held.
+
+### The fix
+
+1. **No insert, update or delete policy on `achievement_verifications`, for any
+   role.** The grants are revoked as well, so a future policy added by accident
+   still cannot write. The only policy on the table is the public `select`,
+   scoped `revoked_at is null`.
+2. **All writes go through `POST /api/achievements/publish`**, which proves
+   ownership against `user_badges`, `enrollments` or `challenge_attempts` before
+   writing, derives every public field server-side, and generates the
+   verification id itself. Full contract: `V3_API_SURFACE.md` §2.
+3. **Un-publishing is a soft revoke** scoped to the session's `user_id`, not a
+   client delete. The id survives, so re-publishing restores the same URL rather
+   than orphaning every link already posted.
+4. **A self-assessed score is not evidence.** `challenge_attempts.scored_by`
+   records how a score was produced, and the publish endpoint refuses
+   `self_assessed`. Otherwise "score ≥90 on a Create challenge" would have been
+   self-issued through a longer path.
+5. **The legacy client-writable path is retired on a dated schedule**
+   (migration 07), because `playground_track_badges` fed `user_badges`, and
+   `user_badges` is what the publish endpoint accepts as proof.
+
+### What the fix is tested by
+
+The hostile-client table in `V3_API_SURFACE.md` §2.4 is a CI test file, not
+prose. Every row in it must pass before Phase 2 ships.
 
 ---
 
@@ -127,6 +206,8 @@ Cloudflare is the first layer; the application is the second.
 | `/api/challenge/score` | 30 / hour / user; 10 / hour / anon IP | 429 |
 | `/api/checkout` | 10 / hour / user | 429 |
 | `/api/download/*` | 20 / hour / user | 429 |
+| `/api/achievements/publish` | 10 / hour / user | 429 |
+| `/api/learning/progress` | 120 / hour / user | 429 |
 | `/api/stripe/webhook` | not limited | signature is the gate |
 | `/login` OAuth start | 20 / hour / IP | 429 |
 
@@ -157,10 +238,12 @@ Additional protections: the newsletter honeypot stays; challenge scoring is serv
 
 ## 9 · Review gates before any v3 code ships
 
-1. Threat-model review of every new `/api/*` route: who can call it, what happens when they lie.
+1. Threat-model review of every new `/api/*` route: who can call it, what happens when they lie. `V3_API_SURFACE.md` is the register; a route absent from it does not ship.
 2. RLS verified **empirically** — a test that authenticates as user A and asserts it cannot read user B's rows, per table. Policies are asserted, not assumed.
 3. `dist/` grepped for secret patterns in CI.
 4. Redirect validation unit-tested against the full hostile list.
 5. Stripe webhook tested with an invalid signature (must 400) and a duplicated event (must be a no-op).
 6. `/api/download/*` tested without entitlement (must fail closed) and with an expired signed URL.
 7. The existing 113-check browser QA extended, not replaced.
+8. **The publish-endpoint hostile-client suite** (`V3_API_SURFACE.md` §2.4) passes in full — including the direct-insert-with-anon-key case, asserted against RLS *and* against the grant, separately.
+9. **A policy audit**, run as a query rather than read as a diff: every table in `public` with an `insert`, `update` or `delete` policy for `anon` or `authenticated` is listed, and each one is justified in writing against the §5 test. After v3.1 the expected list is exactly `saved_prompts` and `subscribers`.

@@ -1,6 +1,7 @@
 # V3_PRODUCT_BLUEPRINT
 
-**Status:** proposal, for approval. Nothing in this document is implemented.
+**Status:** proposal, for approval. **Revised in v3.1** — §2, §7 and the new §8.
+Nothing in this document is implemented.
 **Baseline:** v2.x at `7bb4b45`, live on `https://adeltechtalks.com`. Frozen and stable.
 **Branch:** `claude/adeltechtalk-final-design-4nc4fr` (v3 working branch, cut from `main` after the v2.x merge). `main` is untouched.
 
@@ -44,20 +45,35 @@ Adel is the product and the trust layer. The platform is the delivery mechanism.
 
 Two loops, and they are not decoration — they are the information architecture.
 
-**The learner's loop: Learn → Play → Build → Ship**
+**The narrative: BUILD → PLAY → LEARN → SHIP** *(reframed in v3.1)*
 
-| stage | surface | the artifact the learner leaves with |
-|---|---|---|
-| Learn | Learn paths, Guides, Videos | understanding |
-| Play | Playground challenges | a score, XP, a badge |
-| Build | Courses, Prompt packs, Projects to copy | a thing that exists |
-| Ship | Resources, checklists, Achievements | something published, and proof |
+The v3 draft ran *Learn → Play → Build → Ship*. That is the order a curriculum
+designer writes and it is not the order a visitor experiences. A stranger arrives
+because Adel builds things; the first interesting thing they can do is try one;
+only then does a reading list mean anything.
 
-**Adel's loop: Build → Test → Learn → Teach → Package**
+| act | whose | surface | what changes for the visitor |
+|---|---|---|---|
+| **BUILD** | Adel's | Projects, Now, What's New | *"This person actually makes things."* Credibility, before any ask. |
+| **PLAY** | the visitor's | Prompt Arena, the inline challenge | *"I just did something."* The first act of participation, no account. |
+| **LEARN** | the visitor's | Learn paths, Prompts, Guides, Courses | *"Now I want the method."* Reading has a reason. |
+| **SHIP** | the visitor's | Resources, Achievements, membership | *"I have something to show."* Proof, and a reason to return. |
+
+The four acts are the homepage order (`V3_INFORMATION_ARCHITECTURE.md` §5), the
+motion identity (`V3_MOTION_SYSTEM.md` §2.5), and the argument the site makes. The
+learner still ends up learning; they just are not asked to read first.
+
+**The reason the reorder matters more than it sounds:** the brief's other
+correction is that Playground is a product, not a bench. A product that appears
+below the fold at position 5, after four reading sections, is a bench with better
+copy. Moving PLAY to the second act is what makes the rest of the claim true.
+
+**Adel's supply loop, unchanged: Build → Test → Learn → Teach → Package**
 
 This is the *supply* side, and it is why the content is credible: nothing is taught that was not first built and broken. Every Course traces back to a Project. Every Prompt traces back to a real session. The Content OS (`V3_CONTENT_OS.md`) is the machinery of this loop.
 
-The two loops meet at Projects: Adel's Build is the learner's Learn.
+The two loops meet at Projects: Adel's Build is the visitor's first act of trust,
+and the source of everything they later learn.
 
 ---
 
@@ -71,7 +87,7 @@ Eight destinations. Each has one job and one sentence.
 | **Learn** | route by outcome | "What do you want to be able to do?" |
 | **Prompts** | give away the working tools | "Prompts I actually use." |
 | **Courses** | small paid outcomes | "Finish this and you will have shipped X." |
-| **Playground** | learn by doing | "Don't read about it — try it." |
+| **Playground** | learn by doing — **a real product, launched with a real challenge set** | "Don't read about it — try it." |
 | **Projects** | proof and narrative | "Watch me build it, including the parts that broke." |
 | **What's New** | interpretation, not news | "This changed. Here's whether it matters." |
 | **About** | the trust layer | "Who is saying all this." |
@@ -214,8 +230,56 @@ Dead v1.1 homepage components already unreferenced (`Explore`, `SeriesBand`, `Vi
 These survived two design freezes and they survive this one:
 
 1. **Nothing fake, ever.** No fabricated builds, screenshots, product photography, reviews, subscriber counts, testimonials, ratings, or "live" claims about tools that do not open. Missing assets are publication gates, never implementation blockers: the system ships complete and the individual piece stays unpublished.
-2. **Empty is a designed state.** Every surface has an honest empty state and collapses gracefully. The site must be correct with an empty content directory.
+2. **Empty is a designed state, and v3.1 names three of them.** Every surface has an honest state and collapses gracefully. The site must be correct with an empty content directory. See §8 — *Live*, *Preview* and *Absent* are different things and conflating them is how "coming soon" becomes a lie.
 3. **Internal editorial rules are not visitor copy.** The reader experiences the structure; they never read its documentation.
 4. **Arabic is authored, never translated.** EN and AR are siblings sharing intent and facts, not sentence structure.
 5. **Reduced motion means static and fully visible.**
 6. **Tokens only.** No hard-coded colour or font in a component.
+7. **Nothing a client asserts is treated as proof** *(v3.1)*. XP, scores, levels, badge awards, completions and public verifications are issued by the server against records the server wrote. `V3_SECURITY_MODEL.md` §5.1.
+
+---
+
+## 8 · Launch state — how v3 communicates the vision without faking it *(new in v3.1)*
+
+The brief asks for two things that pull against each other: launch honestly, and
+still show what this is going to be. The resolution is not to blur them. It is to
+name three states and never let one wear another's clothes.
+
+| state | what it means | what it looks like | when it is allowed |
+|---|---|---|---|
+| **Live** | the thing exists and works | the real component, full behaviour | always |
+| **Preview** | the thing is designed, named and genuinely committed, and is not open | a labelled, **non-interactive** card that says what it will be and what opens it | only against a real commitment |
+| **Absent** | nothing real, nothing committed | the section collapses; no placeholder, no skeleton | the default |
+
+**The rules that keep Preview honest:**
+
+1. A preview card is **never clickable into an empty page.** It has no link, or it
+   links to the thing it depends on ("opens after the first Vibe Coding course" →
+   the course).
+2. It **never carries a fabricated date.** "Q3" invented to look confident is a
+   fake claim about the future. A preview states its *condition*, not its date,
+   unless the date is real.
+3. A section may hold **at most one** preview card among live ones. A section that
+   would be all preview is **Absent** instead — a grid of promises is a skeleton
+   with adjectives.
+4. Preview never appears above the fold, and never in the Hero.
+5. Preview copy is written by Adel, in both languages, like any other copy. A
+   preview card with `‹author›` Arabic does not render in Arabic.
+
+**What this means concretely at foundation launch:**
+
+- **Prompt Arena is Live**, with nine real challenges, or Playground does not open
+  at all. It is never Preview. (`V3_GAMIFICATION.md` §7.1.)
+- The other Playground experiences are **Preview**, each naming the course or
+  project that opens it.
+- **Courses and Resources are Absent.** No "coming soon" course cards.
+- The homepage **achievements wall is Absent** until at least three real public
+  verifications exist. It is never seeded with examples, and there is no
+  demonstration data anywhere in the system.
+- Counts, ranks, "X learners" and "most popular" do not appear at launch, because
+  none of them would be true, and a number that becomes true later is not an
+  excuse to print it early.
+
+The empty homepage is verified **before** the full one — that gate is inherited
+from the v3 plan and it is what makes all of the above testable rather than
+aspirational.
