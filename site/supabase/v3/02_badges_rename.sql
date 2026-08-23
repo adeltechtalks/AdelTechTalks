@@ -1,9 +1,10 @@
 -- =============================================================================
--- v3 · 02 · badge catalogue + awards  (renames the live `badges` table)
+-- v3.1 · 02 · badge catalogue + awards  (renames the live `badges` table)
 -- ROLLBACK: drop table public.user_badges;
 --           drop table public.badges;
 --           alter table public.playground_track_badges rename to badges;
 --           (then re-apply the v2.x RLS policy "own badges")
+-- RUNS WITH: 07_retire_legacy_gamification.sql, same deploy, immediately after.
 -- =============================================================================
 -- THE COLLISION, AND WHY IT IS RESOLVED BY RENAMING.
 --
@@ -20,6 +21,13 @@
 alter table if exists public.badges rename to playground_track_badges;
 
 -- The rename carries the policy but not its name's meaning; restate it.
+--
+-- TRANSITIONAL, and it does not survive this deploy. The live v2.x Playground
+-- client is still writing this table at the moment the rename runs, so the write
+-- policy is restated here and then REMOVED BY MIGRATION 07 in the same Phase 0
+-- deploy, once the server-mediated write path is in place. Do not run 02 without
+-- 07. A client-writable table that feeds `user_badges` is a route to a
+-- self-issued public achievement — see 07 for the full chain.
 alter table public.playground_track_badges enable row level security;
 drop policy if exists "own badges" on public.playground_track_badges;
 drop policy if exists "own track badges" on public.playground_track_badges;
@@ -71,6 +79,20 @@ create index if not exists user_badges_user_idx on public.user_badges (user_id);
 -- ---- backfill the legacy Playground track badges ---------------------------
 -- One catalogue entry per track slug that anyone has actually earned, then the
 -- awards themselves. Idempotent.
+--
+-- ONE-TIME, AND THE DATABASE ENFORCES THAT. After migration 07 records the
+-- `legacy_playground_backfill` marker, both statements below become no-ops. This
+-- is what severs the escalation route: from that point on, a row appearing in
+-- `playground_track_badges` — however it got there — can never become a
+-- `user_badges` award, and therefore can never become a publishable achievement.
+create table if not exists public.schema_state (
+  key         text        primary key,
+  value       jsonb       not null default '{}'::jsonb,
+  recorded_at timestamptz not null default now()
+);
+alter table public.schema_state enable row level security;
+-- No policy at all: service role only.
+
 insert into public.badges (key, name, description, icon, skill, requirement, tier)
 select distinct
   'playground-' || b.track_slug,
@@ -81,9 +103,13 @@ select distinct
   jsonb_build_object('type', 'playground_track', 'track', b.track_slug),
   'bronze'
 from public.playground_track_badges b
+where not exists (select 1 from public.schema_state
+                  where key = 'legacy_playground_backfill')
 on conflict (key) do nothing;
 
 insert into public.user_badges (user_id, badge_key, earned_at, source_type, source_id)
 select b.user_id, 'playground-' || b.track_slug, b.earned_at, 'playground', b.track_slug
 from public.playground_track_badges b
+where not exists (select 1 from public.schema_state
+                  where key = 'legacy_playground_backfill')
 on conflict (user_id, badge_key) do nothing;
