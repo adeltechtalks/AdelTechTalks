@@ -1,26 +1,29 @@
 {
-  "//": "A finding listed here is one someone has looked at and decided to live with, for a stated reason. Anything NOT listed fails the build. Removing an entry is how you re-open a question; adding one is a reviewable diff.",
+  "//": "A finding listed here is one someone has looked at and decided to live with, for a stated reason. Anything NOT listed fails the build. Removing an entry is how you re-open a question; adding one is a reviewable diff. An entry that no longer matches any finding fails too — a stale acceptance is a tolerance for a problem that may already be fixed.",
   "accepted": [
     {
       "id": "public-select-exposes-identifier",
       "table": "shares",
-      "reason": "Deliberate public projection: /badge/[id] is server-rendered for LinkedIn's crawler, which does not run JavaScript, so the row must be readable by anon. The row holds no email, no progress and no attempt data. It DOES expose user_id, which is a real if minor leak of an internal identifier — the page needs only display_name, track_slug and earned_at. Narrowing it is tracked as a v3 change (see docs/v3/V3_DATA_MODEL.md): achievement_verifications inherits the same shape and should expose the public columns through a view or column-level grants rather than the whole row. Not changed here because PR 2 is guardrails only and this is a live production policy.",
-      "accepted_at": "PR 2",
-      "revisit": "v3 Phase 0, with migration 03"
+      "reason": "Deliberate public projection: /badge/[id] is server-rendered for LinkedIn's crawler, which does not run JavaScript, so the row must be readable by anon. The row holds no email, no progress and no attempt data. It DOES expose user_id, which is a real if minor leak of an internal identifier — the page needs only display_name, track_slug and earned_at. Migration 03 creates achievement_verifications with a narrowed public column set and copies every row; the cutover that turns `shares` into a view over it is deliberately left commented out in 03, to be run by hand only after the row-count check passes and a known live badge id has been fetched from production. Until that cutover runs, this policy is live and accepted.",
+      "revisit": "When the migration 03 view cutover is executed (see 03_achievements.sql, the commented block) — at which point `shares` stops being a table and this finding should disappear on its own."
     },
     {
       "id": "broad-for-all",
-      "table": "progress",
-      "reason": "FOR ALL to authenticated with auth.uid() = user_id on both USING and WITH CHECK. Correct for v2.x, where a progress row records which Playground steps someone ticked and confers nothing. It is client-writable, which v3 removes: migration 07 makes it select-only once the server-mediated write path ships. Accepted until then rather than changed under a guardrails PR.",
-      "accepted_at": "PR 2",
-      "revisit": "v3 Phase 0, migration 07 stage 1"
+      "table": "saved_prompts",
+      "reason": "The single deliberate exception to the v3.1 rule that a client may write a table only if writing it confers nothing. A saved prompt is a bookmark: it awards no XP, no level, no badge, no course credit, no entitlement and no public verification. Writing one yourself obtains exactly what the feature already gives you. FOR ALL to authenticated with auth.uid() = user_id on both USING and WITH CHECK, so the blast radius is your own bookmark list.",
+      "revisit": "If saved_prompts ever gains a column that feeds scoring, recommendations-with-reward, or anything public — then it stops conferring nothing and must move to a server-mediated write."
     },
     {
-      "id": "broad-for-all",
-      "table": "badges",
-      "reason": "Same shape as progress, and the same v3 disposition. Worth stating the current exposure honestly: a signed-in user can insert their own badges row and then insert a matching shares row, so a v2.x track badge is self-assertable. That is acceptable today because a Playground track badge asserts only 'I clicked through a quiz'. It stops being acceptable the moment a badge means a server-graded score, which is exactly why v3.1 made achievement publishing server-authoritative and why migration 07 retires this table's write path.",
-      "accepted_at": "PR 2",
-      "revisit": "v3 Phase 0, migrations 02 + 07"
+      "id": "rls-no-policy",
+      "table": "schema_state",
+      "reason": "A one-row-per-migration ledger written only by the migrations themselves, used by 02 to make its backfill provably one-time and by 07 to seal it. RLS is enabled with no policy on purpose: that is the correct way to make a table reachable by the service role alone. It holds migration names and timestamps — no user data. A policy here would be strictly worse, because any policy is a grant.",
+      "revisit": "Never, unless something outside the migration runner needs to read it — at which point it needs a read policy and a reason."
+    },
+    {
+      "id": "rls-no-policy",
+      "table": "stripe_events",
+      "reason": "The Stripe webhook idempotency ledger: event id, type, received_at. Written by the webhook handler under the service role and read by nothing else, which is what makes replayed webhooks a no-op. RLS enabled with no policy is deliberate and is the whole security property — a client that could read it learns the shape of the payment stream, and a client that could write it could suppress a real event by pre-inserting its id.",
+      "revisit": "Not applicable while commerce is off. Migration 06 is not applied until PR 16; this entry exists because the file is in the tree, not because the table exists."
     }
   ]
 }

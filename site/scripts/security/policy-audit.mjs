@@ -50,7 +50,10 @@ function sqlFiles(dir, out = []) {
 const strip = (sql) =>
   sql.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/^\s*--.*$/gm, ' ');
 
-const files = sqlFiles(SUPA);
+/* Sorted, so migrations are read in the order they would be applied:
+   the live schema first, then supabase/v3/01… through 07. The end state
+   is what gets judged, and the end state depends on that order. */
+const files = sqlFiles(SUPA).sort();
 if (files.length === 0) {
   console.error('policy-audit: no .sql files found under supabase/');
   process.exit(2);
@@ -79,15 +82,43 @@ for (const file of files) {
   for (const m of sql.matchAll(/alter\s+table\s+(?:if\s+exists\s+)?public\.(\w+)\s+enable\s+row\s+level\s+security/gi)) {
     table(m[1], rel).rls = true;
   }
-  /* rename carries the table forward under a new name */
+  /* A rename carries the whole table forward — columns, RLS *and* policies —
+     and leaves nothing behind under the old name. Migration 02 renames `badges`
+     to `playground_track_badges` and then creates a new, unrelated `badges`
+     catalogue. If the policies did not move with the rename, the old
+     `for all` policy would appear to sit on the new catalogue table, which is
+     read-only reference data — a phantom finding on a table that never had it. */
   for (const m of sql.matchAll(/alter\s+table\s+(?:if\s+exists\s+)?public\.(\w+)\s+rename\s+to\s+(\w+)/gi)) {
     const from = tables.get(m[1]);
+    if (!from) continue;
     const to = table(m[2], rel);
-    if (from) { to.columns = from.columns; to.rls = from.rls; }
+    to.columns = from.columns;
+    to.rls = from.rls;
+    to.policies = from.policies;
+    tables.delete(m[1]);
   }
-  /* create policy "name" on public.X for CMD to ROLES using(...) with check(...) */
-  for (const m of sql.matchAll(
-    /create\s+policy\s+"([^"]+)"\s*\n?\s*on\s+public\.(\w+)\s*([\s\S]*?)(?=;\s*(?:\n|$))/gi)) {
+  /* Policies, walked in source order so a later `drop policy` actually removes
+     an earlier one. Without this the audit reports the union of every policy
+     ever written rather than the state the database ends in — and migration 07
+     exists precisely to drop the transitional policies migration 02 leaves
+     behind. Reporting those as live findings would be a false positive, and a
+     false positive that can only be silenced by writing an untrue reason into
+     accepted-findings.json is worse than no check at all. */
+  const CREATE = /create\s+policy\s+"([^"]+)"\s*\n?\s*on\s+public\.(\w+)\s*([\s\S]*?)(?=;\s*(?:\n|$))/gi;
+  const DROP = /drop\s+policy\s+(?:if\s+exists\s+)?"([^"]+)"\s*\n?\s*on\s+public\.(\w+)/gi;
+
+  const stmts = [];
+  for (const m of sql.matchAll(CREATE)) stmts.push({ at: m.index, kind: 'create', m });
+  for (const m of sql.matchAll(DROP)) stmts.push({ at: m.index, kind: 'drop', m });
+  stmts.sort((a, b) => a.at - b.at);
+
+  for (const { kind, m } of stmts) {
+    if (kind === 'drop') {
+      const [, name, tbl] = m;
+      const t = tables.get(tbl);
+      if (t) t.policies = t.policies.filter((p) => p.name !== name);
+      continue;
+    }
     const [, name, tbl, rest] = m;
     const cmd = (rest.match(/\bfor\s+(all|select|insert|update|delete)\b/i) || [, 'all'])[1].toLowerCase();
     const roles = (rest.match(/\bto\s+([\w\s,]+?)(?=\s+(?:using|with)\b|\s*$)/i) || [, ''])[1]
@@ -150,6 +181,21 @@ for (const f of findings) {
   if (f.sev === 'FAIL') { fails++; continue; }
   if (acceptedMap.has(key(f))) { reviews.push({ ...f, accepted: acceptedMap.get(key(f)) }); }
   else { f.sev = 'FAIL'; f.detail += '  — NOT in accepted-findings.json'; fails++; }
+}
+
+/* An accepted finding that no longer fires is not harmless: it is a tolerance
+   for a problem that may already be fixed, sitting in the file looking like it
+   still applies. Migration 07 retires the `progress` and `badges` write
+   policies, so their entries stop matching the moment those migrations are in
+   the tree — and the correct response is to delete them, not to leave them
+   accruing. Failing on a stale entry is what forces that. */
+const fired = new Set(findings.map(key));
+const stale = accepted.filter((a) => !fired.has(`${a.id}:${a.table}`));
+for (const a of stale) {
+  console.error(`  ✗ FAIL   [stale-acceptance] ${a.table}`);
+  console.error(`           accepted-findings.json still accepts [${a.id}] on ${a.table}, `
+    + 'but the audit no longer reports it. Delete the entry — the finding is gone.\n');
+  fails++;
 }
 
 /* ---- report --------------------------------------------------------------- */
