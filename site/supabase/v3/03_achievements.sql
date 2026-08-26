@@ -124,7 +124,14 @@ drop policy if exists "own verification update" on public.achievement_verificati
 
 -- Belt and braces: even if a future migration adds a policy by accident, the
 -- table grants say no.
-revoke insert, update, delete on public.achievement_verifications from anon, authenticated;
+--
+-- TRUNCATE is in this list deliberately. Supabase's default grants include it,
+-- `revoke insert, update, delete` does not cover it, and — unlike every other
+-- write — **RLS does not apply to TRUNCATE**. A row-level policy cannot stop it,
+-- so the table grant is the only thing that can. Leaving it granted would mean
+-- the holder of a public role retained a one-statement path to emptying every
+-- published achievement on the site.
+revoke insert, update, delete, truncate on public.achievement_verifications from anon, authenticated;
 
 -- The read grant is stated EXPLICITLY rather than inherited.
 --
