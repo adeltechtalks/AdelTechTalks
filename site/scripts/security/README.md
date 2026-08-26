@@ -63,6 +63,30 @@ Parses every `.sql` under `supabase/` and asserts:
 It also prints the list of **client-writable tables**, which is the single number
 worth watching as v3 lands.
 
+**What the audit describes, and what it does not.** It reads every `.sql` under
+`supabase/` in applied order — the live schema first, then `supabase/v3/01…07` —
+and judges **the state the database would end in if all of it were applied**.
+Since PR 3 added the v3 migrations to the tree, that end state is no longer the
+same thing as production: the migrations are written but **not applied**. So a
+policy the audit reports as retired (`progress` and `badges` lost their `FOR ALL`
+write policies in migration 07) is still live in production today.
+
+That gap is deliberate and it is covered: **`security:rls` is the check that
+speaks for production**, because it asks the live database rather than the files.
+Read the two together — the audit tells you whether the SQL you are about to
+apply is sound, and `rls-check` tells you what is true right now.
+
+The audit models `drop policy` and `alter table … rename to` so that the end
+state is judged rather than the union of every policy ever written. Without
+that, migration 02's transitional policy — which migration 07 exists to remove —
+would report as a live finding, and the only way to silence it would be to write
+a reason into `accepted-findings.json` that was not true.
+
+A **stale acceptance fails too**: an entry that no longer matches any finding is
+a tolerance for a problem that may already be fixed, sitting in the file looking
+like it still applies. Delete it; that is the signal that a migration did its
+job.
+
 ### 3 · RLS check — `npm run security:rls`
 
 Asks the live database what the **public anon key** can actually reach, because
@@ -129,9 +153,15 @@ names the rule, the table and a reason. Anything not listed fails the build — 
 accepting a finding is a reviewable diff rather than a silent tolerance, and
 *removing* an entry is how a question gets re-opened.
 
-Three findings are accepted today, each with a reason and a stated revisit point:
-`shares` exposing `user_id` publicly, and the `FOR ALL` policies on `progress`
-and `badges`.
+Four findings are accepted today, each with a reason and a stated revisit point:
+`shares` exposing `user_id` publicly; the `FOR ALL` policy on `saved_prompts`
+(the one table the v3.1 rule deliberately leaves client-writable, because a
+bookmark confers nothing); and the two service-role-only ledgers, `schema_state`
+and `stripe_events`, which have RLS on with no policy on purpose.
+
+The `progress` and `badges` acceptances were **removed** in PR 3 — migration 07
+retires those write policies, so the findings no longer fire and keeping the
+entries would have been a stale acceptance.
 
 ---
 
@@ -172,6 +202,7 @@ site two deployers.
 | a `public` table has no RLS | **CI fails** |
 | an `anon` write policy has no `WITH CHECK` | **CI fails** |
 | a REVIEW finding is not in `accepted-findings.json` | **CI fails** |
+| an `accepted-findings.json` entry matches nothing | **CI fails** — stale acceptance |
 | the anon key reads `subscribers`, `progress` or `badges` | **CI fails** |
 | `shares` becomes unreadable | **CI fails** — this breaks `/badge/[id]` for crawlers |
 | a secret-scan rule stops firing | **CI fails** (self-test) |
