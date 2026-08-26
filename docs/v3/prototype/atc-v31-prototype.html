@@ -694,6 +694,7 @@ body[data-motion="reduced"] .baton p{opacity:1!important;transform:none!importan
     <p id="homeSub">A spine draws as you scroll and hands the baton between acts. Scroll the frame to see it advance.</p></div>
   <div class="statebar">
     <span class="pill">Media layer <b>replaces Right Now</b></span>
+    <span class="pill">Activity types <b>WATCH · BUILD · EXPERIENCE · TAKE · TRY</b></span>
     <span class="pill">Spine <b>draws on scroll</b></span>
     <span class="pill">Batons <b>3 connectives</b></span>
     <span class="pill on">Arena playable, signed out</span>
@@ -738,7 +739,7 @@ body[data-motion="reduced"] .baton p{opacity:1!important;transform:none!importan
           <h3 class="d">[PROJECT NAME]</h3>
           <p>Week 3 — the auth layer works, the pricing page does not.</p>
           <span class="when">Updated 4 days ago</span></div></a>
-      <a class="mcard" href="#"><div class="body"><span class="kind take">My take</span>
+      <a class="mcard" href="#"><div class="body"><span class="kind take">Take</span>
           <h3 class="d">Agent modes landed in the tool I use daily</h3>
           <p>The bottleneck moved from writing the code to describing the outcome.</p>
           <span class="when">5 days ago</span></div></a>
@@ -746,7 +747,7 @@ body[data-motion="reduced"] .baton p{opacity:1!important;transform:none!importan
           <h3 class="d">[TOOL NAME]</h3>
           <p>Inside a real workflow — not a spec sheet.</p>
           <span class="when">Last week</span></div></a>
-      <a class="mcard" href="#"><div class="body"><span class="kind exp">Out in tech</span>
+      <a class="mcard" href="#"><div class="body"><span class="kind exp">Experience</span>
           <h3 class="d">[PLACE] — what the demo floor actually shows you</h3>
           <p>Publishes when the photograph exists. Never a stock image.</p>
           <span class="when">Draft</span></div></a>
@@ -851,7 +852,7 @@ body[data-motion="reduced"] .baton p{opacity:1!important;transform:none!importan
           <h3 class="d">[اسم المشروع]</h3>
           <p>الأسبوع التالت — الـ<span class="ltr">auth</span> شغّال، وصفحة الأسعار لسه لأ.</p>
           <span class="when">Updated 4 days ago</span></div></a>
-      <a class="mcard" href="#"><div class="body"><span class="kind take">My take</span>
+      <a class="mcard" href="#"><div class="body"><span class="kind take">Take</span>
           <h3 class="d">الـ<span class="ltr">agent modes</span> نزلت في الأداة اللي بستخدمها يومياً</h3>
           <p>العقدة اتنقلت من كتابة الكود لوصف النتيجة.</p>
           <span class="when">5 days ago</span></div></a>
@@ -859,7 +860,7 @@ body[data-motion="reduced"] .baton p{opacity:1!important;transform:none!importan
           <h3 class="d">[اسم الأداة]</h3>
           <p>جوّه شغل حقيقي — مش ورقة مواصفات.</p>
           <span class="when">Last week</span></div></a>
-      <a class="mcard" href="#"><div class="body"><span class="kind exp">Out in tech</span>
+      <a class="mcard" href="#"><div class="body"><span class="kind exp">Experience</span>
           <h3 class="d">[المكان] — الـ<span class="ltr">demo floor</span> بيوريك إيه فعلاً</h3>
           <p>بينشر لما الصورة تبقى موجودة. عمره ما بيبقى صورة جاهزة.</p>
           <span class="when">Draft</span></div></a>
@@ -1591,10 +1592,12 @@ function renderWhatsNew(){
     $$('[data-goto]',host).forEach(b=>b.addEventListener('click',()=>go(b.dataset.goto)));
   });
 }
+/* The four approved educational topics — tracks and topics are the same four
+   things (V3_CONTENT_ROUTER §3, §10.2). `business` was dropped at v3.2. */
 const SKILLS=[{k:'prompting',en:'Prompting',ar:'Prompting',c:'var(--blue)'},
-  {k:'coding',en:'Coding',ar:'Coding',c:'var(--deep)'},
-  {k:'design',en:'Design',ar:'Design',c:'#8FB9FA'},
-  {k:'automation',en:'Automation',ar:'Automation',c:'var(--slate)'}];
+  {k:'vibe-coding',en:'Vibe Coding',ar:'Vibe Coding',c:'var(--deep)'},
+  {k:'vibe-designing',en:'Vibe Designing',ar:'Vibe Designing',c:'#8FB9FA'},
+  {k:'ai-workflows',en:'AI Workflows',ar:'AI Workflows',c:'var(--slate)'}];
 function skillXP(k){ return k==='prompting'?S.earned:0; }
 
 function renderMemberPreview(){

@@ -88,9 +88,17 @@ Arabic level names are `‹author›` placeholders. They are brand vocabulary an
 
 ## 4 · Skill tracks
 
-Five, each with total XP of its own alongside the general total:
+**Four** *(reduced from five at the v3.2 simplification)*, each with total XP of
+its own alongside the general total:
 
-`prompting` · `coding` · `design` · `automation` · `business`
+`prompting` · `vibe-coding` · `vibe-designing` · `ai-workflows`
+
+**`business` is dropped.** The tracks now match the four approved educational
+topics exactly (`V3_CONTENT_ROUTER.md` §3), and Business Vibes was explicitly
+excluded as a topic — a fifth XP track with no educational topic behind it would
+be a track nobody could ever earn against. Tracks and topics being the same four
+things is what makes *"strongest in Prompting, nothing yet in Vibe Designing"*
+mean something a learner can act on.
 
 Every XP event may carry one `skill` or none. A skill's XP is a subset of the total, never a separate currency — one action awards once, and the skill field says which shelf it also lands on. Two currencies would immediately raise "which one counts?" and there is no good answer.
 

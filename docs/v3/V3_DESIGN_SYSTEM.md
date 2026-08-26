@@ -1,8 +1,8 @@
 # V3_DESIGN_SYSTEM
 
-**Status:** proposal. **Revised in v3.1** — §2.3 (achievement and state
-components), §2.6 (launch-state components), and §4, which now points at the
-dedicated `V3_CANVA_PRODUCTION_SYSTEM.md` for production.
+**Status:** proposal. **Revised in v3.1** (§2.3 achievement and state components,
+§2.6 launch states, §4 → `V3_CANVA_PRODUCTION_SYSTEM.md`) and **in v3.2** (skill
+tracks reduced from five to four, matching the four approved educational topics).
 **Relationship to v2.1:** additive evolution, not replacement. Every existing token keeps its name and value. v3 adds semantic layers and component families on top. A v2.x page rendered against v3 tokens must look identical.
 
 ---
@@ -49,11 +49,10 @@ The v2.0 palette is the v3 palette. Nothing is retired, nothing is recoloured.
 --adel-badge-locked-fg    text-tertiary   locked badge glyph
 --adel-challenge-correct  status-success
 --adel-challenge-wrong    status-error
---adel-track-prompting    signature-blue   } skill-track identity.
---adel-track-coding       deep-blue        } Five tracks, drawn from the
---adel-track-design       ice-blue         } existing palette — no new
---adel-track-automation   graphite         } hues, and never used as
---adel-track-business     slate            } large surfaces.
+--adel-track-prompting       signature-blue  } skill-track identity.
+--adel-track-vibe-coding     deep-blue       } Four tracks (v3.2), matching
+--adel-track-vibe-designing  ice-blue        } the four educational topics.
+--adel-track-ai-workflows    graphite        } No new hues, never a surface.
 ```
 
 Skill-track colour is a **secondary** identifier only: every track is also named and iconed, so the system never depends on colour alone (WCAG 1.4.1).

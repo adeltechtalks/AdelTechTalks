@@ -42,7 +42,7 @@ await t('media layer replaces the Right Now band',async()=>{
   if(cards!==5) throw new Error('media cards='+cards);
   if(!(await p.locator('#homeEN .mcard.lead').count())) throw new Error('no lead card');
   const kinds=(await p.locator('#homeEN .mcard .kind').allInnerTexts()).map(s=>s.toLowerCase());
-  for(const k of ['watch','build','my take','try','out in tech'])
+  for(const k of ['watch','build','experience','take','try'])
     if(!kinds.some(x=>x.includes(k))) throw new Error('missing card type: '+k+' in '+kinds);
 });
 await t('media layer sits before the spine starts',async()=>{

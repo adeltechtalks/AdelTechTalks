@@ -6,7 +6,12 @@
 
 **Patched by v3.2** — navigation naming, `/builds/` and `/now/` routes, the
 homepage media layer, the video content model, the motion-stack decision, and the
-analytics and performance additions those require. **PR 1 is unchanged.**
+analytics and performance additions those require.
+
+**Patched again by the v3.2 final simplification** — `V3_CONTENT_ROUTER.md` is
+now the durable editorial model (five destinations, four educational topics,
+format as metadata), the premium motion quality bar is a build requirement, and
+the XP skill tracks reduce from five to four. **PR 1 is unchanged.**
 **Branch:** `claude/adeltechtalk-final-design-4nc4fr` — 10 commits ahead of `origin/main` (`7bb4b45`).
 
 ---
@@ -685,8 +690,10 @@ verified on a branch, then `/badge/<real id>` fetched from production immediatel
 after the production run.
 
 **Phase 2** — every redirect resolves in one hop with its Arabic twin; **no
-retained URL changed canonical, and `/prompts/` and `/videos/` are asserted
-unmoved**; a Now `take` without `adels_take` and an `experience` without a photo
+retained URL changed canonical, and `/prompts/`, `/videos/` and `/topics/*` are
+asserted unmoved**; **every published piece resolves to exactly one destination
+and at most one `skill`** — a build check, because the router's whole value is
+that classification stays single; a Now `take` without `adels_take` and an `experience` without a photo
 both **fail the build**; the homepage renders correctly with an **empty content
 directory**, and separately at the media layer's **full** state within budget; a
 video entry with no related slots renders no empty slots.

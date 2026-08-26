@@ -1,9 +1,9 @@
 # V3_MOTION_SYSTEM
 
-**Status:** proposal. **Revised in v3.1** — new §2.5 (the four-act identity) and
-§2.6 (the Playground and achievement sequences, specified as states rather than
-as a list of effects). **Revised in v3.2** — new §0.1 records the library
-decision: none.
+**Status:** **APPROVED.** Revised in v3.1 (§2.5 four-act identity, §2.6
+interactive states), and in v3.2 — §0.1 records the library decision (none) and
+**§0.2 is the premium motion quality bar**, which is now the product-facing
+vocabulary the five tiers map onto.
 **Relationship to the frozen v2.x charter:** the charter is not replaced. Its numbers stay exactly as they are and become **Tier 3** of a five-tier system. v3 adds tiers above and below it, because a platform with challenges and achievements needs motion the charter never had to describe.
 
 ---
@@ -47,16 +47,77 @@ reference — in CSS and WAAPI with **zero animation dependencies**.
 renders *files* at authoring time (`V3_CONTENT_OS.md` §7). If a proposal needs
 Remotion's runtime in the browser, the answer is no — that is a video player.
 
+**The escape hatches, and their conditions** *(v3.2)*. Neither is a standing
+option; each needs a specific approved interaction that the native stack cannot
+carry:
+
+- **GSAP** may be introduced later **only if** a real approved interaction cannot
+  be implemented cleanly and within the performance budget natively. "It would be
+  easier" is not that condition.
+- **Rive** may be introduced later **only for** a genuine interactive branded
+  asset — a character, an illustration that responds. Not for UI motion.
+
+Until one of those exists, the answer to "should we add an animation library?" is
+already written down, and it is no.
+
+### 0.2 The premium quality bar *(v3.2 — approved)*
+
+> **Tech-savvy · Cinematic · Tactile · Premium · Fast**
+
+Motion is part of the brand experience, not decoration. The principle that keeps
+that from becoming an excuse to animate everything:
+
+> **Every major section gets ONE memorable interaction. Everything else gets
+> restrained micro-interaction.**
+
+**The six surfaces that get their memorable moment:**
+
+| surface | the one interaction |
+|---|---|
+| **Hero** | the entrance choreography — line, photograph, chip, in sequence |
+| **What I've Been Up To** | the lead card settling in, and the rail's scroll affordance |
+| **BUILD → PLAY → LEARN → SHIP** | the spine drawing and the batons handing over |
+| **Prompt Arena** | the timer ring and the score resolving into its breakdown |
+| **Member progress** | the level ring filling |
+| **Achievement / share** | the medallion settling — once, one ring |
+
+Everywhere else: hover, focus, press, copy-confirm. Nothing more.
+
+**What "premium" excludes**, stated because the failure mode is well known:
+childish bounce · particles · coins · arcade sound-alikes · confetti · anything
+that reads as a slot machine paying out.
+
+### 0.3 The motion hierarchy *(v3.2 — approved)*
+
+Four levels. **This is the vocabulary; the five tiers in §1 are how it is
+implemented**, and they map cleanly rather than competing:
+
+| level | duration | covers | implemented by |
+|---|---|---|---|
+| **Micro** | **120–180ms** | buttons, navigation, copy / save, chips, hover, focus | Tier 1 |
+| **Standard** | **220–320ms** | cards, accordions, progress transitions, content reveals | Tiers 2 + 3 |
+| **Cinematic** | **500–900ms** | hero choreography, major storytelling transitions, the four-act progression | Tier 4 |
+| **Gamified** | sequence | score → breakdown → XP → badge | Tier 5 |
+
+**The frozen v2.x reveal charter survives this unchanged.** Its 300ms reveal and
+70ms stagger sit inside **Standard** (220–320ms) — the band was chosen to contain
+it. Nothing about the charter's numbers has moved.
+
+**Gamified is a sequence, never a chord.** Score, then breakdown, then XP, then
+badge — each waiting for the one before it, with the 2000ms ceiling from §2.6.
+Firing them together is what produces the arcade feeling the quality bar rules
+out.
+
 ---
 
 ## 1 · The five tiers
 
 | tier | name | duration | easing | what it covers |
 |---|---|---|---|---|
-| 1 | **Micro** | 100–150ms | `--atc-ease-move` | hover, press, focus ring, toggle, chevron |
+| 1 | **Micro** | **120–180ms** *(v3.2)* | `--atc-ease-move` | hover, press, focus ring, toggle, chevron |
 | 2 | **UI** | 200–300ms | `--atc-ease-enter` / `-exit` | dropdown, dialog, toast, tab, accordion, tooltip |
 | 3 | **Reveal** | 300–400ms, 70ms stagger, cap 8 | `--atc-ease-enter` | scroll-in content — **the frozen v2.x charter, unchanged** |
-| 4 | **Narrative** | 600–900ms | `--atc-ease-enter` | scroll-driven storytelling, build timelines, path draws |
+| 4 | **Narrative** | **500–900ms** *(v3.2 — "Cinematic")* | `--atc-ease-enter` | scroll-driven storytelling, build timelines, path draws |
 | 5 | **Feedback** | 400–1200ms | per sequence | XP gain, level up, badge unlock, challenge result |
 
 Tier 3 is the default. A designer reaching for Tier 4 or 5 needs a reason that is about *meaning*, not about the section feeling flat.

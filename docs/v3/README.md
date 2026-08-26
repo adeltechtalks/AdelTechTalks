@@ -13,6 +13,7 @@ Baseline: v2.x at `7bb4b45`, live and stable.
 | **00** | [**V3_DESIGN_SIGNOFF**](V3_DESIGN_SIGNOFF.md) | **what is approved, what is still pending, and the decisions taken at sign-off** |
 | **0** | [**V3_IMPLEMENTATION_MASTER_PLAN**](V3_IMPLEMENTATION_MASTER_PLAN.md) | **the six phases, sixteen PRs, file-by-file map, migration order and cutover** |
 | **0b** | [**V3_2_IA_MEDIA_PATCH**](V3_2_IA_MEDIA_PATCH.md) | **navigation naming, the homepage media layer, social video, Out in Tech, the motion-stack decision** |
+| **0c** | [**V3_CONTENT_ROUTER**](V3_CONTENT_ROUTER.md) | **the durable editorial model — five destinations, four educational topics, format as metadata, and the Gear Nests boundary** |
 | 1 | [V3.1_ARCHITECTURE_PATCH](V3.1_ARCHITECTURE_PATCH.md) | what v3.1 changes, and the security defect it corrects |
 | 2 | [V3_PRODUCT_BLUEPRINT](V3_PRODUCT_BLUEPRINT.md) | what the product becomes, the current system, and the three launch states |
 | 3 | [V3_INFORMATION_ARCHITECTURE](V3_INFORMATION_ARCHITECTURE.md) | nav, routes, the migration matrix, redirects, the four-act homepage |
@@ -50,7 +51,11 @@ Prototype source: [`prototype/`](prototype/) — the artifact's HTML plus its tw
    no history is free to name well; a route with six indexed pages is not.
    *(v3.2 §2)*
 4d. **No motion library.** CSS plus the Web Animations API, proven in the
-   prototype with zero animation dependencies. *(v3.2 §8)*
+   prototype with zero animation dependencies. GSAP and Rive have named escape
+   conditions and neither is met. *(v3.2 §8, Motion §0.1)*
+4e. **Five destinations, four educational topics, and format is not a category.**
+   Three questions classify any idea; twelve worked examples need no new pillar.
+   *(Content Router)*
 5. **Playground opens with three complete challenges and a working loop.** The
    gate is the loop — score, explanation, XP, badge, save, try another, share —
    not the count. *(Gamification §7.1)*

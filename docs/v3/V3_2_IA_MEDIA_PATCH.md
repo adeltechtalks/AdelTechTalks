@@ -1,6 +1,15 @@
 # V3.2 — IA + Media Layer Patch
 
-**Status:** planning and design only. **No production code. No migration. `main` untouched. PR #6 open and unmerged.**
+**Status:** **APPROVED**, with the final simplification applied. Planning and
+design only — **no production code, no migration, `main` untouched, PR #6 open
+and unmerged.**
+
+**Final decisions locked at sign-off:** the navigation below · Prompt Lab with
+`/prompts/` preserved · Builds at `/builds/` · Now at `/now/` · Courses inside
+Learn · Out in Tech as a content type, not a nav item · **What I've Been Up To**
+as the media-layer name. The editorial model that sits underneath all of it is
+`V3_CONTENT_ROUTER.md`, which is the durable artifact — this document is the IA
+that carries it.
 **Patches:** `V3_INFORMATION_ARCHITECTURE.md` · `V3_PRODUCT_BLUEPRINT.md` · `V3_MOTION_SYSTEM.md` · `V3_CONTENT_OS.md` · `V3_IMPLEMENTATION_MASTER_PLAN.md`
 **Baseline:** `claude/adeltechtalk-final-design-4nc4fr`. PR 1 is committed and in review; nothing in this patch changes its scope.
 
@@ -189,13 +198,21 @@ warm one. **Not locked; Adel's call.**
 Five, each with a required real artefact. **A card type with nothing behind it
 does not render** — the same publication-gate rule as everywhere else.
 
+Five, closed, and they are the same five as the Now activity types in
+`V3_CONTENT_ROUTER.md` §5 — one vocabulary, not two.
+
 | type | shows | requires | links to |
 |---|---|---|---|
 | **WATCH** | latest short / reel / video | a real published video | `/videos/[slug]`, or the platform for shorts |
 | **BUILD** | what is being built right now | a `builds` entry updated in the last 60 days | `/builds/[slug]` |
+| **EXPERIENCE** | a real-world tech experience — *Out in Tech* | a photograph Adel took | the `/now/` entry |
+| **TAKE** | something that changed, interpreted | **`adels_take` non-empty** | the `/now/` entry |
 | **TRY** | a tool actually tested | a use case or guide | the piece |
-| **EXPERIENCE** | a real-world tech experience | a photograph Adel took | the `/now/` entry |
-| **MY TAKE** | something that changed, interpreted | **`adels_take` non-empty** | the `/now/` entry |
+
+**Every card should lead deeper into the ecosystem**, not dead-end: video → the
+prompt, the build or the lesson behind it · build → its case study · experience →
+the story · tool → the workflow or the learning · news → Adel's take. A card with
+nowhere to go is a card that spent the visitor's click.
 
 **Staleness is a rendering rule, not a reminder.** A BUILD card whose entry has
 not been updated in 60 days does not render — "Now building" pointing at a
@@ -204,6 +221,10 @@ four-month-old commit is a claim the system should not be able to make.
 **Layout.** One prominent card (most recent, larger, image-led) plus four
 compact. Mixed types, most recent first. Feels like a person's week, not a grid.
 On mobile it is a horizontal rail with the frozen `rail-hint` affordance.
+
+**Not an infinite feed.** Five items, capped by design. It is a homepage
+signal that the site is alive, not a content directory — the full stream is
+`/now/`, one click away.
 
 **Volume gate.** Renders at **three** real items; below that the section is
 absent and the hero flows straight into BUILD. At launch this is the section most

@@ -1,7 +1,8 @@
 # V3_PRODUCT_BLUEPRINT
 
 **Status:** proposal, for approval. **Revised in v3.1** (§2, §7, new §8) and
-**in v3.2** (§1 — the creator dimension; see `V3_2_IA_MEDIA_PATCH.md`).
+**in v3.2** (§1 creator dimension, new §9 educational focus). The editorial
+routing model is `V3_CONTENT_ROUTER.md`.
 Nothing in this document is implemented.
 **Baseline:** v2.x at `7bb4b45`, live on `https://adeltechtalks.com`. Frozen and stable.
 **Branch:** `claude/adeltechtalk-final-design-4nc4fr` (v3 working branch, cut from `main` after the v2.x merge). `main` is untouched.
@@ -249,6 +250,38 @@ These survived two design freezes and they survive this one:
 5. **Reduced motion means static and fully visible.**
 6. **Tokens only.** No hard-coded colour or font in a component.
 7. **Nothing a client asserts is treated as proof** *(v3.1)*. XP, scores, levels, badge awards, completions and public verifications are issued by the server against records the server wrote. `V3_SECURITY_MODEL.md` §5.1.
+
+---
+
+## 9 · The educational focus — four topics, and no more *(v3.2)*
+
+**Only four. The list is closed.**
+
+1. **Prompting**
+2. **Vibe Coding** — websites, apps, software, prototypes; building through
+   conversation and direction with AI
+3. **Vibe Designing** — UI, visual design, branding, design systems, creative
+   direction through AI
+4. **AI Workflows & Automation**
+
+**Not topics, and not to be added without explicit approval:** Vibe Managing ·
+Vibe Building · Business Vibes · Vibe Everything · Vibe Selling · Vibe Research ·
+a Software pillar · an AI Tools pillar · a Gadgets pillar.
+
+**On the word "Vibe."** Vibe Coding and Vibe Designing are deliberate signature
+language and should be visible enough to do brand work. **The word stops there.**
+AI Workflows & Automation keeps its plain name; a forced "Vibe Automating" would
+cheapen the two places where the term actually means something.
+
+**"Building with AI" is not a fifth topic.** It is the story of the whole site.
+Adel builds real things publicly — Gear Nests, AdelTechTalks, apps, businesses,
+workflows, experiments — and teaches from them. When the build is the story it is
+**Builds**; the lesson pulled out of it is **Learn** plus one of the four topics.
+Same work, two pieces, no new pillar.
+
+**A tool is never a category.** The same tool lands in different destinations
+depending on the story being told about it, which is correct rather than a
+taxonomy failure — worked through in `V3_CONTENT_ROUTER.md` §6.
 
 ---
 
