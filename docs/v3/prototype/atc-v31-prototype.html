@@ -704,7 +704,7 @@ body[data-motion="reduced"] .baton p{opacity:1!important;transform:none!importan
     </div>
 
     <div class="baton" data-baton><span class="line"></span>
-      <p>Everything I learn building something becomes a challenge you can try.</p><span class="line b"></span></div>
+      <p>What I learn while building becomes something you can try.</p><span class="line b"></span></div>
 
     <div class="wrap sec" data-act="play" id="playAnchorEN">
       <div class="actrow"><span class="node"><b></b></span><span class="lbl">Play</span><span class="rule"></span><span class="n">02 / 04</span></div>
@@ -715,7 +715,7 @@ body[data-motion="reduced"] .baton p{opacity:1!important;transform:none!importan
     </div>
 
     <div class="baton" data-baton><span class="line"></span>
-      <p>Scored well? Here is the skill underneath it. Scored badly? Even more so.</p><span class="line b"></span></div>
+      <p>Play it. See what worked. Learn why.</p><span class="line b"></span></div>
 
     <div class="wrap sec" data-act="learn">
       <div class="actrow"><span class="node"><b></b></span><span class="lbl">Learn</span><span class="rule"></span><span class="n">03 / 04</span></div>
@@ -737,7 +737,7 @@ body[data-motion="reduced"] .baton p{opacity:1!important;transform:none!importan
     </div>
 
     <div class="baton" data-baton><span class="line"></span>
-      <p>And none of it counts until you have shipped something of your own.</p><span class="line b"></span></div>
+      <p>Then use it to ship something of your own.</p><span class="line b"></span></div>
 
     <div class="wrap sec" data-act="ship" style="padding-block-end:70px">
       <div class="actrow"><span class="node"><b></b></span><span class="lbl">Ship</span><span class="rule"></span><span class="n">04 / 04</span></div>
@@ -795,7 +795,7 @@ body[data-motion="reduced"] .baton p{opacity:1!important;transform:none!importan
     </div>
 
     <div class="baton" data-baton><span class="line"></span>
-      <p>أي حاجة بتعلمها وأنا ببني، بتتحوّل لتحدي تقدر تجرّبه.</p><span class="line b"></span></div>
+      <p>اللي بتعلمه وأنا ببني بيتحوّل لحاجة تقدر تجرّبها.</p><span class="line b"></span></div>
 
     <div class="wrap sec" data-act="play" id="playAnchorAR">
       <div class="actrow"><span class="node"><b></b></span><span class="lbl">Play</span><span class="rule"></span><span class="n">02 / 04</span></div>
@@ -806,7 +806,7 @@ body[data-motion="reduced"] .baton p{opacity:1!important;transform:none!importan
     </div>
 
     <div class="baton" data-baton><span class="line"></span>
-      <p>جبت نتيجة كويسة؟ أهو المهارة اللي وراها. جبت وحشة؟ يبقى أهم.</p><span class="line b"></span></div>
+      <p>العبها. شوف إيه اللي اشتغل. اعرف ليه.</p><span class="line b"></span></div>
 
     <div class="wrap sec" data-act="learn">
       <div class="actrow"><span class="node"><b></b></span><span class="lbl">Learn</span><span class="rule"></span><span class="n">03 / 04</span></div>
@@ -828,7 +828,7 @@ body[data-motion="reduced"] .baton p{opacity:1!important;transform:none!importan
     </div>
 
     <div class="baton" data-baton><span class="line"></span>
-      <p>وكل ده ما بيتحسبش غير لما تطلّع حاجة بتاعتك إنت.</p><span class="line b"></span></div>
+      <p>وبعدين استخدمه عشان تطلّع حاجة بتاعتك.</p><span class="line b"></span></div>
 
     <div class="wrap sec" data-act="ship" style="padding-block-end:70px">
       <div class="actrow"><span class="node"><b></b></span><span class="lbl">Ship</span><span class="rule"></span><span class="n">04 / 04</span></div>
@@ -851,8 +851,9 @@ body[data-motion="reduced"] .baton p{opacity:1!important;transform:none!importan
   <div class="statebar">
     <span class="pill">Dimensions <b>Clarity · Context · Constraints · Structure · Usefulness</b></span>
     <span class="pill on">Scoring is deterministic</span>
-    <span class="pill">Launch gate <b>9 challenges</b></span>
+    <span class="pill">Launch gate <b>3 complete challenges</b></span>
   </div>
+  <p class="note amber"><b>The launch gate is the loop, not a count.</b> Three excellent, genuinely playable challenges ship v3 — provided the whole loop works end to end: challenge → score → explanation → XP → badge where earned → save progress → try another → share where applicable. A ninth challenge adds content; a broken save step makes the other eight worthless. The library expands past nine immediately after launch, and nothing in the engine assumes three.</p>
   <p class="note"><b>The score is real, not a prop.</b> Type anything and the five dimensions are graded by an actual rubric running in the page — the same shape the server-side Repair scorer would have. Ask for a named audience and Context lights; give a length or a "don't" and Constraints lights; ask for sections and Structure lights. The breakdown tells you which rule you missed and why it exists.</p>
   <p class="note mint"><b>Nothing is gated before the value arrives.</b> A signed-out visitor plays, scores, sees the breakdown, and is credited XP and a badge in-session. Only <i>keeping</i> it needs an account — that is the "Save your XP and badge" moment, and it appears after the reward, never before it.</p>
 
@@ -1031,21 +1032,21 @@ const ICON={
 
 /* ── challenges: all Repair, because Repair is the format that teaches ── */
 const CH=[
-{slug:'meeting-summary',xp:25,
+{slug:'meeting-summary',xp:25,rubric:'prompting.repair.v1',
  brief:{en:'Rewrite it so a developer who missed the meeting can act on it.',
         ar:'اكتبه تاني بحيث حد ما حضرش الميتنج يقدر يتصرّف منه.'},
  weak:'Summarise this meeting.',
  flaws:{en:['No audience','No length','No output structure'],
         ar:['مفيش جمهور','مفيش طول','مفيش شكل للمخرجات']},
  subject:/\b(meeting|notes|decision|action|owner|deadline|attend)/i},
-{slug:'product-description',xp:25,
+{slug:'product-description',xp:25,rubric:'prompting.repair.v1',
  brief:{en:'Rewrite it for a stainless steel water bottle aimed at bike commuters.',
         ar:'اكتبه تاني لزجاجة مياه ستانلس موجّهة للي بيروحوا شغلهم بالعجلة.'},
  weak:'Write me a product description.',
  flaws:{en:['No product','No audience','No tone or length'],
         ar:['مفيش منتج','مفيش جمهور','مفيش نبرة ولا طول']},
  subject:/\b(bottle|product|commuter|cyclist|steel|lid|leak|rider)/i},
-{slug:'bug-report',xp:25,
+{slug:'bug-report',xp:25,rubric:'prompting.repair.v1',
  brief:{en:'Rewrite it so the output is an issue a developer can reproduce.',
         ar:'اكتبه تاني بحيث المخرجات تبقى مشكلة المطوّر يقدر يعيدها.'},
  weak:'Fix this bug report.',
@@ -1053,63 +1054,91 @@ const CH=[
         ar:['مفيش شكل للمخرجات','مفيش قاعدة للمعلومة الناقصة','مفيش حاجة محميّة من إعادة الصياغة']},
  subject:/\b(bug|issue|report|reproduc|step|error|environment|expected|actual)/i}];
 
-/* ── the scorer ──────────────────────────────────────────────────────────
-   Deterministic and explainable — the same shape a server-side Repair
-   scorer would have. Five dimensions, 20 points each, and every point is
-   attached to a rule the breakdown can name. */
-const DIMS=[
- {k:'clarity',en:'Clarity',ar:'الوضوح'},
- {k:'context',en:'Context',ar:'السياق'},
- {k:'constraints',en:'Constraints',ar:'القيود'},
- {k:'structure',en:'Structure',ar:'البنية'},
- {k:'usefulness',en:'Usefulness',ar:'الفايدة'}];
+/* ── the rubric, as CONFIG ───────────────────────────────────────────────
+   §4 of the sign-off: the dimensions are visible to the learner because the
+   breakdown is teaching material — but the weights and rules must not live in
+   a presentation component. A rubric is a versioned data object. A challenge
+   names one; the scorer reads it; the UI renders whatever it is handed.
 
-const RX={
- verb:/^\s*(rewrite|write|summari[sz]e|turn|convert|produce|create|generate|list|extract|draft|reformat|rephrase|output)\b/i,
- audience:/\b(for a|for the|for an|audience|reader|developer|engineer|client|customer|team|manager|beginner|commuter|so that|because|who )/i,
- count:/\b\d+\s*(word|words|sentence|sentences|bullet|bullets|line|lines|character|characters|point|points|item|items|section|sections)\b/i,
- forbid:/\b(no |don'?t|do not|avoid|never|without|max|maximum|at most|under |fewer than|only)\b/i,
- shape:/\b(section|sections|bullet|bullets|numbered|heading|headings|table|json|markdown|format|output|list|steps|columns|fields|template)\b/i,
- parts:/(:\s*\S)|(\b\w+\s*,\s*\w+\s*,\s*\w+)/,
- missing:/\b(not stated|unknown|missing|don'?t guess|do not guess|leave blank|skip|ask|n\/a|if (there|the|it|any|no|nothing))\b/i,
- goal:/\b(reproduc|actionable|act on|so (they|i|we|he|she) can|verbatim|exact wording|keep the|preserve|unchanged)\b/i};
+   In production this object is authored in front matter alongside the
+   challenge (V3_IMPLEMENTATION_PLAN §"Content model") and the identical
+   evaluator runs server-side, which is what makes the persisted score
+   authoritative. Nothing below is specific to prompting except its contents. */
+const RUBRICS={
+ 'prompting.repair.v1':{
+  version:'v1', total:100,
+  dimensions:[
+   {k:'clarity',en:'Clarity',ar:'الوضوح',max:20,rules:[
+     {id:'length-floor',pts:8,en:'twelve words or more — enough to carry an instruction',
+      ar:'اتناشر كلمة أو أكتر — كفاية تشيل تعليمة'},
+     {id:'length-ceiling',pts:6,en:'under 120 words — long prompts bury the instruction',
+      ar:'أقل من ١٢٠ كلمة — الطول بيدفن التعليمة'},
+     {id:'opens-with-verb',pts:6,en:'opens with the action you want',
+      ar:'بيبدأ بالفعل اللي إنت عايزه'}]},
+   {k:'context',en:'Context',ar:'السياق',max:20,rules:[
+     {id:'names-audience',pts:12,en:'names who it is for, or why',ar:'بيقول هو لمين، أو ليه'},
+     {id:'names-subject',pts:8,en:'names the actual subject rather than "this"',
+      ar:'بيسمّي الموضوع نفسه مش «ده»'}]},
+   {k:'constraints',en:'Constraints',ar:'القيود',max:20,rules:[
+     {id:'countable-limit',pts:10,en:'gives a countable limit',ar:'بيدّي حد رقمي'},
+     {id:'rules-out',pts:10,en:'rules something out',ar:'بيمنع حاجة'}]},
+   {k:'structure',en:'Structure',ar:'البنية',max:20,rules:[
+     {id:'names-shape',pts:12,en:'names the shape of the output',ar:'بيحدّد شكل المخرجات'},
+     {id:'lists-parts',pts:8,en:'lists the parts, not just the format',
+      ar:'بيعدّد الأجزاء مش الشكل بس'}]},
+   {k:'usefulness',en:'Usefulness',ar:'الفايدة',max:20,rules:[
+     {id:'missing-rule',pts:10,en:'says what to do when information is missing',
+      ar:'بيقول تعمل إيه لما المعلومة تنقص'},
+     {id:'names-outcome',pts:10,
+      en:'names the outcome, or protects something from paraphrase',
+      ar:'بيسمّي النتيجة، أو بيحمي حاجة من إعادة الصياغة'}]}],
+  verdicts:[{min:90,en:'That would work on the first try.',ar:'ده هيشتغل من أول مرة.'},
+            {min:70,en:'Usable. Two rules short of reliable.',ar:'قابل للاستخدام. ناقصه قاعدتين.'},
+            {min:45,en:'Better. It will still drift between runs.',ar:'أحسن. لسه هيختلف من مرة للتانية.'},
+            {min:0, en:'Still guessing on your behalf.',ar:'لسه بيخمّن بدالك.'}]}};
+
+/* The rule implementations, keyed by rule id. Separate from the rubric on
+   purpose: the rubric decides WHICH rules apply and what they are worth; this
+   table decides HOW each one is measured. A new track adds rules here and a
+   new rubric above without touching a single component. */
+const RULES={
+ 'length-floor':(t)=>t.split(/\s+/).filter(Boolean).length>=12,
+ 'length-ceiling':(t)=>{const w=t.split(/\s+/).filter(Boolean).length;return w>0&&w<=120;},
+ 'opens-with-verb':(t)=>/^\s*(rewrite|write|summari[sz]e|turn|convert|produce|create|generate|list|extract|draft|reformat|rephrase|output)\b/i.test(t),
+ 'names-audience':(t)=>/\b(for a|for the|for an|audience|reader|developer|engineer|client|customer|team|manager|beginner|commuter|so that|because|who )/i.test(t),
+ 'names-subject':(t,ch)=>ch.subject.test(t),
+ 'countable-limit':(t)=>/\b\d+\s*(word|words|sentence|sentences|bullet|bullets|line|lines|character|characters|point|points|item|items|section|sections)\b/i.test(t),
+ 'rules-out':(t)=>/\b(no |don'?t|do not|avoid|never|without|max|maximum|at most|under |fewer than|only)\b/i.test(t),
+ 'names-shape':(t)=>/\b(section|sections|bullet|bullets|numbered|heading|headings|table|json|markdown|format|output|list|steps|columns|fields|template)\b/i.test(t),
+ 'lists-parts':(t)=>/(:\s*\S)|(\b\w+\s*,\s*\w+\s*,\s*\w+)/.test(t),
+ 'missing-rule':(t)=>/\b(not stated|unknown|missing|don'?t guess|do not guess|leave blank|skip|ask|n\/a|if (there|the|it|any|no|nothing))\b/i.test(t),
+ 'names-outcome':(t)=>/\b(reproduc|actionable|act on|so (they|i|we|he|she) can|verbatim|exact wording|keep the|preserve|unchanged)\b/i.test(t)};
+
+const rubricFor=ch=>RUBRICS[ch.rubric];
+const DIMS_OF=ch=>rubricFor(ch).dimensions;
 
 function scorePrompt(text, ch){
-  const t=(text||'').trim(), w=t? t.split(/\s+/).length : 0;
-  const hit={
-    clarity:[ [w>=12, 8, 'twelve words or more — enough to carry an instruction'],
-              [w>0 && w<=120, 6, 'under 120 words — long prompts bury the instruction'],
-              [RX.verb.test(t), 6, 'opens with the action you want'] ],
-    context:[ [RX.audience.test(t), 12, 'names who it is for, or why'],
-              [ch.subject.test(t), 8, 'names the actual subject rather than "this"'] ],
-    constraints:[ [RX.count.test(t), 10, 'gives a countable limit'],
-                  [RX.forbid.test(t), 10, 'rules something out'] ],
-    structure:[ [RX.shape.test(t), 12, 'names the shape of the output'],
-                [RX.parts.test(t), 8, 'lists the parts, not just the format'] ],
-    usefulness:[ [RX.missing.test(t), 10, 'says what to do when information is missing'],
-                 [RX.goal.test(t), 10, 'names the outcome, or protects something from paraphrase'] ]};
-  const out={}; let total=0;
-  for(const d of DIMS){
-    const rules=hit[d.k]; let v=0; const met=[], lost=[];
-    for(const [ok,pts,why] of rules){ if(ok){v+=pts;met.push(why);} else lost.push(why); }
-    v=Math.min(20,v); total+=v;
-    out[d.k]={v,met,lost};
+  const t=(text||'').trim(), R=rubricFor(ch), out={}; let total=0;
+  for(const d of R.dimensions){
+    let v=0; const met=[], lost=[];
+    for(const r of d.rules){
+      const fn=RULES[r.id];
+      if(fn && fn(t,ch)){ v+=r.pts; met.push(r); } else lost.push(r);
+    }
+    v=Math.min(d.max,v); total+=v;
+    out[d.k]={v,max:d.max,met,lost};
   }
-  return {total:Math.min(100,total),dims:out};
+  return {total:Math.min(R.total,total),dims:out,rubric:ch.rubric,version:R.version};
 }
 function liveHints(text, ch){
-  const t=(text||'').trim();
-  return {clarity:t.split(/\s+/).filter(Boolean).length>=12 && RX.verb.test(t),
-          context:RX.audience.test(t)||ch.subject.test(t),
-          constraints:RX.count.test(t)||RX.forbid.test(t),
-          structure:RX.shape.test(t),
-          usefulness:RX.missing.test(t)||RX.goal.test(t)};
+  const t=(text||'').trim(), h={};
+  for(const d of rubricFor(ch).dimensions)
+    h[d.k]=d.rules.some(r=>RULES[r.id]&&RULES[r.id](t,ch));
+  return h;
 }
-function verdict(n){
-  if(AR()) return n>=90?'ده هيشتغل من أول مرة.':n>=70?'قابل للاستخدام. ناقصه قاعدتين عشان يبقى مضمون.':
-    n>=45?'أحسن. لسه هيختلف من مرة للتانية.':'لسه بيخمّن بدالك.';
-  return n>=90?'That would work on the first try.':n>=70?'Usable. Two rules short of reliable.':
-    n>=45?'Better. It will still drift between runs.':'Still guessing on your behalf.';
+function verdict(n, ch){
+  const v=rubricFor(ch).verdicts.find(x=>n>=x.min);
+  return AR()?v.ar:v.en;
 }
 const T=(en,ar)=>AR()?ar:en;
 
@@ -1147,7 +1176,7 @@ function mountArena(el, idx, mode){
   }
   function hintsHTML(){
     const h=liveHints(st.text,ch);
-    return '<div class="hints">'+DIMS.map(d=>
+    return '<div class="hints">'+DIMS_OF(ch).map(d=>
       '<span class="hint'+(h[d.k]?' met':'')+'"><i></i>'+esc(d[AR()?'ar':'en'])+'</span>').join('')+
       '<span class="hintnote">'+T('live hints — the score is computed on submit',
         'تلميحات لحظية — النتيجة بتتحسب عند الإرسال')+'</span></div>';
@@ -1176,18 +1205,18 @@ function mountArena(el, idx, mode){
 
   function scoredView(){
     const r=st.res;
-    const dimRows=DIMS.map(d=>{
-      const c=r.dims[d.k], full=c.v>=20;
-      const why = full ? T('Both rules met.','القاعدتين اتحققوا.')
-                       : esc(T('Missing: ','ناقص: ')+c.lost[0]);
+    const dimRows=DIMS_OF(ch).map(d=>{
+      const c=r.dims[d.k], full=c.v>=c.max;
+      const why = full ? T('Every rule met.','كل القواعد اتحققت.')
+                       : esc(T('Missing: ','ناقص: ')+c.lost[0][AR()?'ar':'en']);
       return '<div class="dim'+(c.v===0?' miss':'')+'"><span>'+esc(d[AR()?'ar':'en'])+'</span>'+
-        '<span class="bar"><i data-w="'+(c.v/20*100)+'"></i></span>'+
-        '<span class="v">'+c.v+' / 20</span><span class="why">'+why+'</span></div>';
+        '<span class="bar"><i data-w="'+(c.v/c.max*100)+'"></i></span>'+
+        '<span class="v">'+c.v+' / '+c.max+'</span><span class="why">'+why+'</span></div>';
     }).join('');
     return '<div class="scoreblk"><div>'+
         '<div class="bigscore" id="fig">0<small>/100</small></div>'+
         '<span class="over" style="color:#667085">'+T('Server-scored','متحسبة على السيرفر')+'</span></div>'+
-      '<div><div class="verdict d">'+esc(verdict(r.total))+'</div>'+
+      '<div><div class="verdict d">'+esc(verdict(r.total,ch))+'</div>'+
         '<div class="dims">'+dimRows+'</div></div></div>'+
       gamBlock()+
       '<div id="badgeSlot"></div>'+
@@ -1261,11 +1290,7 @@ function mountArena(el, idx, mode){
       const gain=ch.xp+(st.res.total>=90?25:0);
       msg+=gain+T(' XP awarded. ',' XP اتضافوا. ');
       setTimeout(()=>awardXP(gain), reduced()?0:700);
-      const newBadges=[];
-      if(st.res.total>=70 && !S.badges['prompt-repairer']){ S.badges['prompt-repairer']=true;
-        newBadges.push(BADGES['prompt-repairer']); }
-      if(Object.keys(S.done).length>=3 && !S.badges['prompt-builder']){ S.badges['prompt-builder']=true;
-        newBadges.push(BADGES['prompt-builder']); }
+      const newBadges=evaluateBadges();
       if(newBadges.length){ msg+=T('Badge earned: ','كسبت ')+newBadges[0].name[AR()?'ar':'en']+'. ';
         setTimeout(()=>unlockBadge(newBadges[0]), reduced()?0:1500); }
     }
@@ -1323,7 +1348,7 @@ function mountArena(el, idx, mode){
     if(ta) ta.addEventListener('input',()=>{ st.text=ta.value;
       const box=$('.hints',el);
       if(box){ const h=liveHints(st.text,ch);
-        $$('.hint',box).forEach((n,i)=>n.classList.toggle('met',h[DIMS[i].k])); }
+        $$('.hint',box).forEach((n,i)=>n.classList.toggle('met',h[DIMS_OF(ch)[i].k])); }
     });
     const s=$('#start',el); if(s) s.addEventListener('click',start);
     const g=$('#go',el); if(g) g.addEventListener('click',submit);
@@ -1352,15 +1377,23 @@ function buildArena(){
   if(c) c.textContent='Challenge '+(S.arenaIdx+1)+' of '+CH.length;
 }
 
+/* §5: criteria are machine-readable data, never a condition written into UI
+   logic. Changing the qualifying score from 70 to 75, or three challenges to
+   five, is one number in this object — the same shape the `badges.requirement`
+   jsonb column holds in production, read by one server-side evaluator. */
 const BADGES={
  'prompt-repairer':{icon:'hammer',name:{en:'Prompt Repairer',ar:'مُصلّح Prompts'},
+   requirement:{type:'challenge_score',skill:'prompting',min:70},
    req:{en:'Repair a weak prompt to 70 or better.',ar:'صلّح prompt ضعيف لـ ٧٠ أو أكتر.'}},
  'prompt-builder':{icon:'award',name:{en:'Prompt Builder',ar:'باني Prompts'},
+   requirement:{type:'challenge_count',skill:'prompting',min:3},
    req:{en:'Complete three prompting challenges.',ar:'خلّص تلات تحديات prompting.'}},
  'prompt-architect':{icon:'target',name:{en:'Prompt Architect',ar:'مهندس Prompts'},
+   requirement:{type:'challenge_score',format:'create',min:90,requires:'model_assisted'},
    req:{en:'Score 90+ on a Create challenge. Opens in Phase 4.',
         ar:'٩٠+ في تحدي Create. بيفتح في المرحلة الرابعة.'},locked:true},
  'website-builder':{icon:'book',name:{en:'Website Builder',ar:'باني مواقع'},
+   requirement:{type:'course_completed',course:'launch-a-website-with-ai'},
    req:{en:'Complete Launch a Website with AI.',ar:'خلّص كورس بناء موقع بالـ AI.'},locked:true}};
 
 /* ── prompts I actually use ─────────────────────────────────────────── */
@@ -1398,6 +1431,24 @@ const WHATSNEW=[
   matters:'العقدة اتنقلت من «هيعرف يكتب الكود؟» لـ«هتعرف توصف النتيجة بدقة؟». دي مشكلة <span class="ltr">prompting</span> مش مشكلة كود.',
   take:'إديتها مهمتين من بتوعي. الواضحة خلصت. المبهمة طلّعت أربعين دقيقة شغل غلط بثقة، وده النتيجة الأنفع.',
   next:{label:'جرّب تحدي الإصلاح',to:'arena'}}}];
+
+/* One evaluator, driven by the requirement objects above. It never asks
+   "which badge is this?" — it asks what the requirement says. */
+function evaluateBadges(){
+  const scores=Object.values(S.done);
+  const earned=[];
+  for(const [key,b] of Object.entries(BADGES)){
+    if(S.badges[key]||!b.requirement) continue;
+    const r=b.requirement;
+    if(r.requires) continue;                       // gated on a capability that does not exist yet
+    let ok=false;
+    if(r.type==='challenge_score') ok=scores.some(v=>v>=r.min);
+    else if(r.type==='challenge_count') ok=scores.length>=r.min;
+    else if(r.type==='course_completed') ok=false; // no course completions in this prototype
+    if(ok){ S.badges[key]=true; earned.push(b); }
+  }
+  return earned;
+}
 
 /* ── renderers ───────────────────────────────────────────────────────── */
 function renderPrompts(){

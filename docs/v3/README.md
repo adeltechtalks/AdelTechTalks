@@ -1,7 +1,8 @@
 # AdelTechTalks v3 — architecture set
 
 **Status: PROPOSAL. Nothing here is implemented. `main` is untouched and production is unchanged.**
-**Revision: v3.1.** Start with the patch — it records what changed from v3 and why.
+**Revision: v3.1, design phase CLOSED.** Start with the sign-off record, then the
+implementation plan. The patch below records what changed from v3 and why.
 
 Baseline: v2.x at `7bb4b45`, live and stable.
 
@@ -9,21 +10,25 @@ Baseline: v2.x at `7bb4b45`, live and stable.
 
 | # | document | answers |
 |---|---|---|
-| **0** | [**V3.1_ARCHITECTURE_PATCH**](V3.1_ARCHITECTURE_PATCH.md) | **what v3.1 changes, and the security defect it corrects** |
-| 1 | [V3_PRODUCT_BLUEPRINT](V3_PRODUCT_BLUEPRINT.md) | what the product becomes, the current system, and the three launch states |
-| 2 | [V3_INFORMATION_ARCHITECTURE](V3_INFORMATION_ARCHITECTURE.md) | nav, routes, the migration matrix, redirects, the four-act homepage |
-| 3 | [V3_DESIGN_SYSTEM](V3_DESIGN_SYSTEM.md) | foundations, component families, Figma library, template inventory |
-| 4 | [V3_MOTION_SYSTEM](V3_MOTION_SYSTEM.md) | five tiers, the four-act identity, the interactive state machine, reduced motion |
-| 5 | [V3_DATA_MODEL](V3_DATA_MODEL.md) | the schema, the `badges` collision, event-sourced XP, migrations, legacy retirement |
-| 6 | [V3_API_SURFACE](V3_API_SURFACE.md) | **every server endpoint, what it refuses, what it proves before it writes** |
-| 7 | [V3_COMMERCE_AND_ENTITLEMENTS](V3_COMMERCE_AND_ENTITLEMENTS.md) | Stripe, webhooks, the one entitlement table, secret handling |
-| 8 | [V3_SECURITY_MODEL](V3_SECURITY_MODEL.md) | server sessions, the RLS matrix, the policy test, §5.1 |
-| 9 | [V3_GAMIFICATION](V3_GAMIFICATION.md) | XP, levels, badges, the achievement loop, Prompt Arena |
-| 10 | [V3_CONTENT_OS](V3_CONTENT_OS.md) | the internal content pipeline and its output schema |
-| 11 | [V3_CANVA_PRODUCTION_SYSTEM](V3_CANVA_PRODUCTION_SYSTEM.md) | Figma as source of truth, Canva as the publishing surface |
-| 12 | [V3_IMPLEMENTATION_PLAN](V3_IMPLEMENTATION_PLAN.md) | runtime, component audit, phases, risks, dependencies, QA |
+| **00** | [**V3_DESIGN_SIGNOFF**](V3_DESIGN_SIGNOFF.md) | **what is approved, what is still pending, and the decisions taken at sign-off** |
+| **0** | [**V3_IMPLEMENTATION_MASTER_PLAN**](V3_IMPLEMENTATION_MASTER_PLAN.md) | **the six phases, sixteen PRs, file-by-file map, migration order and cutover** |
+| 1 | [V3.1_ARCHITECTURE_PATCH](V3.1_ARCHITECTURE_PATCH.md) | what v3.1 changes, and the security defect it corrects |
+| 2 | [V3_PRODUCT_BLUEPRINT](V3_PRODUCT_BLUEPRINT.md) | what the product becomes, the current system, and the three launch states |
+| 3 | [V3_INFORMATION_ARCHITECTURE](V3_INFORMATION_ARCHITECTURE.md) | nav, routes, the migration matrix, redirects, the four-act homepage |
+| 4 | [V3_DESIGN_SYSTEM](V3_DESIGN_SYSTEM.md) | foundations, component families, Figma library, template inventory |
+| 5 | [V3_MOTION_SYSTEM](V3_MOTION_SYSTEM.md) | five tiers, the four-act identity, the interactive state machine, reduced motion |
+| 6 | [V3_DATA_MODEL](V3_DATA_MODEL.md) | the schema, the `badges` collision, event-sourced XP, migrations, legacy retirement |
+| 7 | [V3_API_SURFACE](V3_API_SURFACE.md) | **every server endpoint, what it refuses, what it proves before it writes** |
+| 8 | [V3_COMMERCE_AND_ENTITLEMENTS](V3_COMMERCE_AND_ENTITLEMENTS.md) | Stripe, webhooks, the one entitlement table, secret handling |
+| 9 | [V3_SECURITY_MODEL](V3_SECURITY_MODEL.md) | server sessions, the RLS matrix, the policy test, §5.1 |
+| 10 | [V3_GAMIFICATION](V3_GAMIFICATION.md) | XP, levels, badges, the achievement loop, Prompt Arena |
+| 11 | [V3_CONTENT_OS](V3_CONTENT_OS.md) | the internal content pipeline and its output schema |
+| 12 | [V3_CANVA_PRODUCTION_SYSTEM](V3_CANVA_PRODUCTION_SYSTEM.md) | Figma as source of truth, Canva as the publishing surface |
+| 13 | [V3_IMPLEMENTATION_PLAN](V3_IMPLEMENTATION_PLAN.md) | runtime, component audit, phases, risks, dependencies, QA |
 
 Supporting: [`site/supabase/v3/`](../../site/supabase/v3/) — seven proposed migrations, none run.
+Design artifact: https://claude.ai/code/artifact/becad32a-445e-493b-a685-9a9eee36ca4b
+Prototype source: [`prototype/`](prototype/) — the artifact's HTML plus its two QA suites.
 
 ## The decisions worth arguing about first
 
