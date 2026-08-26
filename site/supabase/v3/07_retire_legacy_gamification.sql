@@ -46,12 +46,16 @@
 alter table public.playground_track_badges enable row level security;
 drop policy if exists "own badges"          on public.playground_track_badges;
 drop policy if exists "own track badges"    on public.playground_track_badges;
+-- and the read policy this migration itself creates, so a re-run replaces it
+-- rather than failing on "policy already exists".
+drop policy if exists "own track badges read" on public.playground_track_badges;
 create policy "own track badges read" on public.playground_track_badges
   for select to authenticated using (auth.uid() = user_id);
 revoke insert, update, delete on public.playground_track_badges from anon, authenticated;
 
 alter table public.progress enable row level security;
 drop policy if exists "own progress" on public.progress;
+drop policy if exists "own progress read" on public.progress;
 create policy "own progress read" on public.progress
   for select to authenticated using (auth.uid() = user_id);
 revoke insert, update, delete on public.progress from anon, authenticated;

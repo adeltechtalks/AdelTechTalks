@@ -18,7 +18,39 @@
 -- now costs one migration. Doing it after Playground grows costs a rename under
 -- live traffic.
 
-alter table if exists public.badges rename to playground_track_badges;
+-- The rename, guarded on BOTH sides.
+--
+-- `alter table if exists` is NOT sufficient here and that is the whole point of
+-- this block. After this migration has run once, `public.badges` exists again —
+-- as the new catalogue created below. A bare `if exists` rename would therefore
+-- find a table called `badges` on a re-run and rename the CATALOGUE to
+-- `playground_track_badges`, destroying the wrong table's identity and taking
+-- `user_badges.badge_key` references with it.
+--
+-- So the rename fires only when the source is still the legacy table AND the
+-- target does not yet exist. Once `playground_track_badges` is present the
+-- rename is skipped, whatever `public.badges` happens to be by then.
+do $$
+begin
+  if to_regclass('public.playground_track_badges') is null
+     and to_regclass('public.badges') is not null then
+    -- The legacy table is identified by its shape, not just its name: the v2.x
+    -- table is keyed (user_id, track_slug) and has no `key` column. The
+    -- catalogue created later in this file does have one. If a `badges` table
+    -- is present that does not look like the legacy one, do not touch it.
+    if exists (
+      select 1 from information_schema.columns
+      where table_schema = 'public' and table_name = 'badges'
+        and column_name = 'track_slug'
+    ) and not exists (
+      select 1 from information_schema.columns
+      where table_schema = 'public' and table_name = 'badges'
+        and column_name = 'key'
+    ) then
+      alter table public.badges rename to playground_track_badges;
+    end if;
+  end if;
+end $$;
 
 -- The rename carries the policy but not its name's meaning; restate it.
 --

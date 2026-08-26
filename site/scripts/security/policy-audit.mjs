@@ -38,7 +38,11 @@ function sqlFiles(dir, out = []) {
   if (!existsSync(dir)) return out;
   for (const name of readdirSync(dir, { withFileTypes: true })) {
     const full = join(dir, name.name);
-    if (name.isDirectory()) sqlFiles(full, out);
+    /* `testdata/` holds fixtures that deliberately recreate the OLD schema so
+       the migrations have something to migrate. Auditing them would report the
+       v2.x policies as if they were live and would make the fixture's shape a
+       security finding — so scaffolding is skipped, not accepted. */
+    if (name.isDirectory()) { if (name.name !== 'testdata') sqlFiles(full, out); }
     else if (name.name.endsWith('.sql')) out.push(full);
   }
   return out;

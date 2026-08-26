@@ -1,5 +1,12 @@
 # V3_DATA_MODEL
 
+> **Scope mapping.** GitHub **PR #8** delivers **Implementation Master Plan PR 5**
+> scope — the v3 database foundation and migrations. Earlier in the sequence a
+> numbering drift crept in (this work was called "PR 3" for several turns).
+> Historical numbering is **not** repaired. From here on, implementation is
+> tracked **by scope first and GitHub PR number second**; where the two disagree,
+> the scope name is authoritative.
+
 **Status:** proposal. **Revised in v3.1** — §2.2, §2.3, §2.5, §3 and the new §5.
 No migration in this document has been applied. SQL drafts live in `supabase/v3/`.
 

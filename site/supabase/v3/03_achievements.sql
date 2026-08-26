@@ -126,6 +126,22 @@ drop policy if exists "own verification update" on public.achievement_verificati
 -- table grants say no.
 revoke insert, update, delete on public.achievement_verifications from anon, authenticated;
 
+-- The read grant is stated EXPLICITLY rather than inherited.
+--
+-- Supabase's default privileges grant every role full access to new tables in
+-- `public`, which is why RLS is the protection here and why the revoke above is
+-- needed at all. That default would also supply the SELECT this table needs —
+-- but relying on it would make a public, server-rendered page that LinkedIn
+-- crawls depend on a platform default nobody states. If those defaults are ever
+-- tightened, /badge/<id> goes blank and nothing in this file explains why.
+--
+-- The policy above decides WHICH rows are visible (revoked_at is null). This
+-- grant decides that the roles may read the table at all. Both are required:
+-- with `security_invoker = true`, the `shares` compatibility view created in
+-- step 4 executes as the caller, so `anon` needs this grant on the BASE table,
+-- not merely on the view.
+grant select on public.achievement_verifications to anon, authenticated;
+
 -- ---- step 2: carry every existing share across, id and all ------------------
 -- The id is preserved so every posted /badge/<id> URL resolves to the same row.
 -- Runs as the migration author (service role), which is why it is unaffected by

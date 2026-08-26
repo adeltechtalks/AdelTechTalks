@@ -62,6 +62,7 @@ create table if not exists public.lesson_progress (
 );
 alter table public.lesson_progress enable row level security;
 drop policy if exists "own lesson progress" on public.lesson_progress;
+drop policy if exists "own lesson progress read" on public.lesson_progress;
 create policy "own lesson progress read" on public.lesson_progress
   for select to authenticated using (auth.uid() = user_id);
 revoke insert, update, delete on public.lesson_progress from anon, authenticated;

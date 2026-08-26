@@ -23,11 +23,43 @@ against a branch database first.
 
 - Additive or a rename with a compatibility view. **Nothing that holds live rows
   is dropped.**
-- Every statement is `if not exists` / `or replace`, so running a file twice is
-  a no-op.
+- **Running the whole set twice is a no-op, and this is tested rather than
+  asserted** — see `verify-migrations.sh` below. That rule used to be written
+  here as an aspiration and was not true: the first time it was actually
+  checked, three files failed on a re-run. Every `create policy` is now preceded
+  by `drop policy if exists` for *the same name*, and 02's rename is guarded on
+  both source and target state.
+- **Grants are stated, not inherited.** Supabase grants every role full access to
+  new tables in `public`, which is why RLS is the protection here. Where a role
+  genuinely needs a privilege — `anon` reading `achievement_verifications` so
+  `/badge/<id>` renders — the grant is written down, so the page does not depend
+  on a platform default nobody stated.
 - RLS is enabled on every table that Postgres exposes, in the same migration
   that creates the table — never "we'll add policies later".
 - Every file states its rollback at the top.
+
+## Verifying, before anything touches a real database
+
+```bash
+./verify-migrations.sh          # needs a local PostgreSQL 16; touches nothing remote
+```
+
+It stands up a throwaway database, reproduces the production schema **including
+Supabase's default privileges**, seeds it with production-shaped data — 10
+`progress`, 3 `badges`, 1 `shares` under the real live id, 1 `subscribers` —
+then runs the full set **twice** and asserts:
+
+- both runs succeed and leave identical row counts
+- the legacy rows are preserved, not duplicated
+- the new `badges` catalogue is never renamed by a re-run
+- the share id is unchanged and `/badge/<id>` still resolves **as `anon`**
+- `progress` is frozen: its owner can read it, nobody can write it
+- after the step-4 cutover, `shares` is a view with a byte-identical column set
+  and the badge URL still resolves
+
+Reproducing the default privileges is what makes the test meaningful. A run
+without them gives false failures — it reports the badge page as broken when it
+is not.
 
 ## The v3.1 rule, added after review
 
@@ -44,6 +76,12 @@ which is a bookmark and awards nothing. `subscribers` keeps its anon insert,
 unchanged from v2.x.
 
 ## Order and coupling
+
+**Applying 02 + 07 stops the live v2.x Playground from writing.** That is not a
+prediction; it is what the harness observes. After 07, `insert into progress`
+and `insert into playground_track_badges` are refused for `authenticated`.
+Reads and `/badge/<id>` are unaffected. So the write shims must ship in the same
+release, or the Playground silently stops recording progress.
 
 `02` and `07` **ship in the same deploy, in that order.** 02 leaves a transitional
 write policy on `playground_track_badges` because the live v2.x Playground is
