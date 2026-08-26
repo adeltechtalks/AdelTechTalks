@@ -1,0 +1,26 @@
+{
+  "//": "A finding listed here is one someone has looked at and decided to live with, for a stated reason. Anything NOT listed fails the build. Removing an entry is how you re-open a question; adding one is a reviewable diff.",
+  "accepted": [
+    {
+      "id": "public-select-exposes-identifier",
+      "table": "shares",
+      "reason": "Deliberate public projection: /badge/[id] is server-rendered for LinkedIn's crawler, which does not run JavaScript, so the row must be readable by anon. The row holds no email, no progress and no attempt data. It DOES expose user_id, which is a real if minor leak of an internal identifier — the page needs only display_name, track_slug and earned_at. Narrowing it is tracked as a v3 change (see docs/v3/V3_DATA_MODEL.md): achievement_verifications inherits the same shape and should expose the public columns through a view or column-level grants rather than the whole row. Not changed here because PR 2 is guardrails only and this is a live production policy.",
+      "accepted_at": "PR 2",
+      "revisit": "v3 Phase 0, with migration 03"
+    },
+    {
+      "id": "broad-for-all",
+      "table": "progress",
+      "reason": "FOR ALL to authenticated with auth.uid() = user_id on both USING and WITH CHECK. Correct for v2.x, where a progress row records which Playground steps someone ticked and confers nothing. It is client-writable, which v3 removes: migration 07 makes it select-only once the server-mediated write path ships. Accepted until then rather than changed under a guardrails PR.",
+      "accepted_at": "PR 2",
+      "revisit": "v3 Phase 0, migration 07 stage 1"
+    },
+    {
+      "id": "broad-for-all",
+      "table": "badges",
+      "reason": "Same shape as progress, and the same v3 disposition. Worth stating the current exposure honestly: a signed-in user can insert their own badges row and then insert a matching shares row, so a v2.x track badge is self-assertable. That is acceptable today because a Playground track badge asserts only 'I clicked through a quiz'. It stops being acceptable the moment a badge means a server-graded score, which is exactly why v3.1 made achievement publishing server-authoritative and why migration 07 retires this table's write path.",
+      "accepted_at": "PR 2",
+      "revisit": "v3 Phase 0, migrations 02 + 07"
+    }
+  ]
+}

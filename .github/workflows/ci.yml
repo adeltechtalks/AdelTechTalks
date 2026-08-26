@@ -1,0 +1,76 @@
+# =============================================================================
+# CI — build, QA, and the security guardrails
+# =============================================================================
+# This is the repository's first workflow. Deployment is NOT here and must not
+# move here: Cloudflare deploys from its own Git integration on push to main,
+# and duplicating that in Actions would give the site two deployers.
+#
+# What this does is fail a pull request before a secret, a broken RLS policy or
+# a regression reaches that integration.
+# =============================================================================
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+defaults:
+  run:
+    working-directory: site
+
+jobs:
+  build-and-qa:
+    name: Build + QA
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Static QA sweep
+        run: npm run qa
+
+      # The value that actually protects visitors: whatever the source says,
+      # nothing privileged may reach what the browser downloads.
+      - name: Secret scan — built client output
+        run: npm run security:dist
+
+  security:
+    name: Security guardrails
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # secret-scan reads the git file list
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+
+      # Proves every rule still fires before trusting a clean result.
+      - name: Secret scan — self-test then source
+        run: npm run security:secrets
+
+      - name: Supabase policy audit
+        run: npm run security:policy
+
+      # Reaches the live database with the public anon key. Skips cleanly, and
+      # visibly, when it cannot connect — a connectivity failure is never
+      # reported as a security pass.
+      - name: RLS check (live)
+        run: npm run security:rls
+        env:
+          RLS_TEST_EMAIL_A: ${{ secrets.RLS_TEST_EMAIL_A }}
+          RLS_TEST_PASSWORD_A: ${{ secrets.RLS_TEST_PASSWORD_A }}
+          RLS_TEST_EMAIL_B: ${{ secrets.RLS_TEST_EMAIL_B }}
+          RLS_TEST_PASSWORD_B: ${{ secrets.RLS_TEST_PASSWORD_B }}
