@@ -2,7 +2,8 @@
 
 **Status:** proposal. **Revised in v3.1** — new §2.5 (the four-act identity) and
 §2.6 (the Playground and achievement sequences, specified as states rather than
-as a list of effects).
+as a list of effects). **Revised in v3.2** — new §0.1 records the library
+decision: none.
 **Relationship to the frozen v2.x charter:** the charter is not replaced. Its numbers stay exactly as they are and become **Tier 3** of a five-tier system. v3 adds tiers above and below it, because a platform with challenges and achievements needs motion the charter never had to describe.
 
 ---
@@ -18,6 +19,33 @@ Three consequences, stated once and enforced everywhere:
 - **No looping decorative motion.** Carried from v2.x, non-negotiable. Nothing pulses, breathes, floats or shimmers while idle.
 - **No confetti.** Achievement moments are marked by a single, restrained, one-shot sequence. Celebration through craft, not through particles.
 - **One entrance per element.** An element animates in once. Scrolling back up does not replay it.
+
+### 0.1 The stack — CSS and the Web Animations API, and nothing else *(v3.2)*
+
+Evaluated because the question will keep coming back, and answered once here.
+
+| candidate | verdict | reasoning |
+|---|---|---|
+| CSS transitions / animations | **adopt** | already the entire v2.x motion layer |
+| Web Animations API | **adopt** | native, zero bytes, sequencing and cancellation for free |
+| CSS scroll-driven animations | **adopt**, with an `IntersectionObserver` fallback | the spine and act progression are exactly what it exists for |
+| Motion / Framer Motion | **reject** | React-first. This is Astro with **no UI framework at all** |
+| GSAP | **reject** | ~30–50 KB for a drawn line, three fades and a stagger — up to 2× the entire marketing-route JS budget |
+| Rive | **reject for now** | a runtime plus authored files, for motion that is deliberately *one ring and no particles* |
+| Lottie | **reject** | same reasoning, worse performance |
+
+**This was proven rather than assumed:** the published prototype implements every
+sequence in this document — the four act registers, the spine, the batons, the
+timer ring, the score count, XP, level-up, badge unlock and the ten-item motion
+reference — in CSS and WAAPI with **zero animation dependencies**.
+
+> **Do not add a motion library.** Revisit only if a future design introduces
+> character animation or an interactive illustration — and then evaluate Rive for
+> that artefact alone.
+
+**Remotion is not a website dependency.** It is a Content OS capability that
+renders *files* at authoring time (`V3_CONTENT_OS.md` §7). If a proposal needs
+Remotion's runtime in the browser, the answer is no — that is a video player.
 
 ---
 
@@ -104,6 +132,11 @@ act has **one** entrance register, used consistently inside it and nowhere else.
 | **PLAY** | **responsive** — nothing enters on scroll; everything moves in reply to the visitor | this is the only act where the visitor acts, and the motion should only ever be an answer | 5 |
 | **LEARN** | **calm** — the frozen v2.x reveal, 300ms, 70ms stagger | reading sections should not perform; this is the charter, unchanged | 3 |
 | **SHIP** | **settling** — a path completes and comes to rest; one arrival, no bounce | the end of an argument, not a crescendo | 4 |
+
+**The media layer sits before the spine and has no act register** *(v3.2)*. Cards
+get a 150ms hover lift and nothing else — no entrance sequence of their own. It
+is above the first act, so giving it a register would start the narrative before
+the narrative starts. On mobile the rail keeps the frozen `rail-hint` affordance.
 
 Two rules keep this from becoming four times as much motion:
 

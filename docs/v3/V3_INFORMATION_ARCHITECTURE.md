@@ -1,31 +1,45 @@
 # V3_INFORMATION_ARCHITECTURE
 
-**Status:** proposal. **Revised in v3.1** — §5 is rewritten to the
-BUILD → PLAY → LEARN → SHIP narrative. Companion to `V3_PRODUCT_BLUEPRINT.md`.
+**Status:** proposal. **Revised in v3.1** (§5 rewritten to BUILD → PLAY → LEARN →
+SHIP) and **in v3.2** (§1 navigation renamed to six destinations; `/builds/` and
+`/now/` replace `/projects/` and `/whats-new/`; §5 gains the media layer, which
+absorbs Right Now). See `V3_2_IA_MEDIA_PATCH.md`.
+Companion to `V3_PRODUCT_BLUEPRINT.md`.
 
 ---
 
 ## 1 · Navigation
 
 ```
-AdelTechTalks   Learn   Prompts   Courses   Playground   Projects   What's New   About      [Login] [Join Free]
+AdelTechTalks   Learn   Prompt Lab   Playground   Builds   Now   About      [Login] [Join Free]
 ```
+
+**Six destinations (v3.2), down from seven.** Courses folds into Learn — zero are
+published, and a top-level item pointing at an empty index breaks the nav-gating
+rule below. What's New becomes **Now**, which can hold takes, experiences, videos
+and current activity where What's New could only hold news.
 
 The lockup returns home — "Home" is not a nav item, it is the logo, exactly as in v2.x.
 
-**Seven destinations plus two utility actions.** That is one more destination than v2.x carried and it is the practical ceiling; anything further goes inside Learn or Projects, never into the bar.
+**Six destinations plus two utility actions**, and that is the ceiling; anything
+further goes inside Learn or Builds, never into the bar.
 
-| item | menu | destination |
-|---|---|---|
-| Learn | yes — outcome paths + library | `/learn/` |
-| Prompts | no | `/prompts/` |
-| Courses | yes — when ≥2 published | `/courses/` |
-| Playground | yes — when ≥2 experiences | `/playground/` |
-| Projects | yes — Building now / Shipped / Experiments | `/projects/` |
-| What's New | no | `/whats-new/` |
-| About | no | `/about/` |
-| Login | — | `/login/` |
-| Join Free | — | `/join/` (filled CTA) |
+| item | menu | destination | v3.2 note |
+|---|---|---|---|
+| Learn | yes — outcome paths + library + courses when published | `/learn/` | absorbs Courses |
+| Prompt Lab | no | `/prompts/` | **label only — the route keeps its equity** |
+| Playground | yes — when ≥2 experiences | `/playground/` | unchanged |
+| Builds | yes — Building now / Shipped / Experiments | `/builds/` | **label and route**; matches the existing `builds` collection |
+| Now | no | `/now/` | replaces What's New |
+| About | no | `/about/` | unchanged |
+| Login | — | `/login/` | |
+| Join Free | — | `/join/` (filled CTA) | |
+
+**Why `/prompts/` stays while the label changes.** Six prompts are published and
+indexed there in both languages. The label carries the meaning; the URL carries
+the equity. **Why `/builds/` and not `/projects/`:** `/projects/` has never
+existed, so there is nothing to preserve — and `/builds/` finally makes the
+label, the route and the collection agree.
 
 **Menus keep the v2.x rule that earned its place:** every dropdown entry is gated on its destination having something behind it, and a pillar whose menu is empty renders as a plain link with no chevron. With an empty content directory the whole bar degrades to seven working links. This is `src/lib/nav-menus.ts`, extended — not rewritten.
 
@@ -84,11 +98,14 @@ New routes are marked **NEW**. Everything unmarked exists today and keeps its UR
   /playground/[experience]/             experience shell (v2.x tracks migrate in)
   /playground/passport/                 301 → /account/achievements/ (already a 301 today)
 
-/projects/                          NEW build log index
-  /projects/[slug]/                 NEW project page with update timeline
+/builds/                            NEW build log index  (v3.2: was /projects/)
+  /builds/[slug]/                   NEW build page with update timeline
 
-/whats-new/                         NEW interpretation feed
-  /whats-new/[slug]/                NEW single item
+/now/                               NEW living stream  (v3.2: was /whats-new/)
+  /now/[slug]/                      NEW single entry — take, experience, note
+                                        Also PRESENTS existing types: videos,
+                                        builds and guides surface here without
+                                        moving from their own routes.
 
 /achievements/[verification-id]/    NEW public, crawlable, OG-carded.
                                         One route, three achievement kinds.
@@ -120,12 +137,14 @@ Legend: **KEEP** unchanged · **EVOLVE** same URL, new content/design · **301**
 | `/topics/` `/topics/[topic]/` | same | KEEP | secondary discovery, as in v2.x |
 | `/articles/[slug]/` | same | KEEP | |
 | `/prompts/` + slug | same | EVOLVE | promoted to top-level nav; save-to-account added |
-| `/vibe-coding/` | `/projects/` | **301** | pillar becomes the build log |
-| `/vibe-coding/[slug]/` | `/projects/[slug]/` | **301** | slug preserved 1:1 |
-| `/ar/vibe-coding/*` | `/ar/projects/*` | **301** | |
-| `/gear/` | `/projects/` | **301** | pillar leaves the product |
-| `/gear/[category]/[slug]/` | `/projects/` | **301** | **zero gear stories were ever published — no article URL is lost** |
-| `/series/[series]/` | `/projects/` | **301 (deferred)** | holds real indexed content; redirect only once every entry has a Project home |
+| `/vibe-coding/` | `/builds/` | **301** | pillar becomes the build log |
+| `/vibe-coding/[slug]/` | `/builds/[slug]/` | **301** | slug preserved 1:1 |
+| `/ar/vibe-coding/*` | `/ar/builds/*` | **301** | |
+| `/gear/` | `/builds/` | **301** | pillar leaves the product |
+| `/gear/[category]/[slug]/` | `/builds/` | **301** | **zero gear stories were ever published — no article URL is lost** |
+| `/series/[series]/` | `/builds/` | **301 (deferred)** | holds real indexed content; redirect only once every entry has a Build home |
+| `/prompts/` + slug | same | **KEEP** | **v3.2: label becomes Prompt Lab, URL does not move** |
+| `/videos/` + slug | same | **KEEP** | **v3.2: video pages stay put and surface inside Now** |
 | `/playground/` | same | EVOLVE | hub rebuilt; becomes bilingual |
 | `/playground/[slug]/` | same | EVOLVE | v2.x tracks become Playground experiences at the same URLs |
 | `/playground/passport/` | `/account/achievements/` | **301** | already a 301 today; re-pointed |
@@ -141,14 +160,14 @@ Legend: **KEEP** unchanged · **EVOLVE** same URL, new content/design · **301**
 Cloudflare Workers serves `dist/` with a `_routes.json`. Redirects go in a `public/_redirects` file (supported by the Cloudflare adapter), **not** in per-page meta refreshes:
 
 ```
-/vibe-coding            /projects              301
-/vibe-coding/*          /projects/:splat       301
-/ar/vibe-coding         /ar/projects           301
-/ar/vibe-coding/*       /ar/projects/:splat    301
-/gear                   /projects              301
-/gear/*                 /projects              301
-/ar/gear                /ar/projects           301
-/ar/gear/*              /ar/projects           301
+/vibe-coding            /builds                301
+/vibe-coding/*          /builds/:splat         301
+/ar/vibe-coding         /ar/builds             301
+/ar/vibe-coding/*       /ar/builds/:splat      301
+/gear                   /builds                301
+/gear/*                 /builds                301
+/ar/gear                /ar/builds             301
+/ar/gear/*              /ar/builds             301
 /badge/*                /achievements/:splat   301
 /profile                /account               301
 /playground/passport    /account/achievements  301
@@ -178,8 +197,8 @@ the reading list rather than below it.
 | # | act | section | collapse rule |
 |---|---|---|---|
 | 1 | — | **Hero** — I build with AI, test new tech, and teach what actually works | never |
-| 2 | **BUILD** | **Now** — Now Building / Now Testing / Now Exploring | hides any strip with no live entry; hides entirely with none |
-| 3 | **BUILD** | **What I'm Building** — visual build log, active projects | hides below 1 project |
+| 2 | — | **What I've Been Up To** — the media layer *(v3.2: **absorbs** Right Now)* | hides below **3 real items**; never seeded |
+| 3 | **BUILD** | **What I'm building** — the build log | hides below 1 build |
 | 4 | **PLAY** | **Prompt Arena** — a real challenge, playable in place, signed out | hides with no live challenge — and Prompt Arena is a launch gate, so at launch it does not hide |
 | 5 | **PLAY** | **Recently earned** — real public achievements | hides below **3 real verifications**. Never seeded. Absent at launch |
 | 6 | **LEARN** | **Learn With Me** — outcome rails | hides a rail with no content behind it |
@@ -204,10 +223,37 @@ page. Orientation, not decoration — and it renders complete and static under
 reduced motion (`V3_MOTION_SYSTEM.md` §2.5).
 
 **At foundation launch** — with Courses, Resources and public achievements empty —
-the page renders 1, 2, 3, 4, 6, 7, 8, 12, 13, and reads as a complete argument:
-here is what I build, here is something to try, here is how to learn it, here is
-how to join. **The page must be verified in its empty state before its full
-state.** That gate has not changed and it is what makes the collapse rules real.
+the page reads as a complete argument: here is what I have been doing, here is
+what I build, here is something to try, here is how to learn it, here is how to
+join. **The page must be verified in its empty state before its full state.**
+
+**v3.2 adds the opposite gate for one section.** The media layer must also be
+measured at its **full** state — five items with real images, above the fold, on
+the most-visited route. It is the only section whose full state is the
+performance risk rather than its empty one.
+
+### The media layer — What I've Been Up To *(new in v3.2)*
+
+Five cards, mixed types, most recent first, one prominent and image-led. It
+**replaces** the Right Now trio rather than sitting above it: both answer *is
+this person active?*, and the media layer answers it with artefacts instead of
+assertions. Same section count, same page length, and the Arena stays at act two.
+
+| card | requires | links to |
+|---|---|---|
+| **WATCH** | a real published video | `/videos/[slug]`, or the platform for shorts |
+| **BUILD** | a `builds` entry updated within 60 days | `/builds/[slug]` |
+| **TRY** | a use case or guide | the piece |
+| **EXPERIENCE** | a photograph Adel took | `/now/[slug]` |
+| **MY TAKE** | `adels_take` non-empty | `/now/[slug]` |
+
+**Staleness is a rendering rule.** A BUILD card whose entry has not moved in 60
+days does not render — "now building" pointing at a four-month-old commit is a
+claim the system should not be able to make.
+
+It sits **before the spine starts**, in the hero's gravitational field: it is
+evidence for the hero's claim, not a fifth act. The spine still begins at BUILD.
+Full reasoning in `V3_2_IA_MEDIA_PATCH.md` §3 and §7.
 
 ### Hero
 

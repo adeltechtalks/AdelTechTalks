@@ -26,9 +26,39 @@ await t('spine fills on scroll',async()=>{
   const h=await p.locator('#homeEN [data-spine]').evaluate(n=>n.style.height);
   if(!h||parseFloat(h)<5) throw new Error('spine height='+h);
 });
-await t('baton activates',async()=>{
-  const on=await p.locator('#homeEN [data-baton].on').count();
-  if(!on) throw new Error('no baton on');
+await t('every baton activates when reached',async()=>{
+  const n=await p.locator('#homeEN [data-baton]').count();
+  for(let i=0;i<n;i++){
+    await p.locator('#homeEN [data-baton]').nth(i).scrollIntoViewIfNeeded();
+    await p.waitForTimeout(450);
+    const on=await p.locator('#homeEN [data-baton]').nth(i).evaluate(e=>e.classList.contains('on'));
+    if(!on) throw new Error('baton '+i+' did not activate');
+  }
+});
+await t('media layer replaces the Right Now band',async()=>{
+  await p.evaluate(()=>window.scrollTo(0,0)); await p.waitForTimeout(300);
+  if(await p.locator('#homeEN .now').count()) throw new Error('old Right Now band still present');
+  const cards=await p.locator('#homeEN .mcard').count();
+  if(cards!==5) throw new Error('media cards='+cards);
+  if(!(await p.locator('#homeEN .mcard.lead').count())) throw new Error('no lead card');
+  const kinds=(await p.locator('#homeEN .mcard .kind').allInnerTexts()).map(s=>s.toLowerCase());
+  for(const k of ['watch','build','my take','try','out in tech'])
+    if(!kinds.some(x=>x.includes(k))) throw new Error('missing card type: '+k+' in '+kinds);
+});
+await t('media layer sits before the spine starts',async()=>{
+  const media=await p.locator('#homeEN .media').boundingBox();
+  const story=await p.locator('#homeEN .story').boundingBox();
+  if(media.y >= story.y) throw new Error('media layer is inside/after the story spine');
+});
+await t('nav shows the v3.2 labels and not the old ones',async()=>{
+  await p.locator('.navbtn[data-screen="navs"]').click(); await p.waitForTimeout(250);
+  const items=(await p.locator('#navDemo .links .lk').allInnerTexts()).join('|');
+  for(const want of ['Learn','Prompt Lab','Playground','Builds','Now','About'])
+    if(!items.includes(want)) throw new Error('missing '+want+' in '+items);
+  for(const gone of ['Courses',"What's New"])
+    if(items.includes(gone)) throw new Error(gone+' still present');
+  if(/\bProjects\b/.test(items)) throw new Error('Projects still present');
+  await p.locator('.navbtn[data-screen="home"]').click(); await p.waitForTimeout(200);
 });
 await t('hero CTA jumps to Play act',async()=>{
   await p.evaluate(()=>window.scrollTo(0,0)); await p.waitForTimeout(300);

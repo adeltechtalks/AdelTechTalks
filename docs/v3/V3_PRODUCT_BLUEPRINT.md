@@ -1,6 +1,7 @@
 # V3_PRODUCT_BLUEPRINT
 
-**Status:** proposal, for approval. **Revised in v3.1** — §2, §7 and the new §8.
+**Status:** proposal, for approval. **Revised in v3.1** (§2, §7, new §8) and
+**in v3.2** (§1 — the creator dimension; see `V3_2_IA_MEDIA_PATCH.md`).
 Nothing in this document is implemented.
 **Baseline:** v2.x at `7bb4b45`, live on `https://adeltechtalks.com`. Frozen and stable.
 **Branch:** `claude/adeltechtalk-final-design-4nc4fr` (v3 working branch, cut from `main` after the v2.x merge). `main` is untouched.
@@ -21,9 +22,21 @@ Three clauses, three obligations, and every surface in v3 has to be traceable to
 
 | clause | obligation | primary surface |
 |---|---|---|
-| I build with AI | show real work in progress, publicly | **Projects** (build log) |
-| I test new tech | interpret what is new, in real workflows | **What's New**, Tech I'm Testing |
-| teach what actually works | make people able to do the thing | **Learn · Prompts · Courses · Playground** |
+| I build with AI | show real work in progress, publicly | **Builds** (build log) |
+| I test new tech | interpret what is new, in real workflows and in the real world | **Now** — takes, experiences, tools |
+| teach what actually works | make people able to do the thing | **Learn · Prompt Lab · Playground** |
+
+**The fourth thing, added in v3.2: Adel the creator.** The three clauses above
+describe what Adel does; they do not describe that he *publishes constantly* —
+videos, shorts, observations, technology encountered outside the studio. The v3
+design represented the builder and the teacher well and left the creator almost
+invisible, so a visitor could not tell whether the site was alive this week.
+
+The correction is the **media layer** on the homepage and the **Now** stream
+behind it (`V3_2_IA_MEDIA_PATCH.md` §3). AdelTechTalks is not only an education
+platform: it is the living digital home of Adel's work, learning, media and
+experiments — **Creator + Builder + Teacher + Tech Explorer** — without becoming
+a gadget-review site.
 
 Adel is the product and the trust layer. The platform is the delivery mechanism. If a surface could be lifted onto a generic AI-course site without loss, it is wrong.
 
@@ -35,7 +48,7 @@ Adel is the product and the trust layer. The platform is the delivery mechanism.
 
 ### What AdelTechTalks is NOT
 
-- **Not a gadget review site.** Unboxings, spec tables, scored reviews and buying guides are out of scope. Technology appears only inside a real workflow or story: "what did this let me do?"
+- **Not a gadget review site.** Unboxings, spec tables, scored reviews and buying guides are out of scope. Technology appears only inside a real workflow or story: "what did this let me do?" This survives v3.2 unchanged: **Out in Tech** is Adel *experiencing* technology in the real world — a store, an event, an installation — and it carries the same schema-level protection the `gear` collection already has: no rating, no score, no price, no retailer link, no spec table, and no field to put one in.
 - **Not Gear Nests.** Gear Nests is a separate brand and business. On AdelTechTalks it may appear *only* as a Project, a build-in-public case study, or a teaching example. It is never a section, never navigation, never a default feature. This is the same rule v2.x already enforces (`homepage: false` on the case study, zero template dependencies) and v3 inherits it unchanged.
 - **Not a generic AI startup or course marketplace.** The design must be unmistakably Adel: warm light, graphite, Signature Blue, real photography of a real person, "I ❤️ Tech". No purple gradient mesh, no abstract neural-network hero, no stock founder.
 

@@ -2,7 +2,11 @@
 
 **Status:** plan only. **No implementation code has been written. No migration has been applied. `main` is untouched and production is unchanged.**
 
-**Approved inputs:** `V3_DESIGN_SIGNOFF.md` · `V3.1_ARCHITECTURE_PATCH.md` · the twelve v3 architecture documents · the design artifact at https://claude.ai/code/artifact/becad32a-445e-493b-a685-9a9eee36ca4b
+**Approved inputs:** `V3_DESIGN_SIGNOFF.md` · `V3.1_ARCHITECTURE_PATCH.md` · **`V3_2_IA_MEDIA_PATCH.md`** · the v3 architecture documents · the design artifact at https://claude.ai/code/artifact/becad32a-445e-493b-a685-9a9eee36ca4b
+
+**Patched by v3.2** — navigation naming, `/builds/` and `/now/` routes, the
+homepage media layer, the video content model, the motion-stack decision, and the
+analytics and performance additions those require. **PR 1 is unchanged.**
 **Branch:** `claude/adeltechtalk-final-design-4nc4fr` — 10 commits ahead of `origin/main` (`7bb4b45`).
 
 ---
@@ -171,10 +175,11 @@ verification · rate limiting · the two Playground shim endpoints · migrations
 identical.** That is a test, not an aspiration.
 
 ### Phase 2 — Core content experience
-Projects (with `/vibe-coding` redirects) · Learn outcome paths · Prompts with the
-three-fact card and save-to-account · What's New with the four mandatory slots ·
-homepage content integration · publication gates · `adels_take` required in the
-Zod schema · `/gear` redirects.
+**Builds** at `/builds/` (with `/vibe-coding` redirects) · Learn outcome paths ·
+**Prompt Lab** with the three-fact card and save-to-account, **route unchanged at
+`/prompts/`** · **Now** at `/now/` with the four mandatory slots · the extended
+video model · homepage content integration · publication gates · `adels_take`
+required in the Zod schema · `/gear` redirects.
 
 ### Phase 3 — Playground
 Prompt Arena · **three complete challenges** · the rubric as versioned config ·
@@ -213,10 +218,10 @@ production working whether or not the next one lands.
 | 4 | `src/server/*`: session verification, rate limiting, service-role client | 1 | 2 | no route uses it yet |
 | 5 | Migrations 01–05 + 07 on a Supabase branch + the Playground write shims | 1 | 4 | behaviour-identical; live Playground unchanged |
 | 6 | RTL foundations + Arabic type scale + logical-property audit | 1 | 3 | no new routes |
-| 7 | Homepage shell: acts, spine, batons — flagged off | 1 | 3, 6 | `?v3=1` / flag |
-| 8 | Projects + `/vibe-coding` and `/gear` redirects | 2 | 7 | route live, nav item flagged |
-| 9 | Learn outcome paths + Prompts three-fact card | 2 | 7 | flagged |
-| 10 | What's New + `adels_take` schema requirement | 2 | 7 | flagged |
+| 7 | Homepage shell: **media layer**, acts, spine, batons — flagged off | 1 | 3, 6 | `?v3=1` / flag |
+| 8 | **Builds** (`/builds/`) + `/vibe-coding` and `/gear` redirects | 2 | 7 | route live, nav item flagged |
+| 9 | Learn outcome paths + **Prompt Lab** three-fact card (route stays `/prompts/`) | 2 | 7 | flagged |
+| 10 | **Now** (`/now/`) + video model extensions + `adels_take` requirement | 2 | 7 | flagged |
 | 11 | Arena engine: rubric config, evaluator, timer, breakdown — hidden route | 3 | 4, 5 | `/playground/arena` unlinked |
 | 12 | Three launch challenges + guest attempts + claim path | 3 | 11 | still unlinked |
 | 13 | Homepage PLAY act wired to the Arena; homepage flag ON | 3 | 7, 12 | **the cutover PR** |
@@ -328,8 +333,8 @@ archaeology in six months.
 |---|---|---|
 | `src/components/pages/HomePage.astro` | REPLACE | 7 |
 | `src/components/home/Hero.astro` | EDIT — CTA becomes *Try a 60-second challenge* | 7 |
-| `src/components/home/Exploring.astro` | EDIT → **Now**, reading live project data | 7 |
-| `src/components/home/Latest.astro` | REPLACE → **What's New**, four slots | 10 |
+| `src/components/home/Exploring.astro` | REPLACE → **the media layer**, reading videos, builds and Now entries. *(v3.2: absorbs Right Now rather than sitting beside it)* | 7 |
+| `src/components/home/Latest.astro` | REPLACE → **Now**, four slots | 10 |
 | `src/components/home/LearnSection.astro` | EDIT → outcome rails | 9 |
 | `src/components/home/PlaygroundSection.astro` | REPLACE → the PLAY act | 13 |
 | `src/components/home/AboutSubscribe.astro` | EDIT → membership CTA, newsletter secondary | 7 |
@@ -344,6 +349,9 @@ archaeology in six months.
 `BadgeMedallion` · `Achievement` (PR 12, 14)
 **Member:** `member/Dashboard` · `SkillBars` · `SavedList` · `BadgeGrid` (PR 14)
 **State:** `state/EmptyState.astro` · `state/PreviewCard.astro` (PR 7)
+**Media (v3.2):** `media/MediaLayer.astro` · `media/MediaCard.astro` (five types) ·
+`media/VideoFacade.astro` (thumbnail + click-to-load; **no third-party frame on
+first load**) (PR 7, 10)
 **Core:** `Tabs` · `Dialog` · `Toast` · `Input` · `Select` · `Checkbox` (PR 7, as needed)
 
 ### 6.9 Routes
@@ -351,10 +359,11 @@ archaeology in six months.
 | path | action | PR |
 |---|---|---|
 | `src/pages/index.astro`, `ar/index.astro` | EDIT | 7, 13 |
-| `src/pages/projects/*`, `ar/projects/*` | NEW | 8 |
+| `src/pages/builds/*`, `ar/builds/*` | NEW *(v3.2: was `/projects/`)* | 8 |
 | `src/pages/vibe-coding/*`, `ar/vibe-coding/*` | KEEP as files; redirect via `public/_redirects` | 8 |
 | `src/pages/gear/*`, `ar/gear/*` | KEEP unrouted; redirect | 8 |
-| `src/pages/whats-new/*` | NEW | 10 |
+| `src/pages/now/*`, `ar/now/*` | NEW *(v3.2: was `/whats-new/`)* | 10 |
+| `src/pages/prompts/*`, `videos/*` and their `ar/` twins | **KEEP** — v3.2 changes labels, not these routes | — |
 | `src/pages/playground/index.astro`, `[slug].astro` | REPLACE | 13 |
 | `src/pages/join.astro`, `account/*` | NEW | 14 |
 | `src/pages/achievements/[id].astro` | NEW | 15 |
@@ -528,17 +537,24 @@ redesign — and so nobody instruments ad hoc in the meantime.
 | `guest_progress_claimed` | claim succeeds | `attempts_claimed`, `xp_claimed` | authed | is the transfer working |
 | `prompt_copied` | copy button | `prompt_slug` | both | which prompts are used |
 | `prompt_saved` | save button | `prompt_slug` | authed | account value |
-| `project_opened` | project page | `project_slug` | both | BUILD act |
-| `whats_new_opened` | item opened | `item_slug` | both | LEARN act |
+| `build_opened` | build page | `build_slug` | both | BUILD act |
+| `now_entry_opened` | Now entry opened | `entry_slug`, `type` | both | replaces `whats_new_opened` |
+| `media_card_shown` | media layer in view | `type`, `position` | both | does the layer get seen |
+| `media_card_clicked` | media card click | `type`, `position` | both | which card type earns the click |
+| `video_play_clicked` | facade → play | `video_slug`, `platform` | both | facade conversion |
+| `outbound_social` | leaves to a platform | `platform`, `video_slug` | both | attention leaving |
+| `related_link_clicked` | a related slot on a video/Now entry | `from_type`, `to_type` | both | **does the social → owned chain work** |
 | `achievement_published` | publish 201 | `subject_type` | authed | loop supply |
 | `achievement_shared` | share action | `subject_type`, `target` | authed | loop supply |
 | `achievement_referral_opened` | achievement page from external referrer | `subject_type`, `referrer_host` | anon | **loop return** |
 | `course_viewed` · `checkout_started` · `purchase_completed` | Phase 6 | `product_key`, `amount_bucket` | authed | commerce |
 
-**Two events carry the whole growth thesis:** `join_free_clicked` with
-`had_badge: true` (did the reward convert), and `achievement_referral_opened`
-(did the loop return anyone). If those two stay flat, the loop does not work and
-no amount of content fixes it.
+**Three events carry the whole growth thesis** *(v3.2 adds the third)*:
+`join_free_clicked` with `had_badge: true` (did the reward convert),
+`achievement_referral_opened` (did the loop return anyone), and
+`related_link_clicked` (does short-form attention actually travel from a video to
+a prompt, a build or a challenge). If those three stay flat, the loop is
+decorative — and the answer is to rethink the chain, not to publish more videos.
 
 **`score_bucket`, not `score`.** A raw score plus a challenge slug plus a
 timestamp is close to a fingerprint. Buckets answer the calibration question
@@ -612,6 +628,8 @@ against what the site does today.
 | Fonts, first paint | ≤ 2 families, `swap`, subset | all | network trace |
 | **KO Ghorab** | subset to Arabic + digits, ≤ 60 KB, `swap`, **preloaded on `/ar/*` only** | Arabic routes | network trace |
 | Hero image | ≤ 120 KB, AVIF/WebP, `fetchpriority=high` | `/` | build report |
+| **Media thumbnails** *(v3.2)* | ≤ 40 KB each, AVIF/WebP, explicit `width`/`height`, `loading="lazy"` below the first card | `/` | build report |
+| **Third-party frames on first load** *(v3.2)* | **zero, on every route** | all | network trace |
 | LCP | ≤ 2.0s (p75, mobile) | `/` | Lighthouse CI |
 | INP | ≤ 200ms | `/`, `/playground/*` | Lighthouse CI |
 | CLS | ≤ 0.05 | all | Lighthouse CI |
@@ -625,7 +643,14 @@ against what the site does today.
    reaching the Worker, the build fails. That single check protects the entire
    static-first model from erosion by accident.
 2. **No route may add a JS dependency without removing one or justifying it in
-   the PR body.** The stack is five runtime dependencies and v3 adds two.
+   the PR body.** The stack is five runtime dependencies and v3 adds two —
+   `@supabase/ssr` and `stripe`, both server-only. **v3.2 adds none**: the motion
+   stack is CSS plus the Web Animations API, and Remotion never enters
+   `site/package.json`.
+3. **The homepage is measured at the media layer's FULL state** *(v3.2)* — five
+   items with real images — as well as its empty one. It is the only section
+   whose full state is the performance risk, and a single third-party embed would
+   exceed the entire marketing-route budget on its own.
 
 ---
 
@@ -659,9 +684,12 @@ the write path moves server-side; only its network calls change. Migration 03
 verified on a branch, then `/badge/<real id>` fetched from production immediately
 after the production run.
 
-**Phase 2** — every redirect resolves in one hop with its Arabic twin; no
-retained URL changed canonical; a What's New item without `adels_take` **fails
-the build**; the homepage renders correctly with an **empty content directory**.
+**Phase 2** — every redirect resolves in one hop with its Arabic twin; **no
+retained URL changed canonical, and `/prompts/` and `/videos/` are asserted
+unmoved**; a Now `take` without `adels_take` and an `experience` without a photo
+both **fail the build**; the homepage renders correctly with an **empty content
+directory**, and separately at the media layer's **full** state within budget; a
+video entry with no related slots renders no empty slots.
 
 **Phase 3** — the whole loop, as one browser test: start → type → submit → score
 → per-rule breakdown → XP → badge → save prompt → try another → share. Guest path
@@ -793,6 +821,10 @@ eligibility · real project screenshots · the first What's New item with a genu
 | 13 | Gamification reads as gimmick | medium | no confetti, no streaks, no fake numbers; sequenced feedback with a 2000ms ceiling |
 | 14 | Scope: Phase 3 is the biggest single build | medium | split across PRs 11–13; the engine ships before any challenge exists |
 | 15 | `copy.ts` merge conflicts across parallel PRs | low | PRs merge in the stated order; the file is not split during v3 |
+| 16 | **The media layer is thin at launch and the homepage looks abandoned** *(v3.2)* | high | renders only at ≥3 real items; below that it is absent and the hero flows into BUILD. An honest absence beats three placeholder tiles |
+| 17 | **The media layer becomes a blog grid** *(v3.2)* | medium | five items, mixed types, one prominent; it is capped by design, not by taste |
+| 18 | **A social embed blows the performance budget** *(v3.2)* | high | facade-first, zero third-party frames on first load, asserted in the network trace |
+| 19 | **Out in Tech drifts into product reviews** *(v3.2)* | medium | schema-level: no rating, score, price, retailer link or spec table, and no field to hold one. The H1 is the experience, never a product name |
 
 ---
 
