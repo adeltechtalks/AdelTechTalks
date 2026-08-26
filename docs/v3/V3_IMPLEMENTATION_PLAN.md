@@ -128,17 +128,18 @@ New tokens, new component families, Figma library. Built in isolation, verified 
 ### Phase 2 — the v3 foundation release *(the first thing a visitor sees)*
 New IA and navigation · redesigned homepage in the four acts · Learn outcome paths ·
 Prompts with save-to-account · Projects (with `/vibe-coding` redirects) · What's New ·
-**Prompt Arena, live, with nine real challenges** · Join Free and `/account` ·
+**Prompt Arena, live, with three complete challenges and the whole loop working** · Join Free and `/account` ·
 XP, levels, badges · `/achievements/[id]` with server-authoritative publishing and
 generated cards · contextual CTAs · `/gear` redirects · the Canva template set.
 
 **Two v3.1 changes to what this phase means.**
 
 *Playground is not a shell.* "Playground shell with one real challenge" was the v3
-scope and it is a bench. Prompt Arena opens with three Choose, three Repair and
-three Create challenges, or `/playground/` does not open (`V3_GAMIFICATION.md`
-§7.1). This is a **publication gate**: the engine ships regardless; the route waits
-for content.
+scope and it is a bench. Prompt Arena opens with **three complete challenges and a
+working loop** — score, explanation, XP, badge, save, try another, share
+(`V3_GAMIFICATION.md` §7.1, revised at design sign-off from the earlier
+nine-challenge count). The gate is the loop: a ninth challenge adds content, a
+broken save step makes the rest worthless.
 
 *Achievement publishing is server-side from the first line of code.* There is no
 interim client-write version, not even behind a flag, not even in a preview
@@ -220,7 +221,7 @@ Extends the existing suite. Nothing is replaced.
 2. `/badge/<a real live id>` is fetched from production immediately after migration 03 and must render the same name and badge it rendered before.
 3. **Every row of the hostile-client table** (`V3_API_SURFACE.md` §2.4) passes. A signed-in test user cannot mint a verification for a badge they do not hold, by any route, including a direct anon-key insert.
 4. **The policy audit returns exactly `saved_prompts` and `subscribers`.** Any other table with a client `insert`/`update`/`delete` policy fails the release until it is justified in writing against the §5 test in the Security Model.
-5. **`/playground/` does not open below nine published challenges.** Asserted by the same build check that gates a Gear story on its photograph.
+5. **`/playground/` does not open until three complete challenges exist AND the full loop passes end to end** — score, explanation, XP, badge, save, try another, share. The count is a build check; the loop is a browser test, and the loop is the gate.
 
 ---
 

@@ -37,8 +37,9 @@ Supporting: [`site/supabase/v3/`](../../site/supabase/v3/) — seven proposed mi
    else — which locks `prompt-architect` until Phase 4. *(Gamification §7.3)*
 4. **BUILD → PLAY → LEARN → SHIP.** The interactive thing comes before the reading
    list, on the page and in the motion. *(Blueprint §2, IA §5, Motion §2.5)*
-5. **Playground opens with nine real challenges or it does not open.**
-   *(Gamification §7.1)*
+5. **Playground opens with three complete challenges and a working loop.** The
+   gate is the loop — score, explanation, XP, badge, save, try another, share —
+   not the count. *(Gamification §7.1)*
 6. **Static-first stays.** A dozen routes opt out of prerendering; everything
    indexed stays a CDN file. *(Plan §1)*
 7. **The library does not move under `/learn/`.** *(IA §4)*
@@ -54,9 +55,10 @@ Supporting: [`site/supabase/v3/`](../../site/supabase/v3/) — seven proposed mi
 - **Authored Arabic** for every new string — marked `‹author›` throughout. Level
   names, nav labels, Preview copy, challenge copy, achievement titles. These block
   release, not implementation.
-- **Nine Prompt Arena challenges.** The largest content dependency in Phase 2. The
-  honest options are to write them or to move Playground to Phase 3 — not to open
-  the Arena with three.
+- **Three complete Prompt Arena challenges**, each with its rubric, its
+  per-rule explanations, its XP value and its badge eligibility. Reduced from
+  nine at design sign-off; the library expands past nine after launch with no
+  code change.
 - **Real project screenshots and course content.**
 - **Confirmation** that `/gear/*` should 301 to `/projects/` rather than to Learn.
 - **A decision** on whether to build the homepage achievements wall now. It will be

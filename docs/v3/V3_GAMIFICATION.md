@@ -1,6 +1,6 @@
 # V3_GAMIFICATION
 
-**Status:** proposal. **Revised in v3.1** — §2, §5, §6 and §7. XP, levels, badges and the achievement share loop ship in the v3 foundation. Prompt Arena ships **live, with a real challenge set**, in Phase 2; model-assisted Create scoring in Phase 4.
+**Status:** **APPROVED at design sign-off.** Revised in v3.1 — §2, §5, §6 and §7; §5 and §7.1 revised again at sign-off (configurable criteria; the launch gate is the loop, not a count). XP, levels, badges and the achievement share loop ship in the v3 foundation. Prompt Arena ships **live, with a real challenge set**, in Phase 2; model-assisted Create scoring in Phase 4.
 
 **Framing:** this is a **service**, not page behaviour. One module awards XP, one module evaluates badges, one component renders a level. If challenge pages, lesson pages and project pages each grow their own XP logic, the numbers will disagree within a month and nobody will be able to say which is right.
 
@@ -119,13 +119,19 @@ A single evaluator reads these. Adding a badge is a catalogue row, not a deploy.
 
 ### Launch set
 
-| key | name | requirement |
-|---|---|---|
-| `prompt-builder` | Prompt Builder | complete 3 prompting challenges |
-| `prompt-architect` | Prompt Architect | score ≥90 on a Create challenge — **Phase 4** |
-| `first-ai-workflow` | First AI Workflow | complete the automation path |
-| `vibe-coder` | Vibe Coder | complete the Vibe Coding course |
-| `website-builder` | Website Builder | complete Launch a Website with AI |
+**Criteria are configuration, not UI logic** (design sign-off §5). Each row
+below is a `requirement` object on the catalogue row, read by one evaluator.
+Moving the qualifying score from 70 to 75, or three challenges to five, is one
+number in one place — never a condition written into a component.
+
+| key | name | requirement | ships |
+|---|---|---|---|
+| `prompt-repairer` | Prompt Repairer | `{type:'challenge_score', skill:'prompting', min:70}` | launch |
+| `prompt-builder` | Prompt Builder | `{type:'challenge_count', skill:'prompting', min:3}` | launch |
+| `prompt-architect` | Prompt Architect | `{type:'challenge_score', format:'create', min:90, requires:'model_assisted'}` | Phase 4 |
+| `first-ai-workflow` | First AI Workflow | `{type:'path_completed', path:'automate-my-work'}` | later |
+| `vibe-coder` | Vibe Coder | `{type:'course_completed', course:'vibe-coding-to-a-real-product'}` | later |
+| `website-builder` | Website Builder | `{type:'course_completed', course:'launch-a-website-with-ai'}` | later |
 
 Locked badges show their **requirement**, not a mystery silhouette. "Score 90 on a Create challenge" is an invitation; a grey question mark is a tease.
 
@@ -301,17 +307,29 @@ Experience  (git)   slug, title, skill, description, format set, status
         └── Attempt (db)   score, dimensions jsonb, payload, duration, scored_by
 ```
 
-### 7.1 The launch gate
+### 7.1 The launch gate — the loop, not a count *(revised at design sign-off)*
 
-Prompt Arena opens with **nine challenges** — three Choose, three Repair, three
-Create — across three difficulty steps. Below that it is a demo, and a demo
-labelled as a product is the kind of thing this brief exists to prevent.
+Prompt Arena opens with **three excellent, complete, genuinely playable
+challenges**, provided the whole loop works end to end:
 
-This is a **publication gate, not an implementation blocker**, exactly like the
-Gear photograph and Build screenshot gates in v2.x. The engine, the scoring, the
-XP wiring, the badge evaluator and the routes all ship complete. The `/playground/`
-route does not open until nine challenges exist in git. A half-full Arena is not
-shipped and then filled; it is held and then shipped.
+> challenge → score → explanation → XP → badge where earned → save progress →
+> try another → share where applicable
+
+**The gate is the loop, not the number.** The earlier draft required nine, and
+that was the wrong thing to measure: a ninth challenge adds content, while a
+broken save step makes the other eight worthless. Three challenges that carry a
+learner all the way through the loop is a product; nine that dead-end at the
+score is a demo with better stocking.
+
+Two conditions hold this honest:
+
+1. **Complete means complete.** A challenge ships with its rubric, its
+   explanations for every rule, its XP value and its badge eligibility. A
+   challenge that scores but cannot explain itself is not one of the three.
+2. **Nothing in the engine assumes three.** The library expands past nine
+   immediately after launch by adding front matter, with no code change. If
+   adding a fourth challenge requires a deploy, the gate has been met the wrong
+   way.
 
 ### 7.2 Three formats at launch
 
@@ -321,11 +339,19 @@ shipped and then filled; it is held and then shipped.
 | **Repair** | improve a weak prompt against named weaknesses | rubric checks the server can evaluate | `deterministic` |
 | **Create** | write one from scratch | the learner grades their own attempt against a worked model answer | `self_assessed` |
 
-Prompting dimensions: clarity · context · constraints · specificity · output
-structure · usefulness. **These are the prompting rubric, not the platform's
-rubric.** A Vibe Coding challenge will score something else entirely, which is why
-`dimensions` is `jsonb` and why the rubric ships with the challenge rather than
-with the engine.
+Prompting dimensions, approved at sign-off: **Clarity · Context · Constraints ·
+Structure · Usefulness**. They are shown to the learner because the breakdown is
+teaching material — the learner should finish a challenge knowing which rule they
+missed and why it exists.
+
+**The rubric is a versioned data object, never code in a component.** A challenge
+names a rubric id (`prompting.repair.v1`); the rubric declares its dimensions,
+their weights and their rules; a separate table declares how each rule is
+measured. A new track adds a rubric and its rules without touching a single
+component, and the identical evaluator runs server-side — which is what makes the
+persisted score authoritative. **These are the prompting rubric, not the platform's rubric.** A Vibe Coding
+challenge will score something else entirely, which is why `dimensions` is
+`jsonb` and why the rubric ships with the challenge rather than with the engine.
 
 ### 7.3 Create, and the thing v3.1 had to correct
 
