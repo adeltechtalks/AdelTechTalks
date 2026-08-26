@@ -63,6 +63,10 @@ expect "the catalogue was not renamed"     "$(q "select count(*) from informatio
 expect "share id unchanged"                "$(q "select id from achievement_verifications")" "$SHARE_ID"
 expect "badge URL resolves for anon"       "$(q "set role anon; select display_name||'/'||track_slug from shares where id='$SHARE_ID'")" "Adel/ai-in-your-camera"
 expect "anon SELECT is granted explicitly" "$(q "select privilege_type from information_schema.role_table_grants where table_schema='public' and table_name='achievement_verifications' and grantee='anon' and privilege_type='SELECT'")" "SELECT"
+# RLS cannot stop a TRUNCATE — Postgres checks only the table grant — so this is
+# the one write that a row-level policy could never have caught. Supabase grants
+# it by default; migration 03 must take it back from both public roles.
+expect "TRUNCATE is revoked from both roles" "$(q "select count(*) from information_schema.role_table_grants where table_schema='public' and table_name='achievement_verifications' and grantee in ('anon','authenticated') and privilege_type='TRUNCATE'")" "0"
 expect "progress is frozen, not writable"  "$(q "set role authenticated; set request.jwt.claim.sub='$USER_ID'; insert into progress values ('$USER_ID','x',1)" 2>&1 | grep -c 'permission denied' || true)" "1"
 expect "owner can still read progress"     "$(q "set role authenticated; set request.jwt.claim.sub='$USER_ID'; select count(*) from progress")" "10"
 
