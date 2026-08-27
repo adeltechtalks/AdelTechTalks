@@ -4,6 +4,9 @@ dist/
 .DS_Store
 *.log
 
+# `wrangler dev` scratch state — a local workerd cache, not project state.
+.wrangler/
+
 # QA fixtures — never committable, by design.
 #
 # Exercising the Vibe Coding and Gear story templates needs a story that has

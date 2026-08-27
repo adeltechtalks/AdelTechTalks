@@ -3,8 +3,7 @@
    no icon JavaScript. The design system pins lucide 0.474.0; lucide-static has no
    0.474 release (it goes 0.473 → 0.477), so this is 0.473.0.
    IC v1.0: 24px master, 2px stroke, round caps and joins. */
-import { readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
+import { BUNDLED_ICONS } from '../lib/icon-set';
 
 interface Props {
   name: string;
@@ -18,15 +17,41 @@ const { name, size = 'md', color, class: className } = Astro.props;
 const SIZES = { sm: 16, md: 20, lg: 24, xl: 32 } as const;
 const px = typeof size === 'number' ? size : SIZES[size];
 
-const require = createRequire(import.meta.url);
-let svg = '';
-try {
-  const file = require.resolve(`lucide-static/icons/${name}.svg`);
-  svg = readFileSync(file, 'utf8');
-} catch {
-  throw new Error(
-    `Icon "${name}" does not exist in Lucide. Check the spelling at https://lucide.dev/icons`
-  );
+/* Bundled first. This is the only branch that can run inside the Cloudflare
+   Worker, because it needs no filesystem — see src/lib/icon-set.ts. */
+let svg = BUNDLED_ICONS[name] ?? '';
+
+/* Not bundled: fall back to reading the glyph off disk. That only works where a
+   filesystem exists, which means BUILD time — prerendered pages, which is every
+   route except /badge/<id>. Kept so adding an icon to a static page still just
+   works without touching the bundled set.
+
+   The import is dynamic on purpose: a static `import 'node:fs'` would be pulled
+   into the Worker bundle even though this branch is unreachable there. */
+if (!svg) {
+  let readFailed = '';
+  try {
+    const [{ readFileSync }, { createRequire }] = await Promise.all([
+      import('node:fs'),
+      import('node:module'),
+    ]);
+    const require = createRequire(import.meta.url);
+    svg = readFileSync(require.resolve(`lucide-static/icons/${name}.svg`), 'utf8');
+  } catch (err) {
+    readFailed = err instanceof Error ? err.message : String(err);
+  }
+
+  if (!svg) {
+    /* Say which of the two things actually went wrong. The old message claimed
+       the icon did not exist no matter the cause, which is how a Worker with no
+       filesystem read as a typo for four months. */
+    throw new Error(
+      `Icon "${name}" could not be resolved. If this is a server-rendered route, ` +
+        `add it to BUNDLED_ICONS in src/lib/icon-set.ts — no filesystem is available ` +
+        `at request time. Otherwise check the spelling at https://lucide.dev/icons. ` +
+        `(underlying: ${readFailed || 'not in the bundled set'})`
+    );
+  }
 }
 
 /* Retarget the glyph to our size and let it inherit colour from the parent. */
