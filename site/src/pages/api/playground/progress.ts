@@ -11,7 +11,7 @@
 import type { APIRoute } from 'astro';
 import { requireUser, isResponse, json } from '../../../server/auth';
 import { rateLimit } from '../../../server/ratelimit';
-import { recordStep, type ServerEnv } from '../../../server/db';
+import { MissingBindingError, recordStep, type ServerEnv } from '../../../server/db';
 
 export const prerender = false;
 
@@ -58,6 +58,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
     await recordStep(env, user.id, trackSlug, stepIndex, done);
   } catch (err) {
     console.error('[api/playground/progress]', err);
+    /* A missing binding is not a failed write — the request was fine and the
+       server is not configured to serve it. Separate status, separate fix. */
+    if (err instanceof MissingBindingError) {
+      return json({ error: 'server_misconfigured' }, 503);
+    }
     return json({ error: 'write_failed' }, 500);
   }
 

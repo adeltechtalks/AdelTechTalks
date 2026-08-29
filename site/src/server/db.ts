@@ -14,11 +14,60 @@
    ========================================================================== */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { services } from '../site.config';
+/* Optional: present in workerd, absent when this module is imported under plain
+   Node (the build, and the unit tests). Hence the guarded dynamic shape. */
+import { env as workerEnv } from 'cloudflare:workers';
 
 export type ServerEnv = {
   SUPABASE_URL?: string;
   SUPABASE_SERVICE_ROLE_KEY?: string;
 };
+
+/** Thrown when the service-role key cannot be found in ANY binding source.
+    Routes turn this into 503 rather than 500: nothing is wrong with the
+    request, the server is not configured to serve it. Collapsing the two into
+    one opaque 500 is what turned a config error into a log-forensics exercise. */
+export class MissingBindingError extends Error {
+  readonly name = 'MissingBindingError';
+}
+
+/* Where the key can come from, in order.
+   -------------------------------------------------------------------------
+   `locals.runtime.env` is the adapter's documented path and is what
+   `wrangler dev` populates. In the deployed Worker it came back empty even
+   though the secret is present on the Worker — verified in the Cloudflare
+   dashboard — so the route could never see it.
+
+   `process.env` is the second source. `nodejs_compat` populates it from the
+   Worker's bindings, including secrets, and this Worker sets that flag with a
+   compatibility date well past its introduction. Reading both means the key is
+   found whichever shape the deployment presents, and neither path is a
+   fallback in the sense of being worse — they are two names for the same
+   binding.
+
+   Nothing here widens what is exposed: `process.env` in a Worker holds exactly
+   the bindings that Worker already has. */
+function fromEnv(env: ServerEnv, name: 'SUPABASE_URL' | 'SUPABASE_SERVICE_ROLE_KEY') {
+  const fromLocals = env?.[name];
+  if (fromLocals) return fromLocals;
+  /* `cloudflare:workers` is the runtime's own module for reading bindings
+     outside a request context. Unlike `process.env` — which this build replaces
+     with a frozen `{}` at bundle time, verified in dist — it is provided by
+     workerd itself and survives bundling. */
+  const fromWorkers = (workerEnv as any)?.[name];
+  return typeof fromWorkers === 'string' && fromWorkers ? fromWorkers : undefined;
+}
+
+/** Which sources were actually visible. Logged on failure so the next report
+    says which branch was empty instead of only that something was. */
+function bindingDiagnostics(env: ServerEnv): string {
+  /* Binding NAMES only — never values. Enough to tell "the adapter handed us
+     nothing" apart from "the adapter handed us bindings but not that one",
+     which is the distinction that cost a round trip to establish. */
+  const names = (o: unknown) =>
+    o && typeof o === 'object' ? Object.keys(o as object).sort().join(',') || '(none)' : '(absent)';
+  return `locals.runtime.env=[${names(env)}] cloudflare:workers env=[${names(workerEnv)}]`;
+}
 
 /* One client per isolate. Constructing it per request is wasteful and, more to
    the point, makes the "who holds this key" question harder to answer. */
@@ -26,12 +75,13 @@ let cached: SupabaseClient | null = null;
 let cachedFor = '';
 
 function serviceClient(env: ServerEnv): SupabaseClient {
-  const url = env.SUPABASE_URL || services.supabaseUrl;
-  const key = env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = fromEnv(env, 'SUPABASE_URL') || services.supabaseUrl;
+  const key = fromEnv(env, 'SUPABASE_SERVICE_ROLE_KEY');
   if (!url || !key) {
-    throw new Error(
-      'server/db: SUPABASE_SERVICE_ROLE_KEY is not bound. Set it as a Cloudflare ' +
-        'secret (wrangler secret put SUPABASE_SERVICE_ROLE_KEY), or in .dev.vars locally.'
+    throw new MissingBindingError(
+      'server/db: SUPABASE_SERVICE_ROLE_KEY is not readable from any binding source. ' +
+        'Set it as a Cloudflare secret (wrangler secret put SUPABASE_SERVICE_ROLE_KEY), ' +
+        `or in .dev.vars locally. [${bindingDiagnostics(env)}]`
     );
   }
   const fingerprint = `${url}:${key.slice(-8)}`;
