@@ -3,8 +3,12 @@
    when Supabase keys are present in site.config.ts.
 
    The anon key is designed to be public — it is safe in the browser. What protects
-   your data is Row Level Security, which the SQL in supabase/schema.sql switches on:
-   every row is readable and writable only by the signed-in user who owns it. */
+   your data is Row Level Security: every row is readable only by the signed-in
+   user who owns it.
+
+   READS happen here, directly, under RLS. WRITES do not: progress and badges are
+   posted to /api/playground/* and written by the server, because migration 07
+   revokes the browser's grant on those tables. See src/server/db.ts. */
 
 import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js';
 
@@ -73,6 +77,32 @@ export async function loadProgress(sb: SupabaseClient, userId: string): Promise<
   return out;
 }
 
+/* ---- writes go through the server ----------------------------------------
+   Progress and badges used to be written straight from the browser. Migration
+   07 revokes that grant, because a table the client can write is a table the
+   client can lie to — and `badges` feeds the public share link. These two
+   helpers post to the Phase 0 shims instead. Same behaviour, same call sites;
+   the writer moved.
+
+   The session's access token authenticates the call. The server takes the user
+   id from that token and never from the body. */
+async function post(sb: SupabaseClient, path: string, body: unknown): Promise<void> {
+  const { data } = await sb.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) throw new Error('not signed in');
+
+  const res = await fetch(path, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const detail = await res.json().catch(() => ({}));
+    throw new Error(`${path} failed (${res.status}): ${(detail as any)?.error ?? 'unknown'}`);
+  }
+}
+
 export async function setStep(
   sb: SupabaseClient,
   userId: string,
@@ -80,23 +110,14 @@ export async function setStep(
   stepIndex: number,
   done: boolean
 ) {
-  if (done) {
-    const { error } = await sb
-      .from('progress')
-      .upsert(
-        { user_id: userId, track_slug: trackSlug, step_index: stepIndex },
-        { onConflict: 'user_id,track_slug,step_index' }
-      );
-    if (error) throw error;
-  } else {
-    const { error } = await sb
-      .from('progress')
-      .delete()
-      .eq('user_id', userId)
-      .eq('track_slug', trackSlug)
-      .eq('step_index', stepIndex);
-    if (error) throw error;
-  }
+  /* userId stays in the signature so every call site is unchanged; the server
+     ignores it and uses the verified session instead. */
+  void userId;
+  await post(sb, '/api/playground/progress', {
+    track_slug: trackSlug,
+    step_index: stepIndex,
+    done,
+  });
 }
 
 /* A badge is earned when every step in a track is complete. Awarding is idempotent. */
@@ -108,22 +129,23 @@ export async function syncBadge(
 ): Promise<boolean> {
   const earned = completed.length >= track.steps.length;
   if (earned) {
-    const { error } = await sb
-      .from('badges')
-      .upsert({ user_id: userId, track_slug: track.slug }, { onConflict: 'user_id,track_slug' });
-    if (error) console.error('[playground] could not award badge:', error.message);
-  } else {
-    await sb.from('badges').delete().eq('user_id', userId).eq('track_slug', track.slug);
+    try {
+      await awardBadge(sb, userId, track.slug);
+    } catch (err) {
+      console.error('[playground] could not award badge:', err);
+    }
   }
+  /* Un-awarding on un-tick is gone with the client's delete grant. It was never
+     reachable in the live flow — the quiz awards on a pass and the badge page is
+     a permanent link — and a server endpoint that revokes a posted badge is a
+     different feature with a different owner. */
   return earned;
 }
 
 /* Award a badge outright — used when someone passes the quiz. Idempotent. */
 export async function awardBadge(sb: SupabaseClient, userId: string, trackSlug: string) {
-  const { error } = await sb
-    .from('badges')
-    .upsert({ user_id: userId, track_slug: trackSlug }, { onConflict: 'user_id,track_slug' });
-  if (error) throw error;
+  void userId;
+  await post(sb, '/api/playground/complete', { track_slug: trackSlug });
 }
 
 export type Share = { id: string; track_slug: string; display_name: string; earned_at: string };

@@ -7,6 +7,11 @@ create or replace function auth.uid() returns uuid language sql stable as $$ sel
 do $$ begin create role anon;          exception when duplicate_object then null; end $$;
 do $$ begin create role authenticated; exception when duplicate_object then null; end $$;
 do $$ begin create role service_role;  exception when duplicate_object then null; end $$;
+-- Supabase grants service_role BYPASSRLS (verified against the live project:
+-- pg_roles.rolbypassrls is true for service_role and postgres, false for anon
+-- and authenticated). Without this the fixture is STRICTER than production and
+-- server-side writes fail here for a reason they never would in reality.
+alter role service_role bypassrls;
 grant usage on schema public, auth to anon, authenticated, service_role;
 create table public.progress (
   user_id uuid not null references auth.users(id) on delete cascade,
