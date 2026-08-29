@@ -91,14 +91,16 @@ const interests = aboutStory.interests.map((item) => item[lang]).filter(Boolean)
 const portrait = photography.aboutPhoto || photography.heroPortrait;
 const studio = photography.studioPhoto;
 
+/* The closing cards carry a pillar glyph each. Anything that is a Learn
+   surface — /learn itself, and /prompts, which is one of its surfaces — takes
+   the Learn notebook, which is also the honest fallback for a card added later:
+   a wrong-but-related glyph beats a glyph for a section that is parked. */
 const glyphFor = (href: string) =>
   href.includes('vibe-coding')
     ? 'vibe-coding'
     : href.includes('gear')
       ? 'gear'
-      : href.includes('learn')
-        ? 'learn'
-        : 'playground';
+      : 'learn';
 ---
 
 <Base lang={lang} title={c.about.title} description={t.lede.replace(/\[\[|\]\]/g, '')}>

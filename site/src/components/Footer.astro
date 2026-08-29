@@ -79,21 +79,30 @@ const otherHref =
 /* A surface with nothing in it is dropped — see the header comment. */
 const empty = await emptySurfaces(lang);
 
-/* ---- column 1: the frozen IA, in the frozen order ----------------------------
-   Every one of the six renders, always, and the list is NOT filtered by
-   content. That is deliberate and it is the difference between this column and
-   the next one: these six are the site's navigation, they are the six the
-   header carries, and a footer that quietly drops "Gear" on the day nothing is
-   published would contradict the header two screens above it.
+/* ---- column 1: the primary navigation, in the header's order -----------------
+   Every entry renders, always, and the list is NOT filtered by content. That is
+   deliberate and it is the difference between this column and the next one:
+   these are the site's navigation, they are what the header carries, and a
+   footer that quietly drops "Gear" on the day nothing is published would
+   contradict the header two screens above it.
 
    Nor would it be protecting anyone: /vibe-coding and /gear have DESIGNED empty
    states — a header, an honest line, a footnote — so an empty pillar hub is a
    real page answering a real question. The supporting-content column below is
    different: /guides with nothing in it is an empty index, not an answer, so
-   there the link is dropped until it leads somewhere. */
-const PRIMARY = ['vibeCoding', 'gear', 'learn', 'playground'];
-const primary = PRIMARY.map((key) => nav.find((item) => item.key === key))
-  .filter((item): item is NonNullable<typeof item> => Boolean(item))
+   there the link is dropped until it leads somewhere.
+
+   ── WHY THIS IS DERIVED AND NOT LISTED ──────────────────────────────────────
+   It used to be the literal list ['vibeCoding', 'gear', 'learn', 'playground'],
+   which meant the header read `nav` and this column read a copy of it. Parking
+   the Playground is exactly the change that finds a bug like that: the header
+   would have dropped it and the footer would have gone on linking it.
+
+   `nav` phase 1 IS the primary navigation, and About is deliberately excluded
+   here because it already has its own footer column. One list, three renders
+   (header, mobile menu, this) — they can no longer drift. */
+const primary = nav
+  .filter((item) => item.phase === 1 && item.key !== 'about')
   .map((item) => ({
     key: item.key,
     href: isEnglishOnly(item.path) && lang !== 'en' ? item.path : localizePath(item.path, lang),

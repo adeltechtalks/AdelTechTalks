@@ -129,12 +129,16 @@ const show = entries.length >= MIN_TO_RENDER;
 )}
 
 <style>
-  /* CS v2.0 rhythm: Ice ground, between the white Playground section and the
-     graphite close — "never two adjacent identical surfaces". It is an inset
-     panel rather than a full-bleed band, which is how every other tinted
-     surface on this site is built (see .rw__panel): one rounded rectangle
-     inside the container, no 100vw arithmetic, and therefore no horizontal
-     overflow to mask on mobile or in RTL. */
+  /* CS v2.0 rhythm: Ice ground — "never two adjacent identical surfaces". This
+     section moved up the homepage in Phase 1 (it now sits between Vibe Coding
+     and Gear rather than between the Playground and the close), and the rule
+     still holds: Vibe Coding's panel above it is graphite, Gear below it is on
+     the page's own ground.
+
+     It is an inset panel rather than a full-bleed band, which is how every
+     other tinted surface on this site is built (see .rw__panel): one rounded
+     rectangle inside the container, no 100vw arithmetic, and therefore no
+     horizontal overflow to mask on mobile or in RTL. */
   .lt__panel {
     padding: var(--atc-space-10) var(--atc-space-10) var(--atc-space-12);
     border-radius: var(--adel-radius-panel);

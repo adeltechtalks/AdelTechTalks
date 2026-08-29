@@ -18,7 +18,7 @@ import Logo from './Logo.astro';
 import AuthNav from './AuthNav.astro';
 import Rich from './Rich.astro';
 import PillarIcon from './PillarIcon.astro';
-import { nav, site } from '../site.config';
+import { nav, parked, site } from '../site.config';
 import { useCopy } from '../copy';
 import { navMenus } from '../lib/nav-menus';
 import {
@@ -189,7 +189,12 @@ const homeHref = localizePath('/', lang);
       <a class="hdr__subscribe" href={localizePath('/newsletter', lang)}>
         <Rich text={c.ia.nav.subscribe} />
       </a>
-      <AuthNav lang={lang} />
+      {/* Signing in exists to serve the Playground — its progress, its badges
+          and the Tech Passport — and nothing else on the site needs an account
+          in Phase 1. With the Playground parked, a "Sign in" link would offer a
+          door into a room with nothing in it. /login and /profile still work
+          for anyone who has an account. See `parked` in site.config.ts. */}
+      {!parked.playground && <AuthNav lang={lang} />}
       {/* The language switch is a link to the same page, not a dropdown: one
           tap, no menu, and it works with JavaScript switched off. `lang` and
           `hreflang` on the anchor tell a screen reader the destination is in
@@ -260,12 +265,18 @@ const homeHref = localizePath('/', lang);
     <a class="hdr__link hdr__link--subscribe" href={localizePath('/newsletter', lang)}>
       <Rich text={c.ia.nav.subscribe} />
     </a>
-    <a href={localizePath('/login', lang)} class="hdr__link hdr__link--account" data-m-auth-out>
-      {c.common.signIn}
-    </a>
-    <a href={localizePath('/profile', lang)} class="hdr__link hdr__link--account" data-m-auth-in hidden>
-      {c.common.profile}
-    </a>
+    {/* The mobile mirror of AuthNav above — parked with it, for the same
+        reason. */}
+    {!parked.playground && (
+      <>
+        <a href={localizePath('/login', lang)} class="hdr__link hdr__link--account" data-m-auth-out>
+          {c.common.signIn}
+        </a>
+        <a href={localizePath('/profile', lang)} class="hdr__link hdr__link--account" data-m-auth-in hidden>
+          {c.common.profile}
+        </a>
+      </>
+    )}
     <a class="hdr__link hdr__link--lang" href={otherHref} lang={LANG_TAG[other]} hreflang={LANG_TAG[other]}>
       {c.common.languageSwitch}
     </a>

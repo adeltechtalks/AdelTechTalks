@@ -48,6 +48,7 @@ import {
   type BuildStory,
 } from '../../lib/pillars';
 import { localizePath, type Lang } from '../../i18n';
+import { parked } from '../../site.config';
 
 interface Props {
   lang: Lang;
@@ -104,7 +105,9 @@ const arrow = lang === 'ar' ? '←' : '→';
               <span aria-hidden="true">↗</span>
             </a>
           )}
-          {story.playgroundTool && (
+          {/* Parked, not removed — see `parked` in site.config.ts. The front
+              matter field survives so nothing has to be rewritten later. */}
+          {story.playgroundTool && !parked.playground && (
             <a class="bs__alt" href={`/playground/${story.playgroundTool}/`} lang="en" hreflang="en">
               <Rich text={t.openInPlayground} />
               <span class="bs__arrow" aria-hidden="true">{arrow}</span>

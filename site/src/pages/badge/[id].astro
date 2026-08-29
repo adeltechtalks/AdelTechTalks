@@ -72,6 +72,11 @@ const isNew = Astro.url.searchParams.get('new') === '1';
 const icon = PILLAR_ICON[track.pillar as keyof typeof PILLAR_ICON] ?? 'award';
 ---
 
+{/* One person's badge is not a search result, and the Playground it links on to
+    is parked. `noindex, follow` keeps the page and its OG card working for the
+    person who shared it — an unfurl reads meta tags, not robots — while keeping
+    it out of the index. The page itself is untouched: same route, same render,
+    same share buttons. See `parked` in site.config.ts. */}
 <Base
   title={ogTitle}
   description={ogDescription}
@@ -79,6 +84,7 @@ const icon = PILLAR_ICON[track.pillar as keyof typeof PILLAR_ICON] ?? 'award';
   ogImageAlt={`The ${track.badge} badge for ${track.name} on ${site.name}`}
   ogImageWidth={1200}
   ogImageHeight={630}
+  noindex
 >
   <section class="container bd">
     {isNew && (

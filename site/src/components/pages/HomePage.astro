@@ -6,36 +6,38 @@
    guarantees they drift apart, and a drifted Arabic homepage is exactly the
    "visual afterthought" §10 forbids.
 
-   ── THE FROZEN ORDER (Website Structure v2, 2026-08-17) ─────────────────────
+   ── THE ORDER ───────────────────────────────────────────────────────────────
 
      1. Hero                          I ❤ Tech
      2. What I'm Exploring Now        Building · Testing · Learning
      3. Vibe Coding                   building with AI
-     4. Gear                          using and testing technology
-     5. Learn                         the gateway to the library
-     6. Playground                    what you can actually open
-     7. Latest                        real published content, or nothing
-     8. About + Newsletter            the close
-     9. Footer                        (Base.astro)
-
-   Two sections joined the IA v2.0 order that preceded this file: the
-   orientation trio at §2, and Latest at §7.
+     4. Latest                        real published content, or nothing
+     5. Gear                          using and testing technology
+     6. Learn                         the gateway to the library
+     7. About + Newsletter            the close
+     8. Footer                        (Base.astro)
 
    §2 answers the question a first-time visitor actually arrives with — "what
    is this person doing right now" — before the page starts arguing for
    individual pillars. Three doors, named, one screen.
 
-   §7 sits after everything the reader can DO and before the personal close,
-   because a feed is the least opinionated thing on the page and the close
-   should still be last. It renders published content or it renders nothing:
-   with fewer than two real items it is absent from the DOM entirely.
+   ── TWO PHASE 1 CHANGES TO THE v2 ORDER ─────────────────────────────────────
+   The Playground section is gone from this page. It is PARKED, not deleted —
+   `parked.playground` in site.config.ts, which is also what takes it out of the
+   header, the footer and the Learn Hub. /playground still resolves.
+
+   Latest has moved UP, from below Learn to directly under Vibe Coding. Its old
+   position was reasoned from the v2 IA: a feed is the least opinionated thing
+   on the page, so it sat after everything the reader could DO. Phase 1 inverts
+   that premise — the whole point of this phase is that newly published work is
+   the most important thing on the site, and a feed that appears sixth is a feed
+   nobody scrolls to. The personal close is still last.
 
    ── EVERY SECTION COLLAPSES ON ITS OWN ──────────────────────────────────────
-   §3 and §4 are gated on real assets (a build needs a real screenshot, a gear
-   story needs a real photograph), §5 drops any surface with nothing published,
-   §6 lists only tools you can actually open, §7 disappears below two items.
-   §2 never collapses — it is navigation, and all three destinations have
-   designed empty states of their own.
+   §3 and §5 are gated on real assets (a build needs a real screenshot, a gear
+   story needs a real photograph), §4 disappears below two items, §6 drops any
+   surface with nothing published. §2 never collapses — it is navigation, and
+   all three destinations have designed empty states of their own.
 
    With an empty content directory this page is a hero, three doors, four honest
    lines and a close — which is the correct state, not a broken one.
@@ -50,7 +52,6 @@ import Exploring from '../home/Exploring.astro';
 import RealWorld from '../home/RealWorld.astro';
 import GearSection from '../home/GearSection.astro';
 import LearnSection from '../home/LearnSection.astro';
-import PlaygroundSection from '../home/PlaygroundSection.astro';
 import Latest from '../home/Latest.astro';
 import AboutSubscribe from '../home/AboutSubscribe.astro';
 import { site } from '../../site.config';
@@ -75,20 +76,17 @@ const description = lang === 'ar' ? site.descriptionAr : site.description;
   {/* 3 — Vibe Coding in the Real World. Building with AI. */}
   <RealWorld lang={lang} />
 
-  {/* 4 — Gear. Using and testing technology. */}
-  <GearSection lang={lang} />
-
-  {/* 5 — Learn. The gateway to the library, not the library. */}
-  <LearnSection lang={lang} />
-
-  {/* 6 — Playground. Only what you can actually open. */}
-  <PlaygroundSection lang={lang} />
-
-  {/* 7 — Latest. Real published content, or nothing at all. */}
+  {/* 4 — Latest. Real published content, or nothing at all. */}
   <Latest lang={lang} />
 
-  {/* 8 — About + Subscribe. The close. */}
+  {/* 5 — Gear. Using and testing technology. */}
+  <GearSection lang={lang} />
+
+  {/* 6 — Learn. The gateway to the library, not the library. */}
+  <LearnSection lang={lang} />
+
+  {/* 7 — About + Subscribe. The close. */}
   <AboutSubscribe lang={lang} />
 
-  {/* 9 — Footer, from Base.astro. */}
+  {/* 8 — Footer, from Base.astro. */}
 </Base>

@@ -10,9 +10,13 @@ import { playground, services } from '../../site.config';
 const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
 ---
 
+{/* PARKED for Phase 1 — see `parked` in site.config.ts. The route still
+    resolves so links shared before today still land on a working page, but it
+    is out of the sitemap (astro.config.mjs) and out of search. */}
 <Base
   title="Playground"
   description="Short hands-on tracks. Run the thing yourself and keep the badge."
+  noindex
 >
   <section class="container">
     <div class="stack pg__head">

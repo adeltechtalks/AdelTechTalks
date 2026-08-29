@@ -657,7 +657,11 @@ const en: Copy = {
         { name: 'Vibe Coding', body: 'See what I’m building', href: '/vibe-coding' },
         { name: 'Gear', body: 'What’s on the desk', href: '/gear' },
         { name: 'Learn', body: 'Explore what I’m learning', href: '/learn' },
-        { name: 'Playground', body: 'Try something', href: '/playground' },
+        /* Was the Playground, which is parked for Phase 1 (see `parked` in
+           site.config.ts). The slot goes to the Prompt Library: it is the one
+           surface here that is actually stocked, and it is a Phase 1 priority
+           in its own right. */
+        { name: 'Prompt Library', body: 'Take a prompt with you', href: '/prompts' },
       ],
     },
     footer: {
@@ -1116,7 +1120,12 @@ const ar: Copy = {
         { name: 'Vibe Coding', body: 'شوف اللي ببنيه', href: '/vibe-coding' },
         { name: 'Gear', body: 'إيه اللي على المكتب دلوقتي', href: '/gear' },
         { name: 'اتعلم', body: 'شوف اللي بتعلمه', href: '/learn' },
-        { name: 'Playground', body: 'جرّب حاجة', href: '/playground' },
+        /* §11 — 'Prompt Library' is a proper noun and stays English, exactly as
+           'Vibe Coding' and 'Gear' do in the cards above it and as the footer's
+           `promptLibrary` already does. The body line is the colloquial
+           register these cards are written in, saying what the authored
+           `ecosystem.prompts` line says in MSA. */
+        { name: 'Prompt Library', body: 'الـ[[prompts]] اللي بستخدمها فعلاً', href: '/prompts' },
       ],
     },
     footer: {

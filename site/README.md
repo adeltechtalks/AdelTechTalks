@@ -45,7 +45,7 @@ that was live before the v2.0 migration is still at the same address.
 | Articles | `/articles/<slug>` | `/ar/articles/<slug>` |
 | Topics | `/topics`, `/topics/<id>` | `/ar/topics`, `/ar/topics/<id>` |
 | Newsletter | `/newsletter` | `/ar/newsletter` |
-| Playground | `/playground`, `/playground/<slug>` | — |
+| Playground *(parked)* | `/playground`, `/playground/<slug>` | — |
 | Work with me | `/work-with-me` | — |
 | Contact | `/contact` | — |
 | Badge (shared) | `/badge/<id>` | — |
@@ -67,32 +67,58 @@ real screenshot of something live, a Gear story needs a real photograph. Until
 then the file is drafted and committed but generates no page. See **Publication
 is a gate** below.
 
-### The header holds five items
+### The header
 
-`Vibe Coding · Gear · Learn · Playground · About`, plus Subscribe as the one
-filled pill. Guides, Use Cases, Videos, Prompts and Topics all keep the URLs
-they had — they are reached from `/learn`, which is an index of the whole
-library, and from the footer's second column, which lists every one of them.
-That is what lets the ecosystem grow without the navigation growing with it.
+`Vibe Coding · Gear · Learn · About`, plus Subscribe as the one filled pill.
+Guides, Use Cases, Videos, Prompts and Topics all keep the URLs they had — they
+are reached from `/learn`, which is an index of the whole library, and from the
+footer's second column, which lists every one of them. That is what lets the
+ecosystem grow without the navigation growing with it.
 
 The order lives in one place, `nav` in `src/site.config.ts`, and the header,
 the mobile menu and the footer all read from it, so the three cannot drift.
 
-### The homepage is in pillar order
+### Parked features
+
+A parked feature has an intact implementation and a route that still resolves,
+but no public way in: no header slot, no footer link, no homepage section, no
+hub card, no cross-link, and no place in the sitemap.
+
+**The Playground is parked for Phase 1.** Its pages, API routes, server code,
+Supabase tables and migrations are all untouched, and a link shared before it
+was parked still lands on a working page — it is simply no longer advertised,
+and it renders `noindex`. Signing in is parked with it: `/login` and `/profile`
+exist to serve the Playground's progress and badges, and nothing else on the
+site needs an account today. `/badge/<id>` is parked in the narrower sense of
+`noindex` only: it is a page one person shares deliberately, so it keeps its
+route, its render and its Open Graph card, and only stops being a search
+result.
+
+Everything reads one flag, `parked` in `src/site.config.ts`. Setting
+`playground: false` brings back the header slot, the footer link, the homepage
+section, the Learn Hub card, the "Open in Playground" build CTAs and the account
+links. Two things it cannot reach on its own, both commented at their site: the
+`noindex` prop on the pages themselves, and the sitemap filter in
+`astro.config.mjs`.
+
+### The homepage order
 
     1. Hero
-    2. Vibe Coding in the Real World      building with AI
-    3. Gear — Currently Testing           using and testing technology
-    4. Learn                              the gateway to the library
-    5. Playground                         only what you can actually open
-    6. About + Subscribe                  the close
-    7. Footer
+    2. What I'm Exploring Now             Building · Testing · Learning
+    3. Vibe Coding in the Real World      building with AI
+    4. Latest                             real published content, or nothing
+    5. Gear — Currently Testing           using and testing technology
+    6. Learn                              the gateway to the library
+    7. About + Subscribe                  the close
+    8. Footer
 
-Every section collapses on its own. §2 and §3 are gated on real assets, §4
-drops any surface with nothing published in that language, §5 lists only tools
-a reader can open right now. With an empty content directory the homepage is a
-hero, four honest lines and a close — which is the correct state, not a broken
-one.
+Latest sits fourth rather than sixth: Phase 1 is about publishing, and a feed
+nobody scrolls to is not a feed. The personal close is still last.
+
+Every section collapses on its own. §3 and §5 are gated on real assets, §4
+disappears below two items, §6 drops any surface with nothing published in that
+language. With an empty content directory the homepage is a hero, three doors,
+four honest lines and a close — which is the correct state, not a broken one.
 
 ### Publication is a gate, not a schema rule
 
