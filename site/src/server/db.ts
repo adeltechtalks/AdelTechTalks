@@ -58,6 +58,30 @@ function fromEnv(env: ServerEnv, name: 'SUPABASE_URL' | 'SUPABASE_SERVICE_ROLE_K
   return typeof fromWorkers === 'string' && fromWorkers ? fromWorkers : undefined;
 }
 
+/**
+ * Binding NAMES the Worker can currently see, and whether the service-role key
+ * is among them. Never values.
+ *
+ * Exported so a route can emit it as its OWN log line. The same facts are in
+ * the thrown Error's message, but Cloudflare's log pipeline serialised only the
+ * stack — the message never appeared — so relying on the Error to carry the
+ * diagnostic lost it. A plain string logged separately does not depend on how
+ * an Error is serialised.
+ */
+export function bindingReport(env: ServerEnv) {
+  const keys = (o: unknown) =>
+    o && typeof o === 'object' ? Object.keys(o as object).sort() : null;
+  const localsKeys = keys(env);
+  const workersKeys = keys(workerEnv);
+  return {
+    localsRuntimeEnvKeys: localsKeys,
+    cloudflareWorkersEnvKeys: workersKeys,
+    hasServiceRoleKey:
+      Boolean(localsKeys?.includes('SUPABASE_SERVICE_ROLE_KEY')) ||
+      Boolean(workersKeys?.includes('SUPABASE_SERVICE_ROLE_KEY')),
+  };
+}
+
 /** Which sources were actually visible. Logged on failure so the next report
     says which branch was empty instead of only that something was. */
 function bindingDiagnostics(env: ServerEnv): string {

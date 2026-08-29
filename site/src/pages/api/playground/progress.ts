@@ -11,7 +11,7 @@
 import type { APIRoute } from 'astro';
 import { requireUser, isResponse, json } from '../../../server/auth';
 import { rateLimit } from '../../../server/ratelimit';
-import { MissingBindingError, recordStep, type ServerEnv } from '../../../server/db';
+import { MissingBindingError, bindingReport, recordStep, type ServerEnv } from '../../../server/db';
 
 export const prerender = false;
 
@@ -61,6 +61,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
     /* A missing binding is not a failed write — the request was fine and the
        server is not configured to serve it. Separate status, separate fix. */
     if (err instanceof MissingBindingError) {
+      /* A dedicated line, as a plain string. The same facts live in the Error's
+         message, but Cloudflare logged only the stack — so this does not go
+         through Error serialisation. Binding NAMES only, never values. */
+      console.error(
+        'ATC_BINDING_DIAGNOSTIC ' +
+          JSON.stringify({ route: '/api/playground/progress', ...bindingReport(env) })
+      );
       return json({ error: 'server_misconfigured' }, 503);
     }
     return json({ error: 'write_failed' }, 500);
