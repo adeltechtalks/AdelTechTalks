@@ -31,7 +31,8 @@ const stamps = playground.tracks.map((t) => ({
 }));
 ---
 
-<Base title="Your profile" description="Your Tech Passport, badges and share links.">
+{/* An account page holds nothing public — see /login.astro. */}
+<Base title="Your profile" description="Your Tech Passport, badges and share links." noindex>
   <section class="container prof">
     <!-- One h1 for the document (§30). The two states below swap at runtime,
          so neither of them can be it — a hidden h1 would leave the visible

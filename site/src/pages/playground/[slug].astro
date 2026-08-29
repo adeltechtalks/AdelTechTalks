@@ -34,7 +34,8 @@ const TYPE_LABEL: Record<string, string> = {
 };
 ---
 
-<Base title={track.name} description={track.body}>
+{/* PARKED — see `parked` in site.config.ts and /playground/index.astro. */}
+<Base title={track.name} description={track.body} noindex>
   <section class="container gm">
     <div class="stack gm__head">
       <div class="row">

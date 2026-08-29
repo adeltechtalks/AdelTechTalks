@@ -58,6 +58,44 @@ export const site = {
 };
 
 /* -----------------------------------------------------------------------------
+   PARKED FEATURES (Phase 1)
+   -----------------------------------------------------------------------------
+   A parked feature is one whose implementation is INTACT and whose routes still
+   resolve, but which has no public way in: no header slot, no footer link, no
+   homepage section, no hub card, no cross-link from another page, and no place
+   in the sitemap.
+
+   This is deliberately not a deletion. The Playground's pages, API routes,
+   server code, Supabase tables and migrations are all untouched — a link
+   shared before today still lands on a working page. What changes is that
+   AdelTechTalks stops pointing at it while Phase 1 is about publishing.
+
+   ── HOW TO BRING ONE BACK ───────────────────────────────────────────────────
+   Set its flag to false. That is the whole operation: every entry point below
+   reads this one object, so nothing has to be remembered or re-found.
+
+     · the header and the mobile menu   — via `nav` (phase 1 vs 2), below
+     · the footer's Explore column      — via `nav`, in Footer.astro
+     · the Learn Hub card               — via `ecosystem`, below
+     · the homepage section             — HomePage.astro
+     · "Open in Playground" CTAs        — VibeCodingHub.astro, BuildStory.astro
+     · the About page's closing cards   — copy.ts
+     · search indexing                  — `noindex` on the pages themselves and
+                                          the sitemap filter in astro.config.mjs
+
+   Those last two are the only ones a flag cannot reach on its own, because a
+   `<meta name="robots">` tag and the sitemap filter are per-page decisions; both
+   are commented at their site with a pointer back here.
+   -------------------------------------------------------------------------- */
+export const parked = {
+  /* Phase 1 strategy: AdelTechTalks is an AI education and creator platform,
+     and the Playground's quiz/badge loop is not what it is about right now.
+     Phase 2 may replace it with something much simpler (course → test → pass →
+     certificate), so nothing here is being thrown away in the meantime. */
+  playground: true,
+};
+
+/* -----------------------------------------------------------------------------
    NAVIGATION (§24)
    -----------------------------------------------------------------------------
    Data-driven on purpose. Adding Podcast, Services, Resume or the Prompt
@@ -80,7 +118,11 @@ export const nav: Array<{ key: string; path: string; phase: number }> = [
   { key: 'vibeCoding', path: '/vibe-coding', phase: 1 },
   { key: 'gear', path: '/gear', phase: 1 },
   { key: 'learn', path: '/learn', phase: 1 },
-  { key: 'playground', path: '/playground', phase: 1 },
+  /* PARKED. `parked.playground` demotes this out of phase 1, which is what the
+     header, the mobile menu and the footer's Explore column all read. The entry
+     itself stays so the route is still declared in one place and unparking is a
+     boolean, not an archaeology exercise. */
+  { key: 'playground', path: '/playground', phase: parked.playground ? 2 : 1 },
   { key: 'about', path: '/about', phase: 1 },
   /* Rendered as the Subscribe pill by the header, not as a plain nav link. */
   { key: 'newsletter', path: '/newsletter', phase: 1.2 },
@@ -222,11 +264,13 @@ export const ecosystem: Array<{
   { key: 'videos', path: '/videos', icon: 'clapperboard', status: 'live' },
   { key: 'prompts', path: '/prompts', icon: 'library', status: 'live' },
   { key: 'topics', path: '/topics', icon: 'compass', status: 'live' },
+  /* PARKED — see `parked` above. Kept in the list so the Learn Hub card can be
+     restored by flipping one boolean; filtered out below while parked. */
   { key: 'playground', path: '/playground', icon: 'gamepad-2', status: 'live' },
   /* §22 — defined, deliberately not routed. Do not give this a path until the
      course experience itself is finished. */
   { key: 'courses', path: null, icon: 'graduation-cap', status: 'building' },
-];
+].filter((item) => !(item.key === 'playground' && parked.playground));
 
 /* -----------------------------------------------------------------------------
    MONETISATION (Phase 1.1 — architecture only, nothing switched on)

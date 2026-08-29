@@ -29,6 +29,7 @@ import StoryRow from '../ia/StoryRow.astro';
 import { useCopy } from '../../copy';
 import { buildGroups, featuredBuild, BUILD_STATUS_TONE } from '../../lib/pillars';
 import { localizePath, type Lang } from '../../i18n';
+import { parked } from '../../site.config';
 
 interface Props {
   lang: Lang;
@@ -77,7 +78,11 @@ const arrow = lang === 'ar' ? '←' : '→';
                 <Rich text={c.ia.vc.read} />
                 <span class="vch__arrow" aria-hidden="true">{arrow}</span>
               </a>
-              {featured.playgroundTool && (
+              {/* A build may still declare `playgroundTool` in its front matter —
+                  the field is not going anywhere — but while the Playground is
+                  parked this hub does not offer a way in. See `parked` in
+                  site.config.ts. */}
+              {featured.playgroundTool && !parked.playground && (
                 <a class="vch__alt" href={localizePath(`/playground/${featured.playgroundTool}`, lang)}>
                   <Rich text={c.ia.vc.openInPlayground} />
                   <span class="vch__arrow" aria-hidden="true">{arrow}</span>

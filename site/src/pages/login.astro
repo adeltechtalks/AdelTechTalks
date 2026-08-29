@@ -15,7 +15,9 @@ import { services, site } from '../site.config';
 const live = Boolean(services.supabaseUrl && services.supabaseAnonKey);
 ---
 
-<Base title="Sign in" description={`Sign in to ${site.name} to keep your badges and your Tech Passport.`}>
+{/* An account page holds nothing public. It was already out of the sitemap;
+    this is the matching signal on the page itself. */}
+<Base title="Sign in" description={`Sign in to ${site.name} to keep your badges and your Tech Passport.`} noindex>
   <section class="container lg">
     <div class="lg__intro">
       <span class="overline">Account</span>

@@ -32,12 +32,22 @@ export default defineConfig({
       // nothing public, and /playground/passport is a 301 kept only so links
       // shared before the move still land somewhere sensible.
       //
+      // The Playground itself and the badge pages are PARKED for Phase 1 —
+      // see `parked` in src/site.config.ts. Their routes still resolve and a
+      // link shared before today still works; they simply stop being
+      // advertised. Each of those pages also renders `noindex`, and this is the
+      // half of that decision a flag cannot reach, because the sitemap is
+      // assembled here rather than per page. Unparking means deleting
+      // `playground` and `badge` from the pattern below as well as flipping
+      // the flag.
+      //
       // An index whose collection is empty is dropped too, per language. Those
       // pages render `noindex`, and listing a noindex page in the sitemap is a
       // contradictory signal. Both come back automatically the moment something
       // is published — this is a content-availability state, not a routing one.
       filter: (page) =>
-        !/\/(login|profile|playground\/passport)\/$/.test(page) &&
+        !/\/(login|profile)\/$/.test(page) &&
+        !/\/(playground|badge)(\/|$)/.test(page) &&
         emptyIndexFilter([
           ['guides', 'guides'],
           ['videos', 'videos'],
