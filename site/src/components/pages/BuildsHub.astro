@@ -50,12 +50,12 @@ const hasAnything = Boolean(featured);
 const arrow = lang === 'ar' ? '←' : '→';
 ---
 
-<Base lang={lang} title={c.ia.vc.hubKicker} description={c.ia.vc.hubIntro} noindex={!hasAnything}>
+<Base lang={lang} title={c.ia.builds.hubKicker} description={c.ia.builds.hubIntro} noindex={!hasAnything}>
   <div class="container vch" data-vb>
     <header class="vch__head" data-vb-reveal style="--vb-step:0">
-      <span class="vch__kicker">{c.ia.vc.hubKicker}</span>
-      <Rich text={c.ia.vc.hubTitle} as="h1" class="vch__title ar-hero" />
-      <Rich text={c.ia.vc.hubIntro} as="p" class="vch__intro" />
+      <span class="vch__kicker">{c.ia.builds.hubKicker}</span>
+      <Rich text={c.ia.builds.hubTitle} as="h1" class="vch__title ar-hero" />
+      <Rich text={c.ia.builds.hubIntro} as="p" class="vch__intro" />
     </header>
 
     {featured ? (
@@ -63,7 +63,7 @@ const arrow = lang === 'ar' ? '←' : '→';
         <section class="vch__featured" data-vb-reveal style="--vb-step:1" aria-labelledby="vch-featured">
           <div class="vch__featuredText">
             <StatusPill
-              label={c.ia.vc.status[featured.status]}
+              label={c.ia.builds.status[featured.status]}
               tone={BUILD_STATUS_TONE[featured.status]}
               dot={featured.status === 'building'}
               onDark
@@ -75,7 +75,7 @@ const arrow = lang === 'ar' ? '←' : '→';
 
             <div class="vch__featuredActions">
               <a class="vch__cta" href={featured.href}>
-                <Rich text={c.ia.vc.read} />
+                <Rich text={c.ia.builds.read} />
                 <span class="vch__arrow" aria-hidden="true">{arrow}</span>
               </a>
               {/* A build may still declare `playgroundTool` in its front matter —
@@ -84,7 +84,7 @@ const arrow = lang === 'ar' ? '←' : '→';
                   site.config.ts. */}
               {featured.playgroundTool && !parked.playground && (
                 <a class="vch__alt" href={localizePath(`/playground/${featured.playgroundTool}`, lang)}>
-                  <Rich text={c.ia.vc.openInPlayground} />
+                  <Rich text={c.ia.builds.openInPlayground} />
                   <span class="vch__arrow" aria-hidden="true">{arrow}</span>
                 </a>
               )}
@@ -103,15 +103,15 @@ const arrow = lang === 'ar' ? '←' : '→';
         {/* Structural labels only — no episode titles, dates or counts. */}
         {featured.series && (
           <div class="vch__series" data-vb-reveal style="--vb-step:2">
-            <span class="vch__seriesLabel"><Rich text={c.ia.vc.seriesLabel} /></span>
-            <span class="vch__parts" dir="ltr">{c.ia.vc.seriesStrip}</span>
+            <span class="vch__seriesLabel"><Rich text={c.ia.builds.seriesLabel} /></span>
+            <span class="vch__parts" dir="ltr">{c.ia.builds.seriesStrip}</span>
           </div>
         )}
 
         {grouped.map((group, gi) => (
           <section class="vch__group" aria-labelledby={`vch-${group.id}`}>
             <h2 class="vch__groupTitle" id={`vch-${group.id}`} data-vb-reveal style={`--vb-step:${3 + gi}`}>
-              {group.id === 'builds' ? c.ia.vc.groupBuilds : c.ia.vc.groupExperiments}
+              {group.id === 'builds' ? c.ia.builds.groupBuilds : c.ia.builds.groupExperiments}
             </h2>
             <ul class="vch__rows">
               {group.stories.map((story, i) => (
@@ -120,10 +120,10 @@ const arrow = lang === 'ar' ? '←' : '→';
                   href={story.href}
                   question={story.question}
                   context={story.context}
-                  label={c.ia.vc.status[story.status]}
+                  label={c.ia.builds.status[story.status]}
                   tone={BUILD_STATUS_TONE[story.status]}
                   dimmed={story.status === 'paused'}
-                  cta={c.ia.vc.read}
+                  cta={c.ia.builds.read}
                   step={i}
                 />
               ))}
@@ -134,10 +134,10 @@ const arrow = lang === 'ar' ? '←' : '→';
     ) : (
       /* Zero published builds. An honest line, not an empty page and not a
          fabricated "coming soon" roadmap. */
-      <p class="vch__empty" data-vb-reveal style="--vb-step:1"><Rich text={c.ia.vc.empty} /></p>
+      <p class="vch__empty" data-vb-reveal style="--vb-step:1"><Rich text={c.ia.builds.empty} /></p>
     )}
 
-    <p class="vch__footnote"><Rich text={c.ia.vc.footnote} /></p>
+    <p class="vch__footnote"><Rich text={c.ia.builds.footnote} /></p>
   </div>
 </Base>
 

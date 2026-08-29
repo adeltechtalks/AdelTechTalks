@@ -117,8 +117,17 @@ const primary = nav
           item.key,
   }));
 
-/* ---- column 2: the Learn surfaces, in the design of record's order ---- */
-const SUPPORTING = ['useCases', 'prompts', 'guides', 'videos', 'series', 'topics'];
+/* ---- column 2: the supporting surfaces ---------------------------------------
+   Everything routed and live that does not hold a header slot. Each one is
+   dropped while it has nothing published in this language, and comes back on
+   its own the day something does.
+
+   GEAR IS HERE AND NOT IN THE COLUMN ABOVE. It is not a Phase 1 pillar —
+   unboxings, reviews and comparisons belong to Gear Nests — but /gear, the
+   collection and every published story still work, and a route nothing links to
+   is a route nobody can find. With no gear story published it is absent, which
+   is the same rule every other entry in this column follows. */
+const SUPPORTING = ['useCases', 'prompts', 'guides', 'videos', 'series', 'topics', 'gear'];
 const supporting = SUPPORTING.map((key) => nav.find((item) => item.key === key))
   .filter((item): item is NonNullable<typeof item> => Boolean(item) && item!.phase <= 1.5)
   /* `series` is deliberately not gated here. It is not a content SURFACE with
@@ -128,11 +137,9 @@ const supporting = SUPPORTING.map((key) => nav.find((item) => item.key === key))
   .filter((item) => !empty.has(item.key))
   .map((item) => ({
     href: localizePath(item.path, lang),
-    /* `nav.series` is labelled "Vibe Coding" — it was the Phase 1.1 name for
-       the build narrative, back when the series WAS the pillar. Now that
-       /vibe-coding is the pillar and sits in the column above, reusing that
-       label here would print "Vibe Coding" twice in one footer, pointing at
-       two different pages. The series takes its own name instead. */
+    /* `nav.series` used to be labelled "Vibe Coding", from when the series WAS
+       the pillar. Builds is the pillar now and sits in the column above, so the
+       series takes its own name rather than competing with it. */
     label:
       item.key === 'series'
         ? c.series.label

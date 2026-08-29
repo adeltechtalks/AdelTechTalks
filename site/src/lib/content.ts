@@ -17,8 +17,15 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import { PILLAR_TO_TOPIC } from './topics';
 import { videos as configVideos, topics } from '../site.config';
 import type { Lang } from '../i18n';
+import { getGear } from './pillars';
 
-export type EntryKind = 'guide' | 'article' | 'use-case' | 'prompt' | 'video';
+export type EntryKind = 'guide' | 'article' | 'use-case' | 'prompt' | 'video' | 'build';
+
+/* The shapes a guide can take. A cheat sheet is a FORMAT, not a pillar and not
+   a hub — see content.config.ts. Order is the order /guides renders them in:
+   read-it-through first, keep-it-open last. */
+export const GUIDE_FORMATS = ['tutorial', 'workflow', 'checklist', 'cheatsheet'] as const;
+export type GuideFormat = (typeof GUIDE_FORMATS)[number];
 
 export interface Entry {
   kind: EntryKind;
@@ -43,6 +50,9 @@ export interface Entry {
   /* Videos only. The YouTube ID is what a thumbnail URL needs, and for a
      structured video the entry's `slug` is the page slug, not the video. */
   youtubeId?: string;
+  /* Guides only. What shape the piece is — see content.config.ts. Carried on
+     the Entry so /guides can group by it without re-reading the collection. */
+  format?: GuideFormat;
   /* Links off-site. Videos in the config array do; on-site video pages do not. */
   external?: boolean;
 }
@@ -52,7 +62,11 @@ type Editorial =
   | CollectionEntry<'articles'>
   | CollectionEntry<'useCases'>
   | CollectionEntry<'prompts'>
-  | CollectionEntry<'videos'>;
+  | CollectionEntry<'videos'>
+  /* Builds spread the same `editorial` base in content.config.ts, so a build
+     maps through `toEntry` unchanged. Its `question` is the H1 on its own page;
+     in a feed row it is `title`, like everything else. */
+  | CollectionEntry<'builds'>;
 
 /* Resolved at build time: is there anything in a given collection at all?
    Astro logs a warning for every getCollection() call against an empty
@@ -68,16 +82,19 @@ const HAS = {
   prompts: Object.keys(import.meta.glob('../content/prompts/**/*.md')).length > 0,
   videos: Object.keys(import.meta.glob('../content/videos/**/*.md')).length > 0,
   courses: Object.keys(import.meta.glob('../content/courses/**/*.md')).length > 0,
+  builds: Object.keys(import.meta.glob('../content/builds/**/*.md')).length > 0,
+  gear: Object.keys(import.meta.glob('../content/gear/**/*.md')).length > 0,
 };
 
 /* The URL segment each kind lives under. One place, so a route rename is one
    edit and not a hunt through five components. */
-const BASE: Record<Exclude<EntryKind, 'video'> | 'video', string> = {
+const BASE: Record<EntryKind, string> = {
   guide: 'guides',
   article: 'articles',
   'use-case': 'use-cases',
   prompt: 'prompts',
   video: 'videos',
+  build: 'builds',
 };
 
 /** A published piece's effective topic: `topic`, else the legacy pillar. */
@@ -106,6 +123,7 @@ function toEntry(item: Editorial, kind: EntryKind, lang: Lang): Entry {
     series: item.data.series,
     part: item.data.part,
     youtubeId: 'youtubeId' in item.data ? item.data.youtubeId : undefined,
+    format: 'format' in item.data ? item.data.format : undefined,
     href: `${prefix}/${BASE[kind]}/${item.id}/`,
   };
 }
@@ -152,6 +170,26 @@ export async function getPrompts(lang: Lang): Promise<Entry[]> {
  * videos that link straight out to YouTube. A structured video is an on-site
  * page and is NOT marked external.
  */
+/**
+ * Published Builds for one language, as feed entries.
+ *
+ * A Build is a content pillar, so it belongs in every shared surface a piece of
+ * writing belongs in: the homepage Latest feed, the topic counts, /ask-index and
+ * — because `getRelated` resolves slugs against `getLatest` — the `related:`
+ * front matter of any guide, video, prompt or use case. Before Phase 1 builds
+ * were invisible to all four, which meant a Build could not be linked TO from
+ * anywhere in the library without a bespoke field.
+ *
+ * `lib/pillars.ts` still owns the RICH build shape — stage, status, tools, the
+ * journey rail. This is the flat editorial view of the same file, and the two
+ * read the same collection, so they cannot disagree about what is published.
+ */
+export async function getBuildEntries(lang: Lang): Promise<Entry[]> {
+  if (!HAS.builds) return [];
+  const items = await getCollection('builds', ({ data }) => !data.draft && data.lang === lang);
+  return items.map((i) => toEntry(i, 'build', lang)).sort(byDate);
+}
+
 export async function getVideoPages(lang: Lang): Promise<Entry[]> {
   if (!HAS.videos) return [];
   const items = await getCollection('videos', ({ data }) => !data.draft && data.lang === lang);
@@ -191,6 +229,7 @@ export async function getLatest(lang: Lang, limit?: number): Promise<Entry[]> {
     ...(await getPrompts(lang)),
     ...(await getVideoPages(lang)),
     ...getVideos(),
+    ...(await getBuildEntries(lang)),
   ].sort(byDate);
   return limit ? all.slice(0, limit) : all;
 }
@@ -259,12 +298,24 @@ const SURFACE_KIND: Record<string, EntryKind> = {
   prompts: 'prompt',
 };
 
+/* Gear is not an EntryKind — it never enters the editorial feed — so its
+   emptiness is asked of lib/pillars.ts, which owns the gear publication rule
+   (a gear story needs a real photograph). Asking it rather than restating the
+   rule here is what stops the footer and the Gear Hub disagreeing about what is
+   published. It is here at all because the footer links /gear when, and only
+   when, a gear story exists. */
+async function gearIsEmpty(lang: Lang): Promise<boolean> {
+  if (!HAS.gear) return true;
+  return (await getGear(lang)).length === 0;
+}
+
 export async function emptySurfaces(lang: Lang): Promise<Set<string>> {
   const counts = await countByKind(lang);
   const empty = new Set<string>();
   for (const [key, kind] of Object.entries(SURFACE_KIND)) {
     if (!(counts[kind] > 0)) empty.add(key);
   }
+  if (await gearIsEmpty(lang)) empty.add('gear');
   return empty;
 }
 
@@ -330,14 +381,21 @@ export function findTopic(id?: string) {
    has genuinely been written in.
    -------------------------------------------------------------------------- */
 
-type TranslatableCollection = 'guides' | 'articles' | 'useCases' | 'prompts' | 'videos';
+type TranslatableCollection =
+  | 'guides'
+  | 'articles'
+  | 'useCases'
+  | 'prompts'
+  | 'videos'
+  | 'builds';
 
-const COLLECTION_OF: Record<Exclude<EntryKind, never>, TranslatableCollection> = {
+const COLLECTION_OF: Record<EntryKind, TranslatableCollection> = {
   guide: 'guides',
   article: 'articles',
   'use-case': 'useCases',
   prompt: 'prompts',
   video: 'videos',
+  build: 'builds',
 };
 
 const HAS_COLLECTION: Record<TranslatableCollection, boolean> = {
@@ -346,6 +404,7 @@ const HAS_COLLECTION: Record<TranslatableCollection, boolean> = {
   useCases: HAS.useCases,
   prompts: HAS.prompts,
   videos: HAS.videos,
+  builds: HAS.builds,
 };
 
 export interface Alternate {

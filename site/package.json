@@ -13,7 +13,8 @@
     "security:secrets": "node scripts/security/secret-scan.mjs --self-test && node scripts/security/secret-scan.mjs",
     "security:dist": "node scripts/security/secret-scan.mjs --dist",
     "security:policy": "node scripts/security/policy-audit.mjs",
-    "security:rls": "node scripts/security/rls-check.mjs"
+    "security:rls": "node scripts/security/rls-check.mjs",
+    "new": "node scripts/new.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.10",

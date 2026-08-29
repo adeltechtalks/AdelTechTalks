@@ -1,4 +1,18 @@
 ---
-import VibeCodingHub from '../../components/pages/VibeCodingHub.astro';
+/* /vibe-coding moved to /builds.
+
+   Vibe Coding is no longer a content pillar. It is a TOPIC inside Learn and a
+   SERIES (/series/vibe-coding, untouched) — a way of working, not a category of
+   thing Adel makes. Builds is the pillar, and it is wider than coding: a build
+   may be design, automation, prompting, hardware or a business, or several at
+   once. See PUBLISHING.md.
+
+   This redirect exists because /vibe-coding was a live, linkable URL. The build
+   STORIES never needed one: zero builds were published under the old path, so
+   the rename cost exactly this file and its Arabic twin.
+
+   Same mechanism as /playground/passport — a prerendered redirect emits an HTML
+   stub carrying a canonical and `noindex`, so the link keeps working and the
+   index learns the new address. */
+return Astro.redirect('/builds/', 301);
 ---
-<VibeCodingHub lang="en" />

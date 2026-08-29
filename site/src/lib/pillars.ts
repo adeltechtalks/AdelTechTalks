@@ -18,11 +18,17 @@
    time, and NOT in the Zod schema:
 
      · a Gear story needs a real photograph
-     · a Build story needs a real hero screenshot of something live
 
    A story missing one is drafted, committed, reviewable — and invisible. It
    appears the moment the asset lands, with no other change. Nothing is ever
    substituted, generated or stubbed to fill the gap.
+
+   PHASE 1 REMOVED THE BUILD SIDE OF THAT RULE. A Build story used to need a
+   real hero screenshot too. It no longer does — see `buildPublishable`. The
+   difference is what the missing asset costs: a Gear story with no photograph
+   has no evidence and its whole claim is "I used this thing", whereas a Build
+   story's evidence is the write-up, and BrowserFrame has a designed empty state
+   the photograph slot does not. Still nothing substituted, generated or stubbed.
    ========================================================================== */
 
 import { getCollection, type CollectionEntry } from 'astro:content';
@@ -184,20 +190,42 @@ export interface BuildStory {
   series?: string;
   part?: number;
   liveUrl?: string;
-  heroShot: string;
+  /* Optional. Absent, BrowserFrame renders its designed empty screen — see
+     `buildPublishable` below. */
+  heroShot?: string;
   heroShotAlt: string;
   sessionShot?: string;
   sessionShotAlt?: string;
   tools: { name: string; role: string }[];
+  /* Slugs of guides, videos, prompts or use cases that go with this build.
+     Resolved through `getRelated` in lib/content.ts, which is the same shared
+     path every other content type uses — no second relationship mechanism. */
+  related: string[];
   crossover?: string;
   playgroundTool?: string;
   date: Date;
   href: string;
 }
 
-/** A Build story may only be seen once there is a real screenshot of it. */
+/**
+ * A Build story publishes on its writing, not on its screenshot.
+ *
+ * It used to require `heroShot`, on the reasoning that a build with no picture
+ * of the thing is a claim without evidence. That gate cost more than it bought:
+ * it blocked publishing the WRITE-UP — the part that is actually the work —
+ * behind an asset, and Phase 1 is about publishing today.
+ *
+ * Nothing is faked in its place. `BrowserFrame` already renders a calm empty
+ * screen when it has no `src`, which is a designed state and deliberately NOT
+ * the dashed-box-with-a-picture-glyph idiom that means "this image failed to
+ * load". Add `heroShot:` to the front matter later and the real screenshot
+ * appears in the same frame, at the same size, moving nothing around it —
+ * that is what `object-fit: cover` on a fixed ratio is for.
+ *
+ * The gate that remains is `draft`, which is the author's own switch.
+ */
 const buildPublishable = (data: CollectionEntry<'builds'>['data'], lang: Lang) =>
-  !data.draft && data.lang === lang && Boolean(data.heroShot);
+  !data.draft && data.lang === lang;
 
 function toBuild(item: CollectionEntry<'builds'>, lang: Lang): BuildStory {
   const prefix = lang === 'en' ? '' : `/${lang}`;
@@ -212,15 +240,16 @@ function toBuild(item: CollectionEntry<'builds'>, lang: Lang): BuildStory {
     series: item.data.series,
     part: item.data.part,
     liveUrl: item.data.liveUrl,
-    heroShot: item.data.heroShot as string,
+    heroShot: item.data.heroShot,
     heroShotAlt: item.data.heroShotAlt ?? '',
     sessionShot: item.data.sessionShot,
     sessionShotAlt: item.data.sessionShotAlt,
     tools: item.data.tools,
+    related: item.data.related,
     crossover: item.data.crossover,
     playgroundTool: item.data.playgroundTool,
     date: item.data.date,
-    href: `${prefix}/vibe-coding/${item.id}/`,
+    href: `${prefix}/builds/${item.id}/`,
   };
 }
 

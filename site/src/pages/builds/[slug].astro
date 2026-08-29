@@ -1,10 +1,10 @@
 ---
-/* Build Story — /vibe-coding/<slug>, English.
+/* Build Story — /builds/<slug>, English.
 
-   The route only exists for a build that has cleared the publication gate:
-   `getBuilds()` requires a real hero screenshot of something live, so a build
-   still waiting on its screenshot generates no page at all. That is the gate
-   doing its job — the missing asset blocks its own story and nothing else. */
+   The route exists for every build that is not a draft. The screenshot is NOT
+   a gate: a build with no `heroShot` publishes and renders BrowserFrame's
+   designed empty screen, and adding the real one later swaps it in without
+   moving anything. Phase 1 publishes the write-up, which is the work. */
 
 import BuildStory from '../../components/pages/BuildStory.astro';
 import { getBuilds } from '../../lib/pillars';

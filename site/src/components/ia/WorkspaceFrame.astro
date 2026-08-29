@@ -37,7 +37,8 @@ interface Pane {
 interface Props {
   /** The live product: URL bar + hero screenshot. Always real by the time we get here. */
   url: string;
-  heroShot: string;
+  /** Optional — BrowserFrame renders its designed empty screen without it. */
+  heroShot?: string;
   heroShotAlt?: string;
   heroLabel: string;
   /** Working-session panes. Any without a screenshot drop out silently. */

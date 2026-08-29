@@ -44,12 +44,16 @@ export type BadgeMarker =
   | 'ai-powered'
   | 'featured';
 
-/* The one series that is a pillar rather than a topic. A piece inside it is a
-   Vibe Coding piece whatever its collection says. */
+/* Vibe Coding is a Learn TOPIC and a series in Phase 1, not a pillar. A guide,
+   article, video or prompt written inside that series still reads as a Vibe
+   Coding piece, and this is what says so. */
 const VIBE_CODING_SERIES = 'vibe-coding';
 
 /** The primary badge for an entry. Exactly one, always. */
 export function badgeFor(entry: Entry): BadgeKind {
+  /* Kind wins for a Build, series or no series: a Build in the Vibe Coding
+     series is still a Build, and that is the pillar a reader is choosing. */
+  if (entry.kind === 'build') return 'build';
   if (entry.series === VIBE_CODING_SERIES) return 'vibe-coding';
   switch (entry.kind) {
     case 'prompt':

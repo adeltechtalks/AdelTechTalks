@@ -57,12 +57,12 @@ const fillPercent = ((activeIndex + 0.5) / BUILD_STAGES.length) * 100;
    takes تمّت where the rest take تمّ. English uses one word for both. */
 const stateLabel = (state: string, i: number) =>
   state === 'now'
-    ? c.ia.vc.stageState.now
+    ? c.ia.builds.stageState.now
     : state === 'next'
-      ? c.ia.vc.stageState.next
+      ? c.ia.builds.stageState.next
       : i === 0
-        ? c.ia.vc.stageState.doneFirst
-        : c.ia.vc.stageState.done;
+        ? c.ia.builds.stageState.doneFirst
+        : c.ia.builds.stageState.done;
 ---
 
 <div class:list={['jr', `jr--${variant}`, className]} {...rest}>
@@ -85,7 +85,7 @@ const stateLabel = (state: string, i: number) =>
           ) : (
             <span class="jr__dot jr__dot--next" aria-hidden="true"></span>
           )}
-          <span class="jr__name"><Rich text={c.ia.vc.stage[s.id]} /></span>
+          <span class="jr__name"><Rich text={c.ia.builds.stage[s.id]} /></span>
           <span class="jr__state"><Rich text={stateLabel(s.state, i)} /></span>
         </li>
       ))}
