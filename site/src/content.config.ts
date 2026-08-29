@@ -26,7 +26,18 @@ import { glob } from 'astro/loaders';
 
 /* Every id in `topics` in site.config.ts. Kept as a literal union so a typo in
    frontmatter fails the build instead of producing an orphan page. */
-const TOPICS = ['ai', 'automation', 'product', 'tech', 'building', 'creator-tech'] as const;
+const TOPICS = [
+  'ai',
+  /* reads as "AI Workflows" — see site.config.ts */
+  'automation',
+  'vibe-coding',
+  'vibe-designing',
+  'prompting',
+  'product',
+  'tech',
+  'building',
+  'creator-tech',
+] as const;
 
 /* Every id in `series` in site.config.ts. Same reasoning as TOPICS: a piece
    claiming a series that does not exist should fail the build, not silently
@@ -117,6 +128,18 @@ const guides = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/guides' }),
   schema: z.object({
     ...editorial,
+    /* What SHAPE this piece is. A cheat sheet is not a pillar and it is not a
+       hub — it is a guide you are meant to keep, so it is a value here rather
+       than a ninth collection and a tenth route.
+
+         tutorial   read it once, end up with a thing that runs
+         cheatsheet keep it open beside the work — usually has `download`
+         workflow   a chain end to end: capture, model, output
+         checklist  run down it before or after doing something
+
+       /guides filters on this. Nothing else branches on it, so adding a fifth
+       shape later is one line here and one chip. */
+    format: z.enum(['tutorial', 'cheatsheet', 'workflow', 'checklist']).default('tutorial'),
     /* Download / access (§19). A file in /public, or an external link.
        Present → the guide renders its download panel. */
     download: z

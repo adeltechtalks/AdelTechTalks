@@ -9,37 +9,40 @@
    ── THE ORDER ───────────────────────────────────────────────────────────────
 
      1. Hero                          I ❤ Tech
-     2. What I'm Exploring Now        Building · Testing · Learning
-     3. Vibe Coding                   building with AI
+     2. The three doors               Learn · Prompts · Builds
+     3. Builds                        real things, made with AI
      4. Latest                        real published content, or nothing
-     5. Gear                          using and testing technology
-     6. Learn                         the gateway to the library
-     7. About + Newsletter            the close
-     8. Footer                        (Base.astro)
+     5. Learn                         the gateway to the library
+     6. About + Newsletter            the close
+     7. Footer                        (Base.astro)
 
-   §2 answers the question a first-time visitor actually arrives with — "what
-   is this person doing right now" — before the page starts arguing for
-   individual pillars. Three doors, named, one screen.
+   §2 answers the question a first-time visitor actually arrives with, and it is
+   the three pillars in header order — Learn, Prompts, Builds. Three doors,
+   named, one screen.
 
-   ── TWO PHASE 1 CHANGES TO THE v2 ORDER ─────────────────────────────────────
-   The Playground section is gone from this page. It is PARKED, not deleted —
+   ── WHAT PHASE 1 CHANGED, AND WHY ───────────────────────────────────────────
+   The Playground section is gone. It is PARKED, not deleted —
    `parked.playground` in site.config.ts, which is also what takes it out of the
    header, the footer and the Learn Hub. /playground still resolves.
 
-   Latest has moved UP, from below Learn to directly under Vibe Coding. Its old
-   position was reasoned from the v2 IA: a feed is the least opinionated thing
-   on the page, so it sat after everything the reader could DO. Phase 1 inverts
-   that premise — the whole point of this phase is that newly published work is
-   the most important thing on the site, and a feed that appears sixth is a feed
-   nobody scrolls to. The personal close is still last.
+   The Gear section is gone too, and for a different reason: Gear is not a
+   Phase 1 pillar. Unboxings, reviews and comparisons belong to Gear Nests, and
+   when a device is part of an AI experiment here that story is a Build. /gear,
+   the collection and every published story are untouched — it simply is not one
+   of the three things this page is about.
+
+   Latest moved UP, from seventh to fourth. Its old position was reasoned from
+   the v2 IA: a feed is the least opinionated thing on the page, so it sat after
+   everything the reader could DO. Phase 1 inverts that premise — newly
+   published work is the point of this phase, and a feed that appears seventh is
+   a feed nobody scrolls to. The personal close is still last.
 
    ── EVERY SECTION COLLAPSES ON ITS OWN ──────────────────────────────────────
-   §3 and §5 are gated on real assets (a build needs a real screenshot, a gear
-   story needs a real photograph), §4 disappears below two items, §6 drops any
+   §3 gates on a real screenshot, §4 disappears below two items, §5 drops any
    surface with nothing published. §2 never collapses — it is navigation, and
    all three destinations have designed empty states of their own.
 
-   With an empty content directory this page is a hero, three doors, four honest
+   With an empty content directory this page is a hero, three doors, two honest
    lines and a close — which is the correct state, not a broken one.
 
    CS-05: exactly one primary action on this page, and it is the hero's. Every
@@ -50,7 +53,6 @@ import Base from '../../layouts/Base.astro';
 import Hero from '../home/Hero.astro';
 import Exploring from '../home/Exploring.astro';
 import RealWorld from '../home/RealWorld.astro';
-import GearSection from '../home/GearSection.astro';
 import LearnSection from '../home/LearnSection.astro';
 import Latest from '../home/Latest.astro';
 import AboutSubscribe from '../home/AboutSubscribe.astro';
@@ -70,23 +72,20 @@ const description = lang === 'ar' ? site.descriptionAr : site.description;
   {/* 1 — Hero. I ❤ Tech. */}
   <Hero lang={lang} />
 
-  {/* 2 — What I'm exploring now. Three doors: Building, Testing, Learning. */}
+  {/* 2 — The three doors: Learn, Prompts, Builds. */}
   <Exploring lang={lang} />
 
-  {/* 3 — Vibe Coding in the Real World. Building with AI. */}
+  {/* 3 — Builds. Real things, made with AI. */}
   <RealWorld lang={lang} />
 
   {/* 4 — Latest. Real published content, or nothing at all. */}
   <Latest lang={lang} />
 
-  {/* 5 — Gear. Using and testing technology. */}
-  <GearSection lang={lang} />
-
-  {/* 6 — Learn. The gateway to the library, not the library. */}
+  {/* 5 — Learn. The gateway to the library, not the library. */}
   <LearnSection lang={lang} />
 
-  {/* 7 — About + Subscribe. The close. */}
+  {/* 6 — About + Subscribe. The close. */}
   <AboutSubscribe lang={lang} />
 
-  {/* 8 — Footer, from Base.astro. */}
+  {/* 7 — Footer, from Base.astro. */}
 </Base>

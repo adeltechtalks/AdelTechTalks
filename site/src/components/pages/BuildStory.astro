@@ -14,8 +14,9 @@
      08  related     other builds
 
    ── WHAT REACHES THIS PAGE ──────────────────────────────────────────────────
-   Only a build that has cleared the publication gate: `getBuilds()` requires a
-   real hero screenshot of something live. A build without one is drafted,
+   Only a build that has cleared the publication gate: `getBuilds()` requires
+   `draft: false` and nothing else. A build without a screenshot publishes and
+   renders BrowserFrame's designed empty screen; a build still being written is
    committed, reviewable — and has no route at all. That is the gate working:
    the missing asset blocks ITS OWN story, and nothing else.
 
@@ -37,6 +38,7 @@ import Rich from '../Rich.astro';
 import StatusPill from '../ia/StatusPill.astro';
 import JourneyRail from '../ia/JourneyRail.astro';
 import BrowserFrame from '../ia/BrowserFrame.astro';
+import EntryList from '../editorial/EntryList.astro';
 import StoryRow from '../ia/StoryRow.astro';
 import { useCopy } from '../../copy';
 import {
@@ -47,6 +49,7 @@ import {
   seriesNeighbours,
   type BuildStory,
 } from '../../lib/pillars';
+import { getRelated } from '../../lib/content';
 import { localizePath, type Lang } from '../../i18n';
 import { parked } from '../../site.config';
 
@@ -57,11 +60,17 @@ interface Props {
 
 const { lang, story } = Astro.props;
 const c = useCopy(lang);
-const t = c.ia.vc;
+const t = c.ia.builds;
 
 const gearSide = await crossoverGear(lang, story);
 const { previous, next } = await seriesNeighbours(lang, story);
 const related = await relatedBuilds(lang, story.slug);
+/* The build's own `related:` front matter — guides, videos, prompts, use cases.
+   `relatedBuilds` above finds OTHER BUILDS by proximity; this is the author
+   naming what goes with this one, and it resolves through the same
+   `getRelated` every Learn page uses. A build about automating a camera can
+   point at the prompt it used and the guide that explains it. */
+const alsoRead = await getRelated(lang, story.related);
 const alternateLinks = await buildAlternates(lang, story.slug);
 
 const arrow = lang === 'ar' ? '←' : '→';
@@ -79,7 +88,7 @@ const arrow = lang === 'ar' ? '←' : '→';
     {/* ---- 01 · hero ---- */}
     <header class="bs__hero" data-vb-reveal style="--vb-step:0">
       <div class="bs__heroText">
-        <a class="bs__crumb" href={localizePath('/vibe-coding', lang)}>
+        <a class="bs__crumb" href={localizePath('/builds', lang)}>
           <span aria-hidden="true">{lang === 'ar' ? '→' : '←'}</span>
           <Rich text={t.hubKicker} />
         </a>
@@ -217,6 +226,14 @@ const arrow = lang === 'ar' ? '←' : '→';
             />
           ))}
         </ul>
+      </section>
+    )}
+
+    {/* ---- 09 · everything else that goes with this build ---- */}
+    {alsoRead.length > 0 && (
+      <section class="bs__alsoRead" aria-labelledby="bs-also">
+        <h2 class="bs__sectionTitle" id="bs-also">{c.guides.relatedTitle}</h2>
+        <EntryList entries={alsoRead} lang={lang} />
       </section>
     )}
 
@@ -446,6 +463,10 @@ const arrow = lang === 'ar' ? '←' : '→';
   /* ---- 08 · related ---- */
   .bs__related { margin-top: var(--atc-space-16); }
   .bs__relatedList { list-style: none; margin: 0; padding: 0; }
+
+  /* Same rhythm as the related-builds block above it. EntryList brings its own
+     card styling, so this only owns the gap and the heading. */
+  .bs__alsoRead { margin-top: var(--atc-space-16); }
 
   .bs__footnote {
     margin: var(--atc-space-16) 0 0;

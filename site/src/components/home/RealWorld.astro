@@ -78,7 +78,7 @@ const arrow = lang === 'ar' ? '←' : '→';
           off the visitor-facing page. The rules still govern what publishes;
           they are simply not addressed to the reader. */}
       <span class="rw__kicker" dir="ltr">{t.label}</span>
-      <span class="rw__icon"><PillarIcon name="vibe-coding" size={20} /></span>
+      <span class="rw__icon"><PillarIcon name="builds" size={20} /></span>
     </div>
 
     <h2 class="rw__title ar-hero" id="rw-title" data-vb-reveal style="--vb-step:1">
@@ -99,7 +99,7 @@ const arrow = lang === 'ar' ? '←' : '→';
           <div class="rw__chips">
             <StatusPill label={t.featuredLabel} tone="neutral" onDark />
             <StatusPill
-              label={c.ia.vc.status[featured.status]}
+              label={c.ia.builds.status[featured.status]}
               tone={BUILD_STATUS_TONE[featured.status]}
               dot={featured.status === 'building'}
               onDark
@@ -124,12 +124,12 @@ const arrow = lang === 'ar' ? '←' : '→';
 
           <div class="rw__actions">
             <a class="rw__cta" href={featured.href}>
-              <Rich text={c.ia.vc.read} />
+              <Rich text={c.ia.builds.read} />
               <span class="rw__arrow" aria-hidden="true">{arrow}</span>
             </a>
             {featured.liveUrl && (
               <a class="rw__alt" href={featured.liveUrl} rel="noopener" target="_blank">
-                <Rich text={c.ia.vc.seeLive} />
+                <Rich text={c.ia.builds.seeLive} />
                 <span aria-hidden="true">↗</span>
               </a>
             )}
@@ -167,7 +167,7 @@ const arrow = lang === 'ar' ? '←' : '→';
       )}
 
       <div class="rw__actions rw__actions--section" data-vb-reveal style="--vb-step:6">
-        <a class="rw__ctaGhost" href={localizePath('/vibe-coding', lang)}>
+        <a class="rw__ctaGhost" href={localizePath('/builds', lang)}>
           <Rich text={t.ctaPrimary} />
           <span class="rw__arrow" aria-hidden="true">{arrow}</span>
         </a>

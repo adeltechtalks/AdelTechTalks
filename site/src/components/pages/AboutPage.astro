@@ -91,16 +91,11 @@ const interests = aboutStory.interests.map((item) => item[lang]).filter(Boolean)
 const portrait = photography.aboutPhoto || photography.heroPortrait;
 const studio = photography.studioPhoto;
 
-/* The closing cards carry a pillar glyph each. Anything that is a Learn
-   surface — /learn itself, and /prompts, which is one of its surfaces — takes
-   the Learn notebook, which is also the honest fallback for a card added later:
-   a wrong-but-related glyph beats a glyph for a section that is parked. */
+/* One glyph per closing card. The cards are the three content pillars, so this
+   only has three answers; Learn is the fallback because a card added later is
+   far more likely to be a Learn surface than anything else. */
 const glyphFor = (href: string) =>
-  href.includes('vibe-coding')
-    ? 'vibe-coding'
-    : href.includes('gear')
-      ? 'gear'
-      : 'learn';
+  href.includes('/builds') ? 'builds' : href.includes('/prompts') ? 'prompts' : 'learn';
 ---
 
 <Base lang={lang} title={c.about.title} description={t.lede.replace(/\[\[|\]\]/g, '')}>
@@ -212,7 +207,7 @@ const glyphFor = (href: string) =>
               </li>
             ))}
           </ul>
-          <a class="ab__worldCta ab__worldCta--night" href={localizePath('/vibe-coding', lang)}>
+          <a class="ab__worldCta ab__worldCta--night" href={localizePath('/builds', lang)}>
             <Rich text={t.nightCta} />
             <span aria-hidden="true">{arrow}</span>
           </a>
@@ -642,12 +637,13 @@ const glyphFor = (href: string) =>
 
   /* ---- 7 · closing ------------------------------------------------------ */
   .ab__closing { padding-bottom: var(--atc-space-8); }
+  /* Three cards, because there are three content pillars. */
   .ab__cards {
     list-style: none;
     margin: var(--atc-space-8) 0 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--atc-space-4);
   }
   .ab__card {

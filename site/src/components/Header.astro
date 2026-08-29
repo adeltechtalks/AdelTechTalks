@@ -83,11 +83,14 @@ const menuFor = (key: string) => menus.find((m) => m.key === key);
 const plain = (text: string) => text.replace(/\[\[|\]\]/g, '');
 
 const GLYPH = {
-  vibeCoding: 'vibe-coding',
-  gear: 'gear',
   learn: 'learn',
-  playground: 'playground',
+  prompts: 'prompts',
+  builds: 'builds',
   about: 'about',
+  /* Not in the Phase 1 header; kept so unparking or re-promoting either one is
+     a nav change and not also a missing-glyph bug. */
+  gear: 'gear',
+  playground: 'playground',
 } as const;
 
 const other = LANGS.find((l) => l !== lang)!;

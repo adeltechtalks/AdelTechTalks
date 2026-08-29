@@ -1,32 +1,40 @@
 ---
 /* =============================================================================
-   Homepage §2 — What I'm exploring now
+   Homepage §2 — the three doors
    =============================================================================
-   Design of record: Website Structure v2, frames 2a/2b/2c/2d.
+   THE three content pillars, in header order, as three orientation cards. It is
+   an ORIENTATION strip, not a dashboard: no counts, no status feed, no live
+   data. Three doors, named.
 
-   Three orientation cards — Building · Testing · Learning — that answer "what
-   is this person doing right now" in one screen, and hand the reader to the
-   pillar that owns each answer. It is an ORIENTATION strip, not a dashboard:
-   no counts, no status feed, no live data. Three doors, named.
+   Each card leads with the READER'S intent rather than the pillar's name,
+   because that is the sentence somebody arrives with:
+
+     Learn    "Teach me."                     → /learn
+     Prompts  "Give me something I can use."  → /prompts
+     Builds   "Show me what you made."        → /builds
+
+   That is the same question an author answers when they have an idea, from the
+   other side — see PUBLISHING.md. One decision, one place for the answer.
 
    ── THE CARDS ARE DELIBERATELY NOT IDENTICAL ────────────────────────────────
-   From the handoff's card-system note, verbatim: "Orientation cards:
-   deliberately non-identical — Building = graphite + mono terminal line;
-   Testing = warm white + photography; Learning = ice + oversized type 'Aa'.
-   Whole card is the tap target."
+   The card system gives three distinct treatments — graphite + a mono specimen
+   line, warm white + photography, ice + oversized type "Aa" — so the trio reads
+   as three different places rather than one component rendered three times.
+   They are matched to meaning rather than to position:
 
-   So each card carries the surface of the section it points at, and the trio
-   reads as three different places rather than one component rendered three
-   times. The whole card is an anchor: one tap target, one hover state, and the
-   arrow moves rather than being a second link.
+     Learn    ice + "Aa"          reading, type, study
+     Prompts  graphite + mono     a prompt IS a mono line
+     Builds   warm white + photo  real things, photographed
+
+   The whole card is an anchor: one tap target, one hover state, and the arrow
+   moves rather than being a second link.
 
    ── NO CONTENT DEPENDENCY ───────────────────────────────────────────────────
-   These three cards never collapse and never gate on published content. They
-   are navigation, and all three destinations — /vibe-coding, /gear, /learn —
-   have designed empty states of their own. The photograph on the Testing card
-   is the one optional part: absent, that card falls back to its warm-white
-   ground with the caption alone, which is the approved treatment rather than a
-   broken frame.
+   These cards never collapse and never gate on published content. They are
+   navigation, and all three destinations have designed empty states of their
+   own. The photograph on the Builds card is the one optional part: absent, that
+   card falls back to its warm-white ground with the caption alone, which is the
+   approved treatment rather than a broken frame.
    ========================================================================== */
 
 import Rich from '../Rich.astro';
@@ -54,36 +62,56 @@ const desk = photography.deskDetail;
   </header>
 
   <div class="ex__grid">
-    {/* ---- Building → Vibe Coding · graphite + the mono terminal line ---- */}
+    {/* ---- Learn · ice + the oversized "Aa" ---- */}
     <a
-      class="ex__card ex__card--building"
-      href={localizePath('/vibe-coding', lang)}
+      class="ex__card ex__card--learn"
+      href={localizePath('/learn', lang)}
       data-vb-reveal
       style="--vb-step:1"
     >
-      <span class="ex__marker" dir="ltr">{t.building.marker}</span>
-      <span class="ex__icon"><PillarIcon name="vibe-coding" size={24} /></span>
-      <h3 class="ex__name ar-heading"><Rich text={t.building.title} /></h3>
-      <Rich text={t.building.body} as="p" class="ex__body" />
-      {/* A structural label for the workflow, not a claim about a build. */}
-      <span class="ex__terminal" dir="ltr">{t.building.terminal}</span>
+      <span class="ex__marker" dir="ltr">{t.learn.marker}</span>
+      <span class="ex__icon"><PillarIcon name="learn" size={24} /></span>
+      <h3 class="ex__name ar-heading"><Rich text={t.learn.title} /></h3>
+      {/* Typographic ornament, not content: hidden from the accessibility tree
+          so it is never read out as the letters "A a". */}
+      <span class="ex__aa" aria-hidden="true" dir="ltr">Aa</span>
+      <Rich text={t.learn.body} as="p" class="ex__body" />
       <span class="ex__cta">
-        <Rich text={t.building.cta} />
+        <Rich text={t.learn.cta} />
         <span class="ex__arrow" aria-hidden="true">{arrow}</span>
       </span>
     </a>
 
-    {/* ---- Testing → Gear · warm white + photography ---- */}
+    {/* ---- Prompts · graphite + the mono specimen line ---- */}
     <a
-      class="ex__card ex__card--testing"
-      href={localizePath('/gear', lang)}
+      class="ex__card ex__card--prompts"
+      href={localizePath('/prompts', lang)}
       data-vb-reveal
       style="--vb-step:2"
     >
-      <span class="ex__marker" dir="ltr">{t.testing.marker}</span>
-      <span class="ex__icon"><PillarIcon name="gear" size={24} /></span>
-      <h3 class="ex__name ar-heading"><Rich text={t.testing.title} /></h3>
-      <Rich text={t.testing.body} as="p" class="ex__body" />
+      <span class="ex__marker" dir="ltr">{t.prompts.marker}</span>
+      <span class="ex__icon"><PillarIcon name="prompts" size={24} /></span>
+      <h3 class="ex__name ar-heading"><Rich text={t.prompts.title} /></h3>
+      <Rich text={t.prompts.body} as="p" class="ex__body" />
+      {/* A specimen of the shape of a prompt, not a quotation from one. */}
+      <span class="ex__specimen" dir="ltr">{t.prompts.specimen}</span>
+      <span class="ex__cta">
+        <Rich text={t.prompts.cta} />
+        <span class="ex__arrow" aria-hidden="true">{arrow}</span>
+      </span>
+    </a>
+
+    {/* ---- Builds · warm white + photography ---- */}
+    <a
+      class="ex__card ex__card--builds"
+      href={localizePath('/builds', lang)}
+      data-vb-reveal
+      style="--vb-step:3"
+    >
+      <span class="ex__marker" dir="ltr">{t.builds.marker}</span>
+      <span class="ex__icon"><PillarIcon name="builds" size={24} /></span>
+      <h3 class="ex__name ar-heading"><Rich text={t.builds.title} /></h3>
+      <Rich text={t.builds.body} as="p" class="ex__body" />
       {desk ? (
         <span class="ex__photo">
           <img src={desk} alt="" width="640" height="420" loading="lazy" decoding="async" />
@@ -91,30 +119,10 @@ const desk = photography.deskDetail;
       ) : (
         /* PH v1.0 — no stock, no generated stand-in, no empty dashed frame on a
            live page. The caption carries the card on its own. */
-        <span class="ex__caption" dir="ltr">{t.testing.caption}</span>
+        <span class="ex__caption" dir="ltr">{t.builds.caption}</span>
       )}
       <span class="ex__cta">
-        <Rich text={t.testing.cta} />
-        <span class="ex__arrow" aria-hidden="true">{arrow}</span>
-      </span>
-    </a>
-
-    {/* ---- Learning → Learn · ice + the oversized "Aa" ---- */}
-    <a
-      class="ex__card ex__card--learning"
-      href={localizePath('/learn', lang)}
-      data-vb-reveal
-      style="--vb-step:3"
-    >
-      <span class="ex__marker" dir="ltr">{t.learning.marker}</span>
-      <span class="ex__icon"><PillarIcon name="learn" size={24} /></span>
-      <h3 class="ex__name ar-heading"><Rich text={t.learning.title} /></h3>
-      {/* Typographic ornament, not content: hidden from the accessibility tree
-          so it is never read out as the letters "A a". */}
-      <span class="ex__aa" aria-hidden="true" dir="ltr">Aa</span>
-      <Rich text={t.learning.body} as="p" class="ex__body" />
-      <span class="ex__cta">
-        <Rich text={t.learning.cta} />
+        <Rich text={t.builds.cta} />
         <span class="ex__arrow" aria-hidden="true">{arrow}</span>
       </span>
     </a>
@@ -216,16 +224,16 @@ const desk = photography.deskDetail;
   }
 
   /* ---- Building: graphite, mono terminal line -------------------------- */
-  .ex__card--building {
+  .ex__card--prompts {
     background: var(--adel-graphite);
     color: var(--adel-white);
   }
-  .ex__card--building .ex__marker { color: var(--adel-mint-300); }
-  .ex__card--building .ex__icon { color: var(--adel-blue-300); }
-  .ex__card--building .ex__name { color: var(--adel-white); }
-  .ex__card--building .ex__body { color: rgba(255, 255, 255, 0.76); }
-  .ex__card--building .ex__cta { color: var(--adel-blue-300); }
-  .ex__terminal {
+  .ex__card--prompts .ex__marker { color: var(--adel-mint-300); }
+  .ex__card--prompts .ex__icon { color: var(--adel-blue-300); }
+  .ex__card--prompts .ex__name { color: var(--adel-white); }
+  .ex__card--prompts .ex__body { color: rgba(255, 255, 255, 0.76); }
+  .ex__card--prompts .ex__cta { color: var(--adel-blue-300); }
+  .ex__specimen {
     display: block;
     padding: var(--atc-space-3) var(--atc-space-4);
     border-radius: var(--adel-radius-inline);
@@ -238,15 +246,15 @@ const desk = photography.deskDetail;
   }
 
   /* ---- Testing: warm white, photography -------------------------------- */
-  .ex__card--testing {
+  .ex__card--builds {
     background: var(--adel-warm-white);
     border: 1px solid var(--adel-border-hairline);
     color: var(--adel-text-primary);
   }
-  .ex__card--testing .ex__marker { color: var(--adel-text-tertiary); }
-  .ex__card--testing .ex__icon { color: var(--adel-signature-blue); }
-  .ex__card--testing .ex__body { color: var(--adel-text-secondary); }
-  .ex__card--testing .ex__cta { color: var(--adel-text-link); }
+  .ex__card--builds .ex__marker { color: var(--adel-text-tertiary); }
+  .ex__card--builds .ex__icon { color: var(--adel-signature-blue); }
+  .ex__card--builds .ex__body { color: var(--adel-text-secondary); }
+  .ex__card--builds .ex__cta { color: var(--adel-text-link); }
   .ex__photo {
     display: block;
     margin-top: auto;
@@ -270,15 +278,15 @@ const desk = photography.deskDetail;
   .ex__caption ~ .ex__cta { margin-top: var(--atc-space-4); }
 
   /* ---- Learning: ice, oversized Aa -------------------------------------- */
-  .ex__card--learning {
+  .ex__card--learn {
     background: var(--adel-ice-blue);
     color: var(--adel-deep-blue);
   }
-  .ex__card--learning .ex__marker { color: var(--adel-blue-700); }
-  .ex__card--learning .ex__icon { color: var(--adel-signature-blue); }
-  .ex__card--learning .ex__name { color: var(--adel-deep-blue); }
-  .ex__card--learning .ex__body { color: var(--adel-blue-800); }
-  .ex__card--learning .ex__cta { color: var(--adel-deep-blue); }
+  .ex__card--learn .ex__marker { color: var(--adel-blue-700); }
+  .ex__card--learn .ex__icon { color: var(--adel-signature-blue); }
+  .ex__card--learn .ex__name { color: var(--adel-deep-blue); }
+  .ex__card--learn .ex__body { color: var(--adel-blue-800); }
+  .ex__card--learn .ex__cta { color: var(--adel-deep-blue); }
   .ex__aa {
     /* A Latin typographic ornament in both languages — never the Arabic
        display face, which has no Latin and a 24px floor this would clear only
@@ -314,7 +322,7 @@ const desk = photography.deskDetail;
      purpose. What a component still owns is its own Latin-only declarations —
      and the one that must never survive into Arabic is letter-spacing.
 
-     `.ex__kicker`, `.ex__marker`, `.ex__caption`, `.ex__terminal` and `.ex__aa`
+     `.ex__kicker`, `.ex__marker`, `.ex__caption`, `.ex__specimen` and `.ex__aa`
      are deliberately NOT in this list: those five slots carry Latin strings in
      both languages (frames 2c/2d keep "Right now", "Building", "Testing",
      "Learning", "On the desk" and the terminal line in English), so the mono

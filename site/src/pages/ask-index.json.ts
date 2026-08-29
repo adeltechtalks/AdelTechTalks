@@ -79,6 +79,10 @@ export const GET: APIRoute = async () => {
     { name: 'useCases' as const, kind: 'use-case', segment: 'use-cases' },
     { name: 'prompts' as const, kind: 'prompt', segment: 'prompts' },
     { name: 'videos' as const, kind: 'video', segment: 'videos' },
+    /* Builds are a content pillar, so they are retrievable like everything
+       else. Gear is deliberately absent: it is not a Phase 1 pillar and its
+       stories are a testing journal rather than something to answer from. */
+    { name: 'builds' as const, kind: 'build', segment: 'builds' },
   ];
 
   for (const source of sources) {

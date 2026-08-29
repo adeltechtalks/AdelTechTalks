@@ -35,8 +35,8 @@ export interface Copy {
   nav: {
     guides: string; topics: string; about: string; newsletter: string; playground: string;
     work: string;
-    /* IA v2.0 — the two content pillars */
-    vibeCoding: string; gear: string;
+    /* Phase 1 pillar; `gear` is routed but out of the header. */
+    builds: string; gear: string;
     /* Phase 1.1 */
     learn: string; series: string; useCases: string; videos: string; prompts: string;
     courses: string;
@@ -65,6 +65,8 @@ export interface Copy {
   guides: {
     title: string; intro: string; indexTitle: string; indexIntro: string; empty: string;
     downloadLabel: string; relatedTitle: string;
+    /* One label per GUIDE_FORMATS entry in lib/content.ts. */
+    formats: Record<'tutorial' | 'workflow' | 'checklist' | 'cheatsheet', string>;
   };
   /* ---- Phase 1.1 · the unified product ecosystem ---- */
   learn: {
@@ -114,12 +116,17 @@ export interface Copy {
      English and Arabic each written for its own reader. The Arabic is Egyptian
      colloquial, matching the frames, and is not a translation of the English. */
   ia: {
-    nav: { vibeCoding: string; gear: string; learn: string; playground: string; about: string; subscribe: string };
+    nav: {
+      learn: string; prompts: string; builds: string; about: string; subscribe: string;
+      /* Not in the Phase 1 header. Kept because the Gear hub and the parked
+         Playground still name themselves in their own pages. */
+      gear: string; playground: string;
+    };
     /* Desktop dropdowns + mobile accordion — Website Structure v2, frame 2e.
        The taxonomy is frozen: these are the exact entries, in the exact order,
        under the exact three pillars that carry a menu. */
     menu: {
-      vibeCoding: { currentBuilds: string; experiments: string; buildStories: string; series: string; all: string };
+      builds: { currentBuilds: string; experiments: string; buildStories: string; series: string; all: string };
       gear: {
         currentlyTesting: string; reviews: string; creatorGear: string;
         mobileComputing: string; cameras: string; gamingSetup: string; aiGear: string; all: string;
@@ -130,11 +137,13 @@ export interface Copy {
       };
     };
     /* Homepage §2 — What I'm exploring now (orientation trio) */
+    /* Homepage §2 — the three doors, in header order. `marker` is the reader's
+       intent, `title` is the pillar's name. */
     exploring: {
       kicker: string; title: string;
-      building: { marker: string; title: string; body: string; terminal: string; cta: string };
-      testing: { marker: string; title: string; body: string; caption: string; cta: string };
-      learning: { marker: string; title: string; body: string; cta: string };
+      learn: { marker: string; title: string; body: string; cta: string };
+      prompts: { marker: string; title: string; body: string; specimen: string; cta: string };
+      builds: { marker: string; title: string; body: string; caption: string; cta: string };
     };
     /* Homepage §7 — Latest (real published content only) */
     latestFeed: { kicker: string; title: string; viewAll: string };
@@ -220,7 +229,7 @@ export interface Copy {
       contact: string; promptLibrary: string; rights: string;
     };
     /* Build story + hub */
-    vc: {
+    builds: {
       hubKicker: string; hubTitle: string; hubIntro: string;
       featuredLabel: string; groupBuilds: string; groupExperiments: string;
       seriesLabel: string; seriesStrip: string;
@@ -242,7 +251,7 @@ const en: Copy = {
     guides: 'Guides',
     topics: 'Topics',
     about: 'About',
-    vibeCoding: 'Vibe Coding',
+    builds: 'Builds',
     gear: 'Gear',
     newsletter: 'Newsletter',
     playground: 'Playground',
@@ -315,6 +324,12 @@ const en: Copy = {
     empty: 'No guides published yet — the first ones are being written.',
     downloadLabel: 'Get the guide',
     relatedTitle: 'Related',
+    formats: {
+      tutorial: 'Tutorials',
+      workflow: 'Workflows',
+      checklist: 'Checklists',
+      cheatsheet: 'Cheat sheets',
+    },
   },
   learn: {
     title: 'Learn',
@@ -496,11 +511,11 @@ const en: Copy = {
   },
   /* ---- IA v2.0 — authored English, verbatim from the frozen frames ---- */
   ia: {
-    nav: { vibeCoding: 'Vibe Coding', gear: 'Gear', learn: 'Learn', playground: 'Playground', about: 'About', subscribe: 'Subscribe' },
+    nav: { learn: 'Learn', prompts: 'Prompts', builds: 'Builds', about: 'About', subscribe: 'Subscribe', gear: 'Gear', playground: 'Playground' },
     menu: {
-      vibeCoding: {
+      builds: {
         currentBuilds: 'Current Builds', experiments: 'Experiments',
-        buildStories: 'Build Stories', series: 'Series', all: 'All Vibe Coding',
+        buildStories: 'Build Stories', series: 'Series', all: 'All Builds',
       },
       gear: {
         currentlyTesting: 'Currently Testing', reviews: 'Reviews', creatorGear: 'Creator Gear',
@@ -513,28 +528,31 @@ const en: Copy = {
       },
     },
     exploring: {
-      kicker: 'Right now', title: 'What I’m exploring now.',
-      building: {
-        marker: 'Building', title: 'Vibe Coding',
-        body: 'Experiments, apps and workflows — built with AI, in the open.',
-        terminal: '$ idea → prompt → build → ship_', cta: 'Enter Vibe Coding',
+      kicker: 'Start here', title: 'Three ways in.',
+      learn: {
+        marker: 'Teach me', title: 'Learn',
+        body: 'AI, prompting, vibe coding and designing, workflows and automation — taught from real work.',
+        cta: 'Start learning',
       },
-      testing: {
-        marker: 'Testing', title: 'Gear',
-        body: 'Gadgets and creator tech I actually use.',
-        caption: 'On the desk', cta: 'See the Gear',
+      prompts: {
+        marker: 'Give me something I can use', title: 'Prompts',
+        body: 'The exact prompts I reuse, with what they get wrong and which models they were tested on.',
+        specimen: '> copy · paste · change one line_', cta: 'Open the library',
       },
-      learning: {
-        marker: 'Learning', title: 'Learn',
-        body: 'Prompts, techniques and lessons worth sharing.', cta: 'Start learning',
+      builds: {
+        marker: 'Show me what you made', title: 'Builds',
+        body: 'Apps, automations, hardware experiments — made with AI, in the open, outcome stated either way.',
+        caption: 'On the desk', cta: 'See the builds',
       },
     },
     latestFeed: { kicker: 'Latest', title: 'Fresh from the workbench.', viewAll: 'View all' },
     realWorld: {
-      label: 'Vibe Coding',
+      label: 'Builds',
       headBefore: 'What can I actually ', headEm: 'build', headAfter: ' with AI?',
-      support: 'Real builds, shared while they happen.',
-      ctaPrimary: 'Explore Vibe Coding', ctaSecondary: 'See all builds',
+      /* Not only code: a Build may be an app, an automation, a design, a
+         hardware experiment or a business — often several at once. */
+      support: 'Apps, automations and experiments — shared while they happen.',
+      ctaPrimary: 'See the builds', ctaSecondary: 'All builds and experiments',
       foldLabel: 'From idea → live', foldStatus: 'Current',
       foldJourney: 'Idea → Prompt → Build → Ship',
       featuredLabel: 'Featured build', crossoverChip: 'Crossover · × Gear', statusChip: 'Build · in progress',
@@ -653,15 +671,12 @@ const en: Copy = {
       threadBody:
         'Learning beats pretending to know everything — so everything here is shared while it’s still being figured out.',
       closingTitle: 'Still curious. Still building.',
+      /* The three content pillars, in header order. Gear was here and is not a
+         Phase 1 pillar; the Playground was here and is parked. */
       cards: [
-        { name: 'Vibe Coding', body: 'See what I’m building', href: '/vibe-coding' },
-        { name: 'Gear', body: 'What’s on the desk', href: '/gear' },
         { name: 'Learn', body: 'Explore what I’m learning', href: '/learn' },
-        /* Was the Playground, which is parked for Phase 1 (see `parked` in
-           site.config.ts). The slot goes to the Prompt Library: it is the one
-           surface here that is actually stocked, and it is a Phase 1 priority
-           in its own right. */
-        { name: 'Prompt Library', body: 'Take a prompt with you', href: '/prompts' },
+        { name: 'Prompts', body: 'Take a prompt with you', href: '/prompts' },
+        { name: 'Builds', body: 'See what I’m making', href: '/builds' },
       ],
     },
     footer: {
@@ -670,7 +685,7 @@ const en: Copy = {
       contact: 'Contact', promptLibrary: 'Prompt Library · soon',
       rights: 'AdelTechTalks',
     },
-    vc: {
+    builds: {
       hubKicker: 'Vibe Coding', hubTitle: 'I turn ideas into launches.',
       hubIntro: 'Every build in the open — the idea, the tools, what broke, and where it got to.',
       featuredLabel: 'Now building', groupBuilds: 'Builds', groupExperiments: 'Experiments',
@@ -705,7 +720,7 @@ const ar: Copy = {
   nav: {
     guides: 'الأدلة',
     topics: 'المواضيع',
-    vibeCoding: 'Vibe Coding',
+    builds: 'Builds',
     gear: 'Gear',
     about: 'عن عادل',
     newsletter: 'النشرة',
@@ -776,6 +791,13 @@ const ar: Copy = {
     empty: 'لا توجد أدلة منشورة بعد — أولها قيد الكتابة.',
     downloadLabel: 'احصل على الدليل',
     relatedTitle: 'ذات صلة',
+    /* ⚠️ AR — drafted, review wording. */
+    formats: {
+      tutorial: 'دروس',
+      workflow: '[[Workflows]]',
+      checklist: 'قوائم مراجعة',
+      cheatsheet: 'ملخّصات سريعة',
+    },
   },
   learn: {
     title: 'تعلّم',
@@ -956,13 +978,16 @@ const ar: Copy = {
      each language was written for its own reader. Do not rewrite. ---- */
   ia: {
     /* The navbar labels are the authored AR strings from the design of record
-       (frame 2c): the two pillar names and Playground stay English, Learn and
-       About are Arabic. */
-    nav: { vibeCoding: 'Vibe Coding', gear: 'Gear', learn: 'اتعلم', playground: 'Playground', about: 'عنّي', subscribe: 'اشترك' },
+       (frame 2c): pillar names stay English, Learn and About are Arabic.
+       §11 — 'Prompts' and 'Builds' are pillar names and stay English, as
+       'Vibe Coding' and 'Gear' always did. ⚠️ AR — drafted, review wording. */
+    nav: { learn: 'اتعلم', prompts: 'Prompts', builds: 'Builds', about: 'عنّي', subscribe: 'اشترك', gear: 'Gear', playground: 'Playground' },
     menu: {
-      vibeCoding: {
+      builds: {
         currentBuilds: 'الـ[[Builds]] الحالية', experiments: 'تجارب',
-        buildStories: 'قصص الـ[[Build]]', series: 'سلاسل', all: 'كل الـ[[Vibe Coding]]',
+        buildStories: 'قصص الـ[[Build]]', series: 'سلاسل',
+        /* ⚠️ AR — drafted, review wording. */
+        all: 'كل الـ[[Builds]]',
       },
       gear: {
         currentlyTesting: 'بجرّبه دلوقتي', reviews: 'مراجعات', creatorGear: '[[Creator Gear]]',
@@ -974,29 +999,33 @@ const ar: Copy = {
         videos: 'فيديوهات', browseByTopic: 'تصفّح بالموضوع', all: 'كل اللي بتعلمه',
       },
     },
+    /* ⚠️ AR — drafted, review wording. The markers are the reader's own
+       sentence, so they are colloquial; the pillar names stay English per §11. */
     exploring: {
-      kicker: 'Right now', title: 'بجرب إيه دلوقتي؟',
-      building: {
-        marker: 'Building', title: 'Vibe Coding',
-        body: 'تجارب وتطبيقات و[[workflows]] — ببنيها بالـ[[AI]] قدام الناس.',
-        terminal: '$ idea → prompt → build → ship_', cta: 'ادخل [[Vibe Coding]]',
+      kicker: 'Start here', title: 'تلات طرق تدخل بيهم.',
+      learn: {
+        marker: 'علّمني', title: 'اتعلم',
+        body: 'الـ[[AI]] والـ[[prompting]] والـ[[vibe coding]] والتصميم والـ[[workflows]] — من شغل حقيقي.',
+        cta: 'ابدأ من هنا',
       },
-      testing: {
-        marker: 'Testing', title: 'العتاد',
-        body: 'أجهزة و[[creator tech]] بستخدمها فعلًا.',
-        caption: 'On the desk', cta: 'شوف الـ[[Gear]]',
+      prompts: {
+        marker: 'إديني حاجة أستخدمها', title: 'Prompts',
+        body: 'الـ[[prompts]] اللي بستخدمها فعلاً، وبتغلط في إيه، واتجربت على أنهي [[models]].',
+        specimen: '> copy · paste · change one line_', cta: 'افتح المكتبة',
       },
-      learning: {
-        marker: 'Learning', title: 'تعلّم',
-        body: '[[Prompts]] وطرق شغل ودروس تستاهل تتشارك.', cta: 'ابدأ من هنا',
+      builds: {
+        marker: 'ورّيني عملت إيه', title: 'Builds',
+        body: 'تطبيقات و[[automations]] وتجارب على أجهزة — بالـ[[AI]] وقدام الناس، والنتيجة مكتوبة زي ما هي.',
+        caption: 'On the desk', cta: 'شوف الـ[[Builds]]',
       },
     },
     latestFeed: { kicker: 'Latest', title: 'آخر حاجات من الورشة.', viewAll: 'شوف الكل' },
     realWorld: {
-      label: 'Vibe Coding',
+      label: 'Builds',
       headBefore: 'إيه اللي أقدر أبنيه بالـ', headEm: 'AI', headAfter: '؟',
-      support: '[[Builds]] حقيقية، بشاركها أول بأول.',
-      ctaPrimary: 'اكتشف الـ[[Vibe Coding]]', ctaSecondary: 'شوف كل المشاريع',
+      /* ⚠️ AR — drafted, review wording. */
+      support: 'تطبيقات و[[automations]] وتجارب — بشاركها أول بأول.',
+      ctaPrimary: 'شوف الـ[[Builds]]', ctaSecondary: 'كل الـ[[Builds]] والتجارب',
       foldLabel: 'من الفكرة للإطلاق', foldStatus: 'حاليًا',
       foldJourney: 'فكرة ← [[Prompt]] ← [[Build]] ← إطلاق',
       featuredLabel: 'Featured build', crossoverChip: 'Crossover · × Gear', statusChip: 'بناء · شغّال دلوقتي',
@@ -1116,16 +1145,12 @@ const ar: Copy = {
       threadBody:
         'إني أتعلم أحسن من إني أعمل نفسي عارف كل حاجة — عشان كده كل اللي هنا بيتشارك وهو لسه بيتاكتشف.',
       closingTitle: 'لسه فضولي. ولسه ببني.',
+      /* §11 — the pillar names stay English, as 'Vibe Coding' and 'Gear' did.
+         ⚠️ AR — drafted, review wording. */
       cards: [
-        { name: 'Vibe Coding', body: 'شوف اللي ببنيه', href: '/vibe-coding' },
-        { name: 'Gear', body: 'إيه اللي على المكتب دلوقتي', href: '/gear' },
         { name: 'اتعلم', body: 'شوف اللي بتعلمه', href: '/learn' },
-        /* §11 — 'Prompt Library' is a proper noun and stays English, exactly as
-           'Vibe Coding' and 'Gear' do in the cards above it and as the footer's
-           `promptLibrary` already does. The body line is the colloquial
-           register these cards are written in, saying what the authored
-           `ecosystem.prompts` line says in MSA. */
-        { name: 'Prompt Library', body: 'الـ[[prompts]] اللي بستخدمها فعلاً', href: '/prompts' },
+        { name: 'Prompts', body: 'الـ[[prompts]] اللي بستخدمها فعلاً', href: '/prompts' },
+        { name: 'Builds', body: 'شوف اللي ببنيه', href: '/builds' },
       ],
     },
     footer: {
@@ -1134,7 +1159,7 @@ const ar: Copy = {
       contact: 'كلمني', promptLibrary: 'Prompt Library · قريباً',
       rights: 'AdelTechTalks',
     },
-    vc: {
+    builds: {
       hubKicker: 'Vibe Coding', hubTitle: 'بحوّل الأفكار لمشاريع حقيقية.',
       hubIntro: 'كل [[build]] في العلن — الفكرة، الأدوات، إيه اللي اتكسر، ووصل لفين.',
       featuredLabel: 'ببنيه دلوقتي', groupBuilds: 'Builds', groupExperiments: 'Experiments',

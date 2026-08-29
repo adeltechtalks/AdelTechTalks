@@ -104,37 +104,57 @@ export const parked = {
    so the shape of the future navigation is already decided and visible.
    -------------------------------------------------------------------------- */
 export const nav: Array<{ key: string; path: string; phase: number }> = [
-  /* IA v2.0 (frozen): Vibe Coding · Gear · Learn · Playground · About, with
-     Subscribe rendered separately as the one filled pill.
+  /* ── PHASE 1: THREE CONTENT PILLARS ──────────────────────────────────────
+     Learn · Prompts · Builds, then About, with Subscribe rendered separately
+     as the one filled pill.
 
-     The order is the frozen one and is used in three places from this single
-     list — the header, the mobile menu and the footer's Explore column — so
-     the three can never drift apart.
+     The mental model is deliberately small enough to hold in one hand, and it
+     is the same question an author asks when they have an idea:
 
-     Vibe Coding and Gear are the two content pillars: building with AI, and
-     using/testing technology. Everything else routed in Phase 1.1 is still
-     live at exactly the URL it had; those routes simply reach the reader
-     through /learn and the footer rather than competing for a header slot. */
-  { key: 'vibeCoding', path: '/vibe-coding', phase: 1 },
-  { key: 'gear', path: '/gear', phase: 1 },
+       Learn    Teach me.                    → am I teaching something?
+       Prompts  Give me something I can use. → am I giving something reusable?
+       Builds   Show me what you made.       → am I building or testing something?
+
+     ABOUT IS NOT A PILLAR. It is a supporting page that happens to sit in the
+     same bar. Everything else — Vibe Coding, Vibe Designing, AI Workflows,
+     Automation, Prompting — is a TOPIC inside Learn, not a fourth pillar, and
+     Videos and Cheat Sheets are FORMATS, not destinations. A video teaching
+     Vibe Coding is Learn; a video about automating a camera is a Build. What
+     the piece is FOR decides where it goes, never what file type it is.
+
+     The order is used in three places from this single list — the header, the
+     mobile menu and the footer's Explore column — so the three cannot drift. */
   { key: 'learn', path: '/learn', phase: 1 },
+  { key: 'prompts', path: '/prompts', phase: 1 },
+  { key: 'builds', path: '/builds', phase: 1 },
+  { key: 'about', path: '/about', phase: 1 },
+  /* Rendered as the Subscribe pill by the header, not as a plain nav link.
+     Subscribe is a Phase 1 conversion goal and stays prominent — parking the
+     Playground and hiding Sign in did not touch it, and subscribing has never
+     required an account. */
+  { key: 'newsletter', path: '/newsletter', phase: 1.2 },
   /* PARKED. `parked.playground` demotes this out of phase 1, which is what the
      header, the mobile menu and the footer's Explore column all read. The entry
      itself stays so the route is still declared in one place and unparking is a
      boolean, not an archaeology exercise. */
   { key: 'playground', path: '/playground', phase: parked.playground ? 2 : 1 },
-  { key: 'about', path: '/about', phase: 1 },
-  /* Rendered as the Subscribe pill by the header, not as a plain nav link. */
-  { key: 'newsletter', path: '/newsletter', phase: 1.2 },
-  /* The Phase 1.1 series page keeps its URL and its readers; /vibe-coding is
-     the pillar hub that now carries the nav slot. */
-  { key: 'series', path: '/series/vibe-coding', phase: 1.5 },
-  /* ---- routed and live, surfaced through /learn rather than the header ---- */
+  /* ---- routed and live, surfaced through /learn and the footer ------------
+     Every one of these keeps the exact URL it has always had. They are reached
+     from /learn, which is an index of the whole library, and from the footer's
+     second column. That is what lets the library grow without the navigation
+     growing with it. */
   { key: 'guides', path: '/guides', phase: 1.5 },
   { key: 'useCases', path: '/use-cases', phase: 1.5 },
   { key: 'videos', path: '/videos', phase: 1.5 },
-  { key: 'prompts', path: '/prompts', phase: 1.5 },
   { key: 'topics', path: '/topics', phase: 1.5 },
+  /* The Vibe Coding SERIES keeps its id, its URL and its readers. What changed
+     is that it is a series and a Learn topic rather than a pillar. */
+  { key: 'series', path: '/series/vibe-coding', phase: 1.5 },
+  /* Gear is out of the primary navigation and NOT deleted: /gear, the gear
+     collection and every published story still work. Traditional gadget
+     coverage — unboxings, reviews, comparisons — belongs to Gear Nests. When a
+     device is part of an AI experiment here, that story is normally a Build. */
+  { key: 'gear', path: '/gear', phase: 1.5 },
   /* ---- prepared, not yet routed (§22, §24) ---- */
   { key: 'courses', path: '/courses', phase: 2 },
   { key: 'projects', path: '/projects', phase: 2 },
@@ -158,10 +178,21 @@ export const topics = [
     ar: { name: 'الـ[[AI]]', body: 'النماذج والـ[[agents]] والأدوات المبنية عليها — مُجرَّبة على عمل حقيقي لا على عروض.' },
   },
   {
+    /* Reads as "AI Workflows"; the id stays `automation` so /topics/automation,
+       every published `topic: automation` line and the sitemap are untouched.
+       Renaming the id would buy a prettier URL and cost a redirect plus a
+       frontmatter sweep — the label is the part readers see. */
     id: 'automation',
     icon: 'workflow',
-    en: { name: 'Automation', body: 'Workflows that remove real work, built end to end and handed over.' },
-    ar: { name: '[[Automation]]', body: '[[workflows]] تزيل عملاً حقيقياً، مبنية من أولها إلى آخرها.' },
+    en: {
+      name: 'AI Workflows',
+      body: 'Chains that remove real work — capture, model, output — built end to end and handed over.',
+    },
+    ar: {
+      /* ⚠️ AR — drafted, review wording. */
+      name: '[[AI Workflows]]',
+      body: 'سلاسل تشيل شغل حقيقي — التقاط، ثم [[AI]]، ثم النتيجة — مبنية من أولها لآخرها.',
+    },
   },
   {
     id: 'product',
@@ -174,6 +205,50 @@ export const topics = [
     icon: 'cpu',
     en: { name: 'Tech', body: 'The hardware and software I actually live with, and what survives a working month.' },
     ar: { name: 'الـ[[Tech]]', body: 'العتاد والبرمجيات التي أعيش معها فعلاً، وما يصمد منها بعد شهر عمل.' },
+  },
+  {
+    /* Phase 1: a way of working, not a pillar. A piece that teaches it is
+       Learn; a thing actually built this way is a Build. The SERIES of the same
+       id is separate and unchanged — see /series/vibe-coding. */
+    id: 'vibe-coding',
+    icon: 'terminal',
+    en: {
+      name: 'Vibe Coding',
+      body: 'Building software by describing it — where that works, where it falls apart, and what to do then.',
+    },
+    ar: {
+      /* ⚠️ AR — drafted, review wording. */
+      name: '[[Vibe Coding]]',
+      body: 'تبني البرنامج وأنت بتوصفه — إمتى ينفع، إمتى يقع، وتعمل إيه ساعتها.',
+    },
+  },
+  {
+    id: 'vibe-designing',
+    icon: 'palette',
+    en: {
+      name: 'Vibe Designing',
+      body: 'The same move, pointed at interfaces and visuals: describe it, judge it, keep what holds up.',
+    },
+    ar: {
+      /* ⚠️ AR — drafted, review wording. */
+      name: '[[Vibe Designing]]',
+      body: 'نفس الفكرة بس على الواجهات والتصميم: توصف، تحكم، وتمسك اللي يصمد.',
+    },
+  },
+  {
+    /* Prompting the SUBJECT — how to write one, why one fails. Distinct from
+       the Prompts pillar, which hands you a finished one to paste. */
+    id: 'prompting',
+    icon: 'library',
+    en: {
+      name: 'Prompting',
+      body: 'How to write one that holds up: what to specify, what to leave out, and how to tell it failed.',
+    },
+    ar: {
+      /* ⚠️ AR — drafted, review wording. */
+      name: 'الـ[[Prompting]]',
+      body: 'إزاي تكتب [[prompt]] يصمد: تحدد إيه، تسيب إيه، وتعرف إزاي إنه فشل.',
+    },
   },
   {
     id: 'building',
@@ -253,12 +328,17 @@ export type SeriesId = (typeof series)[number]['id'];
    Turning Courses on later is: build the route, change 'building' to 'live'.
    Nothing else on this page changes.
    -------------------------------------------------------------------------- */
-export const ecosystem: Array<{
+interface EcosystemEntry {
   key: string;
   path: string | null;
   icon: string;
   status: 'live' | 'building';
-}> = [
+}
+
+/* Annotated BEFORE `.filter`, not after: a type annotation on the filtered
+   result does not flow back into the array literal, so `status: 'live'` widens
+   to `string` and stops satisfying the union. */
+const ECOSYSTEM: EcosystemEntry[] = [
   { key: 'guides', path: '/guides', icon: 'book-open', status: 'live' },
   { key: 'useCases', path: '/use-cases', icon: 'target', status: 'live' },
   { key: 'videos', path: '/videos', icon: 'clapperboard', status: 'live' },
@@ -270,7 +350,11 @@ export const ecosystem: Array<{
   /* §22 — defined, deliberately not routed. Do not give this a path until the
      course experience itself is finished. */
   { key: 'courses', path: null, icon: 'graduation-cap', status: 'building' },
-].filter((item) => !(item.key === 'playground' && parked.playground));
+];
+
+export const ecosystem = ECOSYSTEM.filter(
+  (item) => !(item.key === 'playground' && parked.playground)
+);
 
 /* -----------------------------------------------------------------------------
    MONETISATION (Phase 1.1 — architecture only, nothing switched on)

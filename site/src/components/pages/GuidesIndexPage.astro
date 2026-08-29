@@ -1,7 +1,21 @@
 ---
-/* Guides index (§18). Filterable by topic without JavaScript: each filter is a
-   link to /topics/<id>, which is a real page with a real URL that Google can
-   index — a client-side filter would be neither. */
+/* Guides index (§18).
+
+   TWO filter rows, both JavaScript-free and both real links.
+
+   By TOPIC: each chip is a link to /topics/<id>, which is a real page with a
+   real URL that Google can index — a client-side filter would be neither.
+
+   By FORMAT: a guide is a tutorial, a workflow, a checklist or a cheat sheet
+   (see content.config.ts). These do NOT get their own routes, because
+   /guides/cheatsheet would be a page whose whole content is a subset of this
+   one. Instead the list is GROUPED by format and each chip is an anchor into
+   its group — so the chip still goes somewhere real, the grouping is visible
+   without clicking anything, and there is no fifth empty hub to maintain.
+
+   A format with nothing in it renders neither a chip nor a heading. With one
+   format in use the grouping is invisible, which is the right answer for a
+   library of three guides. */
 
 import Base from '../../layouts/Base.astro';
 import EntryList from '../editorial/EntryList.astro';
@@ -9,7 +23,7 @@ import SectionIntro from '../editorial/SectionIntro.astro';
 import NewsletterCTA from '../editorial/NewsletterCTA.astro';
 import Rich from '../Rich.astro';
 import { topics } from '../../site.config';
-import { getGuides } from '../../lib/content';
+import { getGuides, GUIDE_FORMATS } from '../../lib/content';
 import { useCopy } from '../../copy';
 import { localizePath, type Lang } from '../../i18n';
 
@@ -21,6 +35,17 @@ const { lang } = Astro.props;
 const c = useCopy(lang);
 const guides = await getGuides(lang);
 const used = new Set(guides.map((g) => g.topic).filter(Boolean));
+
+/* Grouped in GUIDE_FORMATS order, empty groups dropped. `format` defaults to
+   'tutorial' in the schema, so every guide lands in exactly one group. */
+const groups = GUIDE_FORMATS.map((format) => ({
+  format,
+  label: c.guides.formats[format],
+  entries: guides.filter((g) => (g.format ?? 'tutorial') === format),
+})).filter((group) => group.entries.length > 0);
+
+/* One group is not a grouping. Below two, the page renders as a flat list. */
+const grouped = groups.length > 1;
 ---
 
 {/* An index with nothing on it is thin content. It stays REACHABLE — anybody
@@ -48,10 +73,25 @@ const used = new Set(guides.map((g) => g.topic).filter(Boolean));
       </nav>
     )}
 
-    {guides.length > 0 ? (
-      <EntryList entries={guides} lang={lang} showKind={false} headingLevel={2} class="gi__list" />
-    ) : (
+    {grouped && (
+      <nav class="gi__filters gi__filters--format" aria-label={c.guides.title}>
+        {groups.map((group) => (
+          <a class="gi__filter" href={`#gi-${group.format}`}>{group.label}</a>
+        ))}
+      </nav>
+    )}
+
+    {guides.length === 0 ? (
       <p class="gi__empty">{c.guides.empty}</p>
+    ) : grouped ? (
+      groups.map((group) => (
+        <section class="gi__group" aria-labelledby={`gi-${group.format}`}>
+          <h2 class="gi__groupTitle" id={`gi-${group.format}`}>{group.label}</h2>
+          <EntryList entries={group.entries} lang={lang} showKind={false} headingLevel={3} class="gi__list" />
+        </section>
+      ))
+    ) : (
+      <EntryList entries={guides} lang={lang} showKind={false} headingLevel={2} class="gi__list" />
     )}
 
     <div class="gi__cta">
@@ -80,6 +120,24 @@ const used = new Set(guides.map((g) => g.topic).filter(Boolean));
     color: var(--adel-text-link);
     background: var(--adel-surface-tint);
   }
+  /* The format row sits directly under the topic row, tighter, so the two read
+     as one filter block rather than two competing navigations. */
+  .gi__filters--format { margin-top: calc(var(--atc-space-6) * -1); }
+
+  .gi__group { margin-top: var(--atc-space-10); }
+  .gi__group:first-of-type { margin-top: var(--atc-space-4); }
+  .gi__groupTitle {
+    margin: 0;
+    font-size: var(--adel-text-sm);
+    font-family: var(--adel-font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--adel-text-tertiary);
+  }
+  /* An anchor target under a sticky header needs room above it, or the heading
+     lands behind the bar. */
+  .gi__groupTitle { scroll-margin-top: var(--atc-space-16); }
+
   .gi__list { margin-top: var(--atc-space-4); }
   .gi__empty {
     margin: var(--atc-space-10) 0 0;

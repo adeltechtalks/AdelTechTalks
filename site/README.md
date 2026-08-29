@@ -4,6 +4,7 @@
 content/show identity, named where the channel is named. GearNest is a separate
 business, linked but never merged in.
 
+**👉 To publish something, read [PUBLISHING.md](./PUBLISHING.md).**
 **👉 To get this live, read [LAUNCH.md](./LAUNCH.md).**
 
 > **Which document wins.** The Design System export is the visual source of
@@ -33,8 +34,8 @@ that was live before the v2.0 migration is still at the same address.
 | Page | English | Arabic |
 |---|---|---|
 | Home | `/` | `/ar/` |
-| **Vibe Coding** | `/vibe-coding`, `/vibe-coding/<slug>` | `/ar/vibe-coding`, `/ar/vibe-coding/<slug>` |
-| **Gear** | `/gear`, `/gear/<category>/<slug>` | `/ar/gear`, `/ar/gear/<category>/<slug>` |
+| **Builds** | `/builds`, `/builds/<slug>` | `/ar/builds`, `/ar/builds/<slug>` |
+| Gear *(not in nav)* | `/gear`, `/gear/<category>/<slug>` | `/ar/gear`, `/ar/gear/<category>/<slug>` |
 | **Learn Hub** | `/learn` | `/ar/learn` |
 | **Series** | `/series/<id>` | `/ar/series/<id>` |
 | About | `/about` | `/ar/about` |
@@ -51,6 +52,12 @@ that was live before the v2.0 migration is still at the same address.
 | Badge (shared) | `/badge/<id>` | — |
 | Retrieval index | `/ask-index.json` | (one file, both languages) |
 | 404 | `/404` (answers in both languages) | |
+| *redirect* | `/vibe-coding` → `/builds` | `/ar/vibe-coding` → `/ar/builds` |
+
+`/vibe-coding` moved to `/builds` in Phase 1, because Builds is the pillar and
+Vibe Coding is a topic and a series. Only the hub URL needed a redirect: no
+build had ever published under the old path, so no story URL moved. The series
+kept its own address, `/series/vibe-coding`, and every piece filed under it.
 
 Routes marked — are English only. That is recorded in one place,
 `ENGLISH_ONLY` in `src/i18n/index.ts`: the Arabic header links straight to the
@@ -67,16 +74,36 @@ real screenshot of something live, a Gear story needs a real photograph. Until
 then the file is drafted and committed but generates no page. See **Publication
 is a gate** below.
 
-### The header
+### Three content pillars
 
-`Vibe Coding · Gear · Learn · About`, plus Subscribe as the one filled pill.
-Guides, Use Cases, Videos, Prompts and Topics all keep the URLs they had — they
-are reached from `/learn`, which is an index of the whole library, and from the
-footer's second column, which lists every one of them. That is what lets the
-ecosystem grow without the navigation growing with it.
+`Learn · Prompts · Builds`, then About, plus Subscribe as the one filled pill.
+
+    Learn    Teach me.                      /learn
+    Prompts  Give me something I can use.   /prompts
+    Builds   Show me what you made.         /builds
+
+About is a supporting page, not a pillar. Everything else is a **topic**, a
+**format** or a **relationship**:
+
+* Vibe Coding, Vibe Designing, AI Workflows, Automation and Prompting are
+  **topics inside Learn**. Vibe Coding is also a running **series**.
+* Videos and cheat sheets are **formats**. What a piece is FOR decides its
+  pillar, never what file type it is — "How context windows work" is Learn,
+  "I automated my camera with AI" is a Build.
+* A Build is wider than code: it may be an app, an automation, a design, a
+  hardware experiment or a business, often several at once.
+
+Guides, Use Cases, Videos, Articles and Topics all keep the URLs they had — they
+are reached from `/learn` and from the footer's second column. That is what lets
+the library grow without the navigation growing with it.
 
 The order lives in one place, `nav` in `src/site.config.ts`, and the header,
 the mobile menu and the footer all read from it, so the three cannot drift.
+
+**Gear is not a Phase 1 pillar.** Unboxings, reviews and comparisons belong to
+Gear Nests. `/gear`, the collection and every published story are untouched and
+still reachable — Gear simply is not in the primary navigation, and a device
+that is part of an AI experiment here is published as a Build.
 
 ### Parked features
 
@@ -171,7 +198,7 @@ ever shows content actually written in it.
 | `prompts/` | `/prompts/<slug>` | One reusable prompt, plus what it gets wrong | copy an existing prompt |
 | `videos/` | `/videos/<slug>` | A video with chapters and takeaways | `videos/_template.md` |
 | `articles/` | `/articles/<slug>` | Written to be read | `articles/_template.md` |
-| `builds/` | `/vibe-coding/<slug>` | Making something with AI, in the open | `builds/_example-build.md` |
+| `builds/` | `/builds/<slug>` | Making or testing something with AI, in the open | `builds/_example-build.md` |
 | `gear/` | `/gear/<category>/<slug>` | A testing journal entry — never a review | `gear/_example-fold.md` |
 | `courses/` | *nothing yet* | Model only — no route, by design | `courses/_template.md` |
 

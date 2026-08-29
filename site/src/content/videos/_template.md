@@ -1,15 +1,22 @@
 ---
 # =============================================================================
-# STRUCTURED VIDEO — copy this file, rename it, fill it in.
+# STRUCTURED VIDEO — the OPTIONAL fields. You do not need to copy this file.
 # =============================================================================
+#   npm run new learn "Title" dQw4w9WgXcQ
+#
+# writes the required ones for you and puts the file in the right place. See
+# PUBLISHING.md. This template is the reference for everything else.
+#
+# REQUIRED:  title · description · date · topic · youtubeId
+# `chapters`, `takeaways` and `promptSlugs` all default to empty — a video
+# publishes without any of them.
+#
 # The filename becomes the URL: `camera-ai.md` → /videos/camera-ai/
 # Files starting with _ are ignored, so this one never publishes.
 #
-# ⚠️ NOTHING IS PUBLISHED FROM THIS COLLECTION YET. No real YouTube IDs exist
-# to write up, and a page built on a made-up ID renders a broken thumbnail and
-# a dead link. The moment there is a real video, copy this file and it appears
-# on /videos, /ar/videos, the homepage, the Latest feed and /ask-index.json
-# with no other change anywhere.
+# A VIDEO IS A FORMAT, NOT A PILLAR. This collection is for a video that is
+# TEACHING something. A video about a thing you built is a Build with a
+# `youtubeId` — see PUBLISHING.md.
 # =============================================================================
 
 title: 'What the AI in your camera is actually doing'
