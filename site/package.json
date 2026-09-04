@@ -8,6 +8,7 @@
     "build": "astro build && node scripts/postbuild.mjs",
     "preview": "astro preview",
     "og": "node scripts/build-og-adel.mjs && node scripts/build-og.mjs",
+    "logo:linkedin": "node scripts/build-linkedin-logo.mjs",
     "qa": "node scripts/qa.mjs",
     "security": "npm run security:secrets && npm run security:policy && npm run security:rls",
     "security:secrets": "node scripts/security/secret-scan.mjs --self-test && node scripts/security/secret-scan.mjs",
