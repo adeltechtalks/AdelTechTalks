@@ -47,11 +47,19 @@ export const site = {
   descriptionAr: 'إزاي بستخدم التكنولوجيا عشان أبني وأبدع وأشتغل أذكى.',
   url: 'https://adeltechtalks.com',
   email: 'hello@adeltechtalks.com',
+  /* The address the temporary Coming Soon page offers as a way to reach Adel
+     while the site is down. Deliberately SEPARATE from `email` above: that one
+     is the site's published contact and appears on /contact and in the
+     newsletter's no-JavaScript fallback, and putting the site behind a holding
+     page must not silently repoint it. Change `email` too if the published
+     contact address is meant to change everywhere. */
+  holdingEmail: 'Me@adeltechtalks.com',
   /* Delete any line you do not use */
   social: {
     youtube: 'https://youtube.com/@adeltechtalks',
     instagram: 'https://instagram.com/adeltechtalks',
     tiktok: 'https://tiktok.com/@adeltechtalks',
+    facebook: 'https://www.facebook.com/AdelTechTalks',
     linkedin: 'https://linkedin.com/in/adeltechtalks',
     x: 'https://x.com/adeltechtalks',
   },

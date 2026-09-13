@@ -38,6 +38,11 @@ export default defineConfig({
       // is published — this is a content-availability state, not a routing one.
       filter: (page) =>
         !/\/(login|profile|playground\/passport)\/$/.test(page) &&
+        // The temporary holding page (src/pages/coming-soon.astro) is never a
+        // public URL: in maintenance mode it is served at `/`, and outside it
+        // scripts/maintenance.mjs drops it from the output entirely. Either way
+        // it must not appear in the sitemap.
+        !/\/coming-soon\/$/.test(page) &&
         emptyIndexFilter([
           ['guides', 'guides'],
           ['videos', 'videos'],
