@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/postbuild.mjs",
+    "build": "astro build && node scripts/postbuild.mjs && node scripts/maintenance.mjs",
     "preview": "astro preview",
     "og": "node scripts/build-og-adel.mjs && node scripts/build-og.mjs",
     "qa": "node scripts/qa.mjs",
