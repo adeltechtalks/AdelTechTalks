@@ -82,13 +82,18 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
     <link rel="apple-touch-icon" href="/logo/apple-touch-icon.png" />
     <meta name="theme-color" content="#FAFAF8" />
 
-    <!-- One font, two weights, self-hostless. `display=swap` means text paints
-         immediately in the fallback and never blocks first render. -->
+    <!-- Orbitron SemiBold (600) for the brand and headline type; Amiri for the
+         Arabic line; Montserrat 500 as the supporting face for the contact
+         line. `display=swap` means text paints immediately in a fallback and
+         never blocks first render.
+
+         Amiri's Arabic subset is what matters here and Google Fonts selects it
+         by unicode-range, so no `subset=` parameter is needed or wanted. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Amiri&family=Montserrat:wght@500&family=Orbitron:wght@600&display=swap"
     />
 
     <style is:inline>
@@ -101,6 +106,14 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
         --slate: #667085;    /* Secondary text */
         --blue: #2563eb;     /* Signature Blue — accent only */
         --hair: #e6e8ec;     /* Hairlines */
+
+        /* Orbitron is a wide geometric display face. It carries the brand and
+           headline type only; body/supporting text stays on Montserrat, which
+           is far more readable at small sizes. */
+        --font-display: 'Orbitron', 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        /* Fallbacks are real Arabic faces, not a Latin stack: if Amiri is ever
+           blocked the line must still render as Arabic, never as tofu. */
+        --font-arabic: 'Amiri', 'Scheherazade New', 'Noto Naskh Arabic', 'Times New Roman', serif;
       }
 
       *,
@@ -142,8 +155,9 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
 
       .wordmark {
         margin: 0;
+        font-family: var(--font-display);
         font-size: clamp(1.75rem, 7vw, 3rem);
-        font-weight: 800;
+        font-weight: 600;
         letter-spacing: -0.02em;
         line-height: 1.05;
         /* Keeps the Latin wordmark rendering LTR regardless of context. */
@@ -153,8 +167,9 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
 
       .status {
         margin: 0;
+        font-family: var(--font-display);
         font-size: clamp(0.688rem, 2.2vw, 0.813rem);
-        font-weight: 800;
+        font-weight: 600;
         letter-spacing: 0.24em;
         text-transform: uppercase;
         color: var(--blue);
@@ -162,10 +177,28 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
 
       .tagline {
         margin: 0;
+        font-family: var(--font-display);
         font-size: clamp(0.938rem, 3.4vw, 1.125rem);
-        font-weight: 500;
+        font-weight: 600;
         line-height: 1.6;
         color: var(--slate);
+      }
+
+      .ayah {
+        margin: 0;
+        font-family: var(--font-arabic);
+        font-weight: 400;
+        /* Deliberately larger than the supporting text: this line is meant to
+           carry weight, not sit as a footnote. */
+        font-size: clamp(1.375rem, 5.4vw, 2rem);
+        /* Amiri sets fully-vocalised text with harakat above and below the
+           baseline. A tight leading clips them, so this is generous on purpose. */
+        line-height: 2;
+        color: var(--ink);
+        /* The space that makes it feel intentional rather than appended. It is
+           in addition to the flex gap, so the line is given room on both sides. */
+        margin-block: clamp(8px, 2.4vw, 20px);
+        max-width: 22ch;
       }
 
       .rule {
@@ -257,6 +290,7 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
         main > :nth-child(5) { animation-delay: 180ms; }
         main > :nth-child(6) { animation-delay: 220ms; }
         main > :nth-child(7) { animation-delay: 260ms; }
+        main > :nth-child(8) { animation-delay: 300ms; }
       }
 
       @keyframes rise {
@@ -277,6 +311,11 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
       <p class="status">Coming Soon</p>
 
       <p class="tagline">Learn it. Test it. Build it.</p>
+
+      <!-- Qur'an 53:39. `lang` and `dir` are both set so the line is announced
+           as Arabic and shaped right-to-left regardless of the page's own ltr
+           direction. -->
+      <p class="ayah" lang="ar" dir="rtl">وَأَنْ لَيْسَ لِلْإِنْسَانِ إِلَّا مَا سَعَىٰ</p>
 
       <hr class="rule" />
 
