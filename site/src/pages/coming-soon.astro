@@ -180,7 +180,11 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: clamp(14px, 4vw, 20px);
+        /* Sized so five 44px targets hold ONE row down to a 320px screen:
+           320 - 48 padding = 272 available, 5x44 + 4x10.2 = 261. A sixth
+           network would wrap, which is why the floor is not tighter still —
+           below that the row should break rather than crush the targets. */
+        gap: clamp(8px, 3.2vw, 20px);
       }
 
       .socials a {

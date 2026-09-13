@@ -59,6 +59,7 @@ export const site = {
     youtube: 'https://youtube.com/@adeltechtalks',
     instagram: 'https://instagram.com/adeltechtalks',
     tiktok: 'https://tiktok.com/@adeltechtalks',
+    facebook: 'https://www.facebook.com/AdelTechTalks',
     linkedin: 'https://linkedin.com/in/adeltechtalks',
     x: 'https://x.com/adeltechtalks',
   },
