@@ -211,6 +211,35 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
         outline-offset: 2px;
       }
 
+      .contact {
+        margin: 0;
+        font-size: clamp(0.813rem, 2.6vw, 0.875rem);
+        font-weight: 500;
+        color: var(--slate);
+      }
+
+      .contact a {
+        color: var(--ink);
+        text-decoration: none;
+        border-bottom: 1px solid var(--hair);
+        padding-bottom: 1px;
+        /* An email address must never be broken across lines mid-word on a
+           narrow screen, but it must still wrap rather than overflow. */
+        overflow-wrap: anywhere;
+        transition: color 160ms ease, border-color 160ms ease;
+      }
+
+      .contact a:hover,
+      .contact a:focus-visible {
+        color: var(--blue);
+        border-color: var(--blue);
+      }
+
+      .contact a:focus-visible {
+        outline: 2px solid var(--blue);
+        outline-offset: 3px;
+      }
+
       /* The one permitted animation: a single, subtle entrance. No loops, no
          background effects, nothing that keeps the compositor busy after
          paint. */
@@ -223,6 +252,7 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
         main > :nth-child(4) { animation-delay: 140ms; }
         main > :nth-child(5) { animation-delay: 180ms; }
         main > :nth-child(6) { animation-delay: 220ms; }
+        main > :nth-child(7) { animation-delay: 260ms; }
       }
 
       @keyframes rise {
@@ -259,6 +289,10 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
           </nav>
         )
       }
+
+      <p class="contact">
+        <a href={`mailto:${site.holdingEmail}`}>{site.holdingEmail}</a>
+      </p>
     </main>
   </body>
 </html>
