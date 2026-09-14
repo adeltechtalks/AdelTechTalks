@@ -1,5 +1,7 @@
 # Thumbnail System test — desk wizard
 
+> **✅ FINAL APPROVED** as part of the locked Phase 2B system (2026-09-14). Frozen; not reopened without a genuine implementation blocker.
+
 **A quality test of the Thumbnail System against a real, ordinary subject**: a Funko-style wizard collectible on Adel's desk. Not a poster, not a branded card — three YouTube masters that have to survive a feed.
 **Source image:** a real photograph supplied by Adel (2256 × 2504, phone capture, letterboxed). **No placeholder anywhere in this test.**
 **Platform:** YouTube 16:9 master, 1280 × 720, from the audited `Thumb 16:9` profile. Feed preview at 380 px in dark chrome.
