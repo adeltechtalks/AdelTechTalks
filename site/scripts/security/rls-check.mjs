@@ -11,6 +11,7 @@
    Assertions, all from an unauthenticated client:
 
      subscribers   NOT readable   — the mailing list must never be public
+     waitlist_subscribers  NOT readable — same, for the Coming Soon waitlist
      progress      NOT readable   — someone else's Playground progress
      badges        NOT readable   — someone else's earned badges
      shares        readable       — deliberate public projection, /badge/[id]
@@ -75,7 +76,7 @@ async function probe(table) {
   }
 }
 
-const MUST_BE_PRIVATE = ['subscribers', 'progress', 'badges'];
+const MUST_BE_PRIVATE = ['subscribers', 'waitlist_subscribers', 'progress', 'badges'];
 
 let networkDown = null;
 for (const t of MUST_BE_PRIVATE) {
