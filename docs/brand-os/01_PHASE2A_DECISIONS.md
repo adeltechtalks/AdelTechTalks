@@ -21,7 +21,23 @@ AdelTechTalks v2.1 Blue is the only active brand system. The values are the nine
 | White | `#FFFFFF` | raised surfaces |
 | Soft Gray | `#E6E8EC` | hairlines, dividers |
 
-**Archived, not deleted:** Brand Purple, Lavender (Mist/Veil/Haze), Spark Coral, Magenta, Dark Impact navy/charcoal and the Impact gradient, every Edition 1 asset. They remain in `site/src/styles/tokens/colors.css` and `legacy-att.css` under the `.att-legacy` scope, and move to Figma `99 — Archive / Edition 1`.
+### 1b · Expressive / Creator palette — approved SECONDARY (amended 2026-09-14)
+
+Edition 1 is **not** fully archived. Five families are reclassified as an approved secondary palette for creator-side content. The v2.1 Blue system above stays the **primary** identity for the logo, website/UI, navigation, core layouts and official brand surfaces.
+
+| Family | Values | Note |
+|---|---|---|
+| Purple | 500 `#855FF2` · 600 `#6C41E4` · 700 `#5A32C4` | 600 was the Edition 1 brand purple; it is now an accent, not an identity colour |
+| Spark Coral | 300 `#FFB4A3` · 500 `#FF6B57` · 700 `#CE3A24` | 700 is the text-safe step |
+| Magenta | 500 `#DB4A9B` · 700 `#B2317C` | |
+| Electric / Signal Blue | 500 `#3E7BFA` · 700 `#1F4BC0` | distinct from Signature Blue `#2563EB`; never used where the brand blue belongs |
+| Lavender | mist `#F8F6FF` · veil `#F1EDFE` · haze `#E6DFFC` | atmosphere tints for expressive grounds only |
+
+**May be used intentionally for:** Motion Carousels · Playground / gamification · badges · AI / tech explainers · thumbnails · campaign moments · highlights and creative accents.
+
+**Rules.** They never replace Signature Blue as the primary brand colour. Never used randomly — controlled accents and expressive content colour. One expressive hue leads a piece; a second appears only when the content genuinely has two sides. Never on the mark, the lockups, the I ❤ Tech heart, the signature, or any website/app UI surface. Never a substitute for a status colour. Same values in Figma, Canva and video. Gradients stay retired: the expressive palette is flat colour.
+
+**Still archived, not deleted:** Dark Impact navy/charcoal and the 45° Impact gradient, the violet-tinted neutral ramp and violet shadow ladder, the aurora/dawn gradients, the five-colour content-pillar system, Cairo, the Impact-gradient app icon. These remain in `site/src/styles/tokens/colors.css` and `legacy-att.css` under the `.att-legacy` scope and are shown for reference on Figma `99 — Archive / Edition 1`.
 
 ## 2 · Logo and mark
 
@@ -67,6 +83,12 @@ The audited repository tokens (`tokens/brand.css`) win.
 | Thumbnail 16:9 | 1280 × 720 | 64 | 0 | 0 | 8 cols · 24 gutter |
 
 The bootstrap's 150 / 300 / 180 values are not final. The video skill will eventually read safe zones from the shared token export; that refactor waits until the token model in this phase is approved.
+
+## 6b · Adaptive / Fold-First Content System (added 2026-09-14)
+
+An approved requirement, specified in `04_ADAPTIVE_FOLD_FIRST.md`. Four canonical **video** profiles: `verticalStandard` 1080×1920 9:16 · `foldPortrait` 1440×1920 3:4 · `foldLandscape` 1920×1440 4:3 · `youtubeLandscape` 1920×1080 16:9. Fold-first does not replace standard YouTube.
+
+It is an adaptive composition system, not an export-size list: from one source edit, framing, product placement, text position and line length, captions, brand position, safe zones, graphics and motion all adapt. **Never solved by centre-cropping the 9:16 version.** Dimensions are configuration read from a profile, never assumptions baked into the editor. Per-format PRIMARY / SECONDARY / TEXT / BRAND / FOCAL rules are defined for all eight production formats. The Adaptive Device Pack is requested, never forced. The rendering engine is a later phase; Phase 2A delivers the architecture, tokens, profile definitions, component implications and the inventory of hard-coded dimensions to replace. "Fold First" language is a reserved concept, not a badge.
 
 ## 7 · Figma plan (approved)
 

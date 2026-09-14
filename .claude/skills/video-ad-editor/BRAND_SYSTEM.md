@@ -21,7 +21,30 @@ The bootstrap file `brand/adeltechtalks.bootstrap.json` in this folder is **supe
 
 Ramps: blue #F0F6FF · #DCEBFF · #BBD7FF · #8FB9FA · #5B8EF4 · #2563EB · #1D53CC · #1746A2 · #123577 · #0D264F · mint #DDF8F0 · #8FE9CE · #2DD4A8 · #17A97F · ink-700 #3A414C. Derived neutrals (not brand): sunken #F3F4F6 · border #CDD1D8 · muted #9AA1AC (never text) · graphite-raised #25272C.
 Status (functional): success #17A96A / text #0F7A4C · warning #E08A0B · error #DB3A3F.
-**Archived, never used in active work:** Edition 1 purple #6C41E4, lavender, Spark Coral #FF6B57, magenta #DB4A9B, Dark Impact navy #0B0918 and its gradient, Cairo.
+
+## Expressive / Creator palette — APPROVED SECONDARY
+
+APPROVED SECONDARY — expressive / creator palette. Never replaces Signature Blue as the primary brand colour, never used on the logo, the website UI, navigation, core layouts or official brand surfaces.
+
+| Family | Values | |
+|---|---|---|
+| Purple | 500 `#855FF2` · 600 `#6C41E4` · 700 `#5A32C4` | 700 is the text-safe step |
+| Spark Coral | 300 `#FFB4A3` · 500 `#FF6B57` · 700 `#CE3A24` | 700 is text-safe |
+| Magenta | 500 `#DB4A9B` · 700 `#B2317C` | 700 is text-safe |
+| Electric / Signal Blue | 500 `#3E7BFA` · 700 `#1F4BC0` | distinct from Signature Blue — never used where the brand blue belongs |
+| Lavender | mist `#F8F6FF` · veil `#F1EDFE` · haze `#E6DFFC` | atmosphere tints for expressive grounds |
+
+**May appear in:** Motion Carousels · Playground / gamification · badges · AI / tech explainers · thumbnails · campaign moments · highlights and creative accents.
+**Rules:**
+- Controlled accents and expressive content colour — never a random or decorative choice.
+- One expressive hue leads a given piece; a second appears only when the content genuinely has two sides (A/B, before/after, correct/wrong).
+- Never on the mark, the lockups, the I ❤ Tech heart, the signature, or any website/app UI surface.
+- Never a substitute for a status colour: correct and error stay functional green/red.
+- The -700 steps are the text-safe members; the -500 steps are graphic.
+- Same values in Figma, Canva and video — the expressive palette is one system, not a per-tool improvisation.
+- Gradients stay retired: the expressive palette is flat colour.
+
+**Still archived, never used in active work:** Dark Impact (#0B0918 + the 45° gradient), the violet neutral ramp and violet shadow ladder, the aurora/dawn gradients, Cairo.
 
 ### Light mode (site Tier 2, verified against the CSS)
 | Token | Value | Alias | |
@@ -116,6 +139,62 @@ Slot ceilings (Arabic words, enforced): cover 5 · slide title 6 · body 18 · s
 
 > The skill's `08_safe_check.js` still carries its own hard-coded platform UI-overlay areas (150 / 300 / 180). Those detect Instagram's buttons; they are a different, smaller concept than the brand reserves above and sit inside them. Reading them from this export is a deferred refactor (Phase 2A decision 6).
 
+## Adaptive / Fold-First video canvas profiles
+
+- RECOMPOSITION, not resize or crop. A profile re-lays-out the same source edit: subject framing, product placement, text position and line length, captions, brand position, safe zones and motion are all profile-aware.
+- Never produce a fold profile by centre-cropping or letterboxing the 9:16 master.
+- Graphics EXPAND into the extra canvas; they are not scaled up to fill it.
+- Extra canvas is a reason to give content room, not a reason to add content. Empty space is a legitimate use of it.
+- No profile gets its own visual identity: same palette, same faces, same mark roles, same motion charter.
+- A profile is requested, never forced: one, several, or the full Adaptive Device Pack.
+
+| Profile | Aspect | Size | Margin | Safe top / bottom | Grid | Focal layout |
+|---|---|---|---|---|---|---|
+| `verticalStandard` | 9:16 | 1080×1920 | 72 | 260 / 420 | 4 cols · 32 | single centred focal column |
+| `foldPortrait` ⚠ | 3:4 | 1440×1920 | 96 | 136 / 240 | 6 cols · 32 | focal column + supporting column, roughly 62 / 38 |
+| `foldLandscape` ⚠ | 4:3 | 1920×1440 | 96 | 0 / 120 | 8 cols · 32 | side-by-side, roughly 55 / 45 or a true 50 / 50 for comparison |
+| `youtubeLandscape` ⚠ | 16:9 | 1920×1080 | 72 | 0 / 120 | 8 cols · 24 | focal subject + supporting zone, or full-frame for demo footage |
+
+⚠ = PROPOSED. `verticalStandard` is audited; every other number is derived by a stated rule (see `canvasProfiles[*].provenance` in the JSON) and awaits approval. The two landscape bottom bands are flagged `open` and need a device/platform check before first production use.
+
+**Adaptive Device Pack** — requested, never forced; one, several, or all four:
+- `<name>-standard-9x16.mp4` (verticalStandard)
+- `<name>-fold-portrait-3x4.mp4` (foldPortrait)
+- `<name>-fold-landscape-4x3.mp4` (foldLandscape)
+- `<name>-youtube-16x9.mp4` (youtubeLandscape)
+
+SPECIFIED, NOT IMPLEMENTED — Phase 2A defines the architecture only. The rendering engine is a later phase.
+
+### Per-format recomposition
+**talking-head** — PRIMARY: the speaker — face and gesture space, uncropped. SECONDARY: B-roll insert, contextual graphic, semantic scene cards, progress bar. TEXT: caption card in the caption region; semantic scene text in the supporting zone on fold profiles. BRAND: handle badge below the top reserve; signature micro, bottom. FOCAL: face and upper body, plus the hand area when the speaker gestures — never blind-crop either.
+  - fold portrait: speaker keeps the dominant column at 9:16 scale; the second column takes the contextual graphic, product still or transcript panel. Do NOT enlarge the speaker to fill 3:4.
+  - fold landscape: speaker + supporting visual side by side, or speaker with intentional breathing room. The graphic becomes a real panel, not an overlay.
+**product-hero** — PRIMARY: the product — silhouette and finish, uncropped, visually dominant. SECONDARY: headline, spec tokens, background treatment. TEXT: opposite the product mass; never across the product. BRAND: corner furthest from the product, micro scale. FOCAL: the product outline plus its highlight and shadow contact — a crop that clips either reads as damage.
+  - fold portrait: product holds one column, headline and spec stack in the other.
+  - fold landscape: product leading, text trailing (mirrored for RTL); the extra width is space around the product, not a bigger product.
+**talking-head-plus-broll** — PRIMARY: speech is the spine — the speaker and the synchronised B-roll moment. SECONDARY: which of the two is foregrounded at a given beat. TEXT: caption card, tied to word timing. BRAND: as talking-head. FOCAL: the speaker face and the B-roll subject; one of the two is always fully visible.
+  - fold portrait: both can coexist — speaker column + B-roll column — so the cut becomes a choice, not a necessity.
+  - fold landscape: speaker and B-roll genuinely side by side; the caption spans under both.
+**comparison-ab** — PRIMARY: both products, at matched scale and matched framing. SECONDARY: labels, spec rows, verdict card, scorecard. TEXT: product labels stay pinned to their side; verdict text in the shared zone. BRAND: neutral corner, never inside either product half. FOCAL: the compared feature area on each product — the thing the comparison is about.
+  - fold portrait: true side-by-side becomes comfortable; labels sit above each column.
+  - fold landscape: the best canvas for this format — large side-by-side A/B at equal scale, spec row beneath, verdict card in the shared band.
+**asmr-unboxing** — PRIMARY: the tactile action — hands, packaging, the product surface. SECONDARY: nothing, by default. TEXT: minimal or none; brand text only. BRAND: micro signature, corner, late in the edit. FOCAL: the hands and the contact point where the sound is made.
+  - fold portrait: keep the action LARGE and the frame clean. Extra canvas is breathing room around the action — do not add graphics because space exists.
+  - fold landscape: wider view of the surface and the hands; still no added graphics, no music, no captions by default.
+  - The ASMR audio policy is profile-independent: recorded tactile audio stays ON, no music, captions, denoise, gating or compression by default.
+**product-demo** — PRIMARY: the feature in real use — the proof shot. SECONDARY: feature callout, label, step index. TEXT: callout beside the action on wide profiles; overlaid only when there is no room. BRAND: corner clear of the action. FOCAL: the interaction point — the control being pressed, the screen being shown, the result appearing.
+  - fold portrait: product and feature callout COEXIST — the callout stops being an overlay and becomes its own zone.
+  - fold landscape: demo footage leading, callout stack trailing; steps can persist instead of flashing.
+**motion-carousel** — PRIMARY: the slide media — one idea per slide, product/video first. SECONDARY: headline, body, index, signature. TEXT: headline block, RTL-first for Arabic. BRAND: micro signature, consistent corner across all slides. FOCAL: the slide subject; each slide must read alone.
+  - fold portrait: FOLD EDITION — each slide is RECOMPOSED for the wider canvas: media and text become two zones rather than a stack. Never a crop of the 9:16 slide.
+  - fold landscape: fold edition in landscape; slide motion may use the horizontal axis (parallax, reveal) that 9:16 cannot afford.
+  - Every profile still exports each slide as its own MP4; the stitched preview stays optional.
+**long-form-explainer** — PRIMARY: the explanation — speaker, screen recording or diagram, whichever carries the point. SECONDARY: chapter cards, lower thirds, recurring diagram. TEXT: lower third; chapter title top-trailing. BRAND: top-trailing corner, persistent and micro. FOCAL: the diagram or screen region being discussed.
+  - fold portrait: speaker + diagram stack, comfortable for a handheld unfolded read.
+  - fold landscape: large diagram with the speaker inset.
+
+Consumer-facing "Fold First" language is a reserved concept only — not an official badge, not a permanent brand element.
+
 ## Logo and signature
 - One mark: `brand/logo/adel-mark.svg` (viewBox 220.64 × 180, ratio 1.2258 LOCKED, legs 1.19° apart, counter open at the bottom. Never redraw, never scale non-uniformly.). Roles: **Graphite** everyday · **Signature Blue** alternate · **White** reversed. Forbidden: Fresh Mint, any gradient, Purple 600 (Edition 1), any tint or opacity, stretching, redrawing, outlining.
 - Lockups: **AdelTechTalks** primary · **Adel** secondary (kept) · **I ❤ Tech** master expression with the drawn heart `brand/heart/love-tech-heart.svg`.
@@ -124,9 +203,11 @@ Slot ceilings (Arabic words, enforced): cover 5 · slide title 6 · body 18 · s
 
 ## Non-negotiables the skill enforces
 - Never invent a brand colour when an approved token exists.
+- Signature Blue is the primary brand colour everywhere; the expressive palette never replaces it.
+- Core palette on the logo, website/UI, navigation, core layouts and official brand surfaces. Expressive palette only on creator content: motion carousels, playground/gamification, badges, AI/tech explainers, thumbnails, campaign moments, accents.
 - Fresh Mint ≤ ~3% of any surface; never a background, never the logo.
-- No gradients anywhere in the active system.
-- Status colours are functional, never brand.
+- No gradients anywhere in the active system, expressive palette included.
+- Status colours are functional, never brand and never replaced by an expressive hue.
 - One geometry, three colour roles (Graphite / Signature Blue / White). Never stretch, redraw, recolour or add a gradient tile.
 - AdelTechTalks lockup is primary; Adel lockup is secondary.
 - Bare mark never below 24 px; below that use an app-icon tile.
@@ -135,10 +216,13 @@ Slot ceilings (Arabic words, enforced): cover 5 · slide title 6 · body 18 · s
 - Western digits 0–9 in both languages.
 - Arabic layouts RTL-first with isolated LTR islands for Latin terms.
 - Product footage occupies the dominant area; text second; signature micro.
-- ASMR: recorded tactile audio (box opening, peeling, clicks, scratches, packaging, handling) stays ON — no music, captions, denoise, gating or compression by default.
+- ASMR: recorded tactile audio (box opening, peeling, clicks, scratches, packaging, handling) stays ON — no music, captions, denoise, gating or compression by default, in every canvas profile.
 - Motion Carousel: 5–6 independent ~5 s slides at 1080×1920, each exportable as its own MP4; a stitched preview is optional; never a static carousel with generic zoom.
 - Brand opener / end card are micro moments, not intros.
 - Motion is precise and premium, not template-heavy: cut / match-cut by default for ASMR.
+- Adaptive profiles RECOMPOSE; they never centre-crop or letterbox the 9:16 master. Graphics expand into the canvas rather than scaling up to fill it.
+- Extra canvas is room for the same content, not a reason to add content — ASMR in particular stays clean.
+- Canvas dimensions are configuration read from canvasProfiles, never assumptions held inside the editor.
 
 ## Format relationship
 The brand system is shared; the edit behaviour is not.
