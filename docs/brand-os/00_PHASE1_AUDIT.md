@@ -18,6 +18,7 @@ Read §5 (conflicts) and §7 (decisions) first if short on time. Nothing in §6 
 | Canva — team brand kit "AdelTechTalks" (`kAHQnPVSlSQ`), folders, designs, brand templates | read | one archived carousel guide, empty folder scaffolding ×2, nine loose stock-template experiments |
 | Adobe Creative Cloud (files, Lightroom) | read (one call rate-limited) | two PDFs, a 39-photo Lightroom pool; no Express brand kit, no motion projects |
 | Descript, HyperFrames | read | zero projects in both |
+| OpusClip | plan does not include API access — could not read | skipped |
 | Framer | plugin not open in a project — could not read | the `/learn` Framer work is referenced in `docs/framer/` only |
 | Tella | not authorized in this session | skipped |
 | Notion (AdelTechTalks HQ, Control Center), Google Drive (brand folders) | read | roadmap, the locked Canva brand-kit setup sheet, the Figma-archive task |
