@@ -1,0 +1,16 @@
+{
+  "$schema": "creative-design-engine/content-brief/1",
+  "title": "Working title of the piece — not the hook",
+  "subject": "What the piece is actually about, one sentence.",
+  "contentFamily": "review",
+  "goal": "What this piece is for: get the click, explain the thing, announce the thing.",
+  "viewerResponse": "curious",
+  "_viewerResponseOptions": ["curious", "surprised", "informed", "amused", "impressed", "challenged"],
+  "primaryBeat": null,
+  "_beatNote": "Leave null and let the engine propose one. Set it only when the beat is genuinely decided.",
+  "platform": "youtube-16x9",
+  "language": "en",
+  "deliverables": ["thumbnail"],
+  "constraints": ["no fabricated imagery", "no claim the video does not make"],
+  "notes": "Anything the engine cannot infer — a joke that must land, a competitor that must not be named."
+}
