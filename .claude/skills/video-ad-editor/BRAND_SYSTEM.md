@@ -213,6 +213,38 @@ Consumer-facing "Fold First" language is a reserved concept only — not an offi
 - Static: Static Ultra Carousel, social images and thumbnails. On the carousel it is an OPTIONAL overlay: every archetype carries a `Show watermark` boolean, default OFF, because the signature strip already carries ownership on a slide. It is switched on for image-led slides and for any slide exported without the strip. On a standalone image or thumbnail it is ON by default.
 - Video: documented for the Video System as a DEFAULT corner overlay for Talking Head, ASMR / Unboxing, Product Demo, Product Comparison and Motion Carousel. Short-form vertical prefers top-left. Specified only — the video engine is NOT modified by this rule. **SPECIFIED, NOT IMPLEMENTED. No renderer, template or format JSON changes with this rule.**
 
+## Thumbnail / Video Cover System
+- APPROVED — Phase 2B extension, added 2026-09-14. Introduces no new colour value and changes no approved Phase 2A value. Six thumbnail-scale TEXT STYLES are added (the social ramp stops short of feed-cover scale); nothing existing is edited. Revised the same day after a direction correction: the first pass read as branded cards, and the system was rebuilt around real feed behaviour.
+- **One idea, instantly. A cover that needs a second look is the wrong archetype, not the wrong type size.** Production covers, not a concept board. Every decision is made for the ~168 px version in a feed, not the 1280 px version in Figma.
+- Masters (the only two canvases, both audited): **1280 x 720** margin 64 · **1080 x 1920** margin 72, reserves 260 / 420
+- Platform profiles (composition over those masters, never invented sizes):
+  - **YouTube Thumbnail** — 1280 x 720, margin 64, centre-safe 720 · DERIVED RESERVES — VALIDATION REQUIRED
+  - **Facebook Video Cover** — 1280 x 720, margin 64, centre-safe 720 · DERIVED RESERVES — VALIDATION REQUIRED
+  - **YouTube Shorts Cover** — 1080 x 1920, margin 72, centre-safe 1080 · DERIVED RESERVES — VALIDATION REQUIRED
+  - **Reels Cover** — 1080 x 1920, margin 72, centre-safe 1080 · DERIVED RESERVES — VALIDATION REQUIRED
+  - **TikTok Cover** — 1080 x 1920, margin 72, centre-safe 1080 · DERIVED RESERVES — VALIDATION REQUIRED
+- **A thumbnail must communicate ONE visual idea in under one second, at feed size, on a phone. Attention, clarity and curiosity come first; brand consistency supports the thumbnail and never overpowers it.** Must not feel like: a corporate cover, a presentation slide, a branded card, a generic template, a poster that only works opened full-size.
+- Use: one dominant subject · large product or face · strong foreground / background separation · bold crop · high visual contrast · very short hook copy · visual tension or comparison · clean focal hierarchy. Avoid: tiny text · many small elements · weak product scale · overuse of cards · overly symmetrical layouts · too much empty space · decorative branding that reduces impact · long titles inside the thumbnail.
+- The dominant subject occupies 40-70% of the canvas and bleeds off at least one edge. A subject small enough to sit inside a margin has already failed.
+- Archetypes:
+  - **01 PRODUCT DOMINANT** — Product 40-70% of the canvas, bleeding off an edge, lit against a dark ground. Hook 2-3 words, one circle on the thing the video is about.
+  - **02 FACE + PRODUCT** — Reaction on one side, proof on the other, a drawn arrow tying the claim to the object. The face is cropped close and bleeds off frame.
+  - **03 A/B COMPARISON** — Two subjects at matched scale and framing. If one is larger the thumbnail has already answered its own question.
+  - **04 SCREEN / FEATURE EMPHASIS** — One screen, lens, hinge or UI region zoomed until unmistakable, circled. A full readable UI screenshot is a slide, not this.
+  - **05 SKETCH / ANNOTATION** — Arrow, circle and one handwritten word do the explaining. One idea, marked once.
+  - **06 BIG CLAIM** — One bold phrase, one strong image, one expressive ground. Highest survival rate at feed size; fails hardest when the claim is vague.
+  - **07 VISUAL CONTRADICTION** — A claim set up and visibly broken — struck through, argued with in handwriting. Only legitimate when the video actually challenges the claim.
+  - **08 PROBLEM / FIX** — The problem circled, the arrow crossing to the fix, both halves the same size.
+  - **09 TRANSFORMATION** — Before and after against a hard 6 px seam. Matched framing on both sides or the comparison is dishonest.
+  - **10 MINIMAL PREMIUM** — One product, one short phrase, a light ground, no annotation. Only when the subject is strong enough to carry a quiet frame.
+- Annotation (Arrow · Circle · Underline · Strike · Note): Spark Coral, from the approved Expressive palette. Never Signature Blue — annotation must not impersonate a UI element. One annotation idea per cover, pointed at the thing the hook is about. It must clarify. Annotation used decoratively or scattered across a frame is the failure mode. It sits ON the subject, not in empty space beside it. No emoji, no default red arrows as a style, no starbursts.
+- Copy: hook 2-5 words · eyebrow 3 · callout 5. The thumbnail never repeats the video title. It carries a visual hook that complements it — LOWLIGHT KING?, 20 THINGS FIRST, DON’T CUT THIS, WORTH IT?, BEFORE / AFTER, BETTER THAN DJI?, FOLDABLE CONTENT? The approved rule applies unchanged: an Arabic sentence stays Arabic, and recognised platform, product, creator and technical terms stay English as isolated LTR islands — YouTube Shorts, Foldable, AI, Motion Design, Reels, Claude, Figma, Insta360. No established term is force-translated. Western digits in both languages.
+- Feed ceiling: MEASURED: a four-word hook at the quieter Size L tier stopped resolving at 168 px. Two or three words is the feed-safe ceiling there. On breach the remedy is fewer words, never smaller type. MEASURED during the production test: at the impact tier (Montserrat Black 140) a hook column narrower than about 740 px can only hold words of five characters or fewer. A narrow column therefore needs short words, not smaller type.
+- The brand stays recognisable through typography, the approved palette, controlled expressive colour, the small Liquid Glass A-mark and consistent spacing. A large logo or a branded frame is never forced onto a thumbnail — it costs attention and buys nothing.
+- Every platform version RECOMPOSES subject, crop, text, product placement, watermark and safe zones. A 9:16 cover is never the 16:9 design resized or centre-cropped — the same rule the fold video profiles follow.
+- Image treatment: The source photo must still look like Adel. Never over-retouching a face, smoothing or reshaping features, synthesising or generating a face, making the subject look artificial. Cutout is SUPPORTED, NOT MANUFACTURED. Treatment = Cutout expects a transparent PNG the author supplies. No background-removal step ships with this system.
+- Future workflow: **CONTRACT ONLY — not built. Video-frame extraction is explicitly not implemented and no video-engine file changes.** Contract: video (later) or image · portrait · topic · platform · language in, platform export out, via 7 documented steps.
+
 ## Non-negotiables the skill enforces
 - Never invent a brand colour when an approved token exists.
 - Signature Blue is the primary brand colour everywhere; the expressive palette never replaces it.
@@ -231,6 +263,13 @@ Consumer-facing "Fold First" language is a reserved concept only — not an offi
 - Glass Light on light media, Glass Dark on dark media — judged by the content under the corner, not by the theme of the page.
 - Watermark inset is read from the canvas or video profile (margin / reserve-top), never hard-coded.
 - No glow, gradient, chrome, shadow stack or default animation on the watermark. One hairline edge highlight and a background blur, nothing else.
+- A thumbnail carries ONE idea and 2-6 words of hook copy, and never repeats the video title.
+- Platform profiles are composition over the two AUDITED masters (1280x720, 1080x1920). No platform pixel size is invented; every derived reserve is flagged VALIDATION REQUIRED.
+- A 9:16 cover RECOMPOSES the composition; it is never a centre-crop of the 16:9 master.
+- Never fabricate a face and never invent a product render: an unavailable image is a labelled placeholder, not a guess.
+- Judge every cover at 168 px on a phone, not at 1280 px in Figma. On breach the remedy is fewer words or a bigger subject, never smaller type.
+- One dominant subject at 40-70% of the canvas, bleeding off an edge. No cards, no symmetric grids, no decorative branding.
+- Annotation clarifies or it does not appear: one marked idea per cover, in Spark Coral, sitting on the subject.
 - Product footage occupies the dominant area; text second; signature micro.
 - ASMR: recorded tactile audio (box opening, peeling, clicks, scratches, packaging, handling) stays ON — no music, captions, denoise, gating or compression by default, in every canvas profile.
 - Motion Carousel: 5–6 independent ~5 s slides at 1080×1920, each exportable as its own MP4; a stitched preview is optional; never a static carousel with generic zoom.

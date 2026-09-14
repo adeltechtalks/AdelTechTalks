@@ -599,6 +599,175 @@ const signature = {
   },
 };
 
+/* ---------------------------------------------------------------------------
+   6c · Thumbnail / Video Cover System
+   ---------------------------------------------------------------------------
+   Turns a supplied image — a portrait, a product shot, a still, a screenshot,
+   or later a frame pulled from a video — into a branded, platform-ready cover.
+
+   PROVENANCE IS EXPLICIT, as it is for the fold profiles. Two MASTER canvases
+   are audited repository values. The five platform profiles are COMPOSITION
+   profiles over those two masters: no platform-specific pixel size is invented.
+   Where a surface has several valid display crops, the profile records the safe
+   composition and flags every derived reserve validationRequired: true.
+   ------------------------------------------------------------------------ */
+const thumbMaster = { '16x9': canvases['thumb-16x9'], '9x16': canvases['reel-9x16'] };
+const thumbProfile = (label, master, use, extra) => Object.assign({
+  label, use,
+  master: master === '16x9' ? 'Thumb 16:9 (AUDITED --atc-social-thumb-*)' : 'Cover 9:16 (AUDITED --atc-social-reel-*)',
+  width: thumbMaster[master].width, height: thumbMaster[master].height,
+  margin: thumbMaster[master].margin,
+  'safe-top': thumbMaster[master]['reserve-top'], 'safe-bottom': thumbMaster[master]['reserve-bottom'],
+  'safe-right': thumbMaster[master].margin,
+  columns: thumbMaster[master].columns, gutter: thumbMaster[master].gutter,
+  'centre-safe': Math.min(thumbMaster[master].width, thumbMaster[master].height),
+  validationRequired: false,
+}, extra);
+
+const thumbnails = {
+  status: 'APPROVED — Phase 2B extension, added 2026-09-14. Introduces no new colour value and changes no approved Phase 2A value. Six thumbnail-scale TEXT STYLES are added (the social ramp stops short of feed-cover scale); nothing existing is edited. Revised the same day after a direction correction: the first pass read as branded cards, and the system was rebuilt around real feed behaviour.',
+  purpose: 'Production covers, not a concept board. Every decision is made for the ~168 px version in a feed, not the 1280 px version in Figma.',
+  'one-rule': 'One idea, instantly. A cover that needs a second look is the wrong archetype, not the wrong type size.',
+
+  masters: {
+    _note: 'The only two canvases in this system, both audited. Everything else is composition over them.',
+    'thumb-16x9': thumbMaster['16x9'],
+    'cover-9x16': thumbMaster['9x16'],
+    'not-in-this-system': 'The 1200x630 OG share card built by site/scripts/build-og.mjs is what LinkedIn and Facebook render for a LINK. It is a different surface and is not a video cover.',
+  },
+
+  profiles: {
+    youtubeThumbnail: thumbProfile('YouTube Thumbnail', '16x9', 'standard YouTube video covers and long-form', {
+      'safe-bottom': 72,
+      'chrome-reserve': 'duration pill, bottom-right, 176 x 48 inside the margin',
+      validationRequired: true,
+      provenance: '16:9 master AUDITED. The duration-pill reserve is DERIVED and VALIDATION REQUIRED — confirm against the live player before it is treated as measured.',
+    }),
+    facebookVideoCover: thumbProfile('Facebook Video Cover', '16x9', 'Facebook video covers', {
+      validationRequired: true,
+      provenance: 'No Facebook-specific pixel size is stored, because none is established in this project or clearly documented for this surface. The profile reuses the AUDITED 16:9 master and documents CENTRE-SAFE composition instead of asserting one universal crop. VALIDATION REQUIRED.',
+    }),
+    youtubeShortsCover: thumbProfile('YouTube Shorts Cover', '9x16', 'Shorts covers', {
+      validationRequired: true,
+      provenance: '9:16 master and its 260 / 420 reserves are AUDITED. The 1:1 centre tile is a DERIVED grid-preview guide — VALIDATION REQUIRED.',
+    }),
+    reelsCover: thumbProfile('Reels Cover', '9x16', 'Instagram Reels covers', {
+      validationRequired: true,
+      provenance: '9:16 master AUDITED. The 1:1 centre tile is the DERIVED grid-preview guide — the Reels grid shows a square, so anything that must survive lives inside it. VALIDATION REQUIRED.',
+    }),
+    tiktokCover: thumbProfile('TikTok Cover', '9x16', 'TikTok covers', {
+      'safe-right': 200,
+      validationRequired: true,
+      provenance: '9:16 master AUDITED. The 200 px right-rail reserve and the 1:1 centre tile are DERIVED — VALIDATION REQUIRED.',
+    }),
+  },
+
+  'design-intent': {
+    rule: 'A thumbnail must communicate ONE visual idea in under one second, at feed size, on a phone. Attention, clarity and curiosity come first; brand consistency supports the thumbnail and never overpowers it.',
+    'must-not-feel-like': ['a corporate cover', 'a presentation slide', 'a branded card', 'a generic template', 'a poster that only works opened full-size'],
+    use: ['one dominant subject', 'large product or face', 'strong foreground / background separation', 'bold crop', 'high visual contrast', 'very short hook copy', 'visual tension or comparison', 'clean focal hierarchy'],
+    avoid: ['tiny text', 'many small elements', 'weak product scale', 'overuse of cards', 'overly symmetrical layouts', 'too much empty space', 'decorative branding that reduces impact', 'long titles inside the thumbnail'],
+    'subject-scale': 'The dominant subject occupies 40-70% of the canvas and bleeds off at least one edge. A subject small enough to sit inside a margin has already failed.',
+  },
+
+  primitives: {
+    _note: 'Thirteen reusable pieces on Figma 04, prefixed Thumb /. Archetypes are compositions of these, never independent copies. The watermark is INSTANCED from Watermark / A-Mark, not rebuilt.',
+    'Thumb / Background field': 'Field = Graphite | Ice | Warm | Expressive. Flat only — gradients stay retired.',
+    'Thumb / Portrait frame': 'Treatment = Bleed | Framed | Cutout, boolean Rim light. Bleed is the thumbnail default: no radius, no border, no card.',
+    'Thumb / Product hero': 'Treatment = Bleed | Framed | Cutout, boolean Rim light.',
+    'Thumb / Image mask': 'Ratio = 16:9 | 1:1 | 4:5. Where a supplied image lands.',
+    'Thumb / Subject separation': 'Mode = Scrim | Outline. The scrim is a FLAT panel, never a gradient.',
+    'Thumb / Impact hook': 'Lang = EN | AR, TEXT Hook, boolean Underline. The feed tier: ALL CAPS Latin at 140/128, hand-drawn underline on by default.',
+    'Thumb / Annotation': 'Mark = Arrow | Circle | Underline | Strike | Note. Drawn paths plus the approved Caveat sketch face, always Spark Coral.',
+    'Thumb / Hook text': 'Lang = EN | AR, Size = XL | L. The quieter alternative to the impact tier.',
+    'Thumb / Eyebrow': 'Lang = EN | AR.',
+    'Thumb / Tech label': 'An established term, always LTR.',
+    'Thumb / Platform label': 'Names the surface. Optional.',
+    'Thumb / Feature callout': 'Lang = EN | AR. One supporting fact, never a second hook.',
+    'Thumb / Comparison divider': 'Orientation = Vertical | Diagonal, boolean Show VS.',
+  },
+
+  annotation: {
+    status: 'The layer that makes a cover read as made rather than templated.',
+    marks: ['Arrow', 'Circle', 'Underline', 'Strike', 'Note'],
+    colour: 'Spark Coral, from the approved Expressive palette. Never Signature Blue — annotation must not impersonate a UI element.',
+    face: 'Caveat, the approved sketch face, for handwritten notes.',
+    rules: [
+      'One annotation idea per cover, pointed at the thing the hook is about.',
+      'It must clarify. Annotation used decoratively or scattered across a frame is the failure mode.',
+      'It sits ON the subject, not in empty space beside it.',
+      'No emoji, no default red arrows as a style, no starbursts.',
+    ],
+  },
+
+  archetypes: {
+    _note: 'Ten feed-native families on Figma 08, each Lang = EN | AR at the 16:9 master. Twenty variants: light and dark come from the semantic MODE.',
+    '01 PRODUCT DOMINANT': 'Product 40-70% of the canvas, bleeding off an edge, lit against a dark ground. Hook 2-3 words, one circle on the thing the video is about.',
+    '02 FACE + PRODUCT': 'Reaction on one side, proof on the other, a drawn arrow tying the claim to the object. The face is cropped close and bleeds off frame.',
+    '03 A/B COMPARISON': 'Two subjects at matched scale and framing. If one is larger the thumbnail has already answered its own question.',
+    '04 SCREEN / FEATURE EMPHASIS': 'One screen, lens, hinge or UI region zoomed until unmistakable, circled. A full readable UI screenshot is a slide, not this.',
+    '05 SKETCH / ANNOTATION': 'Arrow, circle and one handwritten word do the explaining. One idea, marked once.',
+    '06 BIG CLAIM': 'One bold phrase, one strong image, one expressive ground. Highest survival rate at feed size; fails hardest when the claim is vague.',
+    '07 VISUAL CONTRADICTION': 'A claim set up and visibly broken — struck through, argued with in handwriting. Only legitimate when the video actually challenges the claim.',
+    '08 PROBLEM / FIX': 'The problem circled, the arrow crossing to the fix, both halves the same size.',
+    '09 TRANSFORMATION': 'Before and after against a hard 6 px seam. Matched framing on both sides or the comparison is dishonest.',
+    '10 MINIMAL PREMIUM': 'One product, one short phrase, a light ground, no annotation. Only when the subject is strong enough to carry a quiet frame.',
+  },
+
+  'image-treatment': {
+    supported: ['subject cutout', 'product cutout', 'background separation', 'foreground / background depth', 'controlled shadow', 'subtle rim light', 'image masking', 'crop and reframe', 'face-first composition', 'product-first composition'],
+    'cutout-status': 'SUPPORTED, NOT MANUFACTURED. Treatment = Cutout expects a transparent PNG the author supplies. No background-removal step ships with this system.',
+    never: ['over-retouching a face', 'smoothing or reshaping features', 'synthesising or generating a face', 'making the subject look artificial'],
+    rule: 'The source photo must still look like Adel.',
+  },
+
+  copy: {
+    'hook-words': { min: 2, max: 5 },
+    'eyebrow-words': 3,
+    'callout-words': 5,
+    'tech-label-words': 2,
+    'hook-is-a-hook': 'The thumbnail never repeats the video title. It carries a visual hook that complements it — LOWLIGHT KING?, 20 THINGS FIRST, DON’T CUT THIS, WORTH IT?, BEFORE / AFTER, BETTER THAN DJI?, FOLDABLE CONTENT?',
+    'column-rule': 'MEASURED during the production test: at the impact tier (Montserrat Black 140) a hook column narrower than about 740 px can only hold words of five characters or fewer. A narrow column therefore needs short words, not smaller type.',
+    'feed-ceiling': 'MEASURED: a four-word hook at the quieter Size L tier stopped resolving at 168 px. Two or three words is the feed-safe ceiling there. On breach the remedy is fewer words, never smaller type.',
+    language: 'The approved rule applies unchanged: an Arabic sentence stays Arabic, and recognised platform, product, creator and technical terms stay English as isolated LTR islands — YouTube Shorts, Foldable, AI, Motion Design, Reels, Claude, Figma, Insta360. No established term is force-translated. Western digits in both languages.',
+  },
+
+  'creative-direction': {
+    is: ['high-end tech', 'modern', 'creator-led', 'editorial', 'visually bold', 'recognisable at 168 px'],
+    'is-not': ['generic clickbait styling', 'emoji', 'default red arrows', 'random glow', 'gradients', 'clutter', 'sentence-length copy', 'eight templates that are one card recoloured'],
+  },
+
+  branding: {
+    watermark: 'Watermark / A-Mark is the default ownership mark on every cover, instanced not rebuilt. It moves to the free safe corner when the default corner is occupied — that is the placement rule working, not an exception to it.',
+    'scale-floor': 'On a 720 px short edge the 2.96% rule would give a 21 px mark, so the 24 px floor wins and the watermark is placed at 0.75 scale. This is the floor doing its job.',
+    'no-duplicate-branding': 'One mark per cover. A cover never carries both the watermark and a lockup.',
+    'content-is-the-hero': 'The brand stays recognisable through typography, the approved palette, controlled expressive colour, the small Liquid Glass A-mark and consistent spacing. A large logo or a branded frame is never forced onto a thumbnail — it costs attention and buys nothing.',
+  },
+
+  workflow: {
+    status: 'CONTRACT ONLY — not built. Video-frame extraction is explicitly not implemented and no video-engine file changes.',
+    inputs: ['video (later) or image', 'portrait', 'topic', 'platform', 'language'],
+    request: 'e.g. "Create a YouTube thumbnail for this video."',
+    steps: [
+      '1. identify the strongest visual subject in the supplied media',
+      '2. choose the archetype that matches the subject and the topic',
+      '3. reframe the supplied image to the archetype slot, never blind-cropping the focal area',
+      '4. write short hook copy within the word ceilings, in the requested language, keeping established terms English',
+      '5. apply the Brand OS — approved palette, type, spacing, flat colour only',
+      '6. apply the corner watermark',
+      '7. export the platform version from the correct profile',
+    ],
+    'platform-recomposition': 'Every platform version RECOMPOSES subject, crop, text, product placement, watermark and safe zones. A 9:16 cover is never the 16:9 design resized or centre-cropped — the same rule the fold video profiles follow.',
+    'must-never': [
+      'fabricate or generate a face',
+      'invent a product render in place of real product photography',
+      'invent a platform dimension that is not established or clearly documented',
+      'centre-crop a 16:9 master to make a 9:16 cover — it recomposes, exactly as the fold video profiles do',
+      'repeat the video title as the hook',
+    ],
+  },
+};
+
 const watermark = {
   status: 'APPROVED — Brand OS rule added 2026-09-14, after Phase 2A was locked. It introduces no new colour value; every fill, stroke, radius and space below is an existing approved token.',
   purpose: 'Subtle brand ownership and recognition on images and video. It is NOT theft prevention and is never sized, placed or weighted as if it were.',
@@ -669,6 +838,15 @@ const rules = {
     'Watermark inset is read from the canvas or video profile (margin / reserve-top), never hard-coded.',
     'No glow, gradient, chrome, shadow stack or default animation on the watermark. One hairline edge highlight and a background blur, nothing else.',
   ],
+  thumbnails: [
+    'A thumbnail carries ONE idea and 2-6 words of hook copy, and never repeats the video title.',
+    'Platform profiles are composition over the two AUDITED masters (1280x720, 1080x1920). No platform pixel size is invented; every derived reserve is flagged VALIDATION REQUIRED.',
+    'A 9:16 cover RECOMPOSES the composition; it is never a centre-crop of the 16:9 master.',
+    'Never fabricate a face and never invent a product render: an unavailable image is a labelled placeholder, not a guess.',
+    'Judge every cover at 168 px on a phone, not at 1280 px in Figma. On breach the remedy is fewer words or a bigger subject, never smaller type.',
+    'One dominant subject at 40-70% of the canvas, bleeding off an edge. No cards, no symmetric grids, no decorative branding.',
+    'Annotation clarifies or it does not appear: one marked idea per cover, in Spark Coral, sitting on the subject.',
+  ],
   families: ['ASMR / Product Unboxing', 'Talking Head / Reel', 'Motion Carousel', 'Product Comparison', 'Product Demo / Feature Spotlight', 'Mixed Talking Head + Product B-roll', 'Long-form / Explainer (routing profile of the Talking Head pipeline — supported, no separate JSON yet)'],
 };
 
@@ -694,7 +872,7 @@ const tokens = {
   color: { primitives, semantic: { light, dark }, expressive, archived },
   typography, space, radius, stroke, sizing, elevation, motion, canvases, slots,
   canvasProfiles, adaptiveLayouts, devicePack, adaptiveMigration, foldFirstNaming,
-  logo, heart, signature, watermark, rules,
+  logo, heart, signature, watermark, thumbnails, rules,
 };
 
 const outputs = new Map();
@@ -852,8 +1030,25 @@ Consumer-facing "Fold First" language is a ${foldFirstNaming.status.toLowerCase(
 - Static: ${watermark.usage.static}
 - Video: ${watermark.usage.video} **${watermark.usage['engine-status']}**
 
+## Thumbnail / Video Cover System
+- ${thumbnails.status}
+- **${thumbnails['one-rule']}** ${thumbnails.purpose}
+- Masters (the only two canvases, both audited): **${thumbnails.masters['thumb-16x9'].width} x ${thumbnails.masters['thumb-16x9'].height}** margin ${thumbnails.masters['thumb-16x9'].margin} · **${thumbnails.masters['cover-9x16'].width} x ${thumbnails.masters['cover-9x16'].height}** margin ${thumbnails.masters['cover-9x16'].margin}, reserves ${thumbnails.masters['cover-9x16']['reserve-top']} / ${thumbnails.masters['cover-9x16']['reserve-bottom']}
+- Platform profiles (composition over those masters, never invented sizes):
+${Object.values(thumbnails.profiles).map((p) => `  - **${p.label}** — ${p.width} x ${p.height}, margin ${p.margin}, centre-safe ${p['centre-safe']}${p.validationRequired ? ' · DERIVED RESERVES — VALIDATION REQUIRED' : ''}`).join('\n')}
+- **${thumbnails['design-intent'].rule}** Must not feel like: ${thumbnails['design-intent']['must-not-feel-like'].join(', ')}.
+- Use: ${thumbnails['design-intent'].use.join(' · ')}. Avoid: ${thumbnails['design-intent'].avoid.join(' · ')}.
+- ${thumbnails['design-intent']['subject-scale']}
+- Archetypes:
+${Object.entries(thumbnails.archetypes).filter(([k]) => !k.startsWith('_')).map(([k, v]) => `  - **${k}** — ${v}`).join('\n')}
+- Annotation (${thumbnails.annotation.marks.join(' · ')}): ${thumbnails.annotation.colour} ${thumbnails.annotation.rules.join(' ')}
+- Copy: hook ${thumbnails.copy['hook-words'].min}-${thumbnails.copy['hook-words'].max} words · eyebrow ${thumbnails.copy['eyebrow-words']} · callout ${thumbnails.copy['callout-words']}. ${thumbnails.copy['hook-is-a-hook']} ${thumbnails.copy.language}
+- Feed ceiling: ${thumbnails.copy['feed-ceiling']} ${thumbnails.copy['column-rule']}\n- ${thumbnails.branding['content-is-the-hero']}\n- ${thumbnails.workflow['platform-recomposition']}
+- Image treatment: ${thumbnails['image-treatment'].rule} Never ${thumbnails['image-treatment'].never.join(', ')}. Cutout is ${thumbnails['image-treatment']['cutout-status']}
+- Future workflow: **${thumbnails.workflow.status}** Contract: ${thumbnails.workflow.inputs.join(' · ')} in, platform export out, via ${thumbnails.workflow.steps.length} documented steps.
+
 ## Non-negotiables the skill enforces
-${[...rules.colour, ...rules.logo, ...rules.typography, ...rules.watermark, ...rules.video].map((r) => `- ${r}`).join('\n')}
+${[...rules.colour, ...rules.logo, ...rules.typography, ...rules.watermark, ...rules.thumbnails, ...rules.video].map((r) => `- ${r}`).join('\n')}
 
 ## Format relationship
 The brand system is shared; the edit behaviour is not.

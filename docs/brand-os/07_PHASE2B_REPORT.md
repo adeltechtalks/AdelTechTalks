@@ -205,3 +205,15 @@ Three design decisions worth recording:
 **Evidence produced:** light media example, dark media example, a real Static Ultra Carousel slide with it switched on, both variants side by side on the grounds they are made for, and the placement spec frame — `evidence/watermark_*.png`.
 
 **Honest limitation:** the light and dark "media" are tonal stand-ins built from approved tokens, because the repository holds no production photography. They were built with a tonal edge running under the corner so the frosted plate is judged where it is hardest, but a real photograph with a busy corner is still the test that matters. Listed as open item 3 in `08_WATERMARK.md`.
+
+---
+
+## 14 · Thumbnail / Video Cover System (approved extension)
+
+Full account: `09_THUMBNAIL_SYSTEM_PLAN.md` and `10_THUMBNAIL_SYSTEM_REPORT.md`.
+
+Thirteen `Thumb /` primitives on module 04, ten feed-native archetypes and five platform profiles on module 08, three real Fold-First directions, and a 9:16 recomposition. Built, then **rebuilt once mid-flight** after a direction correction: the first pass optimised for a clean Brand OS aesthetic and produced branded cards that said nothing at feed size. The corrected system is built for one visual idea in under one second on a phone — dominant subjects at 40-70% of the canvas, bleed instead of cards, a 2-5 word impact hook, and a hand-drawn annotation layer.
+
+Two measured findings became rules: at the impact tier a hook column narrower than ~740 px only holds words of five characters or fewer, and at the quieter tier a four-word hook stops resolving at 168 px. Both were fixed by cutting words, never by shrinking type.
+
+No approved Phase 2A value changed. Six thumbnail-scale text styles were added; the export regenerates clean.
