@@ -2,3 +2,6 @@
 # Python bytecode
 __pycache__/
 *.pyc
+
+# Render outputs are regenerable; keep them out of git
+docs/brand-os/evidence/*.mp4

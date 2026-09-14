@@ -180,6 +180,13 @@ def d3_event_over_detect(sig, det, T):
 
 def d4_peak_masking(sig, det, T):
     """One loud outlier inflates peak, so peak_fraction masks every softer event."""
+    # Only a real risk when a threshold is anchored to the ABSOLUTE peak. With a
+    # percentile reference the outlier cannot dominate, so the same signal fact
+    # stops being a fault. Reported, not tripped.
+    refs = {det.get("silence_reference", "peak"), det.get("event_reference", "peak")}
+    if "peak" not in refs:
+        return False, (f"peak sits {sig['peak_above_p99_db']} dB above p99, but thresholds "
+                       f"anchor on {'/'.join(sorted(refs))} — outlier cannot dominate"), None
     trip = sig["peak_above_p99_db"] > 6.0
     if not trip:
         return False, (f"peak sits {sig['peak_above_p99_db']} dB above p99 — "
@@ -301,12 +308,18 @@ def measure(clip: Path, T: dict) -> tuple:
     # change. That transition is exactly what this records.
     f_, pk_, md_ = audio["noise_floor"], audio["peak"], audio["median"]
     SIL, EV = T["silence"], T["events"]
+    s_ref = audio.get("silence_ref_level", pk_) or pk_
+    e_ref = audio.get("event_ref_level", pk_) or pk_
+    s_rn = f"level[{SIL.get('reference', 'peak')}]"
+    e_rn = f"level[{EV.get('reference', 'peak')}]"
     sil_b = {"floor": f_ * float(SIL["floor_multiplier"]),
-             "peak": pk_ * float(SIL["peak_fraction"])}
+             s_rn: s_ref * float(SIL["peak_fraction"])}
     ev_b = {"median": md_ * float(EV["median_multiplier"]),
-            "peak": pk_ * float(EV["peak_fraction"]),
+            e_rn: e_ref * float(EV["peak_fraction"]),
             "floor": f_ * float(EV["floor_multiplier"])}
     det = {
+        "silence_reference": SIL.get("reference", "peak"),
+        "event_reference": EV.get("reference", "peak"),
         "silence_branch": max(sil_b, key=sil_b.get),
         "event_branch": max(ev_b, key=ev_b.get),
         "events": len(audio["events"]),

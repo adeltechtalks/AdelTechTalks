@@ -108,13 +108,23 @@ def main() -> int:
     parts, modes = [], set()
     for i, s in enumerate(segs):
         src = Path(s["src"])
+        # Read the DISPLAY size, not the stored size. Phone footage carries its
+        # orientation in a rotation matrix: ffprobe reports 1024x576 where ffmpeg
+        # decodes 576x1024. Using the stored size makes recompose_filter compare
+        # the wrong aspect and report a recomposition that did not happen.
         meta = subprocess.run(
-            ["ffprobe", "-v", "error", "-select_streams", "v:0",
-             "-show_entries", "stream=width,height", "-of", "csv=p=0:s=x", str(src)],
-            capture_output=True, text=True).stdout.strip()
+            ["ffprobe", "-v", "error", "-select_streams", "v:0", "-print_format", "json",
+             "-show_streams", str(src)], capture_output=True, text=True).stdout
         try:
-            sw, sh = (int(x) for x in meta.split("x")[:2])
-        except ValueError:
+            st = (json.loads(meta or "{}").get("streams") or [{}])[0]
+            sw, sh = int(st.get("width") or 0), int(st.get("height") or 0)
+            rot = 0
+            for sd in (st.get("side_data_list") or []):
+                if sd.get("rotation") is not None:
+                    rot = int(float(sd["rotation"])) % 360
+            if rot in (90, 270):
+                sw, sh = sh, sw
+        except (ValueError, KeyError, IndexError):
             sw = sh = 0
         vf, mode = recompose_filter(sw, sh, tw, th, ground)
         modes.add(mode)

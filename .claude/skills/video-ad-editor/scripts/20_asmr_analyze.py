@@ -41,6 +41,22 @@ def probe(path: Path) -> dict:
     d = json.loads(r.stdout or "{}")
     v = next((s for s in d.get("streams", []) if s.get("codec_type") == "video"), {})
     a = next((s for s in d.get("streams", []) if s.get("codec_type") == "audio"), None)
+
+    # Phone footage carries a rotation in a Display Matrix rather than in the
+    # stored frame size: ffprobe reports 1024x576 while ffmpeg DECODES 576x1024.
+    # Reading the stored size makes a portrait clip look landscape and sends
+    # every downstream orientation and recomposition decision the wrong way.
+    # Found on the first real clip; synthetic footage has no rotation metadata.
+    rot = 0
+    for sd in (v.get("side_data_list") or []):
+        if sd.get("rotation") is not None:
+            try:
+                rot = int(float(sd["rotation"])) % 360
+            except (TypeError, ValueError):
+                rot = 0
+    if rot in (90, 270):
+        v = dict(v)
+        v["width"], v["height"] = v.get("height"), v.get("width")
     fps = 0.0
     if v.get("avg_frame_rate", "0/0") not in ("0/0", None):
         num, _, den = v["avg_frame_rate"].partition("/")
@@ -50,6 +66,7 @@ def probe(path: Path) -> dict:
         "width": int(v.get("width") or 0),
         "height": int(v.get("height") or 0),
         "fps": round(fps, 3),
+        "rotation": rot,
         "has_audio": a is not None,
         "audio_channels": int(a.get("channels") or 0) if a else 0,
         "audio_sample_rate": int(a.get("sample_rate") or 0) if a else 0,
@@ -83,12 +100,37 @@ def analyse_audio(env: list, fmt_rules: dict, tune: dict = None) -> dict:
     if not env:
         return {"noise_floor": 0.0, "peak": 0.0, "silences": [], "events": []}
     srt = sorted(env)
-    floor = srt[int(len(srt) * float(SIL["floor_percentile"]))]
+    n = len(srt)
+    floor = srt[int(n * float(SIL["floor_percentile"]))]
+
+    # Reference LEVEL for the level-relative threshold branches.
+    #
+    # Real footage exposed why the absolute peak is the wrong anchor: one loud
+    # moment (a box slam 15.5 dB above the clip's own p99) set the threshold for
+    # all 226 seconds, putting ev_thresh ABOVE p99 — structurally unable to see
+    # normal tactile content. Lowering the multiplier only rescales that same
+    # broken anchor, which is why numeric tuning alone did not clear D1/D2/D4.
+    #
+    # A high percentile is robust to a handful of outlier windows while still
+    # tracking how loud the clip actually is. "peak" is kept as the default so
+    # existing profiles behave exactly as before.
+    def _ref(spec):
+        spec = str(spec or "peak").lower()
+        if spec == "peak":
+            return srt[-1]
+        if spec.startswith("p"):
+            try:
+                q = float(spec[1:]) / 100.0
+            except ValueError:
+                return srt[-1]
+            return srt[min(n - 1, max(0, int(n * q)))]
+        return srt[-1]
     peak = srt[-1]
     median = statistics.median(env)
 
     # Dead time: quiet relative to this clip's own floor, not an absolute dB.
-    sil_thresh = max(floor * float(SIL["floor_multiplier"]), peak * float(SIL["peak_fraction"]))
+    sil_ref = _ref(SIL.get("reference", "peak"))
+    sil_thresh = max(floor * float(SIL["floor_multiplier"]), sil_ref * float(SIL["peak_fraction"]))
     min_sil = float(SIL["min_silence_s"])
 
     silences, run = [], None
@@ -107,8 +149,9 @@ def analyse_audio(env: list, fmt_rules: dict, tune: dict = None) -> dict:
 
     # Tactile transients: a sharp rise above the local level. These are the
     # content — a peel, a click, a snap — and they are what must survive.
+    ev_ref = _ref(EV.get("reference", "peak"))
     ev_thresh = max(median * float(EV["median_multiplier"]),
-                    peak * float(EV["peak_fraction"]),
+                    ev_ref * float(EV["peak_fraction"]),
                     floor * float(EV["floor_multiplier"]))
     rise = float(EV["rise_ratio"]); refract = float(EV["refractory_s"])
     events, last = [], -1.0
@@ -123,6 +166,9 @@ def analyse_audio(env: list, fmt_rules: dict, tune: dict = None) -> dict:
         "median": round(median, 6), "silence_threshold": round(sil_thresh, 6),
         "event_threshold": round(ev_thresh, 6),
         "silences": silences, "events": events,
+        "silence_reference": SIL.get("reference", "peak"),
+        "event_reference": EV.get("reference", "peak"),
+        "silence_ref_level": round(sil_ref, 6), "event_ref_level": round(ev_ref, 6),
         "_tuning": T["_id"],
     }
 

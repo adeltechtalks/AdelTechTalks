@@ -96,6 +96,58 @@ def keep_ranges(duration: float, cuts: list) -> list:
     return [(a, b) for a, b in merged if b - a > 0.0]
 
 
+def snap_out(t: float, reserves: list, forward: bool) -> float:
+    """Move a cut point OUT of any tactile reserve it lands inside.
+
+    A sub-range boundary that falls mid-reserve truncates a decay — the exact
+    thing the reserves exist to prevent. Boundaries move outward, never inward.
+    """
+    for rs, re in reserves:
+        if rs < t < re:
+            return re if forward else rs
+    return t
+
+
+def carve(a: float, b: float, events: list, heroes: list, reserves: list,
+          want: float) -> list:
+    """Split an over-long protected run into the best sub-ranges inside `want`.
+
+    Dense real footage merges every reserve into one continuous block — a whole
+    unboxing can come back as a single 140s "keep". Taking it whole blows the
+    duration budget; truncating it arbitrarily throws away the judgement the
+    hero-window scoring already did. So carve around the hero moments, and
+    snap every boundary clear of a reserve.
+    """
+    inside = [h for h in heroes if h["start"] >= a - 0.01 and h["end"] <= b + 0.01]
+    inside.sort(key=lambda h: -h.get("score", 0))
+    out, used = [], 0.0
+    for h in inside:
+        if used >= want:
+            break
+        span = min(want - used, max(h["end"] - h["start"], 2.0))
+        mid = (h["start"] + h["end"]) / 2.0
+        lo = snap_out(max(a, mid - span / 2.0), reserves, forward=False)
+        hi = snap_out(min(b, lo + span), reserves, forward=True)
+        if hi - lo < 1.0 or any(not (hi <= o[0] or lo >= o[1]) for o in out):
+            continue
+        out.append((lo, hi)); used += hi - lo
+    if not out:
+        # No hero window here: take the densest `want` seconds by event count.
+        best, bs = (a, min(b, a + want)), -1
+        step = max(0.5, want / 8.0)
+        t = a
+        while t + want <= b + 1e-6:
+            n = sum(1 for e in events if t <= e["t"] <= t + want)
+            if n > bs:
+                bs, best = n, (t, t + want)
+            t += step
+        lo = snap_out(best[0], reserves, forward=False)
+        hi = snap_out(min(b, lo + want), reserves, forward=True)
+        out = [(lo, hi)]
+    out.sort()
+    return out
+
+
 def main() -> int:
     if len(sys.argv) < 2:
         print("usage: 21_asmr_plan.py <workdir> [--seconds 28]")
@@ -138,10 +190,26 @@ def main() -> int:
                            "dur": round(b - a, 3)})
         scored.sort(key=lambda k: (-k["events"], -k["dur"]))
 
+        heroes = clip.get("hero_windows", [])
         taken = []
         for k in scored:
-            if total + k["dur"] > budget and taken:
+            remaining = budget - total
+            if remaining <= 0.5:
                 dropped.append((f"{clip['file']} {k['start']}–{k['end']}s", "over duration budget"))
+                continue
+            if k["dur"] > remaining:
+                # Too long to take whole. Carve it around the hero moments rather
+                # than accepting it entire (blows the budget) or cutting it at an
+                # arbitrary point (ignores the scoring already done).
+                for a2, b2 in carve(k["start"], k["end"], events, heroes, reserves, remaining):
+                    n2 = sum(1 for e in events if a2 <= e["t"] <= b2)
+                    taken.append({"start": round(a2, 3), "end": round(b2, 3),
+                                  "events": n2, "dur": round(b2 - a2, 3),
+                                  "carved_from": [k["start"], k["end"]]})
+                    total += b2 - a2
+                dropped.append((f"{clip['file']} {k['start']}–{k['end']}s",
+                                f"carved to fit budget — kept {len([t for t in taken if t.get('carved_from')])} "
+                                f"hero-anchored sub-range(s)"))
                 continue
             taken.append(k)
             total += k["dur"]
