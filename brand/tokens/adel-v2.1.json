@@ -1894,6 +1894,15 @@
       ],
       "subject-scale": "The dominant subject occupies 40-70% of the canvas and bleeds off at least one edge. A subject small enough to sit inside a margin has already failed."
     },
+    "composition": {
+      "_note": "Added after a visual-competitiveness pass. These are what separate a finished thumbnail from a design-system demonstration.",
+      "subject-is-hero": "The face, device, screen or transformation carries the majority of visual attention. Subjects bleed off edges, overlap zones, sit BEHIND typography and break the grid on purpose. A composition should feel composed, not boxed.",
+      "no-rigid-splits": "Avoid 50/50 card splits unless the story genuinely is a comparison. A split layout used as a default is the single clearest tell of a template.",
+      "no-text-panel": "Never draw a panel merely to hold text. Type sits directly over photography, controlled blur, depth or large product imagery. Contrast is bought with a GLOBAL grade over the whole image — never a local rectangle with a visible edge.",
+      "annotation-must-mean-something": "Every arrow, circle, underline or note must identify a real focal point: a product feature, a visual contradiction, a before/after difference, a hinge or screen area. If there is nothing meaningful to annotate, there is no annotation. A pending media slot is NOT something real — do not annotate one.",
+      "copy-is-curiosity": "Choose the 2-5 words for curiosity, not to demonstrate the layout.",
+      "judge-in-a-feed": "Never judge a cover alone on a white canvas. Place it at real mobile size in dark feed chrome and ask: does the subject read instantly, is there one obvious focal point, is the idea clear in under a second, does it look like content rather than a template."
+    },
     "primitives": {
       "_note": "Thirteen reusable pieces on Figma 04, prefixed Thumb /. Archetypes are compositions of these, never independent copies. The watermark is INSTANCED from Watermark / A-Mark, not rebuilt.",
       "Thumb / Background field": "Field = Graphite | Ice | Warm | Expressive. Flat only — gradients stay retired.",
@@ -1925,7 +1934,8 @@
         "One annotation idea per cover, pointed at the thing the hook is about.",
         "It must clarify. Annotation used decoratively or scattered across a frame is the failure mode.",
         "It sits ON the subject, not in empty space beside it.",
-        "No emoji, no default red arrows as a style, no starbursts."
+        "No emoji, no default red arrows as a style, no starbursts.",
+        "Caveat carries NO Arabic glyphs. In an Arabic composition the handwritten note must be digits or an established Latin term (9:16, 3:4, AI, Foldable) — an Arabic string silently falls back to a non-handwritten face and the annotation stops being handwriting."
       ]
     },
     "archetypes": {
@@ -1972,7 +1982,7 @@
       "callout-words": 5,
       "tech-label-words": 2,
       "hook-is-a-hook": "The thumbnail never repeats the video title. It carries a visual hook that complements it — LOWLIGHT KING?, 20 THINGS FIRST, DON’T CUT THIS, WORTH IT?, BEFORE / AFTER, BETTER THAN DJI?, FOLDABLE CONTENT?",
-      "column-rule": "MEASURED during the production test: at the impact tier (Montserrat Black 140) a hook column narrower than about 740 px can only hold words of five characters or fewer. A narrow column therefore needs short words, not smaller type.",
+      "impact-hook-current-style-constraint": "NOT a universal rule. With the CURRENT Impact Hook style only — Montserrat Black, 140 px, line height 128, tracking -3%, Latin uppercase — a hook column narrower than about 740 px cannot hold words longer than about five characters without breaking mid-word. It is a property of this style at this size in this column, and it changes the moment any of those change. Treat it as a setting to check, not a law: widen the column, shorten the word, or adjust the style.",
       "feed-ceiling": "MEASURED: a four-word hook at the quieter Size L tier stopped resolving at 168 px. Two or three words is the feed-safe ceiling there. On breach the remedy is fewer words, never smaller type.",
       "language": "The approved rule applies unchanged: an Arabic sentence stays Arabic, and recognised platform, product, creator and technical terms stay English as isolated LTR islands — YouTube Shorts, Foldable, AI, Motion Design, Reels, Claude, Figma, Insta360. No established term is force-translated. Western digits in both languages."
     },

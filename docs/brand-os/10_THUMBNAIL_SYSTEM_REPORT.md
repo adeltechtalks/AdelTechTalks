@@ -1,6 +1,6 @@
 # Thumbnail / Video Cover System — execution report
 
-**Status:** built, and **rebuilt once mid-flight** after a direction correction. Approved Phase 2B extension.
+**Status:** built, rebuilt once after a direction correction, then given a **final visual pass** for competitiveness. Approved Phase 2B extension — **awaiting visual approval**.
 **Plan of record:** `09_THUMBNAIL_SYSTEM_PLAN.md`, written before any Figma change.
 **Figma:** thirteen `Thumb /` primitives on `04 — Core Components`; ten archetypes, five platform profiles and the production test on `08 — Social / Channel`.
 **Changes no approved Phase 2A value.** Six thumbnail-scale text styles were added because the social ramp stops short of feed-cover scale; the export regenerates clean (`--check` passes).
@@ -26,6 +26,18 @@ What that changed concretely:
 | eight archetypes named after content types | **ten families named after visual patterns** |
 
 What was **kept**, because the correction did not invalidate it: all thirteen primitives' architecture, the five platform profiles and their provenance discipline, the language rule, the watermark integration, and the token binding. The archetype layer was rebuilt; the system underneath it was not.
+
+## 1b · The visual-competitiveness pass
+
+The second review was blunt and correct: legibility was proven, **click-worthiness was not**. The examples still read as design-system demonstrations — split-layout cards, annotation samples, typography tests — rather than thumbnails competing in a feed. The rules that came out of it are now in the export under `thumbnails.composition`:
+
+- **The subject is the hero.** Face, device, screen or transformation carries the majority of visual attention. Subjects bleed off edges, overlap zones and sit **behind** typography. Composed, not boxed.
+- **No rigid 50/50 splits** unless the story genuinely is a comparison. A split used as a default is the clearest tell of a template.
+- **No panel drawn merely to hold text.** Type sits directly on photography, controlled blur or depth. Contrast is bought with a **global grade over the whole image**, never a local rectangle with a visible edge.
+- **Annotation must identify something real** — a feature, a contradiction, a before/after difference, a hinge. Otherwise there is no annotation.
+- **Judge in a feed**, at real mobile size, in dark chrome — never alone on a white canvas.
+
+Applying the fourth rule cost two annotations: the circles on Directions A and C were pointing at a **pending media slot**, which is not something real. They were deleted rather than kept for show.
 
 ## 2 · Primitives — 13 on module 04
 
@@ -124,9 +136,42 @@ Adel supplies video or image, portrait, topic, platform and language, and asks f
 
 **Video-frame extraction is not built and the video engine is not modified.** The contract is documented in `brand/tokens/adel-v2.1.json → thumbnails.workflow`, including what it must never do: fabricate a face, invent a product render, invent a platform dimension, centre-crop a master into a vertical cover, or repeat the video title as the hook.
 
+## 9b · The three finished Fold-First directions
+
+| | Pattern | Hook | Media | State |
+|---|---|---|---|---|
+| **A** | FACE + FOLDABLE | مش 9:16 بس | **real photograph**, close crop, global grade | composition approved · device pending |
+| **B** | TRANSFORMATION | 9:16 بيقص | **real photograph, no placeholder at all** | **finished** |
+| **C** | DEVICE-DOMINANT | FOLD ≠ CROP | **real photograph** blurred as environment; device pending | composition approved · device pending |
+
+**Direction B is the only fully finished one, and it is the strongest.** Its idea needs no placeholder because the idea *is* the crop: the real photograph runs full-bleed, the 9:16 region is outlined in white, everything outside it is graded back, and two drawn arrows point outward at what a vertical crop throws away. Handwritten `9:16` and `3:4` label the two regions. It reads before the text does, which is the whole test.
+
+**A and C are composition-complete and media-blocked.** Both use the real photograph — A as the hero at close crop, C blurred into an environment so the frame has depth instead of a flat field. Neither pretends: the device is a **dashed, labelled `FOLDABLE — IMAGE PENDING` slot**, not a grey box dressed as a product.
+
+### The one remaining media dependency
+
+**There is no foldable / device photography in this repository.** That is the single blocker on final visual approval for A and C. Everything else on those two frames — crop, grade, type, hook, watermark, safe zones — is final. When a device image exists, dropping it into the slot finishes both, and the annotation that was removed comes back pointing at the hinge.
+
+Sourcing that image is a real decision, not a design one: it needs either Adel's own photograph of the device or a licensed product shot. Inventing a render would have made these look finished while proving nothing.
+
+## 9c · Feed test, in feed chrome
+
+`evidence/thumb_final_feed-test.png` places all three at **380 px wide in a 412 px dark feed column**, with channel avatar, two-line title, view count and duration pill — the context they actually compete in. Findings:
+
+- **B reads instantly.** The white crop boundary survives the size reduction better than any other element in the system.
+- **A reads instantly** on the face; the dashed pending slot is the only thing that looks unfinished, which is accurate.
+- **C is legible but hollow** at feed size — a large empty slot is exactly as weak as it should look until the device image arrives.
+
+The reference thumbnails supplied for this review were used as the **quality bar for visual behaviour** — subject scale, readability, annotation, comparison tension, copy length. They are deliberately **not reproduced inside the brand file**: third-party creators' artwork does not belong in AdelTechTalks' component library, and no creator's composition or identity was copied.
+
+## 9d · Two corrections recorded
+
+1. **The 740 px finding is not a universal rule** and is no longer written as one. It is stored as `impact-hook-current-style-constraint`: a property of the **current** Impact Hook style only — Montserrat Black 140 / 128 / -3 % tracking, Latin uppercase — that disappears the moment the font, size, weight, tracking or column changes. A setting to check, not a law.
+2. **The sketch face has no Arabic glyphs.** Caveat is Latin-only, so an Arabic "handwritten" note was silently falling back to a non-handwritten face — the annotation was not annotation at all. In Arabic compositions the handwritten note now carries **digits or an established Latin term** (`9:16`, `3:4`, `AI`, `Foldable`). This is why Direction B's handwriting works and reads as genuinely drawn.
+
 ## 10 · Open questions
 
-1. **No product photography and no fold footage exist in the repository.** Seven of the ten archetypes are proven with labelled placeholders. The compositions, type, annotation and watermark are final; only the imagery is pending. A second pass with real product shots is worth doing before the first published thumbnail.
+1. **No product, device or fold photography exists in the repository — the one remaining media dependency.** Directions A and C and seven of the ten archetypes are composition-complete and image-blocked. Type, annotation, grade, watermark and safe zones are final. This is the item that stands between the system and full visual approval, and it is a sourcing decision rather than a design one.
 2. **Cutout is supported but not manufactured.** `Treatment = Cutout` expects a transparent PNG from the author. Background removal would mean Adobe or Canva, both out of scope here.
 3. **Every derived platform reserve still needs device validation** — the duration-pill band, the TikTok right rail, and the 1:1 centre tiles. They are working values, flagged as such, never presented as measured.
 4. **KO Ghorab remains a placeholder** in the Arabic impact style, carried from Phase 2A validation item 1.
