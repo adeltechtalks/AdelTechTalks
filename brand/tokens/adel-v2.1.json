@@ -1846,6 +1846,22 @@
         "validationRequired": true,
         "provenance": "9:16 master AUDITED. The 1:1 centre tile is the DERIVED grid-preview guide — the Reels grid shows a square, so anything that must survive lives inside it. VALIDATION REQUIRED."
       },
+      "instagramVideoCover": {
+        "label": "Instagram Video Cover",
+        "use": "Instagram feed video covers — the cover a video shows in the profile grid and the feed",
+        "master": "Cover 9:16 (AUDITED --atc-social-reel-*)",
+        "width": 1080,
+        "height": 1920,
+        "margin": 72,
+        "safe-top": 260,
+        "safe-bottom": 420,
+        "safe-right": 72,
+        "columns": 4,
+        "gutter": 32,
+        "centre-safe": 1080,
+        "validationRequired": true,
+        "provenance": "9:16 master and its 260 / 420 reserves are AUDITED. Added after the Canva reference review, which found every piece of Canva material in this account is 9:16 and none of it is a 16:9 thumbnail. The governing constraint here is NOT the full frame: the profile grid and feed preview show a SQUARE, so anything that must survive lives inside tile/centre-safe. DERIVED — VALIDATION REQUIRED."
+      },
       "tiktokCover": {
         "label": "TikTok Cover",
         "use": "TikTok covers",
@@ -1951,6 +1967,64 @@
       "09 TRANSFORMATION": "Before and after against a hard 6 px seam. Matched framing on both sides or the comparison is dishonest.",
       "10 MINIMAL PREMIUM": "One product, one short phrase, a light ground, no annotation. Only when the subject is strong enough to carry a quiet frame."
     },
+    "media-requirements": {
+      "_note": "What each archetype needs from the shoot. Adopted from the Canva reference review, where the one substantive build guide in the account declared photo slots per direction and said plainly \"if the shoot is thin, use A\". Choosing an archetype you do not have the imagery for is the most expensive mistake available.",
+      "01 PRODUCT DOMINANT": "1 frame — the product lit and isolated enough to bleed off one edge.",
+      "02 FACE + PRODUCT": "2 frames — a close reaction and a product shot; or 1 frame holding both with room to crop.",
+      "03 A/B COMPARISON": "2 frames at MATCHED scale, angle and lighting. Mismatched framing makes the comparison dishonest before a word is read.",
+      "04 SCREEN / FEATURE EMPHASIS": "1 screenshot or macro frame, sharp on the feature, calm around it.",
+      "05 SKETCH / ANNOTATION": "1 frame with an identifiable focal point to mark and calm space beside it for the hook.",
+      "06 BIG CLAIM": "1 frame, or none — the claim can carry the frame on an expressive ground alone.",
+      "07 VISUAL CONTRADICTION": "2 frames (the claim and its counter-example), or 1 frame plus a struck hook.",
+      "08 PROBLEM / FIX": "2 frames of the same subject in two states, same framing.",
+      "09 TRANSFORMATION": "2 frames, or 1 frame recomposed two ways.",
+      "10 MINIMAL PREMIUM": "1 frame strong enough to carry a quiet composition. On an ordinary photo this archetype fails.",
+      "thin-shoot": "With a single usable frame use 01, 05 or 06. Never force a two-frame archetype by duplicating one photograph — a comparison between a picture and itself is a lie."
+    },
+    "checklist": {
+      "_note": "Run before export. Adopted from the Canva reference review, whose build guide ended in an editor checklist — the one pattern there that survived contact with this system unchanged.",
+      "items": [
+        "One dominant subject at 40-70% of the canvas, bleeding off at least one edge.",
+        "Hook is 2-5 words and is NOT the video title.",
+        "Hook still resolves at 168 px.",
+        "Every annotation points at something real, or there is no annotation.",
+        "No panel behind the text — contrast is a global grade over the whole image.",
+        "Watermark present exactly once, in a free safe corner.",
+        "On any surface with a 1:1 preview, everything that must survive sits inside tile/centre-safe.",
+        "Established Latin terms left in Latin; Arabic never letter-spaced; Western digits.",
+        "No gradient, no emoji, no arrow used as decoration.",
+        "Exported from the platform profile that matches the destination."
+      ]
+    },
+    "canva-reference-review": {
+      "status": "REFERENCE ONLY, completed 2026-09-14. Canva is NOT a source of truth and did not override anything. The Figma Brand OS remains canonical.",
+      "what-was-actually-inspected": "The connector exposes the account’s own Canva content, not the public template gallery. Inspected: 0 brand templates (none exist), 1 brand kit named AdelTechTalks, and 11 designs. Any claim about Canva’s public gallery would have been invention, so none is made.",
+      "the-finding-that-mattered": "There is NOT ONE 16:9 thumbnail or video cover in the account. Every design is 9:16 mobile video, a 9:16 carousel, or a header. Canva therefore contributed nothing about thumbnails directly — the conventions it did contribute are about covers and carousels.",
+      "material-quality": "Only one design is substantive: a 23-page 9:16 carousel build guide for a DJI Osmo Pocket 4P review. The rest are untouched stock templates still carrying their placeholder copy (“Matthew Collins”, “reallygreatsite.com”) — precisely the stock-template experiments Phase 2A ordered archived.",
+      "superseded-not-reference": "That build guide is an EDITION 1 document: Cairo, Purple 600 as the brand colour, the violet-tinted Ink ramp, Mist / Veil grounds, Dark Impact navy and the 45° gradient. Phase 2A archived all of it. The Canva account is behind the Brand OS, not ahead of it, which is why it is reference material and not a source.",
+      "adopted": [
+        "Per-archetype MEDIA REQUIREMENTS, and the honesty of saying which archetype to use when the shoot is thin — see media-requirements.",
+        "A pre-export CHECKLIST — see checklist.",
+        "Declaring what a photograph must PROVIDE, not just where it goes (the guide’s “the lower third must stay calm or the glass panel turns to mud”).",
+        "An Instagram Video Cover profile, because the account’s 9:16-only reality exposed that the profile list had no Instagram feed cover.",
+        "Recording tool limits for the eventual Canva rebuild: no per-corner radii on a frame, RTL applied per text box rather than per document, and Arabic rendering with inline Latin still unverified there."
+      ],
+      "converged-independently": "The guide enforces word ceilings with the remedy “always fewer words, never smaller type”, and gives each of its three directions an explicit trade-off including when NOT to use it. Both rules already exist in this system, arrived at separately. Convergence, not adoption.",
+      "rejected": [
+        "Every Edition 1 colour and type value in the guide — archived by Phase 2A and not reopened.",
+        "The “Origin Corner” shape signature (one double-radius corner per media block): decorative geometry that fights the approved single-radius restraint.",
+        "A glass caption panel on every slide — this system does not draw a panel to hold text.",
+        "Generic template energy of any kind: stock layouts, placeholder aesthetics, and anything that reads as assembled rather than composed.",
+        "Canva as a source of truth, in any form."
+      ],
+      "what-changed-here": "Six additions: the Instagram Video Cover profile, media-requirements, checklist, the photo-suitability note in image-treatment, the Canva rebuild constraints, and this record. No approved value changed, no archetype was replaced, and nothing in the visual language moved.",
+      "rebuild-constraints": [
+        "Canva cannot apply per-corner radii to a frame — a masked shape is needed.",
+        "RTL is applied per text box, not per document.",
+        "Arabic rendering with inline Latin (4K, DJI, 9:16) is unverified in Canva — proof one page with real copy before building a set.",
+        "The brand kit in Canva is still named AdelTechTalks but carries Edition 1 values; it must be rebuilt from brand/tokens/adel-v2.1.json before any production use."
+      ]
+    },
     "image-treatment": {
       "supported": [
         "subject cutout",
@@ -1971,7 +2045,8 @@
         "synthesising or generating a face",
         "making the subject look artificial"
       ],
-      "rule": "The source photo must still look like Adel."
+      "rule": "The source photo must still look like Adel.",
+      "photo-must-provide": "An archetype states what the photograph has to give it, not only where it sits: a calm region for the hook, an identifiable focal point for the annotation, or matched framing for a comparison. A photo that cannot provide it is the wrong photo for that archetype, not a reason to weaken the archetype."
     },
     "copy": {
       "hook-words": {

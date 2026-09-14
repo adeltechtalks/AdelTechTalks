@@ -217,3 +217,21 @@ Thirteen `Thumb /` primitives on module 04, ten feed-native archetypes and five 
 Two measured findings became rules: at the impact tier a hook column narrower than ~740 px only holds words of five characters or fewer, and at the quieter tier a four-word hook stops resolving at 168 px. Both were fixed by cutting words, never by shrinking type.
 
 No approved Phase 2A value changed. Six thumbnail-scale text styles were added; the export regenerates clean.
+
+---
+
+## 15 · Canva reference findings (approved study)
+
+Full account: `12_CANVA_REFERENCE_FINDINGS.md`. Reference only — Canva overrode nothing and the Figma Brand OS remains canonical.
+
+**What was actually inspected:** the connector exposes the account's own content, not Canva's public gallery — 0 brand templates, 1 brand kit, 11 designs. No claim is made about the public template library, because it could not be reached and inventing one would have been research theatre.
+
+**The finding that mattered:** there is not one 16:9 thumbnail or video cover in the account. Everything is 9:16. Only one design is substantive — a DJI Osmo Pocket 4P carousel build guide — and it is an **Edition 1** document (Cairo, Purple 600, Ink ramp, Mist/Veil, Dark Impact, 45° gradient), all archived by Phase 2A. The other ten are untouched stock templates still carrying "Matthew Collins" and "reallygreatsite.com".
+
+**Adopted:** per-archetype media requirements (and the honesty of naming which archetype to use when the shoot is thin) · a pre-export checklist · stating what a photograph must *provide* · an Instagram Video Cover profile, exposed by the account's 9:16-only reality · tool limits for the eventual rebuild.
+
+**Converged independently:** the guide's word ceilings with "always fewer words, never smaller type", and per-direction trade-offs that say when *not* to use each. Both already in this system — evidence the rules are sound, not a borrowing.
+
+**Rejected:** every Edition 1 colour and type value · the Origin Corner shape signature · a glass panel on every slide · generic template energy · Canva as a source of truth.
+
+**Changed here:** six additive items, no approved value touched, no archetype replaced, nothing in the visual language moved.
