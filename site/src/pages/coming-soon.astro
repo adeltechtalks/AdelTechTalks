@@ -16,7 +16,7 @@
    The social URLs are read from src/site.config.ts — the same single source of
    truth the real site uses. None are written here, so none can drift.
    ========================================================================== */
-import { site } from '../site.config';
+import { site, services } from '../site.config';
 
 /* Read as an open record so asking for a network that is not configured is a
    plain `undefined` rather than a type error. That is what lets the list below
@@ -303,6 +303,127 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
         outline-offset: 3px;
       }
 
+      /* ---- waitlist ------------------------------------------------------
+         Deliberately not a card: no panel, no shadow, no filled container. The
+         inputs are hairline boxes on the page's own ground, which is the same
+         visual language as the rule and the underlined contact link. */
+      .waitlist {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .wl-fields {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+      }
+
+      .wl-fields input {
+        flex: 1 1 150px;
+        min-width: 0;            /* lets a flex item actually shrink */
+        height: 46px;
+        padding: 0 14px;
+        font-family: inherit;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--ink);
+        background: #fff;
+        border: 1px solid var(--hair);
+        border-radius: 8px;
+        transition: border-color 160ms ease, box-shadow 160ms ease;
+      }
+
+      .wl-fields input::placeholder { color: var(--slate); opacity: 1; }
+
+      .wl-fields input:focus {
+        outline: none;
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+      }
+
+      /* Marked by the script, never by the browser's own :invalid, which would
+         paint fields red before anyone has typed a character. */
+      .wl-fields input[data-invalid] { border-color: #dc2626; }
+
+      /* The honeypot. Off-screen rather than display:none — some bots skip
+         fields they can tell are hidden. Never focusable, never announced. */
+      .wl-hp {
+        position: absolute;
+        left: -9999px;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+
+      .wl-submit {
+        height: 46px;
+        padding: 0 24px;
+        font-family: inherit;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #fff;
+        background: var(--blue);
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background-color 160ms ease, opacity 160ms ease;
+      }
+
+      .wl-submit:hover:not(:disabled) { background: #1d53cc; }
+      .wl-submit:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+      .wl-submit:disabled { opacity: 0.55; cursor: default; }
+
+      /* The one bilingual string on the page. Isolated so the separator does
+         not get dragged around by the bidi algorithm. */
+      .wl-ar {
+        font-family: var(--font-arabic);
+        font-weight: 400;
+        direction: rtl;
+        unicode-bidi: isolate;
+      }
+
+      .wl-note {
+        margin: 0;
+        max-width: 30rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        line-height: 1.5;
+        color: var(--slate);
+      }
+
+      .wl-block {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .wl-msg {
+        margin: 0;
+        font-size: 0.938rem;
+        font-weight: 700;
+        line-height: 1.4;
+        color: var(--ink);
+      }
+
+      .wl-msg[data-tone='error'] { color: #dc2626; font-weight: 500; }
+
+      /* Below this width the three fields wrap 2 + 1, which reads as a broken
+         grid rather than a row. Stack them properly instead, and let the button
+         match, so the mobile form is one clean column. */
+      @media (max-width: 640px) {
+        .wl-fields { flex-direction: column; }
+        .wl-fields input { flex: 1 1 auto; width: 100%; }
+        .wl-submit { width: 100%; }
+      }
+
       /* The one permitted animation: a single, subtle entrance. No loops, no
          background effects, nothing that keeps the compositor busy after
          paint. */
@@ -318,6 +439,7 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
         main > :nth-child(7) { animation-delay: 260ms; }
         main > :nth-child(8) { animation-delay: 300ms; }
         main > :nth-child(9) { animation-delay: 340ms; }
+        main > :nth-child(10) { animation-delay: 380ms; }
       }
 
       @keyframes rise {
@@ -346,6 +468,45 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
            direction. -->
       <p class="ayah" lang="ar" dir="rtl">وَأَنْ لَيْسَ لِلْإِنْسَانِ إِلَّا مَا سَعَىٰ</p>
 
+      <!-- Waitlist. `novalidate` because the script owns validation: the
+           browser's native bubbles cannot be styled and say the wrong things. -->
+      <div class="wl-block">
+      <form
+        class="waitlist"
+        id="wl"
+        novalidate
+        data-endpoint={`${services.supabaseUrl}/rest/v1/waitlist_subscribers`}
+        data-key={services.supabaseAnonKey}
+      >
+        <div class="wl-fields">
+          <input type="text" name="first_name" placeholder="First Name"
+                 autocomplete="given-name" maxlength="80" aria-label="First Name" required />
+          <input type="text" name="last_name" placeholder="Last Name"
+                 autocomplete="family-name" maxlength="80" aria-label="Last Name" required />
+          <input type="email" name="email" placeholder="Email"
+                 autocomplete="email" maxlength="254" aria-label="Email" required />
+        </div>
+
+        <div class="wl-hp" aria-hidden="true">
+          <label>Company<input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+        </div>
+
+        <button class="wl-submit" type="submit">
+          Keep me posted <span aria-hidden="true">·</span>
+          <span class="wl-ar" lang="ar">خلّيني في الصورة</span>
+        </button>
+
+        <p class="wl-note">
+          By joining, you agree to receive occasional {site.showName} updates. Unsubscribe anytime.
+        </p>
+      </form>
+
+      <!-- Kept in the DOM at all times, not toggled with display:none: a live
+           region that only appears when it has something to say is unreliably
+           announced by screen readers. Empty, it is zero-height. -->
+      <p class="wl-msg" id="wl-msg" role="status" aria-live="polite"></p>
+      </div>
+
       <hr class="rule" />
 
       {
@@ -368,3 +529,105 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
     </main>
   </body>
 </html>
+
+<script is:inline>
+  (function () {
+    var form = document.getElementById('wl');
+    var msg = document.getElementById('wl-msg');
+    if (!form || !msg) return;
+
+    var endpoint = form.dataset.endpoint;
+    var key = form.dataset.key;
+    var btn = form.querySelector('.wl-submit');
+    /* Short on purpose. The real defences against bulk signups are the unique
+       index and the policy gate in Postgres; this only stops a jammed button
+       and rapid-fire clicking. A long window here would punish someone
+       legitimately retrying after a failure. */
+    var THROTTLE_MS = 4000;
+    var lastTry = 0;
+
+    /* Deliberately permissive. The job here is to catch a typo, not to police
+       what a valid address may look like — the database gate is the real
+       boundary, and over-strict client regexes reject real addresses. */
+    function looksLikeEmail(v) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+    }
+
+    function say(text, tone) {
+      msg.textContent = text;
+      if (tone) msg.setAttribute('data-tone', tone);
+      else msg.removeAttribute('data-tone');
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      say('');
+
+      var fields = {
+        first_name: form.first_name.value.trim(),
+        last_name: form.last_name.value.trim(),
+        email: form.email.value.trim().toLowerCase(),
+      };
+
+      /* A bot filled the off-screen field. Report success and write nothing:
+         telling it that it was caught only helps it try again differently. */
+      if (form.company.value) {
+        form.remove();
+        say("You're in \u2764\uFE0F");
+        return;
+      }
+
+      var bad = null;
+      ['first_name', 'last_name', 'email'].forEach(function (n) {
+        var el = form[n];
+        var empty = !fields[n];
+        var invalid = empty || (n === 'email' && !looksLikeEmail(fields.email));
+        if (invalid) { el.setAttribute('data-invalid', ''); bad = bad || el; }
+        else el.removeAttribute('data-invalid');
+      });
+      if (bad) {
+        say(bad.name === 'email' && fields.email
+              ? 'Please enter a valid email.'
+              : 'Please fill in all three fields.',
+            'error');
+        bad.focus();
+        return;
+      }
+
+      var now = Date.now();
+      if (now - lastTry < THROTTLE_MS) { say('Please wait a moment before trying again.', 'error'); return; }
+      lastTry = now;
+
+      btn.disabled = true;
+      say('Joining…');
+
+      fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          apikey: key,
+          Authorization: 'Bearer ' + key,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal',
+        },
+        body: JSON.stringify({
+          first_name: fields.first_name,
+          last_name: fields.last_name,
+          email: fields.email,
+          source: 'coming-soon',
+          consent_at: new Date().toISOString(),
+        }),
+      })
+        .then(function (r) {
+          if (r.ok) { form.remove(); say("You're in \u2764\uFE0F"); return; }
+          /* 409 is the unique index on lower(email). Read only the status —
+             the response body is a database error and never reaches anyone. */
+          if (r.status === 409) { form.remove(); say("You're already on the list \u2764\uFE0F"); return; }
+          throw new Error('http ' + r.status);
+        })
+        .catch(function () {
+          say('Something went wrong. Please try again.', 'error');
+        })
+        .finally(function () { btn.disabled = false; });
+    });
+  })();
+</script>
