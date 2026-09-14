@@ -1,5 +1,11 @@
 # Phase 2C — architecture, written before implementation
 
+> ## ✅ STATUS: FINAL APPROVED
+>
+> Locked by Adel on 2026-09-14. Phase 2C is frozen: the Creative Decision Engine · the 30-skill Creative Skills Library · the 16 composition strategies · the decision matrix · the generic vs brand-specific separation · the `check-generic` enforcement · the exportable public-skill architecture · the Fold-First case study · the documentation structure.
+>
+> **Seven public-distribution gaps stay documented and NON-BLOCKING:** no external cold-start user test yet · no renderer yet · motion skills documented but not executed · brand-profile schema validation still needed · language coverage tested only for Arabic/English · the denylist leakage check is not exhaustive · the licence/attribution decision is still open. These close with evidence and decisions, not with further design.
+
 **Goal:** a **fixed brand system** plus **flexible creative decision making**. The Brand OS stays canonical and unchanged; a Creative Decision Engine sits above it and decides, per job, what the hero is, what composition to use, and which creative skills to apply.
 **Hard requirement:** the engine must be exportable as a reusable Claude skill for other people. AdelTechTalks must be a **reference brand profile**, never hard-coded logic.
 **Not in this phase:** no Motion/Video implementation, no Canva production sync, no Phase 2A change, no Supabase/RLS/security change, no merging of existing PRs. Phase 2C ships as a new stacked draft PR.

@@ -1,5 +1,7 @@
 # Limitations
 
+> **Status: the engine is FINAL APPROVED (2026-09-14).** The limitations below are approved as **known and non-blocking** — they close with evidence and decisions, not with more design. The seven that gate public distribution are listed in `PUBLIC_DISTRIBUTION_GAPS.md`.
+
 Stated plainly, because a system that hides its edges gets trusted in the places it should not be.
 
 ---
