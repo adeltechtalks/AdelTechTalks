@@ -1,26 +1,20 @@
 # Phase 2D — architecture, written before implementation
 
-> ## STATUS — PHASE 2D
-> ### ✅ IMPLEMENTATION APPROVED
-> ### ⏳ REAL-FOOTAGE VALIDATION PENDING
+> ## STATUS — PHASE 2D · CLOSED 14 Sep 2026
+> ### ✅ TECHNICAL FOUNDATION VALIDATED
+> ### ⏸️ CREATIVE PRODUCTION VALIDATION DEFERRED
 >
-> Approved by Adel as an **implementation milestone**, 14 Sep 2026.
-> **ASMR is NOT production-proven.** Approval covers the architecture and code below;
-> it does not cover creative judgement on real tactile material.
+> **The ASMR format is NOT production-proven.** The creative output of this experiment
+> was reviewed and **not approved as production-ready**.
 >
-> **Approved:** Brand OS token integration via `brand_profile.py` · removal of hard-coded
-> safe zones · retirement of blind centre-cropping · analysis → planning → rendering
-> separation · tactile-audio protection logic · policy enforcement (music, captions,
-> denoise, gate, compression, speed) · non-cropping recomposition branch · Liquid Glass
-> watermark integration · end-to-end ffmpeg render pipeline · inspectable/editable plan
-> JSON · synthetic test validation · draft PR #27.
+> The reason is not only the system. The real-footage test material was not strong enough
+> to fairly judge or calibrate a final creative standard, and tuning an engine against weak
+> or inconsistent source risks teaching it the wrong editing behaviour. **That footage is
+> now a learning sample, not the production benchmark.**
 >
-> **Unproven:** real-world tactile audio detection · threshold calibration on real
-> footage · actual creative edit quality on a real unboxing · real camera noise, room
-> noise and handling variability · publish-ready judgement without manual rescue.
->
-> Validation mode: `docs/brand-os/16_PHASE2D_REALFOOTAGE_VALIDATION.md`
-
+> Iteration on this experiment is **stopped**. The technical foundation below is kept as
+> built and is not being redesigned or expanded. The next validation runs on deliberately
+> shot material — see `19_PHASE2D_NEXT_CAPTURE.md`.
 
 **Goal:** turn the approved Brand OS, the Creative Decision Engine and the video-ad-editor skill into an **end-to-end production workflow**, proven on one format: **ASMR unboxing**.
 **Foundations:** Phase 2A, 2B and 2C are FINAL APPROVED and are not reopened.

@@ -1,13 +1,20 @@
 # Phase 2D — Real-footage validation mode
 
-> ## STATUS
-> ### ✅ IMPLEMENTATION APPROVED
-> ### ⏳ REAL-FOOTAGE VALIDATION PENDING
+> ## STATUS — PHASE 2D · CLOSED 14 Sep 2026
+> ### ✅ TECHNICAL FOUNDATION VALIDATED
+> ### ⏸️ CREATIVE PRODUCTION VALIDATION DEFERRED
 >
-> This document describes the validation mode that has been **prepared and self-tested**.
-> It has **not been run on real footage**, because no real footage exists in the repository yet.
-> **Not touched:** Brand OS architecture · Canva · Adobe · Supabase · RLS · Security Guardrails · deployment.
-> **Not started:** Motion Carousel.
+> **The ASMR format is NOT production-proven.** The creative output of this experiment
+> was reviewed and **not approved as production-ready**.
+>
+> The reason is not only the system. The real-footage test material was not strong enough
+> to fairly judge or calibrate a final creative standard, and tuning an engine against weak
+> or inconsistent source risks teaching it the wrong editing behaviour. **That footage is
+> now a learning sample, not the production benchmark.**
+>
+> Iteration on this experiment is **stopped**. The technical foundation below is kept as
+> built and is not being redesigned or expanded. The next validation runs on deliberately
+> shot material — see `19_PHASE2D_NEXT_CAPTURE.md`.
 
 ---
 

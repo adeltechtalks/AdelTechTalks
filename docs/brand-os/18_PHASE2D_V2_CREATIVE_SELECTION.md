@@ -1,3 +1,124 @@
+# Phase 2D V2 — creative selection layer
+
+> ## STATUS — PHASE 2D · CLOSED 14 Sep 2026
+> ### ✅ TECHNICAL FOUNDATION VALIDATED
+> ### ⏸️ CREATIVE PRODUCTION VALIDATION DEFERRED
+>
+> **The ASMR format is NOT production-proven.** The creative output of this experiment
+> was reviewed and **not approved as production-ready**.
+>
+> The reason is not only the system. The real-footage test material was not strong enough
+> to fairly judge or calibrate a final creative standard, and tuning an engine against weak
+> or inconsistent source risks teaching it the wrong editing behaviour. **That footage is
+> now a learning sample, not the production benchmark.**
+>
+> Iteration on this experiment is **stopped**. The architecture below is kept as built and
+> is not being redesigned or expanded. The next validation runs on deliberately shot
+> material — see `19_PHASE2D_NEXT_CAPTURE.md`.
+
+**Not touched:** Brand OS architecture, tokens, Supabase, RLS, Security Guardrails, Canva, Adobe, deployment. Motion Carousel not started.
+
+## What was wrong
+
+V1 ranked candidates on tactile transient density alone. On a real unboxing that
+selected 30 seconds of packaging — sleeve, tray, leaflet — and never reached the
+device. Crinkling card is acoustically sharper and denser than a smooth hinge.
+
+**A strong transient is not a strong shot.**
+
+## What changed
+
+### 1. Seven signals, not one
+
+`25_story_plan.py` scores every candidate window on:
+
+| Dimension | Weight | Source |
+|---|---:|---|
+| narrative importance | 0.26 | beat priority × signature fit |
+| visual quality | 0.14 | edge-energy sharpness — blur is disqualifying |
+| product visibility | 0.14 | centre structure vs frame (proxy, not detection) |
+| action clarity | 0.12 | motion in a usable band — neither frozen nor smeared |
+| novelty vs previous | 0.10 | dHash distance |
+| tactile / audio value | 0.14 | transient density |
+| hero potential | 0.10 | sharp + centred + still |
+
+Audio is now **one input among seven**. A loud clip with a weak visual loses.
+
+### 2. A story model
+
+Nine semantic beats. Each candidate is scored against every beat signature, and the
+sequence is assembled from the beats the footage **actually contains**. Beats that are
+not present are left out — a weak beat is never added to complete the list.
+
+`box_opening` and `first_reveal` are **reserved**: they carry a selection bonus so they
+cannot be displaced by louder packaging.
+
+### 3. Visual analysis
+
+`24_visual_analyze.py` measures what the microphone cannot, with no ML and no model
+downloads — ffmpeg frames plus pure Python:
+
+sharpness (blur) · motion (action, stillness) · skin fraction (hand present) ·
+centre mass (subject prominence) · luminance (screen-on, reveal) · dHash (duplicates).
+
+`subject_mass` is an honest **proxy** for "product occupies useful frame area", not
+object detection: it measures centre structure against the whole frame. A centred box
+scores high; so would a centred hand. It is one weighted signal, never a gate.
+
+### 4. Selection is a DP, not a greedy pass
+
+An unboxing is chronological — the seal cannot be peeled after the box is open. Beat
+order and time order must agree, and two beats cannot occupy the same seconds. Greedy
+selection satisfied neither: it put seal/peel at 104 s ahead of the opening at 90 s, and
+let both reserved beats land on the same window.
+
+Selection is now a DP over time-sorted candidates that extends a sequence only with a
+candidate starting after the previous ends **and** belonging to a later beat. A
+reconciliation pass then fixes what reserve-snapping can reintroduce (overlap, budget
+overrun), and a beat shorter than 1.6 s is dropped rather than kept as a sliver.
+
+### 5. Brand cards
+
+The corner watermark alone read as unbranded; a title-heavy Reel is the other failure.
+Two short cards, nothing during the edit:
+
+- **opener 0.8 s** — content-family label, product name, mark. Fade plus a 14 px rise.
+- **endcard 1.0 s** — a held frame from the final hero beat, darkened and blurred, mark and creator name over it.
+
+Colours come from `brand_profile.color()`; no hex is written into a filtergraph.
+
+**TYPEFACE CAVEAT:** Montserrat is the approved display face and is **not installed in
+this environment**, so the cards render in DejaVu Sans Bold. That substitution is printed
+in the render audit. These cards are structurally correct and typographically provisional.
+
+### 6. Content brief
+
+`templates/brief.example.json` → `<workdir>/brief.json`:
+`product_name` · `product_model` · `content_family` · `optional_hook` · `optional_creator_name`.
+
+## Result on the test footage
+
+| | v1 | v2 |
+|---|---|---|
+| selector | transient density | seven signals + story model |
+| segments | 6 windows, one region | **7 beats, story-ordered** |
+| coverage | 30.8–109.4 s (packaging only) | **73.8–203.2 s (whole arc)** |
+| device reveal | **absent** | **present** — lift, unfold, screen-on |
+| branding | watermark only | opener + watermark + endcard |
+
+Beats selected: sealed hero · seal/peel · **box opening** · **first reveal** ·
+accessories · handling · final hero. `product_lift` and `macro_detail` were absent from a
+chronologically consistent sequence and were left out rather than forced in.
+
+Output: **1080×1920 H.264 High / yuv420p, 29.03 s**, delivery gate passed.
+
+## Honest limits
+
+- `subject_mass` and `hand` are heuristics, not detection. They will mis-score a centred
+  hand as a centred product.
+- Beat signatures are hand-authored percentile bands, validated on **one** clip — and that
+  clip is now a learning sample, not a benchmark.
+- No metric here proves the cut lands well inside a gesture. Listening is still the test.
 
 ---
 

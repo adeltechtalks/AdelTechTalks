@@ -105,9 +105,11 @@
   },
   "_status": {
     "phase": "2D",
-    "implementation": "APPROVED",
-    "production": "REAL-FOOTAGE VALIDATION PENDING",
-    "_note": "Approved as an implementation milestone. NOT production-proven: detection thresholds were tuned on synthetic audio only. See docs/brand-os/16_PHASE2D_REALFOOTAGE_VALIDATION.md"
+    "technical": "TECHNICAL FOUNDATION VALIDATED",
+    "creative": "CREATIVE PRODUCTION VALIDATION DEFERRED",
+    "production_proven": false,
+    "_note": "NOT production-proven. The creative output of the first real-footage experiment was reviewed and not approved; the test material was not strong enough to calibrate a final creative standard and is treated as a learning sample, not the benchmark. Next validation uses deliberately shot material — see docs/brand-os/19_PHASE2D_NEXT_CAPTURE.md",
+    "closed": "2026-09-14"
   },
   "_tuning_source": "calibration/thresholds.json (via scripts/tuning.py) — detection constants, NOT brand values"
 }
