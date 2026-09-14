@@ -1,0 +1,15 @@
+{
+  "id": "talking-head",
+  "name": "Talking Head / Reel",
+  "pipeline": "legacy-v2-plus-brand-system",
+  "audio": {"voice_priority": true, "captions": true, "music": "optional"},
+  "editing": {
+    "remove_dead_air": true,
+    "duplicate_sentence_detection": true,
+    "word_level_captions": true,
+    "broll_allowed": true,
+    "motion_graphics": "semantic-not-decorative",
+    "behind_subject_text": "sparingly"
+  },
+  "exports": ["final_mp4", "srt", "transcript"]
+}

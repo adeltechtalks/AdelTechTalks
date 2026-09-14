@@ -1,0 +1,16 @@
+{
+  "id": "comparison",
+  "name": "Product Comparison",
+  "default_duration_seconds": [30, 90],
+  "audio": {"voiceover_or_talking_head": true, "natural_product_audio": "preserve_when_useful", "music": "optional"},
+  "story": ["hook", "criteria", "side_by_side", "proof", "winner_by_use_case", "close"],
+  "layouts": ["split_screen", "a_then_b", "matched_shot", "spec_card", "scorecard", "winner_card"],
+  "rules": {
+    "match_equivalent_shots": true,
+    "avoid_fake_precision": true,
+    "state_test_conditions": true,
+    "captions_when_speech": true,
+    "product_labels_always_clear": true
+  },
+  "exports": ["final_mp4", "comparison_stills_optional"]
+}

@@ -1,0 +1,37 @@
+{
+  "title": "Example Motion Carousel",
+  "target": {"width": 1080, "height": 1350, "fps": 30},
+  "brand": {
+    "bg": "#0B1220",
+    "ink": "#F8FAFC",
+    "accent": "#2563EB",
+    "muted": "#94A3B8",
+    "font_ar": "Alexandria",
+    "font_en": "Inter",
+    "signature": "assets/signature.png"
+  },
+  "slides": [
+    {
+      "id": "01",
+      "duration": 5,
+      "media": "media/slide01.mp4",
+      "media_type": "video",
+      "motion": "hero_push",
+      "eyebrow": "INSTA360 LUNA PRO",
+      "headline": "خمس حاجات لفتت نظري",
+      "body": "كل Slide يركز على فكرة واحدة.",
+      "rtl": true
+    },
+    {
+      "id": "02",
+      "duration": 5,
+      "media": "media/slide02.mp4",
+      "media_type": "video",
+      "motion": "macro_drift",
+      "eyebrow": "FEATURE 01",
+      "headline": "النقطة الأولى",
+      "body": "لقطة حقيقية من المنتج + motion بسيط.",
+      "rtl": true
+    }
+  ]
+}

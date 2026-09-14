@@ -1,0 +1,19 @@
+{
+  "target": {"width": 1080, "height": 1920, "fps": 30},
+  "segments": [
+    {"file": "raw/clip01.mov", "start": 0.2, "end": 1.7, "speed": 1.0, "volume": 1.0, "audio_stream": 0, "boundary_fade_ms": 5, "label": "hook_or_hero"},
+    {"file": "raw/clip02.mov", "start": 0.4, "end": 2.4, "speed": 1.0, "volume": 1.0, "audio_stream": 0, "boundary_fade_ms": 5, "label": "opening_action"}
+  ],
+  "brand": {
+    "opener": "assets/opener.mp4",
+    "endcard": "assets/endcard.mp4",
+    "signature": {
+      "asset": "assets/signature.png",
+      "position": "bottom-left",
+      "opacity": 0.82,
+      "margin_x": 54,
+      "margin_y": 340,
+      "width": 220
+    }
+  }
+}
