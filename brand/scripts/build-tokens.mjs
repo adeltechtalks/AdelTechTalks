@@ -599,6 +599,46 @@ const signature = {
   },
 };
 
+const watermark = {
+  status: 'APPROVED — Brand OS rule added 2026-09-14, after Phase 2A was locked. It introduces no new colour value; every fill, stroke, radius and space below is an existing approved token.',
+  purpose: 'Subtle brand ownership and recognition on images and video. It is NOT theft prevention and is never sized, placed or weighted as if it were.',
+  element: 'the AdelTechTalks A-mark. The full lockup may be supported later; the mark is the default.',
+  components: {
+    'Watermark / A-Mark / Glass Light': 'for LIGHT media and light grounds — plate alpha/white-22, hairline edge brand/white @ 50%, mark brand/graphite @ 80%.',
+    'Watermark / A-Mark / Glass Dark': 'for DARK media and dark grounds — plate alpha/white-10, hairline edge alpha/white-22, mark brand/white @ 92%.',
+    _figma: 'One component set `Watermark / A-Mark` on module 04 with the variant property Glass = Light | Dark. The two names above are its two variants.',
+  },
+  'why-a-variant-not-a-mode':
+    'Every other themeable component in the system takes Light/Dark from the Color / Semantic mode. The watermark cannot: it responds to the luminance of the MEDIA underneath the corner, which the semantic mode does not know. A dark photograph on a light slide takes Glass Dark. So the glass tone is a variant, and its mark fill binds to a primitive rather than a mark/* semantic, on purpose.',
+  treatment: {
+    plate: 'frosted translucent plate — background blur 20, radius/panel, one hairline edge highlight only.',
+    'edge-highlight': 'a single 1 px stroke at stroke/hairline. No second stroke, no inner glow.',
+    forbidden: ['heavy glow', 'gradients of any kind', '3D or chrome treatment', 'drop-shadow stacks', 'animation by default', 'expressive-palette tinting', 'recolouring the mark outside Graphite / White'],
+  },
+  geometry: {
+    'mark-height': 32,
+    'reference-short-edge': 1080,
+    'mark-height-ratio': 0.0296,
+    padding: space['3'],
+    radius: radius.panel,
+    'stroke-weight': stroke.hairline,
+    'background-blur': 20,
+    'plate-size-at-reference': '63 × 56',
+    scaling: 'the whole watermark scales with the canvas short edge and never shrinks below the 24 px mark floor (logo.min-size). It never grows to make a point.',
+  },
+  placement: {
+    default: 'top-left',
+    inset: 'x = canvas margin, y = canvas reserve-top — read from the canvas or video profile, never hard-coded. Where a canvas has no top reserve (thumbnails) y falls back to the margin.',
+    alternates: 'any other safe corner, when composition, captions or platform UI need it.',
+    never: ['centred', 'outside the safe zone', 'over a face', 'over a product detail', 'over a caption or subtitle band', 'over platform UI or a player control band', 'large enough to read as a design element'],
+  },
+  usage: {
+    static: 'Static Ultra Carousel, social images and thumbnails. On the carousel it is an OPTIONAL overlay: every archetype carries a `Show watermark` boolean, default OFF, because the signature strip already carries ownership on a slide. It is switched on for image-led slides and for any slide exported without the strip. On a standalone image or thumbnail it is ON by default.',
+    video: 'documented for the Video System as a DEFAULT corner overlay for Talking Head, ASMR / Unboxing, Product Demo, Product Comparison and Motion Carousel. Short-form vertical prefers top-left. Specified only — the video engine is NOT modified by this rule.',
+    'engine-status': 'SPECIFIED, NOT IMPLEMENTED. No renderer, template or format JSON changes with this rule.',
+  },
+};
+
 /* ---------------------------------------------------------------------------
    7 · Rules the video skill enforces (not just documents)
    ------------------------------------------------------------------------ */
@@ -622,6 +662,12 @@ const rules = {
     'Adaptive profiles RECOMPOSE; they never centre-crop or letterbox the 9:16 master. Graphics expand into the canvas rather than scaling up to fill it.',
     'Extra canvas is room for the same content, not a reason to add content — ASMR in particular stays clean.',
     'Canvas dimensions are configuration read from canvasProfiles, never assumptions held inside the editor.',
+  ],
+  watermark: [
+    'The corner watermark is an ownership signature, never a design element: small, one corner, inside the safe zone, never centred and never enlarged.',
+    'Glass Light on light media, Glass Dark on dark media — judged by the content under the corner, not by the theme of the page.',
+    'Watermark inset is read from the canvas or video profile (margin / reserve-top), never hard-coded.',
+    'No glow, gradient, chrome, shadow stack or default animation on the watermark. One hairline edge highlight and a background blur, nothing else.',
   ],
   families: ['ASMR / Product Unboxing', 'Talking Head / Reel', 'Motion Carousel', 'Product Comparison', 'Product Demo / Feature Spotlight', 'Mixed Talking Head + Product B-roll', 'Long-form / Explainer (routing profile of the Talking Head pipeline — supported, no separate JSON yet)'],
 };
@@ -648,7 +694,7 @@ const tokens = {
   color: { primitives, semantic: { light, dark }, expressive, archived },
   typography, space, radius, stroke, sizing, elevation, motion, canvases, slots,
   canvasProfiles, adaptiveLayouts, devicePack, adaptiveMigration, foldFirstNaming,
-  logo, heart, signature, rules,
+  logo, heart, signature, watermark, rules,
 };
 
 const outputs = new Map();
@@ -797,8 +843,17 @@ Consumer-facing "Fold First" language is a ${foldFirstNaming.status.toLowerCase(
 - App icon: white mark on a flat tile, radius 27/120. No gradient tile.
 - Signature: ${signature.status}. ${signature.rule} Skill slot: \`assets/signature.png\`.
 
+## Corner watermark — Liquid Glass
+- ${watermark.status}
+- **${watermark.purpose}**
+- Two components, one set: ${Object.keys(watermark.components).filter((k) => !k.startsWith('_')).map((k) => `\`${k}\``).join(' · ')}. Glass tone follows the **media** luminance, not the semantic mode.
+- Geometry: mark height ${watermark.geometry['mark-height']} at a ${watermark.geometry['reference-short-edge']} short edge (${(watermark.geometry['mark-height-ratio'] * 100).toFixed(2)}%), padding ${watermark.geometry.padding}, radius ${watermark.geometry.radius}, ${watermark.geometry['stroke-weight']} px hairline edge, background blur ${watermark.geometry['background-blur']}. ${watermark.geometry.scaling}
+- Placement: **${watermark.placement.default}**, ${watermark.placement.inset} Alternates: ${watermark.placement.alternates} Never: ${watermark.placement.never.join(', ')}.
+- Static: ${watermark.usage.static}
+- Video: ${watermark.usage.video} **${watermark.usage['engine-status']}**
+
 ## Non-negotiables the skill enforces
-${[...rules.colour, ...rules.logo, ...rules.typography, ...rules.video].map((r) => `- ${r}`).join('\n')}
+${[...rules.colour, ...rules.logo, ...rules.typography, ...rules.watermark, ...rules.video].map((r) => `- ${r}`).join('\n')}
 
 ## Format relationship
 The brand system is shared; the edit behaviour is not.

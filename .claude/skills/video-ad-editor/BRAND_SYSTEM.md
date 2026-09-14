@@ -204,6 +204,15 @@ Consumer-facing "Fold First" language is a reserved concept only — not an offi
 - App icon: white mark on a flat tile, radius 27/120. No gradient tile.
 - Signature: RESERVED — empty. No handwritten signature is created, simulated, traced or set in a handwriting font. The slot stays empty until Adel supplies a real scanned signature (SVG or transparent PNG). Skill slot: `assets/signature.png`.
 
+## Corner watermark — Liquid Glass
+- APPROVED — Brand OS rule added 2026-09-14, after Phase 2A was locked. It introduces no new colour value; every fill, stroke, radius and space below is an existing approved token.
+- **Subtle brand ownership and recognition on images and video. It is NOT theft prevention and is never sized, placed or weighted as if it were.**
+- Two components, one set: `Watermark / A-Mark / Glass Light` · `Watermark / A-Mark / Glass Dark`. Glass tone follows the **media** luminance, not the semantic mode.
+- Geometry: mark height 32 at a 1080 short edge (2.96%), padding 12, radius 18, 1 px hairline edge, background blur 20. the whole watermark scales with the canvas short edge and never shrinks below the 24 px mark floor (logo.min-size). It never grows to make a point.
+- Placement: **top-left**, x = canvas margin, y = canvas reserve-top — read from the canvas or video profile, never hard-coded. Where a canvas has no top reserve (thumbnails) y falls back to the margin. Alternates: any other safe corner, when composition, captions or platform UI need it. Never: centred, outside the safe zone, over a face, over a product detail, over a caption or subtitle band, over platform UI or a player control band, large enough to read as a design element.
+- Static: Static Ultra Carousel, social images and thumbnails. On the carousel it is an OPTIONAL overlay: every archetype carries a `Show watermark` boolean, default OFF, because the signature strip already carries ownership on a slide. It is switched on for image-led slides and for any slide exported without the strip. On a standalone image or thumbnail it is ON by default.
+- Video: documented for the Video System as a DEFAULT corner overlay for Talking Head, ASMR / Unboxing, Product Demo, Product Comparison and Motion Carousel. Short-form vertical prefers top-left. Specified only — the video engine is NOT modified by this rule. **SPECIFIED, NOT IMPLEMENTED. No renderer, template or format JSON changes with this rule.**
+
 ## Non-negotiables the skill enforces
 - Never invent a brand colour when an approved token exists.
 - Signature Blue is the primary brand colour everywhere; the expressive palette never replaces it.
@@ -218,6 +227,10 @@ Consumer-facing "Fold First" language is a reserved concept only — not an offi
 - KO Ghorab: Arabic display only, ≥ 24 px, never letter-spaced, hierarchy by size.
 - Western digits 0–9 in both languages.
 - Arabic layouts RTL-first with isolated LTR islands for Latin terms.
+- The corner watermark is an ownership signature, never a design element: small, one corner, inside the safe zone, never centred and never enlarged.
+- Glass Light on light media, Glass Dark on dark media — judged by the content under the corner, not by the theme of the page.
+- Watermark inset is read from the canvas or video profile (margin / reserve-top), never hard-coded.
+- No glow, gradient, chrome, shadow stack or default animation on the watermark. One hairline edge highlight and a background blur, nothing else.
 - Product footage occupies the dominant area; text second; signature micro.
 - ASMR: recorded tactile audio (box opening, peeling, clicks, scratches, packaging, handling) stays ON — no music, captions, denoise, gating or compression by default, in every canvas profile.
 - Motion Carousel: 5–6 independent ~5 s slides at 1080×1920, each exportable as its own MP4; a stitched preview is optional; never a static carousel with generic zoom.

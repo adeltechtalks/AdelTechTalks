@@ -46,6 +46,7 @@ Edition 1 is **not** fully archived. Five families are reclassified as an approv
 - App icon / profile tile: **Signature Blue is the default ground**, Graphite a secondary dark variant (refinement decision 3).
 - No gradient logo tile. The Impact-gradient app icon is retired to the archive.
 - `AdelTechTalks` lockup is primary. The `Adel` lockup is kept as a **secondary** lockup, not retired.
+- **Corner watermark (added 2026-09-14, after the lock):** the A-mark also serves as a small Liquid Glass corner ownership mark for images and video. It introduces no new colour value and changes nothing above. Rule: `08_WATERMARK.md`.
 
 ## 3 · Signature
 

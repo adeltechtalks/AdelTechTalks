@@ -5,6 +5,7 @@
 **Reserved, untouched:** `06 — Motion Carousel`, `07 — Video System`, `08 — Social / Channel`.
 **Not touched at all:** Canva, Adobe, Supabase, RLS, the Security Guardrails check, production deployment. PR #24 is not merged; Phase 2B ships as a new stacked draft PR.
 **Plan of record:** `06_PHASE2B_PLAN.md`, written before any Figma change.
+**Added mid-phase by approval:** the Liquid Glass corner watermark — a small Brand OS rule requested while Phase 2B was in progress. Built, documented in `08_WATERMARK.md`, summarised in §13 below. It changes no approved Phase 2A value.
 
 ---
 
@@ -162,9 +163,14 @@ At `Social/Cover` 112/123 the ratio is 1.10, while the system's own Arabic displ
 |---|---|
 | `docs/brand-os/06_PHASE2B_PLAN.md` | **new** — the implementation plan, written before any Figma change |
 | `docs/brand-os/07_PHASE2B_REPORT.md` | **new** — this report |
+| `docs/brand-os/08_WATERMARK.md` | **new** — the Liquid Glass corner watermark rule |
 | `docs/brand-os/evidence/phase2b_*.png` | **new** — 7 screenshots |
+| `docs/brand-os/evidence/watermark_*.png` | **new** — 5 watermark screenshots |
+| `brand/scripts/build-tokens.mjs` | the watermark rule block and its markdown section |
+| `brand/tokens/adel-v2.1.json` | regenerated — adds `watermark` and `rules.watermark` |
+| `.claude/skills/video-ad-editor/BRAND_SYSTEM.md` | regenerated — adds the watermark section |
 
-**No token, generator or skill file changed.** Phase 2B is Figma work plus documentation; the brand export is untouched and still verifies clean.
+The component work of Phase 2B changed no token, generator or skill file. The three generated/generator files above changed only for the watermark rule, and `--check` passes.
 
 ## 12 · Open questions
 
@@ -174,3 +180,28 @@ At `Social/Cover` 112/123 the ratio is 1.10, while the system's own Arabic displ
 4. **Media placeholders are empty frames.** The archetypes are proven with real copy but not with real photography — there is no approved product or studio imagery in the repo yet. A second pass with real images is worth doing before the first published carousel.
 5. **No export pipeline yet.** The carousel is design-complete; producing final PNG/JPG slides for publishing is not part of this phase.
 6. **Module 09 Web Components** still holds pre-2A website content and has not been reconciled with these components. Out of scope here.
+
+---
+
+## 13 · Liquid Glass corner watermark (added mid-phase)
+
+Full rule: `08_WATERMARK.md`. Summary of what was built and what it costs:
+
+| | |
+|---|---|
+| Figma components | one set `Watermark / A-Mark`, variants `Glass = Light \| Dark`, on module 04 |
+| Spec frame | `Watermark · placement & scale` — placement, scale, variant choice and the "never" list |
+| Archetype integration | a `Show watermark` BOOLEAN on **all ten** archetypes, default **off**, slot positioned top-left at margin / reserve-top |
+| New colour values | **none** — plate, edge and mark bind to `alpha/white-22`, `alpha/white-10`, `brand/white`, `brand/graphite` |
+| New tokens | none. Geometry is a ratio plus existing `space/3`, `radius/panel`, `stroke/hairline`, `mark/min-size` |
+| Video engine | **untouched** — the rule is specified for the Video System, not implemented |
+
+Three design decisions worth recording:
+
+1. **Glass tone is a variant, not a mode.** This is the one deliberate exception to "theme is a mode" (§2). The watermark follows the luminance of the media under the corner, which the semantic mode cannot know — a dark photo on a light slide takes Glass Dark. The mark fill therefore binds to a primitive, not to `mark/*`, so a dark-mode frame cannot flip a watermark sitting on a light photograph.
+2. **The mark is instanced, not re-mastered.** The watermark contains an instance of the existing `Mark / A` master, so there is still one geometry. The nested vector's fill is overridden to a primitive — the only override, and the reason for it is decision 1.
+3. **Default off on the carousel.** A Static Ultra Carousel slide already carries the `Brand / Signature strip`. Turning the watermark on by default would put two AdelTechTalks marks on every slide, which is the "visually distracting" failure the rule itself forbids. The boolean exists so an author switches it on for an image-led slide or a slide exported without the strip. On standalone images, thumbnails and video it is on by default.
+
+**Evidence produced:** light media example, dark media example, a real Static Ultra Carousel slide with it switched on, both variants side by side on the grounds they are made for, and the placement spec frame — `evidence/watermark_*.png`.
+
+**Honest limitation:** the light and dark "media" are tonal stand-ins built from approved tokens, because the repository holds no production photography. They were built with a tonal edge running under the corner so the frosted plate is judged where it is hardest, but a real photograph with a busy corner is still the test that matters. Listed as open item 3 in `08_WATERMARK.md`.
