@@ -148,6 +148,16 @@ def colour(path: str) -> str:
     return node["value"] if isinstance(node, dict) and "value" in node else node
 
 
+def color(dotted: str, fallback: str = "#000000") -> str:
+    """colour() with a fallback — for filtergraphs that must not crash on a
+    missing token. Same single door into brand/tokens; no hex lives elsewhere."""
+    try:
+        v = colour(dotted)
+        return v if isinstance(v, str) else fallback
+    except (KeyError, TypeError):
+        return fallback
+
+
 if __name__ == "__main__":
     import sys
     p = profile(sys.argv[1] if len(sys.argv) > 1 else "verticalStandard")

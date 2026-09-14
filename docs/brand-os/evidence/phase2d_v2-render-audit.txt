@@ -1,0 +1,17 @@
+ASMR render audit
+=================
+brand source   /home/user/AdelTechTalks/brand/tokens/adel-v2.1.json
+profile        verticalStandard 1080x1920 @30fps
+recomposition  scale — aspect already matches
+brand cards    opener 0.8s + endcard 1.0s (font: DejaVu Sans Bold — SUBSTITUTE, Montserrat not installed)
+audio policy   denoise: off, noise_gate: off, compression: off, loudness_normalization: off, music: off, captions: off, speed: 1.0, volume: 1.0 (recorded level preserved)
+segments       7
+
+codec_name=h264
+width=1080
+height=1920
+codec_name=aac
+sample_rate=48000
+channels=2
+duration=29.033333
+size=18981000

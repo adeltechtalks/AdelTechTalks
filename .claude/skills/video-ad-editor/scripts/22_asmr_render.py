@@ -24,6 +24,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import brand_profile as bp
+import importlib.util as _ilu
+_cs = _ilu.spec_from_file_location("brand_cards", Path(__file__).resolve().parent / "26_brand_cards.py")
+brand_cards = _ilu.module_from_spec(_cs); _cs.loader.exec_module(brand_cards)
 
 FORBIDDEN = ["denoise", "noise_gate", "compression", "loudness_normalization"]
 
@@ -154,6 +157,30 @@ def main() -> int:
         parts.append(dest)
         print(f"  seg {i:02d}  {s['clip']}  {s['start']}→{s['end']}s  ({mode})")
 
+    # --- brand cards: one short opener, one short end card ------------------
+    # The corner watermark alone read as unbranded; a title-heavy Reel is the
+    # other failure. Two short cards, nothing during the edit.
+    brand_cfg = plan.get("branding") or {}
+    brief = plan.get("brief") or {}
+    card_note = "none"
+    if brand_cfg and (brief.get("product_name") or brief.get("content_family")):
+        try:
+            op_s = float(brand_cfg.get("opener_s", 0.8))
+            ec_s = float(brand_cfg.get("endcard_s", 1.0))
+            op = brand_cards.opener(tmp / "opener.mp4", tmp, prof, brief, op_s)
+            last = segs[-1]
+            ec = brand_cards.endcard(tmp / "endcard.mp4", tmp, prof, brief,
+                                     Path(last["src"]),
+                                     (float(last["start"]) + float(last["end"])) / 2.0, ec_s)
+            parts = [op] + parts + [ec]
+            card_note = (f"opener {op_s:.1f}s + endcard {ec_s:.1f}s"
+                         f" (font: {'DejaVu Sans Bold — SUBSTITUTE, Montserrat not installed' if brand_cards.FONT_IS_SUBSTITUTE else 'Montserrat'})")
+            print(f"  cards      {card_note}")
+        except SystemExit:
+            print("  cards      ❌ brand card render failed — continuing without cards")
+        except Exception as e:                       # noqa: BLE001
+            print(f"  cards      ❌ {type(e).__name__}: {e} — continuing without cards")
+
     concat = tmp / "list.txt"
     concat.write_text("".join(f"file '{p}'\n" for p in parts), encoding="utf-8")
     body = tmp / "body.mp4"
@@ -220,6 +247,7 @@ def main() -> int:
         f"brand source   {bp.source_path()}\n"
         f"profile        {prof['id']} {tw}x{th} @{fps}fps\n"
         f"recomposition  {'; '.join(sorted(modes))}\n"
+        f"brand cards    {card_note}\n"
         f"audio policy   {', '.join(audit)}\n"
         f"segments       {len(segs)}\n\n{probe}", encoding="utf-8")
     print(f"\n✓ {out}")

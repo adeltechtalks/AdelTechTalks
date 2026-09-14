@@ -1,0 +1,15 @@
+{
+  "_what": "Content metadata for one edit. Copy to <workdir>/brief.json and fill in.",
+  "product_name": "Galaxy Z Fold",
+  "product_model": "SM-F956U",
+  "content_family": "ASMR UNBOXING",
+  "optional_hook": "",
+  "optional_creator_name": "AdelTechTalks",
+  "_notes": {
+    "product_name": "Shown on the opening card. Keep it short — it is read in under a second.",
+    "product_model": "Optional second line. Omit if it adds nothing.",
+    "content_family": "Small label, e.g. ASMR UNBOXING. Omit to hide the label.",
+    "optional_hook": "At most a few words. Left empty by default — this format is not title-heavy.",
+    "optional_creator_name": "Defaults to AdelTechTalks."
+  }
+}
