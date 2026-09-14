@@ -1,0 +1,215 @@
+{
+  "candidates": [
+    {
+      "t": 170.582,
+      "beat": "handling",
+      "sharpness": 0.09622,
+      "subject_mass": 1.3844,
+      "hand": 0.3972,
+      "luma": 0.3114,
+      "text_band": "bottom",
+      "text_space": 0.456,
+      "bands": {
+        "top": 0.096,
+        "middle": 0.1248,
+        "bottom": 0.0679
+      },
+      "separation": 1.3844,
+      "dims": {
+        "clarity": 0.833,
+        "product": 0.833,
+        "story": 0.7,
+        "curiosity": 0.653,
+        "text_space": 0.833,
+        "separation": 0.833
+      },
+      "score": 0.7815
+    },
+    {
+      "t": 91.965,
+      "beat": "seal_peel",
+      "sharpness": 0.0956,
+      "subject_mass": 1.5561,
+      "hand": 0.2136,
+      "luma": 0.2598,
+      "text_band": "bottom",
+      "text_space": 0.382,
+      "bands": {
+        "top": 0.0881,
+        "middle": 0.1226,
+        "bottom": 0.0757
+      },
+      "separation": 1.5561,
+      "dims": {
+        "clarity": 0.667,
+        "product": 1.0,
+        "story": 0.45,
+        "curiosity": 0.45,
+        "text_space": 0.667,
+        "separation": 1.0
+      },
+      "score": 0.673
+    },
+    {
+      "t": 201.5,
+      "beat": "final_hero",
+      "sharpness": 0.10353,
+      "subject_mass": 1.1877,
+      "hand": 0.3596,
+      "luma": 0.2359,
+      "text_band": "bottom",
+      "text_space": 0.215,
+      "bands": {
+        "top": 0.1029,
+        "middle": 0.1164,
+        "bottom": 0.0913
+      },
+      "separation": 1.1877,
+      "dims": {
+        "clarity": 1.0,
+        "product": 0.333,
+        "story": 0.88,
+        "curiosity": 0.645,
+        "text_space": 0.333,
+        "separation": 0.333
+      },
+      "score": 0.6597
+    },
+    {
+      "t": 97.001,
+      "beat": "box_opening",
+      "sharpness": 0.0906,
+      "subject_mass": 1.3388,
+      "hand": 0.4377,
+      "luma": 0.3155,
+      "text_band": "bottom",
+      "text_space": 0.355,
+      "bands": {
+        "top": 0.0834,
+        "middle": 0.1143,
+        "bottom": 0.0737
+      },
+      "separation": 1.3388,
+      "dims": {
+        "clarity": 0.167,
+        "product": 0.667,
+        "story": 0.9,
+        "curiosity": 0.78,
+        "text_space": 0.5,
+        "separation": 0.667
+      },
+      "score": 0.5725
+    },
+    {
+      "t": 106.612,
+      "beat": "first_reveal",
+      "sharpness": 0.09262,
+      "subject_mass": 1.147,
+      "hand": 0.5061,
+      "luma": 0.3061,
+      "text_band": "top",
+      "text_space": 0.183,
+      "bands": {
+        "top": 0.0824,
+        "middle": 0.1009,
+        "bottom": 0.0941
+      },
+      "separation": 1.147,
+      "dims": {
+        "clarity": 0.5,
+        "product": 0.167,
+        "story": 1.0,
+        "curiosity": 0.667,
+        "text_space": 0.167,
+        "separation": 0.167
+      },
+      "score": 0.49
+    },
+    {
+      "t": 75.825,
+      "beat": "sealed_hero",
+      "sharpness": 0.08878,
+      "subject_mass": 1.0084,
+      "hand": 0.2205,
+      "luma": 0.2334,
+      "text_band": "bottom",
+      "text_space": 0.54,
+      "bands": {
+        "top": 0.1066,
+        "middle": 0.11,
+        "bottom": 0.0506
+      },
+      "separation": 1.0084,
+      "dims": {
+        "clarity": 0.0,
+        "product": 0.0,
+        "story": 0.66,
+        "curiosity": 0.396,
+        "text_space": 1.0,
+        "separation": 0.0
+      },
+      "score": 0.3474
+    },
+    {
+      "t": 155.171,
+      "beat": "accessories",
+      "sharpness": 0.09219,
+      "subject_mass": 1.2356,
+      "hand": 0.5828,
+      "luma": 0.3269,
+      "text_band": "top",
+      "text_space": 0.137,
+      "bands": {
+        "top": 0.0851,
+        "middle": 0.0987,
+        "bottom": 0.0924
+      },
+      "separation": 1.2356,
+      "dims": {
+        "clarity": 0.333,
+        "product": 0.5,
+        "story": 0.35,
+        "curiosity": 0.28,
+        "text_space": 0.0,
+        "separation": 0.5
+      },
+      "score": 0.3159
+    }
+  ],
+  "directions": [
+    {
+      "id": "A",
+      "name": "Product hero",
+      "why": "The strongest frame is the device itself, sharp and centred. With no creator asset the product carries the frame, and the panel names it rather than shouting a hook.",
+      "hook": "GALAXY Z FOLD",
+      "label": "ASMR UNBOXING",
+      "scrim": 0.0,
+      "rule": false,
+      "hook_scale": 0.062,
+      "hook_scale_wide": 0.062,
+      "frame_t": 170.582
+    },
+    {
+      "id": "B",
+      "name": "Curiosity \u2014 reveal withheld",
+      "why": "The reveal beat with a short hook over the quiet band. Text asks the question the frame does not answer.",
+      "hook": "WORTH IT?",
+      "label": "Galaxy Z Fold",
+      "scrim": 0.46,
+      "rule": true,
+      "hook_scale": 0.105,
+      "frame_t": 170.582
+    },
+    {
+      "id": "C",
+      "name": "Bold concept \u2014 typography led",
+      "why": "Typography is the idea; the frame supports it. Used when the product reads small at feed size.",
+      "hook": "FOLD IT",
+      "label": "ASMR UNBOXING",
+      "scrim": 0.55,
+      "rule": true,
+      "hook_scale": 0.135,
+      "frame_t": 91.965
+    }
+  ]
+}
