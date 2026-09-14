@@ -76,11 +76,12 @@
     "logo": "assets/logo.png",
     "endcard": "assets/endcard.mp4"
   },
-  "_brand_source": "brand/tokens/adel-v2.1.json \u2014 canvas, safe zones, watermark and motion come from the canonical export via scripts/brand_profile.py. No brand value is restated in this file.",
+  "_brand_source": "brand/tokens/adel-v2.1.json — canvas, safe zones, watermark and motion come from the canonical export via scripts/brand_profile.py. No brand value is restated in this file.",
   "_pipeline": [
     "20_asmr_analyze.py",
     "21_asmr_plan.py",
-    "22_asmr_render.py"
+    "22_asmr_render.py",
+    "23_asmr_calibrate.py — real-footage validation: signature vs synthetic baseline, 9 diagnostics, gated tuning"
   ],
   "platform_profiles": {
     "primary": "verticalStandard",
@@ -95,11 +96,18 @@
     "min_silence_s": 0.45,
     "pre_roll_s": 0.12,
     "tail_s": 0.45,
-    "_note": "A transient reserves pre_roll before and tail after it. Silence overlapping a reserve is never trimmed \u2014 the decay is the content."
+    "_note": "A transient reserves pre_roll before and tail after it. Silence overlapping a reserve is never trimmed — the decay is the content."
   },
   "creative": {
     "default_primary_treatment": null,
     "default_supporting_treatment": null,
-    "_note": "ASMR default is product-first, tactile, premium, calm \u2014 usually no creative treatment beyond the corner watermark. Renderer caps at one primary plus one supporting."
-  }
+    "_note": "ASMR default is product-first, tactile, premium, calm — usually no creative treatment beyond the corner watermark. Renderer caps at one primary plus one supporting."
+  },
+  "_status": {
+    "phase": "2D",
+    "implementation": "APPROVED",
+    "production": "REAL-FOOTAGE VALIDATION PENDING",
+    "_note": "Approved as an implementation milestone. NOT production-proven: detection thresholds were tuned on synthetic audio only. See docs/brand-os/16_PHASE2D_REALFOOTAGE_VALIDATION.md"
+  },
+  "_tuning_source": "calibration/thresholds.json (via scripts/tuning.py) — detection constants, NOT brand values"
 }

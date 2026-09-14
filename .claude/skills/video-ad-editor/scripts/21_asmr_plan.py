@@ -25,10 +25,16 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import brand_profile as bp
 
-PRE_ROLL = 0.12    # breath before a transient
-TAIL = 0.45        # the decay — cutting into this is what kills ASMR
-MIN_CUT = 0.30     # a silence shorter than this is not worth cutting
-MIN_SEGMENT = 0.35 # a kept run shorter than this is MERGED, never discarded
+# Edit reserves live in calibration/thresholds.json, never inline here — a
+# calibration run on real footage must be able to move them, and the move must
+# show up as a measurable delta rather than a diff against buried literals.
+import tuning
+TUNE = tuning.load()
+_P = TUNE["plan"]
+PRE_ROLL = float(_P["pre_roll_s"])      # breath before a transient
+TAIL = float(_P["tail_s"])              # the decay — cutting into this is what kills ASMR
+MIN_CUT = float(_P["min_cut_s"])        # a silence shorter than this is not worth cutting
+MIN_SEGMENT = float(_P["min_segment_s"])# a kept run shorter than this is MERGED, never discarded
 
 
 def protected(events: list) -> list:

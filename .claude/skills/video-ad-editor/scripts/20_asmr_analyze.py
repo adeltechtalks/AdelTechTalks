@@ -20,10 +20,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import brand_profile as bp
+import tuning
 
-SR = 8000              # analysis sample rate
-WIN_MS = 20            # envelope window
 CLIP_EXT = {".mp4", ".mov", ".m4v", ".mkv", ".webm", ".avi"}
+
+# Detection constants live in calibration/thresholds.json, never inline here.
+# They are a property of the FOOTAGE, not of the brand — see tuning.py.
+TUNE = tuning.load()
+SR = int(TUNE["envelope"]["sample_rate_hz"])
+WIN_MS = int(TUNE["envelope"]["window_ms"])
 
 
 def probe(path: Path) -> dict:
@@ -71,18 +76,20 @@ def envelope(path: Path) -> list:
     return out
 
 
-def analyse_audio(env: list, fmt_rules: dict) -> dict:
+def analyse_audio(env: list, fmt_rules: dict, tune: dict = None) -> dict:
     """Dead time and tactile transients from the envelope."""
+    T = tune or TUNE
+    SIL, EV = T["silence"], T["events"]
     if not env:
         return {"noise_floor": 0.0, "peak": 0.0, "silences": [], "events": []}
     srt = sorted(env)
-    floor = srt[int(len(srt) * 0.20)]
+    floor = srt[int(len(srt) * float(SIL["floor_percentile"]))]
     peak = srt[-1]
     median = statistics.median(env)
 
     # Dead time: quiet relative to this clip's own floor, not an absolute dB.
-    sil_thresh = max(floor * 2.2, peak * 0.03)
-    min_sil = float(fmt_rules.get("_analysis", {}).get("min_silence_s", 0.45))
+    sil_thresh = max(floor * float(SIL["floor_multiplier"]), peak * float(SIL["peak_fraction"]))
+    min_sil = float(SIL["min_silence_s"])
 
     silences, run = [], None
     for i, v in enumerate(env):
@@ -100,12 +107,15 @@ def analyse_audio(env: list, fmt_rules: dict) -> dict:
 
     # Tactile transients: a sharp rise above the local level. These are the
     # content — a peel, a click, a snap — and they are what must survive.
-    ev_thresh = max(median * 3.0, peak * 0.18, floor * 4.0)
+    ev_thresh = max(median * float(EV["median_multiplier"]),
+                    peak * float(EV["peak_fraction"]),
+                    floor * float(EV["floor_multiplier"]))
+    rise = float(EV["rise_ratio"]); refract = float(EV["refractory_s"])
     events, last = [], -1.0
     for i in range(1, len(env)):
         t = i * WIN_MS / 1000.0
         prev = env[i - 1] if env[i - 1] > 1e-9 else 1e-9
-        if env[i] >= ev_thresh and env[i] / prev >= 1.8 and t - last >= 0.08:
+        if env[i] >= ev_thresh and env[i] / prev >= rise and t - last >= refract:
             events.append({"t": round(t, 3), "amp": round(env[i] / (peak or 1), 3)})
             last = t
     return {
@@ -113,11 +123,14 @@ def analyse_audio(env: list, fmt_rules: dict) -> dict:
         "median": round(median, 6), "silence_threshold": round(sil_thresh, 6),
         "event_threshold": round(ev_thresh, 6),
         "silences": silences, "events": events,
+        "_tuning": T["_id"],
     }
 
 
-def scene_changes(path: Path, threshold: float = 0.12) -> list:
+def scene_changes(path: Path, threshold: float = None) -> list:
     """Camera/scene motion proxy — used to avoid calling a pan a hero moment."""
+    if threshold is None:
+        threshold = float(TUNE["scene"]["threshold"])
     r = subprocess.run(
         ["ffmpeg", "-v", "info", "-i", str(path),
          "-vf", f"select='gt(scene,{threshold})',showinfo", "-f", "null", "-"],
@@ -132,15 +145,20 @@ def scene_changes(path: Path, threshold: float = 0.12) -> list:
     return out
 
 
-def hero_windows(events: list, scenes: list, duration: float, span: float = 3.0) -> list:
+def hero_windows(events: list, scenes: list, duration: float,
+                 span: float = None, min_events: int = None) -> list:
     """Dense tactile activity with a stable camera. The moments worth leading with."""
+    if span is None:
+        span = float(TUNE["hero"]["span_s"])
+    if min_events is None:
+        min_events = int(TUNE["hero"]["min_events"])
     if not events:
         return []
     best = []
     for e in events:
         lo, hi = e["t"] - span / 2, e["t"] + span / 2
         inside = [x for x in events if lo <= x["t"] <= hi]
-        if len(inside) < 2:
+        if len(inside) < min_events:
             continue
         if any(lo <= s <= hi for s in scenes):
             continue                              # a cut mid-window is not a hero moment
@@ -179,6 +197,8 @@ def main() -> int:
     out = {
         "_generated_by": "20_asmr_analyze.py",
         "_brand_source": bp.source_path(),
+        "_tuning_profile": TUNE["_id"],
+        "_tuning_source": str(tuning.CAL),
         "profile": prof,
         "format": rules["id"],
         "audio_policy": rules["editing_rules"]["audio"],
