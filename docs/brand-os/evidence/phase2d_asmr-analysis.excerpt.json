@@ -1,0 +1,354 @@
+{
+  "_generated_by": "20_asmr_analyze.py",
+  "_brand_source": "/home/user/AdelTechTalks/brand/tokens/adel-v2.1.json",
+  "profile": {
+    "id": "verticalStandard",
+    "width": 1080,
+    "height": 1920,
+    "margin": 72,
+    "safe_top": 260,
+    "safe_bottom": 420,
+    "safe_side": 72,
+    "fps": 30,
+    "aspect": "9:16",
+    "validation_required": false,
+    "provenance": "AUDITED \u2014 site/src/styles/tokens/brand.css (--atc-social-reel-*)"
+  },
+  "format": "asmr-unboxing",
+  "audio_policy": {
+    "source": "recorded_source_or_external_mic_track",
+    "default_volume": 1.0,
+    "denoise": false,
+    "noise_gate": false,
+    "compression": false,
+    "loudness_normalization": false,
+    "boundary_fade_ms": 5,
+    "preserve_events": [
+      "scratch",
+      "peel",
+      "click",
+      "snap",
+      "box_open",
+      "plastic",
+      "paper",
+      "button_press"
+    ]
+  },
+  "clips": [
+    {
+      "file": "01-sealed-box.mp4",
+      "path": "/tmp/claude-0/-home-user-AdelTechTalks/118735a4-6e6c-58e1-89aa-45150f760a83/scratchpad/asmr-test/raw/01-sealed-box.mp4",
+      "duration": 9.0,
+      "width": 1080,
+      "height": 1920,
+      "fps": 30.0,
+      "has_audio": true,
+      "audio_channels": 1,
+      "audio_sample_rate": 48000,
+      "orientation": "portrait",
+      "matches_profile": true,
+      "audio": {
+        "noise_floor": 0.0,
+        "peak": 0.259691,
+        "median": 9.8e-05,
+        "silence_threshold": 0.007791,
+        "event_threshold": 0.046744,
+        "silences": [
+          {
+            "start": 0.4,
+            "end": 1.8
+          },
+          {
+            "start": 2.2,
+            "end": 3.6
+          },
+          {
+            "start": 4.0,
+            "end": 5.4
+          },
+          {
+            "start": 5.8,
+            "end": 7.2
+          },
+          {
+            "start": 7.6,
+            "end": 9.0
+          }
+        ],
+        "events": [
+          {
+            "t": 1.8,
+            "amp": 0.977
+          },
+          {
+            "t": 3.6,
+            "amp": 0.969
+          },
+          {
+            "t": 5.4,
+            "amp": 0.973
+          },
+          {
+            "t": 7.2,
+            "amp": 0.996
+          }
+        ]
+      },
+      "scene_changes": [],
+      "hero_windows": []
+    },
+    {
+      "file": "02-peel-open.mp4",
+      "path": "/tmp/claude-0/-home-user-AdelTechTalks/118735a4-6e6c-58e1-89aa-45150f760a83/scratchpad/asmr-test/raw/02-peel-open.mp4",
+      "duration": 10.0,
+      "width": 1080,
+      "height": 1920,
+      "fps": 30.0,
+      "has_audio": true,
+      "audio_channels": 1,
+      "audio_sample_rate": 48000,
+      "orientation": "portrait",
+      "matches_profile": true,
+      "audio": {
+        "noise_floor": 0.0,
+        "peak": 0.282539,
+        "median": 0.000196,
+        "silence_threshold": 0.008476,
+        "event_threshold": 0.050857,
+        "silences": [
+          {
+            "start": 0.26,
+            "end": 1.1
+          },
+          {
+            "start": 1.36,
+            "end": 2.2
+          },
+          {
+            "start": 2.46,
+            "end": 3.3
+          },
+          {
+            "start": 3.56,
+            "end": 4.4
+          },
+          {
+            "start": 4.66,
+            "end": 5.5
+          },
+          {
+            "start": 5.76,
+            "end": 6.6
+          },
+          {
+            "start": 6.86,
+            "end": 7.7
+          },
+          {
+            "start": 7.96,
+            "end": 8.8
+          },
+          {
+            "start": 9.06,
+            "end": 9.9
+          }
+        ],
+        "events": [
+          {
+            "t": 1.1,
+            "amp": 0.95
+          },
+          {
+            "t": 2.2,
+            "amp": 0.984
+          },
+          {
+            "t": 3.3,
+            "amp": 0.949
+          },
+          {
+            "t": 4.4,
+            "amp": 1.0
+          },
+          {
+            "t": 5.5,
+            "amp": 0.959
+          },
+          {
+            "t": 6.6,
+            "amp": 0.985
+          },
+          "\u2026"
+        ]
+      },
+      "scene_changes": [],
+      "hero_windows": [
+        {
+          "start": 4.0,
+          "end": 7.0,
+          "events": 3,
+          "score": 2.944
+        },
+        {
+          "start": 7.3,
+          "end": 10.0,
+          "events": 3,
+          "score": 2.926
+        },
+        {
+          "start": 0.7,
+          "end": 3.7,
+          "events": 3,
+          "score": 2.883
+        }
+      ]
+    },
+    {
+      "file": "03-macro-detail.mp4",
+      "path": "/tmp/claude-0/-home-user-AdelTechTalks/118735a4-6e6c-58e1-89aa-45150f760a83/scratchpad/asmr-test/raw/03-macro-detail.mp4",
+      "duration": 8.0,
+      "width": 1920,
+      "height": 1080,
+      "fps": 30.0,
+      "has_audio": true,
+      "audio_channels": 1,
+      "audio_sample_rate": 48000,
+      "orientation": "landscape",
+      "matches_profile": false,
+      "audio": {
+        "noise_floor": 0.0,
+        "peak": 0.213209,
+        "median": 0.0,
+        "silence_threshold": 0.006396,
+        "event_threshold": 0.038378,
+        "silences": [
+          {
+            "start": 0.18,
+            "end": 2.6
+          },
+          {
+            "start": 2.78,
+            "end": 5.2
+          },
+          {
+            "start": 5.38,
+            "end": 7.8
+          }
+        ],
+        "events": [
+          {
+            "t": 2.6,
+            "amp": 0.986
+          },
+          {
+            "t": 5.2,
+            "amp": 1.0
+          },
+          {
+            "t": 7.8,
+            "amp": 0.997
+          }
+        ]
+      },
+      "scene_changes": [],
+      "hero_windows": []
+    },
+    {
+      "file": "04-handling.mp4",
+      "path": "/tmp/claude-0/-home-user-AdelTechTalks/118735a4-6e6c-58e1-89aa-45150f760a83/scratchpad/asmr-test/raw/04-handling.mp4",
+      "duration": 12.0,
+      "width": 1080,
+      "height": 1920,
+      "fps": 30.0,
+      "has_audio": true,
+      "audio_channels": 1,
+      "audio_sample_rate": 48000,
+      "orientation": "portrait",
+      "matches_profile": true,
+      "audio": {
+        "noise_floor": 0.0,
+        "peak": 0.274353,
+        "median": 0.0,
+        "silence_threshold": 0.008231,
+        "event_threshold": 0.049384,
+        "silences": [
+          {
+            "start": 0.26,
+            "end": 0.9
+          },
+          {
+            "start": 1.16,
+            "end": 1.8
+          },
+          {
+            "start": 2.06,
+            "end": 2.7
+          },
+          {
+            "start": 2.96,
+            "end": 8.1
+          },
+          {
+            "start": 8.36,
+            "end": 9.0
+          },
+          {
+            "start": 9.26,
+            "end": 9.9
+          },
+          {
+            "start": 10.16,
+            "end": 10.8
+          },
+          {
+            "start": 11.06,
+            "end": 11.7
+          }
+        ],
+        "events": [
+          {
+            "t": 0.9,
+            "amp": 0.987
+          },
+          {
+            "t": 1.8,
+            "amp": 0.965
+          },
+          {
+            "t": 2.7,
+            "amp": 0.988
+          },
+          {
+            "t": 8.1,
+            "amp": 0.985
+          },
+          {
+            "t": 9.0,
+            "amp": 0.979
+          },
+          {
+            "t": 9.9,
+            "amp": 0.966
+          },
+          "\u2026"
+        ]
+      },
+      "scene_changes": [],
+      "hero_windows": [
+        {
+          "start": 0.3,
+          "end": 3.3,
+          "events": 3,
+          "score": 2.94
+        },
+        {
+          "start": 7.5,
+          "end": 10.5,
+          "events": 3,
+          "score": 2.93
+        }
+      ]
+    }
+  ]
+}
+…truncated…

@@ -1,7 +1,10 @@
 {
   "id": "asmr-unboxing",
   "name": "ASMR Unboxing",
-  "default_duration_seconds": [20, 35],
+  "default_duration_seconds": [
+    20,
+    35
+  ],
   "music": false,
   "captions": false,
   "natural_audio_priority": true,
@@ -18,9 +21,27 @@
   ],
   "editing_rules": {
     "cuts": "clean-and-fast",
-    "transitions": ["cut", "match_cut"],
-    "avoid": ["generic_whoosh_transition", "heavy_zoom", "caption_wall", "background_music", "noise_gate_that_kills_tactile_sounds"],
-    "speed": {"default": 1.0, "allowed": [0.75, 1.0, 1.25, 1.5, 2.0]},
+    "transitions": [
+      "cut",
+      "match_cut"
+    ],
+    "avoid": [
+      "generic_whoosh_transition",
+      "heavy_zoom",
+      "caption_wall",
+      "background_music",
+      "noise_gate_that_kills_tactile_sounds"
+    ],
+    "speed": {
+      "default": 1.0,
+      "allowed": [
+        0.75,
+        1.0,
+        1.25,
+        1.5,
+        2.0
+      ]
+    },
     "audio": {
       "source": "recorded_source_or_external_mic_track",
       "default_volume": 1.0,
@@ -29,15 +50,56 @@
       "compression": false,
       "loudness_normalization": false,
       "boundary_fade_ms": 5,
-      "preserve_events": ["scratch", "peel", "click", "snap", "box_open", "plastic", "paper", "button_press"]
+      "preserve_events": [
+        "scratch",
+        "peel",
+        "click",
+        "snap",
+        "box_open",
+        "plastic",
+        "paper",
+        "button_press"
+      ]
     },
-    "opening_seconds": [0.4, 1.0],
-    "endcard_seconds": [0.6, 1.2]
+    "opening_seconds": [
+      0.4,
+      1.0
+    ],
+    "endcard_seconds": [
+      0.6,
+      1.2
+    ]
   },
   "brand_slots": {
     "opener": "assets/opener.mp4",
     "signature": "assets/signature.png",
     "logo": "assets/logo.png",
     "endcard": "assets/endcard.mp4"
+  },
+  "_brand_source": "brand/tokens/adel-v2.1.json \u2014 canvas, safe zones, watermark and motion come from the canonical export via scripts/brand_profile.py. No brand value is restated in this file.",
+  "_pipeline": [
+    "20_asmr_analyze.py",
+    "21_asmr_plan.py",
+    "22_asmr_render.py"
+  ],
+  "platform_profiles": {
+    "primary": "verticalStandard",
+    "supported": [
+      "foldPortrait",
+      "foldLandscape",
+      "youtubeLandscape"
+    ],
+    "_rule": "Alternate formats RECOMPOSE. Never a centre-crop of the 9:16 master."
+  },
+  "_analysis": {
+    "min_silence_s": 0.45,
+    "pre_roll_s": 0.12,
+    "tail_s": 0.45,
+    "_note": "A transient reserves pre_roll before and tail after it. Silence overlapping a reserve is never trimmed \u2014 the decay is the content."
+  },
+  "creative": {
+    "default_primary_treatment": null,
+    "default_supporting_treatment": null,
+    "_note": "ASMR default is product-first, tactile, premium, calm \u2014 usually no creative treatment beyond the corner watermark. Renderer caps at one primary plus one supporting."
   }
 }
