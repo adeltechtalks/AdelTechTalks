@@ -1,36 +1,56 @@
 {
   "brand": "AdelTechTalks",
-  "version": "bootstrap-2026-09",
-  "status": "sync-with-figma-before-lock",
-  "source_of_truth": "Figma brand library",
+  "version": "bootstrap-2026-09 → superseded 2026-09-14 (Phase 2A)",
+  "status": "SUPERSEDED — this file is kept for backward compatibility only. The canonical, machine-readable brand export is brand/tokens/adel-v2.1.json at the repository root, generated from the site token CSS by brand/scripts/build-tokens.mjs. BRAND_SYSTEM.md in this folder is rendered from that export and must not be hand-edited.",
+  "canonical_export": "brand/tokens/adel-v2.1.json",
+  "source_of_truth": "Figma brand library OD9bQi6eWexQi53tLKoctW (modules 00–03 built in Phase 2A)",
   "known_core_colors": {
     "signature_blue": "#2563EB",
-    "ice": "#DCEBFF",
-    "deep_blue": "#1746A2"
+    "deep_blue": "#1746A2",
+    "ice_blue": "#DCEBFF",
+    "fresh_mint": "#2DD4A8 (accent only, ≤ ~3%)",
+    "graphite": "#171A1F",
+    "slate": "#667085",
+    "warm_white": "#FAFAF8",
+    "white": "#FFFFFF",
+    "soft_gray": "#E6E8EC"
   },
   "typography": {
-    "arabic_primary": "Alexandria",
-    "latin_primary": "Inter",
-    "status": "proposed-defaults-until-figma-sync"
+    "latin_display": "Montserrat",
+    "arabic_display": "KO Ghorab",
+    "text": "Readex Pro",
+    "mono": "JetBrains Mono",
+    "not_approved": ["Alexandria", "Inter", "Tajawal", "Cairo (Edition 1 — archived)"],
+    "status": "locked — Phase 2A decision 5; the audited website typography wins"
   },
   "identity": {
     "handle": "@AdelTechTalks",
-    "signature_asset": "assets/signature.png",
-    "logo_asset": "assets/logo.png"
+    "signature_asset": "assets/signature.png (RESERVED — empty until Adel supplies a real scanned signature; never a font stand-in)",
+    "logo_asset": "assets/logo.png (export from brand/logo/adel-mark-*.svg; Graphite default, Signature Blue alternate, White reversed)"
   },
   "video": {
-    "canvas": {"width": 1080, "height": 1920, "fps": 30},
-    "safe_zones": {
+    "canvas": { "width": 1080, "height": 1920, "fps": 30 },
+    "brand_reserves_9x16": {
+      "top": 260,
+      "bottom": 420,
+      "margin": 72,
+      "columns": 4,
+      "gutter": 32,
+      "source": "site/src/styles/tokens/brand.css (--atc-social-reel-*) via brand/tokens/adel-v2.1.json canvases.reel-9x16 — no headline, body or signature inside the reserves"
+    },
+    "legacy_ui_overlay_defaults": {
       "top": 150,
       "bottom": 300,
       "right": 180,
       "right_y_start": 1100,
-      "right_y_end": 1750
+      "right_y_end": 1750,
+      "note": "Platform UI-overlap detector defaults still hard-coded in scripts/08_safe_check.js and SKILL.md. These are NOT the brand safe zones and are not final; they sit inside the brand reserves above. Reading them from the canonical export is a deferred refactor (Phase 2A decision 6)."
     },
     "asmr": {
       "music": false,
       "captions": false,
       "natural_audio_priority": true,
+      "mic_policy": "KEEP_RECORDED_AUDIO_ON — box opening, peeling, clicks, scratches, packaging, handling",
       "transitions": ["cut", "match_cut"],
       "speed_ramps": "subtle-only",
       "text_density": "minimal",

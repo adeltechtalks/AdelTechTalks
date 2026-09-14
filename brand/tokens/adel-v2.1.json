@@ -1,0 +1,1172 @@
+{
+  "$meta": {
+    "brand": "AdelTechTalks",
+    "system": "v2.1 Blue",
+    "schema": "adeltechtalks-brand-tokens/1",
+    "authority": "Figma file OD9bQi6eWexQi53tLKoctW defines the approved visual system. This file is the one machine-readable export automation consumes. It is GENERATED from site/src/styles/tokens by brand/scripts/build-tokens.mjs — never hand-edited.",
+    "regenerate": "node brand/scripts/build-tokens.mjs",
+    "sources": [
+      "site/src/styles/tokens/fonts.css",
+      "site/src/styles/tokens/colors.css",
+      "site/src/styles/tokens/typography.css",
+      "site/src/styles/tokens/spacing.css",
+      "site/src/styles/tokens/elevation.css",
+      "site/src/styles/tokens/brand.css",
+      "site/src/styles/tokens/motion.css",
+      "site/src/styles/tokens/adel-v2.css",
+      "site/src/styles/tokens/adel-type.css",
+      "site/src/styles/tokens/bridge-v2.css",
+      "site/src/styles/tokens/legacy-att.css",
+      "site/public/logo/atc-mark-currentcolor.svg",
+      "site/src/components/LoveTech.astro"
+    ],
+    "decisions": "docs/brand-os/01_PHASE2A_DECISIONS.md",
+    "consumers": [
+      ".claude/skills/video-ad-editor/BRAND_SYSTEM.md (generated)",
+      "Canva brand kit rebuild (Phase 2B+)",
+      "Framer / website work"
+    ]
+  },
+  "color": {
+    "primitives": {
+      "brand": {
+        "signature-blue": {
+          "value": "#2563EB",
+          "role": "primary brand colour, primary action, heart, links"
+        },
+        "deep-blue": {
+          "value": "#1746A2",
+          "role": "pressed states, depth, text on Ice tint"
+        },
+        "ice-blue": {
+          "value": "#DCEBFF",
+          "role": "tinted surfaces, quiet emphasis"
+        },
+        "fresh-mint": {
+          "value": "#2DD4A8",
+          "role": "ACCENT ONLY — ≤ ~3% of any surface, never a background, never the logo"
+        },
+        "graphite": {
+          "value": "#171A1F",
+          "role": "primary neutral, primary text, the everyday mark, dark-mode canvas"
+        },
+        "slate": {
+          "value": "#667085",
+          "role": "secondary text"
+        },
+        "warm-white": {
+          "value": "#FAFAF8",
+          "role": "primary light surface (page canvas), not pure white"
+        },
+        "white": {
+          "value": "#FFFFFF",
+          "role": "raised surfaces"
+        },
+        "soft-gray": {
+          "value": "#E6E8EC",
+          "role": "hairlines, dividers, rules"
+        }
+      },
+      "blue": {
+        "50": "#F0F6FF",
+        "100": "#DCEBFF",
+        "200": "#BBD7FF",
+        "300": "#8FB9FA",
+        "400": "#5B8EF4",
+        "500": "#2563EB",
+        "600": "#1D53CC",
+        "700": "#1746A2",
+        "800": "#123577",
+        "900": "#0D264F"
+      },
+      "mint": {
+        "100": "#DDF8F0",
+        "300": "#8FE9CE",
+        "500": "#2DD4A8",
+        "700": "#17A97F"
+      },
+      "ink": {
+        "700": "#3A414C"
+      },
+      "neutral": {
+        "_note": "Derived neutrals, NOT brand colours: interpolations on the Warm White → Graphite ramp that the UI needs.",
+        "sunken": "#F3F4F6",
+        "border": "#CDD1D8",
+        "muted": {
+          "value": "#9AA1AC",
+          "warning": "NOT a text colour (2.46:1 on Warm White). Disabled controls, icon strokes, decorative rules only."
+        },
+        "graphite-raised": {
+          "value": "#25272C",
+          "source": "documented composite of --adel-glass-fill (Graphite 0.94) over Warm White; the only dark raised surface with a written precedent"
+        }
+      },
+      "status": {
+        "_note": "Functional, not brand. Kept distinct from the blue family so correct/error/brand never read alike.",
+        "success": "#17A96A",
+        "success-text": "#0F7A4C",
+        "success-bg": "#E6F5F3",
+        "warning": "#E08A0B",
+        "error": "#DB3A3F",
+        "error-bg": "#FFE9E4"
+      },
+      "alpha": {
+        "graphite-94": {
+          "value": "rgba(23, 26, 31, 0.94)",
+          "use": "glass fill (the site header — the only glass surface)"
+        },
+        "white-10": {
+          "value": "rgba(255, 255, 255, 0.10)",
+          "use": "glass top highlight; dark-mode hairline"
+        },
+        "white-06": {
+          "value": "rgba(255, 255, 255, 0.06)",
+          "use": "glass bottom edge"
+        },
+        "white-08": {
+          "value": "rgba(255, 255, 255, 0.08)",
+          "use": "hover wash on graphite"
+        },
+        "white-22": {
+          "value": "rgba(255, 255, 255, 0.22)",
+          "use": "strong border on graphite"
+        }
+      }
+    },
+    "semantic": {
+      "light": {
+        "surface": {
+          "canvas": {
+            "ref": "brand.warm-white",
+            "value": "#FAFAF8"
+          },
+          "raised": {
+            "ref": "brand.white",
+            "value": "#FFFFFF"
+          },
+          "sunken": {
+            "ref": "neutral.sunken",
+            "value": "#F3F4F6"
+          },
+          "tint": {
+            "ref": "brand.ice-blue",
+            "value": "#DCEBFF"
+          },
+          "inverse": {
+            "ref": "brand.graphite",
+            "value": "#171A1F"
+          },
+          "depth": {
+            "ref": "mint.100",
+            "value": "#DDF8F0"
+          }
+        },
+        "text": {
+          "primary": {
+            "ref": "brand.graphite",
+            "value": "#171A1F"
+          },
+          "secondary": {
+            "ref": "brand.slate",
+            "value": "#667085"
+          },
+          "tertiary": {
+            "ref": "brand.slate",
+            "value": "#667085"
+          },
+          "inverse": {
+            "ref": "brand.white",
+            "value": "#FFFFFF"
+          },
+          "link": {
+            "ref": "brand.signature-blue",
+            "value": "#2563EB"
+          },
+          "link-hover": {
+            "ref": "brand.deep-blue",
+            "value": "#1746A2"
+          },
+          "on-tint": {
+            "ref": "brand.deep-blue",
+            "value": "#1746A2"
+          }
+        },
+        "border": {
+          "hairline": {
+            "ref": "brand.soft-gray",
+            "value": "#E6E8EC"
+          },
+          "strong": {
+            "ref": "neutral.border",
+            "value": "#CDD1D8"
+          },
+          "brand": {
+            "ref": "brand.signature-blue",
+            "value": "#2563EB"
+          }
+        },
+        "action": {
+          "primary-bg": {
+            "ref": "brand.signature-blue",
+            "value": "#2563EB"
+          },
+          "primary-bg-hover": {
+            "ref": "blue.600",
+            "value": "#1D53CC"
+          },
+          "primary-bg-pressed": {
+            "ref": "brand.deep-blue",
+            "value": "#1746A2"
+          },
+          "primary-fg": {
+            "ref": "brand.white",
+            "value": "#FFFFFF"
+          },
+          "secondary-fg": {
+            "ref": "brand.signature-blue",
+            "value": "#2563EB"
+          },
+          "secondary-bg-hover": {
+            "ref": "brand.ice-blue",
+            "value": "#DCEBFF"
+          }
+        },
+        "accent": {
+          "mint": {
+            "ref": "brand.fresh-mint",
+            "value": "#2DD4A8"
+          }
+        },
+        "mark": {
+          "primary": {
+            "ref": "brand.graphite",
+            "value": "#171A1F"
+          },
+          "alternate": {
+            "ref": "brand.signature-blue",
+            "value": "#2563EB"
+          },
+          "reversed": {
+            "ref": "brand.white",
+            "value": "#FFFFFF"
+          }
+        },
+        "heart": {
+          "fill": {
+            "ref": "brand.signature-blue",
+            "value": "#2563EB"
+          }
+        },
+        "focus": {
+          "ring": {
+            "ref": "brand.signature-blue",
+            "value": "#2563EB"
+          }
+        }
+      },
+      "dark": {
+        "_status": "PROPOSED — Graphite-based dark surfaces approved in principle (Phase 2A decision 4); values below come from documented precedents; open:true = no precedent, awaiting ruling",
+        "surface": {
+          "canvas": {
+            "ref": "brand.graphite",
+            "value": "#171A1F",
+            "precedent": "--adel-surface-inverse, the graphite navbar"
+          },
+          "raised": {
+            "ref": "neutral.graphite-raised",
+            "value": "#25272C",
+            "precedent": "glass composite documented in adel-v2.css"
+          },
+          "sunken": {
+            "ref": "brand.graphite",
+            "value": "#171A1F",
+            "open": true
+          },
+          "tint": {
+            "ref": "blue.900",
+            "value": "#0D264F",
+            "open": true
+          },
+          "inverse": {
+            "ref": "brand.warm-white",
+            "value": "#FAFAF8"
+          },
+          "depth": {
+            "ref": "mint.100",
+            "value": "#DDF8F0"
+          }
+        },
+        "text": {
+          "primary": {
+            "ref": "brand.white",
+            "value": "#FFFFFF",
+            "precedent": "--adel-nav-fg-strong"
+          },
+          "secondary": {
+            "ref": "brand.soft-gray",
+            "value": "#E6E8EC",
+            "precedent": "--adel-nav-fg"
+          },
+          "tertiary": {
+            "ref": "brand.soft-gray",
+            "value": "#E6E8EC"
+          },
+          "inverse": {
+            "ref": "brand.graphite",
+            "value": "#171A1F"
+          },
+          "link": {
+            "ref": "blue.300",
+            "value": "#8FB9FA",
+            "precedent": "LoveTech .lovetech--onDark; Signature Blue is 3.37:1 on Graphite and fails 4.5:1 for text"
+          },
+          "link-hover": {
+            "ref": "brand.ice-blue",
+            "value": "#DCEBFF",
+            "precedent": "--adel-nav-fg-hover"
+          },
+          "on-tint": {
+            "ref": "brand.ice-blue",
+            "value": "#DCEBFF"
+          }
+        },
+        "border": {
+          "hairline": {
+            "ref": "alpha.white-10",
+            "value": "rgba(255, 255, 255, 0.10)",
+            "precedent": "--adel-glass-border"
+          },
+          "strong": {
+            "ref": "alpha.white-22",
+            "value": "rgba(255, 255, 255, 0.22)",
+            "precedent": "--adel-nav-border"
+          },
+          "brand": {
+            "ref": "brand.signature-blue",
+            "value": "#2563EB"
+          }
+        },
+        "action": {
+          "primary-bg": {
+            "ref": "brand.signature-blue",
+            "value": "#2563EB",
+            "open": true
+          },
+          "primary-bg-hover": {
+            "ref": "blue.600",
+            "value": "#1D53CC",
+            "open": true
+          },
+          "primary-bg-pressed": {
+            "ref": "brand.deep-blue",
+            "value": "#1746A2",
+            "open": true
+          },
+          "primary-fg": {
+            "ref": "brand.white",
+            "value": "#FFFFFF"
+          },
+          "secondary-fg": {
+            "ref": "blue.300",
+            "value": "#8FB9FA"
+          },
+          "secondary-bg-hover": {
+            "ref": "alpha.white-08",
+            "value": "rgba(255, 255, 255, 0.08)",
+            "precedent": "--adel-nav-bg-hover"
+          }
+        },
+        "accent": {
+          "mint": {
+            "ref": "brand.fresh-mint",
+            "value": "#2DD4A8"
+          }
+        },
+        "mark": {
+          "primary": {
+            "ref": "brand.white",
+            "value": "#FFFFFF"
+          },
+          "alternate": {
+            "ref": "brand.signature-blue",
+            "value": "#2563EB"
+          },
+          "reversed": {
+            "ref": "brand.graphite",
+            "value": "#171A1F"
+          }
+        },
+        "heart": {
+          "fill": {
+            "ref": "blue.300",
+            "value": "#8FB9FA",
+            "precedent": "LoveTech .lovetech--onDark"
+          }
+        },
+        "focus": {
+          "ring": {
+            "ref": "brand.signature-blue",
+            "value": "#2563EB"
+          }
+        }
+      }
+    },
+    "archived": {
+      "_note": "Edition 1 / ATT Content System. Archived, not deleted. Scoped to .att-legacy in the site; Figma page 99 — Archive / Edition 1. Never linked from active modules.",
+      "purple": {
+        "50": "#F5F3FF",
+        "100": "#EBE6FE",
+        "600": "#6C41E4",
+        "700": "#5A32C4"
+      },
+      "signal-blue-500": "#3E7BFA",
+      "spark-coral": {
+        "100": "#FFE9E4",
+        "500": "#FF6B57",
+        "700": "#CE3A24"
+      },
+      "magenta-500": "#DB4A9B",
+      "lavender": {
+        "mist": "#F8F6FF",
+        "veil": "#F1EDFE",
+        "haze": "#E6DFFC"
+      },
+      "dark-impact": {
+        "navy": "#0B0918",
+        "blue": "#2B6CFF",
+        "purple": "#7A3BE8",
+        "magenta": "#D63BC9",
+        "gradient": "linear-gradient(45deg, #2B6CFF 0%, #7A3BE8 52%, #D63BC9 100%)"
+      },
+      "display-face": "Cairo"
+    }
+  },
+  "typography": {
+    "families": {
+      "display": {
+        "family": "Montserrat",
+        "stack": "'Montserrat', 'Readex Pro', 'Segoe UI', sans-serif",
+        "job": "Latin display — standalone headings, wordmarks, nav, CTA, index figures. Never inside an Arabic run.",
+        "weights": [
+          400,
+          500,
+          600,
+          700,
+          800
+        ]
+      },
+      "text": {
+        "family": "Readex Pro",
+        "stack": "'Readex Pro', 'Segoe UI', Tahoma, 'Noto Sans Arabic', sans-serif",
+        "job": "Arabic body/UI, any Latin inside an Arabic sentence, EN long-form.",
+        "weights": [
+          300,
+          400,
+          500,
+          600
+        ]
+      },
+      "arabic-display": {
+        "family": "KO Ghorab",
+        "stack": "'KO Ghorab', 'Montserrat', 'Readex Pro', Tahoma, sans-serif",
+        "job": "Arabic display only — hero, headings, pull quotes. ≥ 24 px. Never letter-spaced. Single weight: hierarchy by size.",
+        "weights": [
+          400
+        ],
+        "licence": "licensed to Adel; self-hosted; NOT redistributable",
+        "figma": "not in the Figma font environment — must be uploaded as a team font"
+      },
+      "mono": {
+        "family": "JetBrains Mono",
+        "stack": "'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace",
+        "job": "technical figures, specs, code, overlines",
+        "weights": [
+          400,
+          500
+        ]
+      },
+      "hand": {
+        "family": "Caveat",
+        "stack": "'Caveat', 'Segoe Script', cursive",
+        "job": "About-page sketch layer ONLY, EN only. Placeholder until real handwriting exists. NEVER a signature stand-in.",
+        "weights": [
+          500,
+          600
+        ],
+        "exception": true
+      }
+    },
+    "not-approved": {
+      "Cairo": "Edition 1 Arabic display — archived",
+      "Inter": "bootstrap placeholder — not approved",
+      "Alexandria": "bootstrap placeholder — not approved",
+      "Tajawal": "generic skill example — not brand data",
+      "Amiri": "not core; documented exception only for the scripture line on the holding page (coming-soon.astro)"
+    },
+    "montserrat-weights": {
+      "400": "specific supporting text only",
+      "600": "secondary headings",
+      "700": "major section headings",
+      "800": "Hero / Display XL (\"I ❤ Tech\")",
+      "500-600": "navigation, CTA, labels"
+    },
+    "scale": {
+      "xs": 12,
+      "sm": 14,
+      "base": 17,
+      "lg": 20,
+      "xl": 24,
+      "2xl": 32,
+      "3xl": 42,
+      "4xl": 56,
+      "5xl": 72
+    },
+    "leading": {
+      "tight": 1.15,
+      "snug": 1.35,
+      "body": 1.7,
+      "arabic-body": 1.85,
+      "arabic-snug": 1.5
+    },
+    "tracking": {
+      "tight": "-0.02em",
+      "wide": "0.08em",
+      "love-tech": "-0.04em",
+      "wordmark": "-0.02em",
+      "adel-lockup": "-0.03em"
+    },
+    "measure": {
+      "latin": "68ch",
+      "arabic": "58ch"
+    },
+    "arabic": {
+      "hero": {
+        "size": 52,
+        "mobile": 34,
+        "line": 1.4
+      },
+      "heading": {
+        "size": 32,
+        "mobile": 24,
+        "line": 1.45
+      },
+      "quote": {
+        "size": 26,
+        "line": 1.5
+      },
+      "display-min": 24,
+      "inline-latin-scale": 0.925,
+      "rules": [
+        "RTL-first layouts; Latin terms are isolated LTR islands (.term)",
+        "Western digits 0–9, tabular",
+        "never letter-spaced",
+        "never synthesised bold or italic",
+        "no uppercase concept — overlines are sentence case",
+        "Ghorab has no Latin glyphs: an English term inside a Ghorab headline falls to Montserrat 700 at ×0.925"
+      ]
+    },
+    "latin-ui-scale": {
+      "display1": {
+        "size": 56,
+        "line": 64,
+        "weight": 700
+      },
+      "display2": {
+        "size": 44,
+        "line": 52,
+        "weight": 700
+      },
+      "heading1": {
+        "size": 36,
+        "line": 44,
+        "weight": 700
+      },
+      "heading2": {
+        "size": 28,
+        "line": 36,
+        "weight": 600
+      },
+      "heading3": {
+        "size": 22,
+        "line": 30,
+        "weight": 600
+      },
+      "heading4": {
+        "size": 18,
+        "line": 26,
+        "weight": 600
+      }
+    },
+    "body": {
+      "large": {
+        "size": 18,
+        "line": 30
+      },
+      "base": {
+        "size": 16,
+        "line": 26
+      },
+      "small": {
+        "size": 14,
+        "line": 22
+      },
+      "label": {
+        "size": 14,
+        "line": 20,
+        "weight": 500
+      },
+      "caption": {
+        "size": 12,
+        "line": 18
+      },
+      "overline": {
+        "size": 12,
+        "line": 16,
+        "weight": 600,
+        "tracking": "0.08em",
+        "latinOnly": true
+      }
+    },
+    "social": {
+      "_note": "Authored in Arabic. Latin steps DOWN: size ÷ 1.08, line-height − 0.15. cover = KO Ghorab (was Cairo) · title/sub/body/support/label = Readex Pro · spec = JetBrains Mono tabular · index = Montserrat",
+      "cover": {
+        "size": 112,
+        "line": 123,
+        "weight": 900
+      },
+      "title": {
+        "size": 76,
+        "line": 94,
+        "weight": 700
+      },
+      "sub": {
+        "size": 54,
+        "line": 71,
+        "weight": 600
+      },
+      "body": {
+        "size": 36,
+        "line": 58,
+        "weight": 400
+      },
+      "support": {
+        "size": 30,
+        "line": 48,
+        "weight": 400
+      },
+      "label": {
+        "size": 26,
+        "line": 32,
+        "weight": 500
+      },
+      "spec": {
+        "size": 34,
+        "line": 40,
+        "weight": 500
+      },
+      "index": {
+        "size": 150,
+        "line": 135,
+        "weight": 800
+      },
+      "latin-stepdown": {
+        "size": 1.08,
+        "line": 0.15
+      }
+    },
+    "figma-text-styles": [
+      {
+        "name": "EN/Display/Hero · I ❤ Tech",
+        "family": "Montserrat",
+        "style": "ExtraBold",
+        "size": 72,
+        "line": 83,
+        "tracking": "-4%"
+      },
+      {
+        "name": "EN/Display/1",
+        "family": "Montserrat",
+        "style": "Bold",
+        "size": 56,
+        "line": 64
+      },
+      {
+        "name": "EN/Display/2",
+        "family": "Montserrat",
+        "style": "Bold",
+        "size": 44,
+        "line": 52
+      },
+      {
+        "name": "EN/Heading/1",
+        "family": "Montserrat",
+        "style": "Bold",
+        "size": 36,
+        "line": 44
+      },
+      {
+        "name": "EN/Heading/2",
+        "family": "Montserrat",
+        "style": "SemiBold",
+        "size": 28,
+        "line": 36
+      },
+      {
+        "name": "EN/Heading/3",
+        "family": "Montserrat",
+        "style": "SemiBold",
+        "size": 22,
+        "line": 30
+      },
+      {
+        "name": "EN/Heading/4",
+        "family": "Montserrat",
+        "style": "SemiBold",
+        "size": 18,
+        "line": 26
+      },
+      {
+        "name": "EN/Body/L",
+        "family": "Readex Pro",
+        "style": "Regular",
+        "size": 18,
+        "line": 30
+      },
+      {
+        "name": "EN/Body/M",
+        "family": "Readex Pro",
+        "style": "Regular",
+        "size": 16,
+        "line": 26
+      },
+      {
+        "name": "EN/Body/S",
+        "family": "Readex Pro",
+        "style": "Regular",
+        "size": 14,
+        "line": 22
+      },
+      {
+        "name": "EN/Label",
+        "family": "Readex Pro",
+        "style": "Medium",
+        "size": 14,
+        "line": 20
+      },
+      {
+        "name": "EN/Caption",
+        "family": "Readex Pro",
+        "style": "Regular",
+        "size": 12,
+        "line": 18
+      },
+      {
+        "name": "EN/Overline",
+        "family": "Readex Pro",
+        "style": "SemiBold",
+        "size": 12,
+        "line": 16,
+        "tracking": "+8%"
+      },
+      {
+        "name": "AR/Display/Hero [Ghorab]",
+        "family": "KO Ghorab",
+        "style": "Regular",
+        "size": 52,
+        "line": 73
+      },
+      {
+        "name": "AR/Display/Heading [Ghorab]",
+        "family": "KO Ghorab",
+        "style": "Regular",
+        "size": 32,
+        "line": 46
+      },
+      {
+        "name": "AR/Display/Quote [Ghorab]",
+        "family": "KO Ghorab",
+        "style": "Regular",
+        "size": 26,
+        "line": 39
+      },
+      {
+        "name": "AR/Body/L",
+        "family": "Readex Pro",
+        "style": "Regular",
+        "size": 18,
+        "line": 33
+      },
+      {
+        "name": "AR/Body/M",
+        "family": "Readex Pro",
+        "style": "Regular",
+        "size": 16,
+        "line": 30
+      },
+      {
+        "name": "AR/UI",
+        "family": "Readex Pro",
+        "style": "Medium",
+        "size": 14,
+        "line": 24
+      },
+      {
+        "name": "Social/Cover [Ghorab]",
+        "family": "KO Ghorab",
+        "style": "Regular",
+        "size": 112,
+        "line": 123
+      },
+      {
+        "name": "Social/Title",
+        "family": "Readex Pro",
+        "style": "Bold",
+        "size": 76,
+        "line": 94
+      },
+      {
+        "name": "Social/Sub",
+        "family": "Readex Pro",
+        "style": "SemiBold",
+        "size": 54,
+        "line": 71
+      },
+      {
+        "name": "Social/Body",
+        "family": "Readex Pro",
+        "style": "Regular",
+        "size": 36,
+        "line": 58
+      },
+      {
+        "name": "Social/Support",
+        "family": "Readex Pro",
+        "style": "Regular",
+        "size": 30,
+        "line": 48
+      },
+      {
+        "name": "Social/Label",
+        "family": "Readex Pro",
+        "style": "Medium",
+        "size": 26,
+        "line": 32
+      },
+      {
+        "name": "Social/Spec",
+        "family": "JetBrains Mono",
+        "style": "Medium",
+        "size": 34,
+        "line": 40
+      },
+      {
+        "name": "Social/Index",
+        "family": "Montserrat",
+        "style": "ExtraBold",
+        "size": 150,
+        "line": 135
+      },
+      {
+        "name": "Tech/Code",
+        "family": "JetBrains Mono",
+        "style": "Regular",
+        "size": 14,
+        "line": 22
+      }
+    ]
+  },
+  "space": {
+    "0": 0,
+    "1": 4,
+    "2": 8,
+    "3": 12,
+    "4": 16,
+    "5": 20,
+    "6": 24,
+    "8": 32,
+    "10": 40,
+    "12": 48,
+    "16": 64,
+    "20": 80,
+    "24": 96,
+    "32": 128
+  },
+  "radius": {
+    "inline": 6,
+    "control": 10,
+    "card": 14,
+    "panel": 18,
+    "media": 20,
+    "hero": 24,
+    "signature": 32,
+    "pill": 999
+  },
+  "stroke": {
+    "hairline": 1,
+    "default": 1,
+    "strong": 1.5,
+    "brand": 2
+  },
+  "sizing": {
+    "control": {
+      "sm": 32,
+      "md": 40,
+      "lg": 48
+    },
+    "icon": {
+      "sm": 16,
+      "md": 20,
+      "lg": 24,
+      "xl": 32
+    },
+    "touch-target": 44
+  },
+  "elevation": {
+    "1": "0 1px 2px rgba(23, 26, 31, 0.06)",
+    "2": "0 4px 12px rgba(23, 26, 31, 0.08)",
+    "3": "0 12px 32px rgba(23, 26, 31, 0.10)",
+    "4": "0 24px 56px rgba(23, 26, 31, 0.14)",
+    "_note": "neutral-cool Graphite shadows; the violet ladder is archived"
+  },
+  "motion": {
+    "duration": {
+      "instant": 0,
+      "micro": 80,
+      "fast": 120,
+      "base": 200,
+      "moderate": 300,
+      "slow": 450,
+      "deliberate": 600,
+      "ceiling": 800
+    },
+    "sequence": {
+      "product-max": 600,
+      "marketing-max": 1200
+    },
+    "ease": {
+      "enter": "cubic-bezier(0.16, 0.84, 0.44, 1)",
+      "exit": "cubic-bezier(0.4, 0, 1, 1)",
+      "move": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "loop": "linear"
+    },
+    "distance": {
+      "1": 4,
+      "2": 8,
+      "3": 16,
+      "4": 24,
+      "marketing": 80
+    },
+    "scale": {
+      "enter": 0.96,
+      "rest": 1,
+      "overshoot": 1.03
+    },
+    "stagger": {
+      "product": 40,
+      "marketing": 70
+    },
+    "reduced-motion": "full replacement, never a degradation",
+    "v3-cinematic": {
+      "range": "500–900 ms",
+      "bar": "Tech-savvy · Cinematic · Tactile · Premium · Fast",
+      "rules": [
+        "one memorable interaction per section",
+        "no confetti",
+        "no looping idle motion",
+        "no gimmicky transitions"
+      ]
+    }
+  },
+  "canvases": {
+    "_note": "reserve-top / reserve-bottom are layout reserves: no headline, body or signature inside them. They are larger than, and contain, the platform UI-overlay areas the video skill's safe-check detects.",
+    "reel-9x16": {
+      "key": "reel-9x16",
+      "label": "Reel / Story 9:16",
+      "use": "Motion Carousel slides, Reels, ASMR, Talking Head, all vertical video",
+      "width": 1080,
+      "height": 1920,
+      "margin": 72,
+      "reserve-top": 260,
+      "reserve-bottom": 420,
+      "columns": 4,
+      "gutter": 32
+    },
+    "feed-4x5": {
+      "key": "feed-4x5",
+      "label": "Feed 4:5",
+      "use": "Static Ultra Carousel canonical canvas",
+      "width": 1080,
+      "height": 1350,
+      "margin": 72,
+      "reserve-top": 96,
+      "reserve-bottom": 168,
+      "columns": 6,
+      "gutter": 24
+    },
+    "square-1x1": {
+      "key": "square-1x1",
+      "label": "Square 1:1",
+      "use": "square posts",
+      "width": 1080,
+      "height": 1080,
+      "margin": 72,
+      "reserve-top": 96,
+      "reserve-bottom": 168,
+      "columns": 6,
+      "gutter": 24
+    },
+    "thumb-16x9": {
+      "key": "thumb-16x9",
+      "label": "Thumbnail 16:9",
+      "use": "YouTube / long-form covers",
+      "width": 1280,
+      "height": 720,
+      "margin": 64,
+      "reserve-top": 0,
+      "reserve-bottom": 0,
+      "columns": 8,
+      "gutter": 24
+    }
+  },
+  "slots": {
+    "_note": "ENFORCED, counted in Arabic words. On breach the remedy is fewer words, never smaller type.",
+    "cover-headline": 5,
+    "slide-title": 6,
+    "body": 18,
+    "support": 8,
+    "spec-tokens": 3,
+    "chip-words": 3,
+    "chip-count": 3
+  },
+  "logo": {
+    "master": "brand/logo/adel-mark.svg",
+    "path": "M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.89 121.04 L 101.29 120.89 L 69.49 179.21 L 108.07 179.31 L 121.08 155.45 L 220.64 155.69 Z",
+    "viewBox": "0 0 220.64 180.0",
+    "ratio": 1.2258,
+    "clearspace-ratio": 0.23,
+    "min-size": 24,
+    "min-print": "9mm",
+    "min-embroidery": "26mm",
+    "geometry": "viewBox 220.64 × 180, ratio 1.2258 LOCKED, legs 1.19° apart, counter open at the bottom. Never redraw, never scale non-uniformly.",
+    "roles": {
+      "primary": {
+        "name": "Graphite",
+        "ref": "brand.graphite",
+        "value": "#171A1F",
+        "use": "the everyday mark"
+      },
+      "alternate": {
+        "name": "Signature Blue",
+        "ref": "brand.signature-blue",
+        "value": "#2563EB",
+        "use": "approved brand alternate"
+      },
+      "reversed": {
+        "name": "White",
+        "ref": "brand.white",
+        "value": "#FFFFFF",
+        "use": "dark or photographic grounds; never tinted grey"
+      }
+    },
+    "forbidden": [
+      "Fresh Mint",
+      "any gradient",
+      "Purple 600 (Edition 1)",
+      "any tint or opacity",
+      "stretching, redrawing, outlining"
+    ],
+    "files": {
+      "graphite": "brand/logo/adel-mark-graphite.svg",
+      "signature-blue": "brand/logo/adel-mark-signature-blue.svg",
+      "white": "brand/logo/adel-mark-white.svg"
+    },
+    "lockups": {
+      "adeltechtalks": {
+        "status": "primary",
+        "word": "AdelTechTalks",
+        "font": "Montserrat 800",
+        "word-size": "0.58 × mark height",
+        "gap": 12,
+        "tracking": "-0.02em",
+        "direction": "ltr, never mirrored, Latin on the Arabic site too",
+        "source": "site/src/components/Logo.astro"
+      },
+      "adel": {
+        "status": "secondary — kept, not retired",
+        "word": "Adel",
+        "font": "Montserrat 800",
+        "word-size": "0.72 × mark height",
+        "gap": 10,
+        "tracking": "-0.03em",
+        "source": "site/src/components/AdelLogo.astro"
+      },
+      "love-tech": {
+        "status": "master brand expression",
+        "words": "I ❤ Tech",
+        "font": "Montserrat 800",
+        "tracking": "-0.04em",
+        "gap": "0.21em",
+        "heart": "0.76em, brand/heart/love-tech-heart.svg, fill heart/fill (Signature Blue light · blue/300 dark)",
+        "source": "site/src/components/LoveTech.astro"
+      }
+    },
+    "app-icon": {
+      "tile": "Signature Blue (recommended) or Graphite — ruling open",
+      "mark": "White",
+      "radius": "27/120 of tile",
+      "gradient": "retired (atc-appicon-gradient.svg → archive)"
+    }
+  },
+  "heart": {
+    "master": "brand/heart/love-tech-heart.svg",
+    "path": "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z",
+    "viewBox": "0 0 24 24",
+    "fill": {
+      "light": "heart/fill → brand.signature-blue",
+      "dark": "heart/fill → blue.300"
+    },
+    "note": "scripts/build-og-adel.mjs still carries a second heart path; consolidate to this master (§5.5 of the audit)."
+  },
+  "signature": {
+    "status": "RESERVED — empty",
+    "asset": null,
+    "site-slot": "site.config.ts photography.signature",
+    "skill-slot": ".claude/skills/video-ad-editor/assets/signature.png",
+    "rule": "No handwritten signature is created, simulated or set in a handwriting font. The slot stays empty until Adel supplies a real scanned signature (SVG or transparent PNG)."
+  },
+  "rules": {
+    "colour": [
+      "Never invent a brand colour when an approved token exists.",
+      "Fresh Mint ≤ ~3% of any surface; never a background, never the logo.",
+      "No gradients anywhere in the active system.",
+      "Status colours are functional, never brand."
+    ],
+    "logo": [
+      "One geometry, three colour roles (Graphite / Signature Blue / White). Never stretch, redraw, recolour or add a gradient tile.",
+      "AdelTechTalks lockup is primary; Adel lockup is secondary.",
+      "Bare mark never below 24 px; below that use an app-icon tile."
+    ],
+    "typography": [
+      "Montserrat when Latin stands alone; Readex Pro the moment Latin sits inside an Arabic sentence.",
+      "KO Ghorab: Arabic display only, ≥ 24 px, never letter-spaced, hierarchy by size.",
+      "Western digits 0–9 in both languages.",
+      "Arabic layouts RTL-first with isolated LTR islands for Latin terms."
+    ],
+    "video": [
+      "Product footage occupies the dominant area; text second; signature micro.",
+      "ASMR: recorded tactile audio (box opening, peeling, clicks, scratches, packaging, handling) stays ON — no music, captions, denoise, gating or compression by default.",
+      "Motion Carousel: 5–6 independent ~5 s slides at 1080×1920, each exportable as its own MP4; a stitched preview is optional; never a static carousel with generic zoom.",
+      "Brand opener / end card are micro moments, not intros.",
+      "Motion is precise and premium, not template-heavy: cut / match-cut by default for ASMR."
+    ],
+    "families": [
+      "ASMR / Product Unboxing",
+      "Talking Head / Reel",
+      "Motion Carousel",
+      "Product Comparison",
+      "Product Demo / Feature Spotlight",
+      "Mixed Talking Head + Product B-roll",
+      "Long-form / Explainer (routing profile of the Talking Head pipeline — supported, no separate JSON yet)"
+    ]
+  }
+}
