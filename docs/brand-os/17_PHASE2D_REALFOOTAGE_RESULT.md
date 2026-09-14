@@ -191,3 +191,27 @@ gesture — §6 is the reason, and a human ear is still the test.
 **One unaudited item:** the 64 kbps WhatsApp audio is not representative of what a
 camera original would give. Re-running calibration on an original-quality file may
 move `real-v1` again, and that profile should be treated as provisional until it does.
+
+## ⚠️ Post-delivery defect — unplayable master (FIXED)
+
+The first renders, synthetic and real alike, were encoded **H.264 High 4:4:4
+Predictive / yuv444p**. That will not play in browsers, QuickTime, iOS or Android.
+The synthetic render carried the same defect and was reported as a successful
+render because it was never played.
+
+**Cause.** The watermark pass composites an RGBA mark with `overlay=...:format=auto`,
+which promotes the chain to `yuv444p`, and that final encode set no `-pix_fmt`, so
+x264 selected a 4:4:4 profile. The segment encodes were already correct; only the
+watermark pass was not.
+
+**Fix.** `format=yuv420p` pinned at the end of the watermark filtergraph, plus
+`-pix_fmt yuv420p -profile:v high -level 4.0` on both encodes.
+
+**Delivery gate.** `22_asmr_render.py` now probes its own output and exits 7 if the
+pixel format is not `yuv420p`, printing what it found. Verified in both directions:
+it accepts the corrected master and rejects a deliberately built yuv444p file. A
+master that will not play on a phone is not a master, and that is now checked in
+code rather than assumed.
+
+Corrected output: **H.264 High / yuv420p / level 4.0, 1080×1920, AAC-LC 48 kHz**,
+`moov` before `mdat` for progressive streaming.

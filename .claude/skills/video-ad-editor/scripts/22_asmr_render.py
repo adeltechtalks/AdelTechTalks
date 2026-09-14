@@ -134,7 +134,8 @@ def main() -> int:
         cmd = ["ffmpeg", "-v", "error", "-ss", f"{float(s['start']):.4f}",
                "-t", f"{dur:.4f}", "-i", str(src),
                "-vf", f"{vf},fps={fps},setsar=1,format=yuv420p",
-               "-c:v", "libx264", "-preset", "medium", "-crf", "18"]
+               "-c:v", "libx264", "-preset", "medium", "-crf", "18",
+               "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.0"]
         has_audio = subprocess.run(
             ["ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries",
              "stream=index", "-of", "csv=p=0", str(src)],
@@ -174,17 +175,41 @@ def main() -> int:
             f"[0:v]crop={plate_w}:{plate_h}:{x}:{y},boxblur={max(2,wm['blur']//2)}:1,"
             f"drawbox=0:0:{plate_w}:{plate_h}:color=white@0.22:t=fill[plate];"
             f"[0:v][plate]overlay={x}:{y}[base];"
-            f"[base][1:v]overlay={x+pad}:{y+pad}:format=auto[v]"
+            # format=auto promotes to yuv444p when blending an RGBA mark, and
+            # x264 then writes High 4:4:4 Predictive — which browsers, QuickTime,
+            # iOS and Android all refuse to play. Pin the output chroma here.
+            f"[base][1:v]overlay={x+pad}:{y+pad}:format=auto,format=yuv420p[v]"
         )
         run(["ffmpeg", "-v", "error", "-i", str(body), "-i", str(png),
              "-filter_complex", fc, "-map", "[v]", "-map", "0:a?",
              "-c:v", "libx264", "-preset", "medium", "-crf", "18",
+             "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.0",
              "-c:a", "copy", "-movflags", "+faststart", "-y", str(out)])
         print(f"  watermark  {wm['plate_width']}×{wm['plate_height']} plate at ({x},{y})"
               + ("  [24 px mark floor applied]" if wm["floor_applied"] else ""))
     else:
         run(["ffmpeg", "-v", "error", "-i", str(body), "-c", "copy",
              "-movflags", "+faststart", "-y", str(out)])
+
+    # DELIVERY GATE. A master that will not play on a phone is not a master.
+    # This shipped once as High 4:4:4 Predictive / yuv444p and was reported as a
+    # successful render because nobody tried to play it. Checked in code now.
+    # Parse by NAME. ffprobe emits fields in the stream's own order, not the
+    # order requested, so positional CSV silently swaps pix_fmt and profile.
+    chk = subprocess.run(
+        ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
+         "stream=pix_fmt,profile", "-of", "default=nw=1", str(out)],
+        capture_output=True, text=True).stdout
+    fields = dict(
+        line.split("=", 1) for line in chk.strip().splitlines() if "=" in line)
+    pix = fields.get("pix_fmt", "").strip()
+    vprof = fields.get("profile", "").strip()
+    if pix != "yuv420p":
+        print(f"❌ DELIVERY GATE: output is {pix or 'unknown'} (profile {vprof or 'unknown'}), "
+              f"not yuv420p.\n   That file will not play in browsers, QuickTime, iOS or "
+              f"Android. Refusing to report it as a finished master.")
+        sys.exit(7)
+    print(f"  delivery   {pix} / {vprof} — plays on phone and browser")
 
     probe = subprocess.run(
         ["ffprobe", "-v", "error", "-show_entries",

@@ -150,3 +150,27 @@ python3 .claude/skills/video-ad-editor/scripts/22_asmr_render.py  ~/work/unboxin
 Reads `~/work/unboxing/raw/*.mp4`, writes `asmr-analysis.json`, `asmr-plan.json`, `asmr-decisions.md`, `asmr-final.mp4` and `asmr-render-audit.txt`. Review `asmr-decisions.md` before the render — it is the edit, in words.
 
 In future, through the skill: **"Edit this ASMR unboxing footage."**
+
+## ⚠️ Post-delivery defect — unplayable master (FIXED)
+
+The first renders, synthetic and real alike, were encoded **H.264 High 4:4:4
+Predictive / yuv444p**. That will not play in browsers, QuickTime, iOS or Android.
+The synthetic render carried the same defect and was reported as a successful
+render because it was never played.
+
+**Cause.** The watermark pass composites an RGBA mark with `overlay=...:format=auto`,
+which promotes the chain to `yuv444p`, and that final encode set no `-pix_fmt`, so
+x264 selected a 4:4:4 profile. The segment encodes were already correct; only the
+watermark pass was not.
+
+**Fix.** `format=yuv420p` pinned at the end of the watermark filtergraph, plus
+`-pix_fmt yuv420p -profile:v high -level 4.0` on both encodes.
+
+**Delivery gate.** `22_asmr_render.py` now probes its own output and exits 7 if the
+pixel format is not `yuv420p`, printing what it found. Verified in both directions:
+it accepts the corrected master and rejects a deliberately built yuv444p file. A
+master that will not play on a phone is not a master, and that is now checked in
+code rather than assumed.
+
+Corrected output: **H.264 High / yuv420p / level 4.0, 1080×1920, AAC-LC 48 kHz**,
+`moov` before `mdat` for progressive streaming.
