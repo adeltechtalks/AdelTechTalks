@@ -1,0 +1,65 @@
+{
+  "$schema": "creative-design-engine/brand-profile/1",
+  "_note": "A FICTIONAL example brand. Replace every value. The engine reads this file and never assumes anything not declared here.",
+  "brand": { "name": "Northwind Studio", "tone": ["calm", "precise", "unfussy"], "contentIsTheHero": true },
+  "language": {
+    "primary": "en",
+    "secondary": null,
+    "rules": [
+      "Established product and platform names stay in their original language.",
+      "Declare a digit convention and never mix systems in one composition."
+    ],
+    "digits": "western",
+    "rtl": false
+  },
+  "colour": {
+    "primary": "#1F5F4B",
+    "neutralInk": "#14181A",
+    "surfaces": { "canvas": "#FBFBF9", "raised": "#FFFFFF", "sunken": "#EFEFEA" },
+    "accent": "#C9A227",
+    "annotation": "#D4552F",
+    "_annotationRule": "Must differ from primary and from any action colour, so an annotation can never be mistaken for interface.",
+    "expressive": ["#6E5BD6", "#D4552F"],
+    "gradients": "retired",
+    "accentCeiling": "3% of any surface"
+  },
+  "typography": {
+    "display": { "family": "ExampleSans", "weights": [700, 900] },
+    "text": { "family": "ExampleText", "weights": [400, 600] },
+    "mono": { "family": "ExampleMono", "weights": [500] },
+    "sketch": { "family": "ExampleScript", "weights": [700], "scripts": ["latin"],
+      "_note": "Declare which scripts the sketch face actually supports. A handwritten note in an unsupported script silently falls back and stops being handwriting." },
+    "impactHook": { "size": 140, "lineHeight": 128, "tracking": "-3%", "case": "upper",
+      "_constraint": "Style-specific, not universal: at this size a hook column narrower than about 740 px cannot hold words longer than about five characters without breaking mid-word. Re-measure when any of size, weight, tracking or column changes." }
+  },
+  "spacing": { "scale": [4, 8, 12, 16, 20, 24, 32, 48, 64], "radius": { "default": 12, "media": 16, "pill": 999 } },
+  "watermark": {
+    "element": "mark",
+    "variants": ["light-media", "dark-media"],
+    "_variantRule": "The variant follows the luminance of the MEDIA under the corner, which a light/dark theme mode cannot know.",
+    "scaleRatio": 0.0296, "referenceShortEdge": 1080, "minMarkSize": 24,
+    "defaultCorner": "top-left", "inset": "margin, or the top reserve where one exists"
+  },
+  "platforms": [
+    { "id": "youtube-16x9", "canvas": [1280, 720], "margin": 64, "reserves": { "bottom": 72 },
+      "centreSafe": 720, "provenance": "audited | derived — state which" },
+    { "id": "vertical-9x16", "canvas": [1080, 1920], "margin": 72, "reserves": { "top": 260, "bottom": 420 },
+      "centreSafe": 1080, "provenance": "audited | derived — state which" }
+  ],
+  "contentFamilies": [
+    { "id": "review", "defaultBeats": ["reveal", "proof", "comparison"] },
+    { "id": "explainer", "defaultBeats": ["explanation", "proof"] },
+    { "id": "announcement", "defaultBeats": ["reveal", "CTA"] }
+  ],
+  "composition": {
+    "subjectScale": "40-70% of canvas, bleeding off at least one edge",
+    "textPanels": "forbidden — contrast comes from a global grade over the image",
+    "annotationRule": "must identify something real, or is omitted",
+    "hookWords": { "min": 2, "max": 5 },
+    "effectCeiling": "one primary creative skill per scene, optionally one supporting"
+  },
+  "archetypes": {
+    "_note": "Optional. Named pre-composed layouts. The engine treats these as CANDIDATE INSTANCES of composition strategies, never as a lookup from content type to layout.",
+    "items": []
+  }
+}

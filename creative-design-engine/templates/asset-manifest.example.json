@@ -1,0 +1,20 @@
+{
+  "$schema": "creative-design-engine/asset-manifest/1",
+  "_rule": "This file is the ONLY source of truth about what imagery exists. No entry, no asset. The engine may not propose a direction requiring media not listed here.",
+  "assets": [
+    { "id": "portrait-01", "kind": "portrait", "path": "media/portrait-01.jpg", "quality": "production",
+      "notes": "close, eye contact, mixed practical lighting, calm region on the left",
+      "usableFor": ["face-dominant", "face+product", "sketch-overlay"] },
+    { "id": "product-01", "kind": "product", "path": "media/product-01.jpg", "quality": "production",
+      "notes": "three-quarter view, plain ground, separable from background",
+      "usableFor": ["product-dominant", "macro-focus"] },
+    { "id": "ui-01", "kind": "screenshot", "path": "media/ui-01.png", "quality": "usable",
+      "notes": "full window; the panel that matters is small and needs extracting",
+      "usableFor": ["floating-ui"] }
+  ],
+  "absent": [
+    { "kind": "cutout", "consequence": "collage and exploded-view are unavailable" },
+    { "kind": "products", "consequence": "comparison and before/after are unavailable" }
+  ],
+  "_absentNote": "Listing what is MISSING is as useful as listing what exists: it tells the engine which strategies to stop considering, and tells a human what to go and shoot."
+}
