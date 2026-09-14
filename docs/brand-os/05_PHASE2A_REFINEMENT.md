@@ -1,6 +1,6 @@
 # Phase 2A — Refinement pass
 
-**Status:** Phase 2A is directionally approved and **not final**. This pass resolves the eight decisions raised at review and confirms the two required patches. Nothing here begins Phase 2B, Canva or Adobe, and PR #24 is not merged.
+**Status: FINAL APPROVED.** Phase 2A is the locked AdelTechTalks Brand OS foundation. This pass resolved the eight decisions raised at review and confirmed the two required patches. Nothing here begins Phase 2B, Canva or Adobe, and PR #24 is not merged.
 **Date:** 2026-09-14.
 
 ---
@@ -100,13 +100,17 @@ The machine-readable export already carries `canvasProfiles`, `adaptiveLayouts`,
 
 ---
 
-## Remaining unresolved decisions
+## Validation / follow-up items — none blocking approval
 
-1. **KO Ghorab licence document** — supply it, or written confirmation from Kotype that team/cloud hosting is permitted. Until then the Figma placeholder stands.
-2. **The two landscape control bands (120 px)** in `foldLandscape` and `youtubeLandscape` — proposed player-control reserves with no audited precedent. Need a device and platform check.
-3. **Fold portrait reserves (136 / 240)** — derived from the Feed 4:5 reserves by aspect similarity. Confirm the basis, or supply measured values from a real device.
-4. **Body word ceiling rising to 24** on wide profiles — this edits an enforced slot rule and needs an explicit yes.
-5. **Focal splits** (62/38 portrait, 55/45 landscape, 58/42 YouTube) — compositional starting points, not measured.
+Phase 2A is approved with these open. The first three are the items named at final approval; each is closed by evidence rather than by a design decision.
+
+1. **KO Ghorab licence** — Readex Pro stays the labelled Figma placeholder until the original licence terms or written vendor permission confirm that team/cloud font upload is allowed. KO Ghorab remains the approved **production** Arabic display typeface throughout.
+2. **Fold / adaptive safe zones — DEVICE VALIDATION REQUIRED.** The architecture is approved. The fold-landscape and youtube-landscape control bands and the fold-portrait reserves keep their derived working values and are validated on real devices during production testing. No final measurement is invented.
+3. **Body word ceiling — DEFERRED.** The enforced slot rule is unchanged at 18 Arabic words on every profile. Raising it for wide canvases is revisited during Static Ultra Carousel and Motion Carousel production testing.
+
+### Still to settle (lower priority)
+
+4. **Focal splits** (62/38 portrait, 55/45 landscape, 58/42 YouTube) — compositional starting points, not measured.
 6. **Default large-screen YouTube profile** — `foldLandscape` or `youtubeLandscape` when both would serve.
 7. **Frame rate per profile** — all four are 30 fps; confirm, or allow 60 fps for landscape demo footage.
 8. **Adaptive Device Pack default subset** — when a job names no profiles, produce nothing by default, or standard + YouTube?

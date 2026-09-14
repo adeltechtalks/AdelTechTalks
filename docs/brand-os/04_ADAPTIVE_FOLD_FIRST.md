@@ -1,6 +1,6 @@
 # Adaptive / Fold-First Content System
 
-**Status:** APPROVED REQUIREMENT, added to Phase 2A on 2026-09-14. Architecture, tokens, profile definitions, component implications and documentation only.
+**Status: FINAL APPROVED** as part of the locked Phase 2A foundation (2026-09-14). The adaptive architecture, tokens, profile definitions and component implications are approved. The fold and landscape safe-zone measurements carry **DEVICE VALIDATION REQUIRED** and are confirmed on real devices during production testing — they are working values, never presented as final measurements, and they do not block approval.
 **Not in this phase:** no fold videos generated, nothing published, no campaign, no Canva, no Adobe, no rendering engine.
 **Machine-readable source:** `brand/tokens/adel-v2.1.json` → `canvasProfiles`, `adaptiveLayouts`, `devicePack`, `adaptiveMigration`, `foldFirstNaming`.
 
@@ -23,19 +23,19 @@ All four profiles are AdelTechTalks. One palette, one type system, one set of ma
 | Profile | Aspect | Size | Margin | Safe top / bottom | Side | Grid | Focal zones |
 |---|---|---|---|---|---|---|---|
 | `verticalStandard` | 9:16 | 1080 × 1920 | 72 | 260 / 420 | 72 | 4 cols · 32 | 1 |
-| `foldPortrait` ⚠ | 3:4 | 1440 × 1920 | 96 | 136 / 240 | 96 | 6 cols · 32 | 2 |
-| `foldLandscape` ⚠ | 4:3 | 1920 × 1440 | 96 | 0 / 120 | 96 | 8 cols · 32 | 2 |
-| `youtubeLandscape` ⚠ | 16:9 | 1920 × 1080 | 72 | 0 / 120 | 72 | 8 cols · 24 | 2 |
+| `foldPortrait` ◐ | 3:4 | 1440 × 1920 | 96 | 136 / 240 | 96 | 6 cols · 32 | 2 |
+| `foldLandscape` ◐ | 4:3 | 1920 × 1440 | 96 | 0 / 120 | 96 | 8 cols · 32 | 2 |
+| `youtubeLandscape` ◐ | 16:9 | 1920 × 1080 | 72 | 0 / 120 | 72 | 8 cols · 24 | 2 |
 
 **Use:** vertical standard for Reels, TikTok, Shorts, Stories and all standard vertical social video · fold portrait as the large-screen / unfolded portrait composition · fold landscape as the unfolded large-screen landscape composition and, where appropriate, a special YouTube large-screen edition · YouTube landscape for standard YouTube output and long-form. **Fold-first does not replace standard YouTube**; 16:9 stays first-class.
 
-### Provenance — what is audited and what is proposed
+### Provenance — what is audited and what needs device validation
 
-`verticalStandard` carries the audited repository values from `site/src/styles/tokens/brand.css` (`--atc-social-reel-*`). Everything marked ⚠ is **derived by a stated rule and is a proposal for approval**, not an invented number:
+`verticalStandard` carries the audited repository values from `site/src/styles/tokens/brand.css` (`--atc-social-reel-*`). Everything marked ◐ is **derived by a stated rule and carries DEVICE VALIDATION REQUIRED** — a working value confirmed on real devices during production testing, never an invented final measurement:
 
 - **Margin** = 6.67% of the canvas short edge, the audited reel ratio (72 / 1080), rounded to the 8 px grid. Gives 96 for both 1440-short-edge profiles and 72 for 16:9.
 - **Fold portrait reserves** = the audited **Feed 4:5** reserves (96 / 168), the nearest audited canvas by aspect, scaled by the height ratio 1920 / 1350 = 1.4222 → 136 / 240.
-- **Landscape bottom bands** (120) are proposed player-control bands. **No audited landscape video precedent exists** — the audited 16:9 token is a static cover with 0 / 0 reserves and stays unchanged. These two values are flagged `open` in the export and need a device and platform check before first production use.
+- **Landscape bottom bands** (120) are working player-control bands. **No audited landscape video precedent exists** — the audited 16:9 token is a static cover with 0 / 0 reserves and stays unchanged. These two values are flagged `deviceValidationRequired` in the export and are confirmed on a real unfolded device and against the live player during production testing.
 
 The audited static canvases (Feed 4:5, Square 1:1, Thumbnail 16:9) are untouched by this system. They remain in the `Canvas & Safe Zones` collection; the video profiles are a separate `Canvas / Video Device Profiles` collection so a consumer cannot confuse a static cover canvas with a video device profile.
 
@@ -44,7 +44,7 @@ The audited static canvases (Feed 4:5, Square 1:1, Thumbnail 16:9) are untouched
 Beyond dimensions, every profile defines: safe zones · content margins · grid · **caption region** (anchor, alignment, max width) · **preferred brand positions** with alternates and scale · **text limits** (headline / title / body / support word ceilings plus the Arabic and Latin measure) · **focal rules** (how many genuine content zones, the split, and what must never be blind-cropped).
 
 Two text-limit notes:
-- Headline and title ceilings **do not rise** on a bigger canvas. A fold canvas is not a licence for a longer headline. The body ceiling rises from 18 to 24 Arabic words because the measure is genuinely wider, and that rise is itself flagged `proposed`.
+- Headline and title ceilings **do not rise** on a bigger canvas. A fold canvas is not a licence for a longer headline. **The enforced body ceiling stays at 18 Arabic words on every profile**: raising it to 24 for the wider measure was proposed and is deferred, to be revisited during Static Ultra Carousel and Motion Carousel production testing.
 - Captions keep the reel line length on fold profiles rather than stretching to the full width. A longer caption line is harder to read, not better.
 
 ## 3 · Adaptive layout rules per format
@@ -110,11 +110,11 @@ The rendering engine is **not** built in Phase 2A. What Phase 2A does is guarant
 
 "Fold First", "Fold Ready", "Made for your unfolded screen" are **reserved concepts only**. None is an official badge or a permanent brand element. Nothing ships with this language until a separate decision approves one.
 
-## 8 · Open questions for approval
+## 8 · Validation items — none blocking
 
-1. **The two landscape bottom bands (120 px).** Proposed as player-control reserves with no audited precedent. Need a device and platform check.
-2. **Fold portrait reserves (136 / 240).** Derived from the Feed 4:5 reserves by aspect similarity. Confirm the derivation is the right basis, or supply measured values from a real device.
-3. **The body word ceiling rising to 24 on wide profiles.** This edits an enforced slot rule; it needs an explicit yes.
+1. **The two landscape control bands (120 px)** — DEVICE VALIDATION REQUIRED. Working player-control reserves; confirm on a real unfolded device and against the live player.
+2. **Fold portrait reserves (136 / 240)** — DEVICE VALIDATION REQUIRED. Derived from the Feed 4:5 reserves by aspect similarity; confirm or replace with measured values from a real device.
+3. **The body word ceiling** — DEFERRED, not open. The enforced rule stays at 18 on every profile; the rise to 24 is revisited during carousel production testing.
 4. **Focal splits** (62/38 portrait, 55/45 landscape, 58/42 YouTube) are compositional starting points, not measured. Confirm or adjust.
 5. **Whether `foldLandscape` or `youtubeLandscape` is the default for a large-screen YouTube edition** when both would work.
 6. **Frame rate per profile** — all four are 30 fps today. Confirm, or allow 60 fps for landscape demo footage.

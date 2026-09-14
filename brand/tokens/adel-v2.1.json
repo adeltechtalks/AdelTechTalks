@@ -3,6 +3,13 @@
     "brand": "AdelTechTalks",
     "system": "v2.1 Blue",
     "schema": "adeltechtalks-brand-tokens/1",
+    "status": "FINAL APPROVED — Phase 2A is the locked AdelTechTalks Brand OS foundation (2026-09-14).",
+    "validation-items": {
+      "_note": "Documented follow-ups, NOT blockers. Phase 2A is approved with these open; each is resolved by evidence from the real world, not by a design decision.",
+      "ko-ghorab-licence": "Readex Pro stays the labelled Figma placeholder until the original licence terms or written vendor permission confirm that team/cloud font upload is allowed. KO Ghorab remains the approved PRODUCTION Arabic display typeface throughout.",
+      "fold-safe-zones": "DEVICE VALIDATION REQUIRED. The fold-landscape and youtube-landscape control bands and the fold-portrait reserves keep their derived values and are validated on real devices during production testing. They are not final measurements and were not invented as such.",
+      "body-word-ceiling": "The enforced slot rule is UNCHANGED at 18 Arabic words on every profile. Raising it for wide canvases is deferred and revisited during Static Ultra Carousel and Motion Carousel production testing."
+    },
     "authority": "Figma file OD9bQi6eWexQi53tLKoctW defines the approved visual system. This file is the one machine-readable export automation consumes. It is GENERATED from site/src/styles/tokens by brand/scripts/build-tokens.mjs — never hand-edited.",
     "regenerate": "node brand/scripts/build-tokens.mjs",
     "sources": [
@@ -1106,7 +1113,8 @@
     "chip-count": 3
   },
   "canvasProfiles": {
-    "_note": "Canonical VIDEO device profiles for the Adaptive / Fold-First Content System. All four are AdelTechTalks — one identity, four compositions. Dimensions are configuration, never assumptions baked into an editor.",
+    "_note": "Canonical VIDEO device profiles for the Adaptive / Fold-First Content System. APPROVED ARCHITECTURE (Phase 2A final). All four are AdelTechTalks — one identity, four compositions. Dimensions are configuration, never assumptions baked into an editor.",
+    "_validation": "DEVICE VALIDATION REQUIRED on the fold and landscape safe zones: the derived values below stand as working values and are confirmed on real devices during production testing. The architecture is approved; those measurements are not yet final.",
     "_contract": [
       "RECOMPOSITION, not resize or crop. A profile re-lays-out the same source edit: subject framing, product placement, text position and line length, captions, brand position, safe zones and motion are all profile-aware.",
       "Never produce a fold profile by centre-cropping or letterboxing the 9:16 master.",
@@ -1178,8 +1186,8 @@
       "width": 1440,
       "height": 1920,
       "fps": 30,
-      "proposed": true,
-      "provenance": "PROPOSED — margin derived from the audited reel ratio; reserves derived from the audited Feed 4:5 reserves × 1.4222",
+      "deviceValidationRequired": true,
+      "provenance": "DEVICE VALIDATION REQUIRED — margin derived from the audited reel ratio; reserves derived from the audited Feed 4:5 reserves × 1.4222",
       "use": [
         "unfolded / large-screen portrait composition",
         "dual-screen portrait",
@@ -1191,19 +1199,19 @@
         "bottom": 240,
         "left": 96,
         "right": 96,
-        "proposed": true
+        "deviceValidationRequired": true
       },
       "grid": {
         "columns": 6,
         "gutter": 32,
-        "proposed": true,
+        "deviceValidationRequired": true,
         "_note": "Two more columns than the 9:16 reel: the extra width is for a second content column, not a wider single column."
       },
       "captionRegion": {
         "anchor": "bottom",
         "align": "center",
         "maxWidth": "66% of canvas width",
-        "proposed": true,
+        "deviceValidationRequired": true,
         "_note": "Captions keep the reel line length rather than stretching to the full fold width — a longer caption line is harder to read, not better."
       },
       "brandPositions": {
@@ -1212,15 +1220,14 @@
           "bottom-center"
         ],
         "scale": "micro",
-        "proposed": true
+        "deviceValidationRequired": true
       },
       "textLimits": {
         "headlineWords": 5,
         "titleWords": 6,
-        "bodyWords": 24,
+        "bodyWords": 18,
         "supportWords": 8,
-        "proposed": true,
-        "_note": "Body ceiling rises from 18 to 24 Arabic words because the measure is wider. Headline and title ceilings do NOT rise — a bigger canvas is not a licence for a longer headline. \"Fewer words, never smaller type\" still governs a breach."
+        "revisit": "The enforced ceiling stays 18 Arabic words on every profile. Raising it to 24 for the wider measure was proposed and is DEFERRED — revisited during Static Ultra Carousel and Motion Carousel production testing. Headline and title ceilings do not rise at all: a bigger canvas is not a licence for a longer headline, and \"fewer words, never smaller type\" still governs a breach."
       },
       "focal": {
         "zones": 2,
@@ -1235,8 +1242,8 @@
       "width": 1920,
       "height": 1440,
       "fps": 30,
-      "proposed": true,
-      "provenance": "PROPOSED — margin derived from the audited reel ratio; no audited landscape VIDEO reserve exists, so the bottom band is a proposal (open)",
+      "deviceValidationRequired": true,
+      "provenance": "DEVICE VALIDATION REQUIRED — margin derived from the audited reel ratio; no audited landscape VIDEO reserve exists, so the bottom band is a working value to confirm on device",
       "use": [
         "unfolded / large-screen landscape composition",
         "special YouTube large-screen edition where appropriate"
@@ -1247,20 +1254,19 @@
         "bottom": 120,
         "left": 96,
         "right": 96,
-        "proposed": true,
-        "open": true,
-        "_note": "Bottom band reserved for player controls. Needs a device check before first production use."
+        "deviceValidationRequired": true,
+        "_note": "Bottom band reserved for player controls. Working value — confirm on a real unfolded device during production testing."
       },
       "grid": {
         "columns": 8,
         "gutter": 32,
-        "proposed": true
+        "deviceValidationRequired": true
       },
       "captionRegion": {
         "anchor": "bottom",
         "align": "center",
         "maxWidth": "50% of canvas width",
-        "proposed": true,
+        "deviceValidationRequired": true,
         "_note": "Landscape captions sit as a lower-third band, not a full-width strip."
       },
       "brandPositions": {
@@ -1269,14 +1275,14 @@
           "top-trailing corner"
         ],
         "scale": "micro",
-        "proposed": true
+        "deviceValidationRequired": true
       },
       "textLimits": {
         "headlineWords": 5,
         "titleWords": 6,
-        "bodyWords": 24,
+        "bodyWords": 18,
         "supportWords": 8,
-        "proposed": true
+        "revisit": "Enforced ceiling unchanged at 18 Arabic words; the rise to 24 for the wider measure is DEFERRED and revisited during Static Ultra Carousel and Motion Carousel production testing."
       },
       "focal": {
         "zones": 2,
@@ -1291,8 +1297,8 @@
       "width": 1920,
       "height": 1080,
       "fps": 30,
-      "proposed": true,
-      "provenance": "PROPOSED — margin derived from the audited reel ratio; the audited 16:9 token (1280×720, margin 64, reserves 0/0) is a STATIC cover canvas and stays unchanged",
+      "deviceValidationRequired": true,
+      "provenance": "DEVICE VALIDATION REQUIRED — margin derived from the audited reel ratio; the audited 16:9 token (1280×720, margin 64, reserves 0/0) is a STATIC cover canvas and stays unchanged",
       "use": [
         "standard YouTube output",
         "long-form / explainer",
@@ -1305,20 +1311,19 @@
         "bottom": 120,
         "left": 72,
         "right": 72,
-        "proposed": true,
-        "open": true,
-        "_note": "Bottom band for the player control bar and progress. Needs a platform check before first production use."
+        "deviceValidationRequired": true,
+        "_note": "Bottom band for the player control bar and progress. Working value — confirm against the live player during production testing."
       },
       "grid": {
         "columns": 8,
         "gutter": 24,
-        "proposed": true
+        "deviceValidationRequired": true
       },
       "captionRegion": {
         "anchor": "bottom",
         "align": "center",
         "maxWidth": "60% of canvas width",
-        "proposed": true,
+        "deviceValidationRequired": true,
         "_note": "Burned-in captions sit above the controls band; a platform subtitle track is preferred where available."
       },
       "brandPositions": {
@@ -1327,15 +1332,15 @@
           "bottom-trailing corner above the controls band"
         ],
         "scale": "micro",
-        "proposed": true,
+        "deviceValidationRequired": true,
         "_note": "Trailing-corner placement keeps the mark clear of the end-screen cards that occupy the closing seconds."
       },
       "textLimits": {
         "headlineWords": 5,
         "titleWords": 6,
-        "bodyWords": 24,
+        "bodyWords": 18,
         "supportWords": 8,
-        "proposed": true
+        "revisit": "Enforced ceiling unchanged at 18 Arabic words; the rise to 24 for the wider measure is DEFERRED and revisited during Static Ultra Carousel and Motion Carousel production testing."
       },
       "focal": {
         "zones": 2,

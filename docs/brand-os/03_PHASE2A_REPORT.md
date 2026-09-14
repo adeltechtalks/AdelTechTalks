@@ -1,8 +1,14 @@
 # Phase 2A — Execution report (modules 00–03)
 
-> **Refinement applied 2026-09-14.** Phase 2A is directionally approved and **not final**. The eight review decisions are resolved in `05_PHASE2A_REFINEMENT.md`; this report reflects the refined state. Headline changes: dark semantic values resolved and contrast-checked (zero open flags), KO Ghorab verified and deliberately **not** uploaded, Signature Blue set as the default app-icon ground, the four legacy pages relabelled `Legacy / Reference` and ordered after 99, `AR/UI` removed from the core, the signature end card defined as an optional variant, and the Motion Carousel canonical canvas corrected to 1080×1920.
+> # ✅ STATUS: FINAL APPROVED
+>
+> **Phase 2A is the locked AdelTechTalks Brand OS foundation, approved 2026-09-14 at commit `db33ad1` plus the status lock.**
+>
+> Three items remain as documented validation / follow-up work. **None is a blocker to this approval**: the KO Ghorab licence confirmation, device validation of the fold and landscape safe zones, and the deferred body-word-ceiling review. They are resolved by evidence from the real world, not by a design decision.
+>
+> **Refinement applied 2026-09-14.** The eight review decisions are resolved in `05_PHASE2A_REFINEMENT.md`; this report reflects the refined state. Headline changes: dark semantic values resolved and contrast-checked (zero open flags), KO Ghorab verified and deliberately **not** uploaded, Signature Blue set as the default app-icon ground, the four legacy pages relabelled `Legacy / Reference` and ordered after 99, `AR/UI` removed from the core, the signature end card defined as an optional variant, and the Motion Carousel canonical canvas corrected to 1080×1920.
 
-**Date:** 2026-09-14 · **Figma file:** `OD9bQi6eWexQi53tLKoctW` · **Branch:** `claude/adeltechtalks-brand-os-phase2-9rz7ct`
+**Status:** FINAL APPROVED · **Date:** 2026-09-14 · **Figma file:** `OD9bQi6eWexQi53tLKoctW` · **Branch:** `claude/adeltechtalks-brand-os-phase2-9rz7ct`
 **Scope executed:** Figma modules 00–03, canonical variables, colour system (core + expressive), typography system, logo/mark rules, signature placeholder, light/dark surfaces, social/video safe-zone tokens, the Adaptive / Fold-First canvas profile architecture, machine-readable repo export. Intent was recorded first in `02_PHASE2A_FIGMA_PLAN.md`; this is what was actually built.
 **Not touched:** Canva, Adobe, Supabase/RLS, the CI security check, the website deploy, any signature artwork, the video skill's hard-coded dimensions and safe-zone defaults. No fold video was generated, nothing published, no campaign.
 
@@ -152,7 +158,7 @@ Not changed: `site/**` (no site code, no deploy), `scripts/security/**`, Supabas
 | Bootstrap fonts / safe zones | Alexandria + Inter; 150/300/180 as brand values | superseded; 260/420/72 brand reserves; legacy values labelled as detector defaults |
 | Skill safe-check defaults | hard-coded 150/300/180 | unchanged (deferred by decision 6) |
 
-## 8 · Unresolved questions
+## 8 · Validation / follow-up items — none blocking
 
 1. **KO Ghorab in Figma and Canva.** Adel must upload the licensed OTF/WOFF2 as a Figma team font (and later a Canva brand font). Until then the four `[Ghorab]` styles show Readex Pro. After upload: change the family on those four styles; nothing else moves.
 2. **Dark-mode values without a precedent** (marked ⚠ in Figma and `open: true` in the export): `surface/sunken` (currently = canvas), `surface/tint` (currently `blue/900`), and the `action/primary-bg / -hover / -pressed` ladder on dark (currently the light ladder). Rule on these before any dark template is built.
@@ -163,8 +169,10 @@ Not changed: `site/**` (no site code, no deploy), `scripts/security/**`, Supabas
 7. **Amiri on the holding page:** keep the scripture exception (documented) or drop Amiri entirely.
 8. **Second heart path in `scripts/build-og-adel.mjs`** still differs from the `LoveTech` master; consolidate in a site change (not done here — no site code touched in 2A).
 9. **Figma → CSS sync direction.** The generator reads the site CSS today. A later phase should either export Figma variables to CSS or verify the two against each other in CI (`--check` already guards repo freshness).
+**Phase 2A is approved with these open.** Each is closed by evidence — a licence document, a device measurement, a production test — not by a further design decision.
+
 0. **Resolved by the refinement** (no longer open): KO Ghorab (verified, not uploaded) · the five dark values · app-icon ground · parked pages · `AR/UI` · signature end card · Amiri · heart path. See `05_PHASE2A_REFINEMENT.md`.
-10. **Adaptive profiles awaiting approval** — the two landscape bottom bands (120 px, no audited precedent), the fold-portrait reserve derivation (136 / 240), the body word ceiling rising to 24 on wide profiles, the focal splits, which landscape profile is the default large-screen YouTube edition, frame rate per profile, and whether the Device Pack should have a default subset. Detail in `04_ADAPTIVE_FOLD_FIRST.md §8`.
+10. **DEVICE VALIDATION REQUIRED** — the two landscape control bands (120 px) and the fold-portrait reserves (136 / 240) keep their derived working values and are validated on real devices during production testing. The adaptive architecture itself is approved. **Deferred, not open:** the body word ceiling stays at the enforced 18 on every profile; raising it is revisited during Static Ultra Carousel and Motion Carousel production testing. Also still to settle: the focal splits, which landscape profile is the default large-screen YouTube edition, frame rate per profile, and whether the Device Pack should have a default subset. Detail in `04_ADAPTIVE_FOLD_FIRST.md §8`.
 11. **Expressive palette coverage** — whether any family beyond the five (for example the Edition 1 teal or gold) should join, and whether badges are the one component where an expressive hue is the default rather than an option.
 12. **Figma pages 00's legacy sections** (Typography & Language, Badge Taxonomy, Visual Direction) are kept as pre-2A reference; the type section is marked superseded. Decide whether they move to 99 in Phase 2B.
 

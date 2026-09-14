@@ -1,6 +1,6 @@
 # AdelTechTalks Brand OS — Phase 2A Locked Decisions
 
-**Status:** LOCKED by Adel on 2026-09-14, then REFINED the same day — see `05_PHASE2A_REFINEMENT.md` for the eight further decisions (KO Ghorab licence, dark values, app icon, legacy pages, AR/UI, signature end card, Amiri, heart path). Phase 2A is directionally approved and **not final**. These answers close the nine questions in `00_PHASE1_AUDIT.md §7`.
+**Status: FINAL APPROVED.** Locked by Adel on 2026-09-14, refined the same day (see `05_PHASE2A_REFINEMENT.md` for the eight further decisions: KO Ghorab licence, dark values, app icon, legacy pages, AR/UI, signature end card, Amiri, heart path), then approved as the locked AdelTechTalks Brand OS foundation. Three documented validation items remain open and are **not blockers**. These answers close the nine questions in `00_PHASE1_AUDIT.md §7`.
 **Scope of Phase 2A:** Figma modules 00–03, canonical tokens/variables, colour, typography, logo/mark rules, signature placeholder architecture, light/dark surfaces, social/video safe-zone tokens, and the machine-readable repo export structure. Nothing else.
 
 ---
