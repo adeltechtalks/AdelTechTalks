@@ -479,10 +479,8 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
         data-key={services.supabaseAnonKey}
       >
         <div class="wl-fields">
-          <input type="text" name="first_name" placeholder="First Name"
-                 autocomplete="given-name" maxlength="80" aria-label="First Name" required />
-          <input type="text" name="last_name" placeholder="Last Name"
-                 autocomplete="family-name" maxlength="80" aria-label="Last Name" required />
+          <input type="text" name="name" placeholder="Name"
+                 autocomplete="name" maxlength="160" aria-label="Name" required />
           <input type="email" name="email" placeholder="Email"
                  autocomplete="email" maxlength="254" aria-label="Email" required />
         </div>
@@ -564,8 +562,7 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
       say('');
 
       var fields = {
-        first_name: form.first_name.value.trim(),
-        last_name: form.last_name.value.trim(),
+        name: form.name.value.trim(),
         email: form.email.value.trim().toLowerCase(),
       };
 
@@ -578,7 +575,7 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
       }
 
       var bad = null;
-      ['first_name', 'last_name', 'email'].forEach(function (n) {
+      ['name', 'email'].forEach(function (n) {
         var el = form[n];
         var empty = !fields[n];
         var invalid = empty || (n === 'email' && !looksLikeEmail(fields.email));
@@ -588,7 +585,7 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
       if (bad) {
         say(bad.name === 'email' && fields.email
               ? 'Please enter a valid email.'
-              : 'Please fill in all three fields.',
+              : 'Please fill in both fields.',
             'error');
         bad.focus();
         return;
@@ -610,8 +607,7 @@ const MARK = 'M 139.96 0.1 L 98.09 0 L 0 179.9 L 40.87 180 L 118.57 37.49 L 161.
           Prefer: 'return=minimal',
         },
         body: JSON.stringify({
-          first_name: fields.first_name,
-          last_name: fields.last_name,
+          name: fields.name,
           email: fields.email,
           source: 'coming-soon',
           consent_at: new Date().toISOString(),

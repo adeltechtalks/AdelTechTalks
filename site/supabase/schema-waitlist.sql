@@ -8,12 +8,20 @@
 --
 -- TO ROLL BACK:  drop table if exists public.waitlist_subscribers;
 -- Nothing depends on it.
+--
+-- HISTORY: this began with separate first_name/last_name columns. They were
+-- merged into `name` in two steps rather than one, because the deployed page
+-- was live and taking signups at the time: step one added `name`, backfilled
+-- it and relaxed the policy to accept either shape, so nothing broke while the
+-- new page rolled out; step two dropped the old columns once it was verified.
+-- This file describes the end state, which is what a fresh database should get.
 -- =============================================================================
 
 create table if not exists public.waitlist_subscribers (
   id          uuid primary key default gen_random_uuid(),
-  first_name  text not null,
-  last_name   text not null,
+  -- One field, as entered. Splitting a person's name into first/last assumes a
+  -- shape many names do not have, and the waitlist has no use for the halves.
+  name        text not null,
   email       text not null,
   -- Which surface the signup came from. Constrained by the policy below so the
   -- column cannot be used as free storage by anyone posting to the endpoint.
@@ -55,8 +63,7 @@ create policy "anyone can join the waitlist"
   with check (
     -- A sanity gate at the database edge, so a malformed or oversized row
     -- cannot be written even if the client-side checks are bypassed entirely.
-    first_name is not null and length(btrim(first_name)) between 1 and 80
-    and last_name  is not null and length(btrim(last_name))  between 1 and 80
+    name is not null and length(btrim(name)) between 1 and 160
     and email is not null
     and length(email) between 6 and 254
     and position('@' in email) > 1
