@@ -1,0 +1,43 @@
+{
+  "id": "asmr-unboxing",
+  "name": "ASMR Unboxing",
+  "default_duration_seconds": [20, 35],
+  "music": false,
+  "captions": false,
+  "natural_audio_priority": true,
+  "mic_policy": "KEEP_RECORDED_AUDIO_ON",
+  "default_sequence": [
+    "hook_or_hero",
+    "sealed_package",
+    "opening_action",
+    "first_reveal",
+    "accessories",
+    "macro_details",
+    "interaction_or_power_on",
+    "hero_close"
+  ],
+  "editing_rules": {
+    "cuts": "clean-and-fast",
+    "transitions": ["cut", "match_cut"],
+    "avoid": ["generic_whoosh_transition", "heavy_zoom", "caption_wall", "background_music", "noise_gate_that_kills_tactile_sounds"],
+    "speed": {"default": 1.0, "allowed": [0.75, 1.0, 1.25, 1.5, 2.0]},
+    "audio": {
+      "source": "recorded_source_or_external_mic_track",
+      "default_volume": 1.0,
+      "denoise": false,
+      "noise_gate": false,
+      "compression": false,
+      "loudness_normalization": false,
+      "boundary_fade_ms": 5,
+      "preserve_events": ["scratch", "peel", "click", "snap", "box_open", "plastic", "paper", "button_press"]
+    },
+    "opening_seconds": [0.4, 1.0],
+    "endcard_seconds": [0.6, 1.2]
+  },
+  "brand_slots": {
+    "opener": "assets/opener.mp4",
+    "signature": "assets/signature.png",
+    "logo": "assets/logo.png",
+    "endcard": "assets/endcard.mp4"
+  }
+}

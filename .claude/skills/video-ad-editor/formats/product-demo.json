@@ -1,0 +1,13 @@
+{
+  "id": "product-demo",
+  "name": "Product Demo / Feature Spotlight",
+  "default_duration_seconds": [15, 60],
+  "audio": {"voiceover": "optional", "natural_audio": true, "music": "optional"},
+  "story": ["hook", "feature", "real_use", "proof", "close"],
+  "rules": {
+    "show_feature_before_explaining_when_possible": true,
+    "one_feature_per_scene": true,
+    "use_real_product_footage": true,
+    "captions_only_if_speech_or_needed": true
+  }
+}
