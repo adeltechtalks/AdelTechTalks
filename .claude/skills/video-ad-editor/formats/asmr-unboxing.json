@@ -1,7 +1,10 @@
 {
   "id": "asmr-unboxing",
   "name": "ASMR Unboxing",
-  "default_duration_seconds": [20, 35],
+  "default_duration_seconds": [
+    20,
+    35
+  ],
   "music": false,
   "captions": false,
   "natural_audio_priority": true,
@@ -18,9 +21,27 @@
   ],
   "editing_rules": {
     "cuts": "clean-and-fast",
-    "transitions": ["cut", "match_cut"],
-    "avoid": ["generic_whoosh_transition", "heavy_zoom", "caption_wall", "background_music", "noise_gate_that_kills_tactile_sounds"],
-    "speed": {"default": 1.0, "allowed": [0.75, 1.0, 1.25, 1.5, 2.0]},
+    "transitions": [
+      "cut",
+      "match_cut"
+    ],
+    "avoid": [
+      "generic_whoosh_transition",
+      "heavy_zoom",
+      "caption_wall",
+      "background_music",
+      "noise_gate_that_kills_tactile_sounds"
+    ],
+    "speed": {
+      "default": 1.0,
+      "allowed": [
+        0.75,
+        1.0,
+        1.25,
+        1.5,
+        2.0
+      ]
+    },
     "audio": {
       "source": "recorded_source_or_external_mic_track",
       "default_volume": 1.0,
@@ -29,15 +50,66 @@
       "compression": false,
       "loudness_normalization": false,
       "boundary_fade_ms": 5,
-      "preserve_events": ["scratch", "peel", "click", "snap", "box_open", "plastic", "paper", "button_press"]
+      "preserve_events": [
+        "scratch",
+        "peel",
+        "click",
+        "snap",
+        "box_open",
+        "plastic",
+        "paper",
+        "button_press"
+      ]
     },
-    "opening_seconds": [0.4, 1.0],
-    "endcard_seconds": [0.6, 1.2]
+    "opening_seconds": [
+      0.4,
+      1.0
+    ],
+    "endcard_seconds": [
+      0.6,
+      1.2
+    ]
   },
   "brand_slots": {
     "opener": "assets/opener.mp4",
     "signature": "assets/signature.png",
     "logo": "assets/logo.png",
     "endcard": "assets/endcard.mp4"
-  }
+  },
+  "_brand_source": "brand/tokens/adel-v2.1.json — canvas, safe zones, watermark and motion come from the canonical export via scripts/brand_profile.py. No brand value is restated in this file.",
+  "_pipeline": [
+    "20_asmr_analyze.py",
+    "21_asmr_plan.py",
+    "22_asmr_render.py",
+    "23_asmr_calibrate.py — real-footage validation: signature vs synthetic baseline, 9 diagnostics, gated tuning"
+  ],
+  "platform_profiles": {
+    "primary": "verticalStandard",
+    "supported": [
+      "foldPortrait",
+      "foldLandscape",
+      "youtubeLandscape"
+    ],
+    "_rule": "Alternate formats RECOMPOSE. Never a centre-crop of the 9:16 master."
+  },
+  "_analysis": {
+    "min_silence_s": 0.45,
+    "pre_roll_s": 0.12,
+    "tail_s": 0.45,
+    "_note": "A transient reserves pre_roll before and tail after it. Silence overlapping a reserve is never trimmed — the decay is the content."
+  },
+  "creative": {
+    "default_primary_treatment": null,
+    "default_supporting_treatment": null,
+    "_note": "ASMR default is product-first, tactile, premium, calm — usually no creative treatment beyond the corner watermark. Renderer caps at one primary plus one supporting."
+  },
+  "_status": {
+    "phase": "2D",
+    "technical": "TECHNICAL FOUNDATION VALIDATED",
+    "creative": "CREATIVE PRODUCTION VALIDATION DEFERRED",
+    "production_proven": false,
+    "_note": "NOT production-proven. The creative output of the first real-footage experiment was reviewed and not approved; the test material was not strong enough to calibrate a final creative standard and is treated as a learning sample, not the benchmark. Next validation uses deliberately shot material — see docs/brand-os/19_PHASE2D_NEXT_CAPTURE.md",
+    "closed": "2026-09-14"
+  },
+  "_tuning_source": "calibration/thresholds.json (via scripts/tuning.py) — detection constants, NOT brand values"
 }

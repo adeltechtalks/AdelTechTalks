@@ -1,0 +1,106 @@
+{
+  "_what": "Signal-detection tuning for the ASMR pipeline. NOT brand values — nothing here comes from or belongs in brand/tokens/. Brand values enter the video engine only through scripts/brand_profile.py.",
+  "_why": "Phase 2D was validated on synthetic clips. Every constant below was tuned against exponentially-decaying white-noise bursts, which are NOT real tactile audio. Naming them here makes the calibration delta measurable instead of a diff against buried literals.",
+  "active": "synthetic-v1",
+  "profiles": {
+    "synthetic-v1": {
+      "_status": "APPROVED — IMPLEMENTATION. Validated on synthetic clips only.",
+      "_tuned_against": "testsrc2 video + aevalsrc='0.55*random(0)*exp(-9*mod(t,1.8))' audio",
+      "_caution": "Do not treat these numbers as correct for real footage until a calibration run says so.",
+      "envelope": {
+        "sample_rate_hz": 8000,
+        "window_ms": 20,
+        "_note": "20 ms windows at 8 kHz. Ample for transient onsets; keeps the skill dependency-free."
+      },
+      "silence": {
+        "floor_multiplier": 2.2,
+        "peak_fraction": 0.03,
+        "floor_percentile": 0.2,
+        "min_silence_s": 0.45,
+        "_rule": "threshold = max(floor * floor_multiplier, peak * peak_fraction)",
+        "_risk_on_real_footage": "Real room tone raises the measured floor. floor_multiplier=2.2 may then sit ABOVE quiet handling noise, classifying real tactile content as silence. This is the dangerous direction: it over-cuts and destroys the rhythm the format exists to protect.",
+        "reference": "peak"
+      },
+      "events": {
+        "median_multiplier": 3.0,
+        "peak_fraction": 0.18,
+        "floor_multiplier": 4.0,
+        "rise_ratio": 1.8,
+        "refractory_s": 0.08,
+        "_rule": "threshold = max(median * median_multiplier, peak * peak_fraction, floor * floor_multiplier); a window must also rise by rise_ratio over its predecessor",
+        "_risk_on_real_footage": "Real footage has continuous room tone and handling noise, so the median is much higher relative to transients than in synthetic audio. median_multiplier=3.0 may then exceed real peels entirely — under-detection. A single loud snap also inflates peak, so peak_fraction=0.18 can mask every softer event in the clip.",
+        "reference": "peak"
+      },
+      "scene": {
+        "threshold": 0.12,
+        "_risk_on_real_footage": "Handheld camera motion and lighting change can trip scene detection where there is no cut, suppressing hero windows that are genuinely stable content."
+      },
+      "hero": {
+        "span_s": 3.0,
+        "min_events": 2,
+        "_note": "Widened from 2.0 during synthetic testing because generated bursts landed 1.1–2.6 s apart. Real tactile activity clusters far more densely; this may want narrowing."
+      },
+      "plan": {
+        "pre_roll_s": 0.12,
+        "tail_s": 0.45,
+        "min_cut_s": 0.3,
+        "min_segment_s": 0.35,
+        "_rule": "Every transient reserves pre_roll before and tail after. A silence overlapping a reserve is never trimmed. A kept run shorter than min_segment is MERGED with its neighbour, never discarded.",
+        "_risk_on_real_footage": "tail_s=0.45 was set against a synthetic decay envelope. A real room has reverb; a real peel decays differently. Too short truncates the decay — the single most audible way to ruin an ASMR cut."
+      }
+    },
+    "real-v1": {
+      "_status": "DERIVED from synthetic-v1 by real-footage calibration on a Galaxy Z Fold unboxing",
+      "_tuned_against": "/tmp/claude-0/-home-user-AdelTechTalks/118735a4-6e6c-58e1-89aa-45150f760a83/scratchpad/realwork",
+      "_caution": "Do not treat these numbers as correct for real footage until a calibration run says so.",
+      "envelope": {
+        "sample_rate_hz": 8000,
+        "window_ms": 20,
+        "_note": "20 ms windows at 8 kHz. Ample for transient onsets; keeps the skill dependency-free."
+      },
+      "silence": {
+        "floor_multiplier": 1.43,
+        "peak_fraction": 0.03,
+        "floor_percentile": 0.1,
+        "min_silence_s": 0.45,
+        "_rule": "threshold = max(floor * floor_multiplier, peak * peak_fraction)",
+        "_risk_on_real_footage": "Real room tone raises the measured floor. floor_multiplier=2.2 may then sit ABOVE quiet handling noise, classifying real tactile content as silence. This is the dangerous direction: it over-cuts and destroys the rhythm the format exists to protect.",
+        "reference": "p95"
+      },
+      "events": {
+        "median_multiplier": 3.0,
+        "peak_fraction": 0.18,
+        "floor_multiplier": 4.0,
+        "rise_ratio": 1.8,
+        "refractory_s": 0.08,
+        "_rule": "threshold = max(median * median_multiplier, peak * peak_fraction, floor * floor_multiplier); a window must also rise by rise_ratio over its predecessor",
+        "_risk_on_real_footage": "Real footage has continuous room tone and handling noise, so the median is much higher relative to transients than in synthetic audio. median_multiplier=3.0 may then exceed real peels entirely — under-detection. A single loud snap also inflates peak, so peak_fraction=0.18 can mask every softer event in the clip.",
+        "reference": "p95"
+      },
+      "scene": {
+        "threshold": 0.12,
+        "_risk_on_real_footage": "Handheld camera motion and lighting change can trip scene detection where there is no cut, suppressing hero windows that are genuinely stable content."
+      },
+      "hero": {
+        "span_s": 3.0,
+        "min_events": 2,
+        "_note": "Widened from 2.0 during synthetic testing because generated bursts landed 1.1–2.6 s apart. Real tactile activity clusters far more densely; this may want narrowing."
+      },
+      "plan": {
+        "pre_roll_s": 0.12,
+        "tail_s": 0.45,
+        "min_cut_s": 0.3,
+        "min_segment_s": 0.35,
+        "_rule": "Every transient reserves pre_roll before and tail after. A silence overlapping a reserve is never trimmed. A kept run shorter than min_segment is MERGED with its neighbour, never discarded.",
+        "_risk_on_real_footage": "tail_s=0.45 was set against a synthetic decay envelope. A real room has reverb; a real peel decays differently. Too short truncates the decay — the single most audible way to ruin an ASMR cut."
+      },
+      "_driven_by": [
+        "D1:SILENCE_OVER_CUT",
+        "D2:EVENT_UNDER_DETECT",
+        "D4:PEAK_MASKING",
+        "D6:FLOOR_DRIFT"
+      ],
+      "_structural_change": "reference level peak -> p95. Numeric tuning alone did not clear D1/D2/D4; the absolute peak was the wrong anchor."
+    }
+  }
+}

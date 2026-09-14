@@ -1,6 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Assemble an ASMR/unboxing edit from asmr-plan.json.
+
+SUPERSEDED by 22_asmr_render.py (Phase 2D). Kept for reference only.
+
+Two reasons it was replaced, both recorded in docs/brand-os/14_PHASE2D_ARCHITECTURE.md:
+  · it CENTRE-CROPS to fit the target (scale=…increase, crop=TW:TH). Harmless for a
+    9:16 master from portrait footage, and exactly the behaviour the approved adaptive
+    architecture forbids the moment an alternate format is requested.
+  · it carries brand defaults inline (canvas 1080x1920, signature width/opacity/margins)
+    instead of reading brand/tokens/adel-v2.1.json.
+
 Usage: python3 scripts/13_asmr_assemble.py <workdir> [output.mp4]
 
 The plan is intentionally simple and model-editable. Each segment points to an original

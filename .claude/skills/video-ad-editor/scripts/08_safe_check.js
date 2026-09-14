@@ -16,13 +16,38 @@ const THEME=fs.existsSync(W+'theme.json')?JSON.parse(fs.readFileSync(W+'theme.js
 const caps=JSON.parse(fs.readFileSync(W+'caps.json','utf8'));
 const FPS=30, OUT_D=CFG.outro, DUR=caps.total+OUT_D;
 
-/* المناطق الخطرة — نسبة الحبر المسموحة داخل كل وحدة */
+/* المناطق الخطرة — نسبة الحبر المسموحة داخل كل وحدة.
+
+   المقاسات تُقرأ من التصدير المعتمد brand/tokens/adel-v2.1.json ولا تُكتب هنا.
+   كانت القيم القديمة 150/300/180 من ملف bootstrap المُلغى؛ القيم المعتمدة
+   للريل هي 260 أعلى و 420 أسفل (--atc-social-reel-*).
+   Reserves come from the canonical export — never restated here. The previous
+   150 / 300 / 180 values were the superseded bootstrap numbers; the approved
+   reel reserves are 260 top and 420 bottom. */
+function brandProfile(id){
+  const start=path.resolve(__dirname);
+  let dir=start, found=null;
+  for(let i=0;i<8 && dir!==path.parse(dir).root;i++){
+    const cand=path.join(dir,'brand','tokens','adel-v2.1.json');
+    if(fs.existsSync(cand)){found=cand;break;}
+    dir=path.dirname(dir);
+  }
+  if(process.env.ATC_BRAND_TOKENS) found=process.env.ATC_BRAND_TOKENS;
+  if(!found) throw new Error('brand/tokens/adel-v2.1.json not found — set ATC_BRAND_TOKENS');
+  const t=JSON.parse(fs.readFileSync(found,'utf8'));
+  const p=t.canvasProfiles[id];
+  if(!p) throw new Error(`unknown video profile ${id}`);
+  return {src:found, w:p.width, h:p.height, margin:p.margin,
+          top:p.safeZones.top, bottom:p.safeZones.bottom, side:p.safeZones.left};
+}
+const PROF=brandProfile(process.env.ATC_VIDEO_PROFILE||'verticalStandard');
 const DEF={
+  _source:PROF.src,
   zones:[
-    {k:'أعلى الشاشة (اسم الحساب وزر المتابعة)', x:0,   y:0,    w:1080, h:150, hard:true,  max:0.004},
-    {k:'أسفل الشاشة (كابشن انستقرام والصوت)',   x:0,   y:1620, w:1080, h:300, hard:true,  max:0.002},
-    {k:'حزام الأسفل الحذر',                     x:0,   y:1500, w:1080, h:120, hard:false, max:0.010},
-    {k:'يمين الشاشة (لايك · تعليق · مشاركة)',   x:950, y:1100, w:130,  h:650, hard:true,  max:0.010}   /* 1٪: أقل من كذا = حافة كرت لا نص */
+    {k:'أعلى الشاشة (اسم الحساب وزر المتابعة)', x:0, y:0, w:PROF.w, h:PROF.top, hard:true, max:0.004},
+    {k:'أسفل الشاشة (كابشن انستقرام والصوت)',   x:0, y:PROF.h-PROF.bottom, w:PROF.w, h:PROF.bottom, hard:true, max:0.002},
+    {k:'حزام الأسفل الحذر',                     x:0, y:PROF.h-PROF.bottom-Math.round(PROF.bottom*0.4), w:PROF.w, h:Math.round(PROF.bottom*0.4), hard:false, max:0.010},
+    {k:'يمين الشاشة (لايك · تعليق · مشاركة)',   x:PROF.w-130, y:Math.round(PROF.h*0.57), w:130, h:650, hard:true, max:0.010}   /* 1٪: أقل من كذا = حافة كرت لا نص */
   ],
   hook_max:0.5            // أول كابشن لازم يظهر بأول نصف ثانية
 };
@@ -63,7 +88,7 @@ const FLAT_B='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2
     args:['--no-sandbox','--allow-file-access-from-files','--font-render-hinting=none','--force-color-profile=srgb']});
   const p=await b.newPage();
   p.on('pageerror',e=>console.log('PAGEERR',e.message));
-  await p.setViewport({width:1080,height:1920,deviceScaleFactor:1});
+  await p.setViewport({width:PROF.w,height:PROF.h,deviceScaleFactor:1});
   await p.setCacheEnabled(false);   // لا تقرأ نسخة مخبّأة من compose.html
   await p.goto('file://'+W+'compose.html',{waitUntil:'networkidle0'});
   const FF=THEME.font||'Cairo';
@@ -83,7 +108,7 @@ const FLAT_B='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2
   const res=await p.evaluate(async(times,zones,bg,FA,FB)=>{
     const cv=document.getElementById('cv'), X=cv.getContext('2d',{willReadFrequently:true});
     const hx=h=>{h=h.replace('#','');return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];};
-    const B=hx(bg||"#F3EFEA"), W=1080, H=1920, EDGE=24;   /* هامش حافة الكادر — تداخل حواف الصورة يعطي إنذاراً كاذباً */
+    const B=hx(bg||"#F3EFEA"), W=PROF.w, H=PROF.h, EDGE=24;   /* هامش حافة الكادر — تداخل حواف الصورة يعطي إنذاراً كاذباً */
     const out=zones.map(z=>({k:z.k,hard:z.hard,max:z.max,worst:0,at:0}));
     let skipped=0;
     const near=(v,a,d)=>Math.abs(v-a)<d;

@@ -1,0 +1,154 @@
+{
+  "_what": "Synthetic-footage signature. The reference the real-footage calibration compares against.",
+  "_tuning": "synthetic-v1",
+  "clips": 4,
+  "signature": {
+    "decay_median_s": 0.3,
+    "decay_p75_s": 0.3,
+    "duration_s": 9.75,
+    "floor_dbfs": -180.0,
+    "floor_drift_db": 0.0,
+    "floor_is_digital_silence": 1,
+    "median_above_floor_db": 51.417,
+    "median_dbfs": -128.583,
+    "median_is_digital_silence": 0.5,
+    "occupancy": 0.516,
+    "onset_rise_median": 106.972,
+    "p99_dbfs": -12.012,
+    "peak_above_median_db": 116.748,
+    "peak_above_p99_db": 0.177,
+    "peak_dbfs": -11.835,
+    "scene_changes_per_s": 0.0
+  },
+  "detection": {
+    "silence_branch": "peak",
+    "event_branch": "peak",
+    "events": 6,
+    "events_per_s": 0.597,
+    "silences": 6.25,
+    "silence_fraction": 0.811,
+    "silence_seconds": 7.86
+  },
+  "per_clip": [
+    {
+      "file": "01-sealed-box.mp4",
+      "signature": {
+        "duration_s": 9.0,
+        "floor_is_digital_silence": true,
+        "median_is_digital_silence": false,
+        "floor_dbfs": -180.0,
+        "median_dbfs": -80.18,
+        "p99_dbfs": -11.98,
+        "peak_dbfs": -11.71,
+        "median_above_floor_db": 99.82,
+        "peak_above_median_db": 68.47,
+        "peak_above_p99_db": 0.27,
+        "floor_drift_db": 0.0,
+        "occupancy": 0.644,
+        "onset_rise_median": 161.095,
+        "decay_median_s": 0.44,
+        "decay_p75_s": 0.44,
+        "scene_changes_per_s": 0.0
+      },
+      "detection": {
+        "silence_branch": "peak",
+        "event_branch": "peak",
+        "events": 4,
+        "events_per_s": 0.444,
+        "silences": 5,
+        "silence_fraction": 0.778,
+        "silence_seconds": 7.0
+      }
+    },
+    {
+      "file": "02-peel-open.mp4",
+      "signature": {
+        "duration_s": 10.0,
+        "floor_is_digital_silence": true,
+        "median_is_digital_silence": false,
+        "floor_dbfs": -180.0,
+        "median_dbfs": -74.15,
+        "p99_dbfs": -11.12,
+        "peak_dbfs": -10.98,
+        "median_above_floor_db": 105.85,
+        "peak_above_median_db": 63.17,
+        "peak_above_p99_db": 0.14,
+        "floor_drift_db": 0.0,
+        "occupancy": 0.702,
+        "onset_rise_median": 84.746,
+        "decay_median_s": 0.28,
+        "decay_p75_s": 0.28,
+        "scene_changes_per_s": 0.0
+      },
+      "detection": {
+        "silence_branch": "peak",
+        "event_branch": "peak",
+        "events": 9,
+        "events_per_s": 0.9,
+        "silences": 9,
+        "silence_fraction": 0.756,
+        "silence_seconds": 7.56
+      }
+    },
+    {
+      "file": "03-macro-detail.mp4",
+      "signature": {
+        "duration_s": 8.0,
+        "floor_is_digital_silence": true,
+        "median_is_digital_silence": true,
+        "floor_dbfs": -180.0,
+        "median_dbfs": -180.0,
+        "p99_dbfs": -13.54,
+        "peak_dbfs": -13.42,
+        "median_above_floor_db": 0.0,
+        "peak_above_median_db": 166.58,
+        "peak_above_p99_db": 0.12,
+        "floor_drift_db": 0.0,
+        "occupancy": 0.223,
+        "onset_rise_median": 69.442,
+        "decay_median_s": 0.2,
+        "decay_p75_s": 0.2,
+        "scene_changes_per_s": 0.0
+      },
+      "detection": {
+        "silence_branch": "peak",
+        "event_branch": "peak",
+        "events": 3,
+        "events_per_s": 0.375,
+        "silences": 3,
+        "silence_fraction": 0.907,
+        "silence_seconds": 7.26
+      }
+    },
+    {
+      "file": "04-handling.mp4",
+      "signature": {
+        "duration_s": 12.0,
+        "floor_is_digital_silence": true,
+        "median_is_digital_silence": true,
+        "floor_dbfs": -180.0,
+        "median_dbfs": -180.0,
+        "p99_dbfs": -11.41,
+        "peak_dbfs": -11.23,
+        "median_above_floor_db": 0.0,
+        "peak_above_median_db": 168.77,
+        "peak_above_p99_db": 0.18,
+        "floor_drift_db": 0.0,
+        "occupancy": 0.497,
+        "onset_rise_median": 112.607,
+        "decay_median_s": 0.28,
+        "decay_p75_s": 0.28,
+        "scene_changes_per_s": 0.0
+      },
+      "detection": {
+        "silence_branch": "peak",
+        "event_branch": "peak",
+        "events": 8,
+        "events_per_s": 0.667,
+        "silences": 8,
+        "silence_fraction": 0.802,
+        "silence_seconds": 9.62
+      }
+    }
+  ]
+}
