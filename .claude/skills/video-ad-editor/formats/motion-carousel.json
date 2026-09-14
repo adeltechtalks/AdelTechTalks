@@ -3,11 +3,31 @@
   "name": "Motion Carousel",
   "purpose": "A 5-6 slide social carousel where each slide is a short motion clip instead of a static image.",
   "default_slide_duration_seconds": 5,
-  "default_slide_count": [5, 6],
-  "default_canvas": {"width": 1080, "height": 1350, "fps": 30},
-  "alternate_canvas": {"width": 1080, "height": 1920, "fps": 30},
-  "audio": {"default": "muted", "allow_natural_audio": true, "allow_voiceover": true},
-  "exports": ["individual_slide_mp4s", "stitched_preview_mp4", "poster_pngs"],
+  "default_slide_count": [
+    5,
+    6
+  ],
+  "default_canvas": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "alternate_canvas": {
+    "width": 1080,
+    "height": 1350,
+    "fps": 30,
+    "note": "feed-shaped variant only when a job explicitly asks for it"
+  },
+  "audio": {
+    "default": "muted",
+    "allow_natural_audio": true,
+    "allow_voiceover": true
+  },
+  "exports": [
+    "individual_slide_mp4s",
+    "stitched_preview_mp4",
+    "poster_pngs"
+  ],
   "content_rules": {
     "one_primary_idea_per_slide": true,
     "headline_words_max": 10,
@@ -15,14 +35,47 @@
     "product_visual_priority": true,
     "rtl_first_for_arabic": true
   },
-  "motion_presets": ["hero_push", "macro_drift", "parallax_left", "parallax_right", "feature_reveal", "split_reveal", "clean_hold"],
+  "motion_presets": [
+    "hero_push",
+    "macro_drift",
+    "parallax_left",
+    "parallax_right",
+    "feature_reveal",
+    "split_reveal",
+    "clean_hold"
+  ],
   "transition_rules": {
     "between_slides": "none_required_each_slide_is_independent",
-    "stitched_preview": ["cut", "match_cut"],
-    "avoid": ["generic_whoosh", "spin", "random_zoom", "template_heavy_transition"]
+    "stitched_preview": [
+      "cut",
+      "match_cut"
+    ],
+    "avoid": [
+      "generic_whoosh",
+      "spin",
+      "random_zoom",
+      "template_heavy_transition"
+    ]
   },
   "brand_slots": {
     "signature": "assets/signature.png",
     "logo": "assets/logo.png"
-  }
+  },
+  "canonical_canvas": {
+    "profile": "verticalStandard",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "note": "CONFIRMED in the Phase 2A refinement: the canonical Motion Carousel production canvas is 1080x1920. The Static Ultra Carousel stays 1080x1350 and is a different format."
+  },
+  "fold_editions": {
+    "status": "specified, not implemented",
+    "profiles": [
+      "foldPortrait",
+      "foldLandscape"
+    ],
+    "rule": "Each slide is RECOMPOSED for the wider canvas - media and text become two zones instead of a vertical stack. Never a crop of the 9:16 slide. Every profile still exports each slide as its own MP4."
+  },
+  "canvas_profiles_source": "brand/tokens/adel-v2.1.json -> canvasProfiles. Dimensions are configuration read from a profile; this file must not hold a canvas assumption once the engine reads profiles.",
+  "slide_rule": "5-6 independently exportable video slides, ~5s each, genuine motion/video composition - never animated static zooms."
 }

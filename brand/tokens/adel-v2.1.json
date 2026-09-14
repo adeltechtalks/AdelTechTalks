@@ -99,6 +99,11 @@
         "graphite-raised": {
           "value": "#25272C",
           "source": "documented composite of --adel-glass-fill (Graphite 0.94) over Warm White; the only dark raised surface with a written precedent"
+        },
+        "graphite-sunken": {
+          "value": "#090D12",
+          "introduced": "v2.1 (Phase 2A refinement)",
+          "source": "DERIVED, not invented: Graphite minus the measured canvas→raised step (+14/+13/+13), so the dark ladder sunken → canvas → raised is one even step in each direction. White text measures 19.48:1 on it."
         }
       },
       "status": {
@@ -265,7 +270,8 @@
         }
       },
       "dark": {
-        "_status": "PROPOSED — Graphite-based dark surfaces approved in principle (Phase 2A decision 4); values below come from documented precedents; open:true = no precedent, awaiting ruling",
+        "_status": "RESOLVED — Graphite-based dark surfaces. Values are either a documented precedent or a v2.1 semantic value newly introduced in the Phase 2A refinement, derived from the approved Graphite / Blue system and contrast-checked. Nothing is inherited from Dark Impact or Edition 1, and no arbitrary colour was added: exactly one new primitive (neutral/graphite-sunken) exists, everything else is an existing ramp step.",
+        "_contrast": "Measured with the WCAG relative-luminance formula. Text pairs clear 4.5:1; UI fills clear 3:1 against the surface they sit on.",
         "surface": {
           "canvas": {
             "ref": "brand.graphite",
@@ -278,14 +284,18 @@
             "precedent": "glass composite documented in adel-v2.css"
           },
           "sunken": {
-            "ref": "brand.graphite",
-            "value": "#171A1F",
-            "open": true
+            "ref": "neutral.graphite-sunken",
+            "value": "#090D12",
+            "introduced": "v2.1",
+            "derivation": "Graphite − the canvas→raised step, mirroring the light ladder downward",
+            "contrast": "white 19.48:1 · soft-gray 15.88:1"
           },
           "tint": {
             "ref": "blue.900",
             "value": "#0D264F",
-            "open": true
+            "introduced": "v2.1",
+            "derivation": "the published blue ramp's darkest step — the dark counterpart of Ice Blue, from the approved ramp rather than a new mix",
+            "contrast": "white 14.92:1 · ice-blue 12.34:1"
           },
           "inverse": {
             "ref": "brand.warm-white",
@@ -347,28 +357,35 @@
           }
         },
         "action": {
+          "_rule": "The light ladder's rule is \"each state moves one step further from the surface\". On a Graphite surface that direction is LIGHTER, so the dark ladder is the same rule mirrored — and the foreground flips to Graphite because the fill is now the light element. This is not a preference: keeping the light ladder on dark fails the 3:1 UI floor against the canvas (blue/600 = 2.63:1, deep-blue = 2.02:1), so the mirrored ladder is the accessible option.",
           "primary-bg": {
-            "ref": "brand.signature-blue",
-            "value": "#2563EB",
-            "open": true
+            "ref": "blue.400",
+            "value": "#5B8EF4",
+            "introduced": "v2.1",
+            "contrast": "graphite text 5.50:1 · against the canvas 5.50:1"
           },
           "primary-bg-hover": {
-            "ref": "blue.600",
-            "value": "#1D53CC",
-            "open": true
+            "ref": "blue.300",
+            "value": "#8FB9FA",
+            "introduced": "v2.1",
+            "contrast": "graphite text 8.71:1"
           },
           "primary-bg-pressed": {
-            "ref": "brand.deep-blue",
-            "value": "#1746A2",
-            "open": true
+            "ref": "blue.200",
+            "value": "#BBD7FF",
+            "introduced": "v2.1",
+            "contrast": "graphite text 11.86:1"
           },
           "primary-fg": {
-            "ref": "brand.white",
-            "value": "#FFFFFF"
+            "ref": "brand.graphite",
+            "value": "#171A1F",
+            "introduced": "v2.1",
+            "note": "Graphite, not White: on dark the primary fill is a light blue, so the label inverts with it. White on blue/400 measures 3.17:1 and fails."
           },
           "secondary-fg": {
             "ref": "blue.300",
-            "value": "#8FB9FA"
+            "value": "#8FB9FA",
+            "contrast": "8.71:1 on the canvas"
           },
           "secondary-bg-hover": {
             "ref": "alpha.white-08",
@@ -527,7 +544,8 @@
           400
         ],
         "licence": "licensed to Adel; self-hosted; NOT redistributable",
-        "figma": "not in the Figma font environment — must be uploaded as a team font"
+        "licence-terms": "NOT STORED WITH THE PROJECT — no EULA, licence file or written grant exists anywhere in the repository; site/src/assets/fonts/README.md asserts the licence but does not reproduce its terms.",
+        "figma": "NOT UPLOADED. A Figma team-font upload puts the file on the Figma servers and shares it with every team member, which is a redistribution-shaped use. The stored licence does not clearly permit it, so it is not done. KO Ghorab remains the approved Arabic display face and stays in production and export use where the licence does permit it (self-hosted on the site, and in local rendering). The Figma [Ghorab] styles keep their labelled Readex Pro placeholder family. No other typeface substitutes for Ghorab."
       },
       "mono": {
         "family": "JetBrains Mono",
@@ -548,6 +566,9 @@
         ],
         "exception": true
       }
+    },
+    "removed-from-core": {
+      "AR/UI": "Readex Pro Medium 14/24. Removed from the canonical core typography system in the Phase 2A refinement: no site token backs it and nothing in production uses it. Preserved in Figma only as \"Legacy / AR-UI (reference only)\", not a brand standard. Arabic compact UI takes the EN/Label size with the Arabic body face."
     },
     "not-approved": {
       "Cairo": "Edition 1 Arabic display — archived",
@@ -855,13 +876,6 @@
         "style": "Regular",
         "size": 16,
         "line": 30
-      },
-      {
-        "name": "AR/UI",
-        "family": "Readex Pro",
-        "style": "Medium",
-        "size": 14,
-        "line": 24
       },
       {
         "name": "Social/Cover [Ghorab]",
@@ -1646,10 +1660,11 @@
       }
     },
     "app-icon": {
-      "tile": "Signature Blue (recommended) or Graphite — ruling open",
+      "tile": "Signature Blue — DEFAULT",
+      "tile-secondary": "Graphite — secondary dark variant",
       "mark": "White",
       "radius": "27/120 of tile",
-      "gradient": "retired (atc-appicon-gradient.svg → archive)"
+      "gradient": "NONE. The Edition 1 Impact-gradient icon is retired (atc-appicon-gradient.svg → archive)."
     }
   },
   "heart": {
@@ -1667,7 +1682,12 @@
     "asset": null,
     "site-slot": "site.config.ts photography.signature",
     "skill-slot": ".claude/skills/video-ad-editor/assets/signature.png",
-    "rule": "No handwritten signature is created, simulated or set in a handwriting font. The slot stays empty until Adel supplies a real scanned signature (SVG or transparent PNG)."
+    "rule": "No handwritten signature is created, simulated, traced or set in a handwriting font. The slot stays empty until Adel supplies a real scanned signature (SVG or transparent PNG).",
+    "video-end-card": {
+      "status": "OPTIONAL VARIANT — never mandatory branding",
+      "rule": "When the real scan exists, the video end card gains a signature variant that a job may choose. It is never applied automatically and never becomes a required element on every video. The default end card carries the mark or lockup, not the signature.",
+      "applies-to": "every canvas profile; the signature follows the profile brand zone and stays micro scale"
+    }
   },
   "rules": {
     "colour": [

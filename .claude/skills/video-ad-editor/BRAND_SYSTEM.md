@@ -79,14 +79,14 @@ APPROVED SECONDARY — expressive / creator palette. Never replaces Signature Bl
 | focus/ring | #2563EB | brand.signature-blue |  |
 
 ### Dark mode — Graphite-based, PROPOSED
-PROPOSED — Graphite-based dark surfaces approved in principle (Phase 2A decision 4); values below come from documented precedents; open:true = no precedent, awaiting ruling
+RESOLVED — Graphite-based dark surfaces. Values are either a documented precedent or a v2.1 semantic value newly introduced in the Phase 2A refinement, derived from the approved Graphite / Blue system and contrast-checked. Nothing is inherited from Dark Impact or Edition 1, and no arbitrary colour was added: exactly one new primitive (neutral/graphite-sunken) exists, everything else is an existing ramp step.
 
 | Token | Value | Alias | Precedent |
 |---|---|---|---|
 | surface/canvas | #171A1F | brand.graphite | --adel-surface-inverse, the graphite navbar |
 | surface/raised | #25272C | neutral.graphite-raised | glass composite documented in adel-v2.css |
-| surface/sunken | #171A1F | brand.graphite | ⚠ open — no precedent |
-| surface/tint | #0D264F | blue.900 | ⚠ open — no precedent |
+| surface/sunken | #090D12 | neutral.graphite-sunken |  |
+| surface/tint | #0D264F | blue.900 |  |
 | surface/inverse | #FAFAF8 | brand.warm-white |  |
 | surface/depth | #DDF8F0 | mint.100 |  |
 | text/primary | #FFFFFF | brand.white | --adel-nav-fg-strong |
@@ -99,10 +99,11 @@ PROPOSED — Graphite-based dark surfaces approved in principle (Phase 2A decisi
 | border/hairline | rgba(255, 255, 255, 0.10) | alpha.white-10 | --adel-glass-border |
 | border/strong | rgba(255, 255, 255, 0.22) | alpha.white-22 | --adel-nav-border |
 | border/brand | #2563EB | brand.signature-blue |  |
-| action/primary-bg | #2563EB | brand.signature-blue | ⚠ open — no precedent |
-| action/primary-bg-hover | #1D53CC | blue.600 | ⚠ open — no precedent |
-| action/primary-bg-pressed | #1746A2 | brand.deep-blue | ⚠ open — no precedent |
-| action/primary-fg | #FFFFFF | brand.white |  |
+| action/_rule |  |  |  |
+| action/primary-bg | #5B8EF4 | blue.400 |  |
+| action/primary-bg-hover | #8FB9FA | blue.300 |  |
+| action/primary-bg-pressed | #BBD7FF | blue.200 |  |
+| action/primary-fg | #171A1F | brand.graphite |  |
 | action/secondary-fg | #8FB9FA | blue.300 |  |
 | action/secondary-bg-hover | rgba(255, 255, 255, 0.08) | alpha.white-08 | --adel-nav-bg-hover |
 | accent/mint | #2DD4A8 | brand.fresh-mint |  |
@@ -199,7 +200,7 @@ Consumer-facing "Fold First" language is a reserved concept only — not an offi
 - One mark: `brand/logo/adel-mark.svg` (viewBox 220.64 × 180, ratio 1.2258 LOCKED, legs 1.19° apart, counter open at the bottom. Never redraw, never scale non-uniformly.). Roles: **Graphite** everyday · **Signature Blue** alternate · **White** reversed. Forbidden: Fresh Mint, any gradient, Purple 600 (Edition 1), any tint or opacity, stretching, redrawing, outlining.
 - Lockups: **AdelTechTalks** primary · **Adel** secondary (kept) · **I ❤ Tech** master expression with the drawn heart `brand/heart/love-tech-heart.svg`.
 - App icon: white mark on a flat tile, radius 27/120. No gradient tile.
-- Signature: RESERVED — empty. No handwritten signature is created, simulated or set in a handwriting font. The slot stays empty until Adel supplies a real scanned signature (SVG or transparent PNG). Skill slot: `assets/signature.png`.
+- Signature: RESERVED — empty. No handwritten signature is created, simulated, traced or set in a handwriting font. The slot stays empty until Adel supplies a real scanned signature (SVG or transparent PNG). Skill slot: `assets/signature.png`.
 
 ## Non-negotiables the skill enforces
 - Never invent a brand colour when an approved token exists.

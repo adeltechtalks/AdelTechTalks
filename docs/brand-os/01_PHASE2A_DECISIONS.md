@@ -1,6 +1,6 @@
 # AdelTechTalks Brand OS — Phase 2A Locked Decisions
 
-**Status:** LOCKED by Adel on 2026-09-14. These answers close the nine questions in `00_PHASE1_AUDIT.md §7`.
+**Status:** LOCKED by Adel on 2026-09-14, then REFINED the same day — see `05_PHASE2A_REFINEMENT.md` for the eight further decisions (KO Ghorab licence, dark values, app icon, legacy pages, AR/UI, signature end card, Amiri, heart path). Phase 2A is directionally approved and **not final**. These answers close the nine questions in `00_PHASE1_AUDIT.md §7`.
 **Scope of Phase 2A:** Figma modules 00–03, canonical tokens/variables, colour, typography, logo/mark rules, signature placeholder architecture, light/dark surfaces, social/video safe-zone tokens, and the machine-readable repo export structure. Nothing else.
 
 ---
@@ -43,16 +43,17 @@ Edition 1 is **not** fully archived. Five families are reclassified as an approv
 
 - One geometry: `site/public/logo/atc-mark-currentcolor.svg` (viewBox 220.64 × 180, ratio 1.2258 locked, 24 px floor, clear space 23% of height).
 - Colour roles: **Graphite** = everyday default · **Signature Blue** = approved alternate · **White** = reversed on dark or photographic grounds.
+- App icon / profile tile: **Signature Blue is the default ground**, Graphite a secondary dark variant (refinement decision 3).
 - No gradient logo tile. The Impact-gradient app icon is retired to the archive.
 - `AdelTechTalks` lockup is primary. The `Adel` lockup is kept as a **secondary** lockup, not retired.
 
 ## 3 · Signature
 
-No handwritten signature is created or simulated. A reserved component and asset slot exist and stay empty until a real scanned signature is supplied. A handwriting font is never a stand-in.
+No handwritten signature is created or simulated. A reserved component and asset slot exist and stay empty until a real scanned signature is supplied. A handwriting font is never a stand-in. When the real scan arrives it becomes an **optional** video end-card variant — never mandatory branding on every video (refinement decision 6).
 
 ## 4 · Dark mode
 
-Graphite-based dark surfaces are approved. Dark Impact gradients are retired from the active system. Dark values are taken from documented precedents in the token files (the graphite navbar, the glass composite, `LoveTech` on dark) and are listed in `02_PHASE2A_FIGMA_PLAN.md`; anything without a precedent is left open in §8 of the report rather than invented.
+Graphite-based dark surfaces are approved. Dark Impact gradients are retired from the active system. Dark values come from documented precedents in the token files (the graphite navbar, the glass composite, `LoveTech` on dark). The five that had no precedent were **resolved in the refinement** as newly introduced v2.1 semantic values, derived from the approved Graphite / Blue system and contrast-checked, with exactly one new primitive (`neutral/graphite-sunken`). Nothing is inherited from Dark Impact or Edition 1. Working in `05_PHASE2A_REFINEMENT.md §2`.
 
 ## 5 · Typography
 
@@ -61,7 +62,7 @@ The audited website typography wins over the bootstrap placeholders.
 | Face | Job | Source |
 |---|---|---|
 | Montserrat 400–800 | Latin display, wordmarks, nav, CTA, index figures | Google Fonts |
-| KO Ghorab 400 | Arabic display only, ≥ 24 px, never letter-spaced | self-hosted, licensed to Adel, not redistributable |
+| KO Ghorab 400 | Arabic display only, ≥ 24 px, never letter-spaced | self-hosted, licensed to Adel, not redistributable. **Not uploaded to the Figma team** — the licence terms are not stored with the project, so team/cloud hosting is not clearly permitted (refinement decision 1) |
 | Readex Pro 300–600 | Arabic body/UI, any Latin inside an Arabic sentence, EN long-form | Google Fonts |
 | JetBrains Mono 400–500 | technical figures, specs, code, overlines | Google Fonts |
 | Caveat 500–600 | About-page sketch layer only, EN only, placeholder for real handwriting | Google Fonts |
@@ -70,6 +71,7 @@ The audited website typography wins over the bootstrap placeholders.
 - Alexandria and Inter (bootstrap) are **not** approved. Tajawal (generic skill example) is **not** brand data.
 - Amiri is not core. It survives only as a documented special-purpose exception for the scripture line on the holding page, if that use case stays.
 - Font roles are not changed beyond what the audited implementation already does.
+- `AR/UI` was removed from the core in the refinement (no source token, no production use) and preserved only as `Legacy / AR-UI (reference only)`.
 
 ## 6 · Safe zones
 

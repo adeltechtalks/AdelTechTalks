@@ -109,6 +109,7 @@ const primitives = {
     border: hex('--adel-neutral-border'),
     muted: { value: hex('--adel-neutral-muted'), warning: 'NOT a text colour (2.46:1 on Warm White). Disabled controls, icon strokes, decorative rules only.' },
     'graphite-raised': { value: '#25272C', source: 'documented composite of --adel-glass-fill (Graphite 0.94) over Warm White; the only dark raised surface with a written precedent' },
+    'graphite-sunken': { value: '#090D12', introduced: 'v2.1 (Phase 2A refinement)', source: 'DERIVED, not invented: Graphite minus the measured canvas→raised step (+14/+13/+13), so the dark ladder sunken → canvas → raised is one even step in each direction. White text measures 19.48:1 on it.' },
   },
   status: {
     _note: 'Functional, not brand. Kept distinct from the blue family so correct/error/brand never read alike.',
@@ -159,11 +160,26 @@ const mustEqual = [
 for (const [name, v] of mustEqual) if (hex(name) !== v) throw new Error(`Light semantic drift: ${name} = ${hex(name)} ≠ ${v}`);
 
 const dark = {
-  _status: 'PROPOSED — Graphite-based dark surfaces approved in principle (Phase 2A decision 4); values below come from documented precedents; open:true = no precedent, awaiting ruling',
-  surface: { canvas: { ...ref('brand.graphite'), precedent: '--adel-surface-inverse, the graphite navbar' }, raised: { ...ref('neutral.graphite-raised'), precedent: 'glass composite documented in adel-v2.css' }, sunken: { ...ref('brand.graphite'), open: true }, tint: { ...ref('blue.900'), open: true }, inverse: ref('brand.warm-white'), depth: ref('mint.100') },
+  _status: 'RESOLVED — Graphite-based dark surfaces. Values are either a documented precedent or a v2.1 semantic value newly introduced in the Phase 2A refinement, derived from the approved Graphite / Blue system and contrast-checked. Nothing is inherited from Dark Impact or Edition 1, and no arbitrary colour was added: exactly one new primitive (neutral/graphite-sunken) exists, everything else is an existing ramp step.',
+  _contrast: 'Measured with the WCAG relative-luminance formula. Text pairs clear 4.5:1; UI fills clear 3:1 against the surface they sit on.',
+  surface: {
+    canvas: { ...ref('brand.graphite'), precedent: '--adel-surface-inverse, the graphite navbar' },
+    raised: { ...ref('neutral.graphite-raised'), precedent: 'glass composite documented in adel-v2.css' },
+    sunken: { ...ref('neutral.graphite-sunken'), introduced: 'v2.1', derivation: 'Graphite − the canvas→raised step, mirroring the light ladder downward', contrast: 'white 19.48:1 · soft-gray 15.88:1' },
+    tint: { ...ref('blue.900'), introduced: 'v2.1', derivation: 'the published blue ramp\'s darkest step — the dark counterpart of Ice Blue, from the approved ramp rather than a new mix', contrast: 'white 14.92:1 · ice-blue 12.34:1' },
+    inverse: ref('brand.warm-white'), depth: ref('mint.100'),
+  },
   text: { primary: { ...ref('brand.white'), precedent: '--adel-nav-fg-strong' }, secondary: { ...ref('brand.soft-gray'), precedent: '--adel-nav-fg' }, tertiary: ref('brand.soft-gray'), inverse: ref('brand.graphite'), link: { ...ref('blue.300'), precedent: 'LoveTech .lovetech--onDark; Signature Blue is 3.37:1 on Graphite and fails 4.5:1 for text' }, 'link-hover': { ...ref('brand.ice-blue'), precedent: '--adel-nav-fg-hover' }, 'on-tint': ref('brand.ice-blue') },
   border: { hairline: { ...ref('alpha.white-10'), precedent: '--adel-glass-border' }, strong: { ...ref('alpha.white-22'), precedent: '--adel-nav-border' }, brand: ref('brand.signature-blue') },
-  action: { 'primary-bg': { ...ref('brand.signature-blue'), open: true }, 'primary-bg-hover': { ...ref('blue.600'), open: true }, 'primary-bg-pressed': { ...ref('brand.deep-blue'), open: true }, 'primary-fg': ref('brand.white'), 'secondary-fg': ref('blue.300'), 'secondary-bg-hover': { ...ref('alpha.white-08'), precedent: '--adel-nav-bg-hover' } },
+  action: {
+    _rule: 'The light ladder\'s rule is "each state moves one step further from the surface". On a Graphite surface that direction is LIGHTER, so the dark ladder is the same rule mirrored — and the foreground flips to Graphite because the fill is now the light element. This is not a preference: keeping the light ladder on dark fails the 3:1 UI floor against the canvas (blue/600 = 2.63:1, deep-blue = 2.02:1), so the mirrored ladder is the accessible option.',
+    'primary-bg': { ...ref('blue.400'), introduced: 'v2.1', contrast: 'graphite text 5.50:1 · against the canvas 5.50:1' },
+    'primary-bg-hover': { ...ref('blue.300'), introduced: 'v2.1', contrast: 'graphite text 8.71:1' },
+    'primary-bg-pressed': { ...ref('blue.200'), introduced: 'v2.1', contrast: 'graphite text 11.86:1' },
+    'primary-fg': { ...ref('brand.graphite'), introduced: 'v2.1', note: 'Graphite, not White: on dark the primary fill is a light blue, so the label inverts with it. White on blue/400 measures 3.17:1 and fails.' },
+    'secondary-fg': { ...ref('blue.300'), contrast: '8.71:1 on the canvas' },
+    'secondary-bg-hover': { ...ref('alpha.white-08'), precedent: '--adel-nav-bg-hover' },
+  },
   accent: { mint: ref('brand.fresh-mint') },
   mark: { primary: ref('brand.white'), alternate: ref('brand.signature-blue'), reversed: ref('brand.graphite') },
   heart: { fill: { ...ref('blue.300'), precedent: 'LoveTech .lovetech--onDark' } },
@@ -223,10 +239,11 @@ const typography = {
   families: {
     display: { family: family('--adel-font-display'), stack: tok('--adel-font-display'), job: 'Latin display — standalone headings, wordmarks, nav, CTA, index figures. Never inside an Arabic run.', weights: [400, 500, 600, 700, 800] },
     text: { family: family('--adel-font-text'), stack: tok('--adel-font-text'), job: 'Arabic body/UI, any Latin inside an Arabic sentence, EN long-form.', weights: [300, 400, 500, 600] },
-    'arabic-display': { family: family('--adel-font-arabic-display'), stack: tok('--adel-font-arabic-display'), job: 'Arabic display only — hero, headings, pull quotes. ≥ 24 px. Never letter-spaced. Single weight: hierarchy by size.', weights: [400], licence: 'licensed to Adel; self-hosted; NOT redistributable', figma: 'not in the Figma font environment — must be uploaded as a team font' },
+    'arabic-display': { family: family('--adel-font-arabic-display'), stack: tok('--adel-font-arabic-display'), job: 'Arabic display only — hero, headings, pull quotes. ≥ 24 px. Never letter-spaced. Single weight: hierarchy by size.', weights: [400], licence: 'licensed to Adel; self-hosted; NOT redistributable', 'licence-terms': 'NOT STORED WITH THE PROJECT — no EULA, licence file or written grant exists anywhere in the repository; site/src/assets/fonts/README.md asserts the licence but does not reproduce its terms.', figma: 'NOT UPLOADED. A Figma team-font upload puts the file on the Figma servers and shares it with every team member, which is a redistribution-shaped use. The stored licence does not clearly permit it, so it is not done. KO Ghorab remains the approved Arabic display face and stays in production and export use where the licence does permit it (self-hosted on the site, and in local rendering). The Figma [Ghorab] styles keep their labelled Readex Pro placeholder family. No other typeface substitutes for Ghorab.' },
     mono: { family: family('--adel-font-mono'), stack: tok('--adel-font-mono'), job: 'technical figures, specs, code, overlines', weights: [400, 500] },
     hand: { family: family('--adel-font-hand'), stack: tok('--adel-font-hand'), job: 'About-page sketch layer ONLY, EN only. Placeholder until real handwriting exists. NEVER a signature stand-in.', weights: [500, 600], exception: true },
   },
+  'removed-from-core': { 'AR/UI': 'Readex Pro Medium 14/24. Removed from the canonical core typography system in the Phase 2A refinement: no site token backs it and nothing in production uses it. Preserved in Figma only as "Legacy / AR-UI (reference only)", not a brand standard. Arabic compact UI takes the EN/Label size with the Arabic body face.' },
   'not-approved': { Cairo: 'Edition 1 Arabic display — archived', Inter: 'bootstrap placeholder — not approved', Alexandria: 'bootstrap placeholder — not approved', Tajawal: 'generic skill example — not brand data', Amiri: 'not core; documented exception only for the scripture line on the holding page (coming-soon.astro)' },
   'montserrat-weights': { 800: 'Hero / Display XL ("I ❤ Tech")', 700: 'major section headings', 600: 'secondary headings', '500-600': 'navigation, CTA, labels', 400: 'specific supporting text only' },
   scale: Object.fromEntries(['xs', 'sm', 'base', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'].map((s) => [s, px(`--adel-text-${s}`)])),
@@ -253,7 +270,7 @@ const typography = {
     ['EN/Heading/1', 'Montserrat', 'Bold', 36, 44], ['EN/Heading/2', 'Montserrat', 'SemiBold', 28, 36], ['EN/Heading/3', 'Montserrat', 'SemiBold', 22, 30], ['EN/Heading/4', 'Montserrat', 'SemiBold', 18, 26],
     ['EN/Body/L', 'Readex Pro', 'Regular', 18, 30], ['EN/Body/M', 'Readex Pro', 'Regular', 16, 26], ['EN/Body/S', 'Readex Pro', 'Regular', 14, 22], ['EN/Label', 'Readex Pro', 'Medium', 14, 20], ['EN/Caption', 'Readex Pro', 'Regular', 12, 18], ['EN/Overline', 'Readex Pro', 'SemiBold', 12, 16, '+8%'],
     ['AR/Display/Hero [Ghorab]', 'KO Ghorab', 'Regular', 52, 73], ['AR/Display/Heading [Ghorab]', 'KO Ghorab', 'Regular', 32, 46], ['AR/Display/Quote [Ghorab]', 'KO Ghorab', 'Regular', 26, 39],
-    ['AR/Body/L', 'Readex Pro', 'Regular', 18, 33], ['AR/Body/M', 'Readex Pro', 'Regular', 16, 30], ['AR/UI', 'Readex Pro', 'Medium', 14, 24],
+    ['AR/Body/L', 'Readex Pro', 'Regular', 18, 33], ['AR/Body/M', 'Readex Pro', 'Regular', 16, 30],
     ['Social/Cover [Ghorab]', 'KO Ghorab', 'Regular', 112, 123], ['Social/Title', 'Readex Pro', 'Bold', 76, 94], ['Social/Sub', 'Readex Pro', 'SemiBold', 54, 71], ['Social/Body', 'Readex Pro', 'Regular', 36, 58], ['Social/Support', 'Readex Pro', 'Regular', 30, 48], ['Social/Label', 'Readex Pro', 'Medium', 26, 32], ['Social/Spec', 'JetBrains Mono', 'Medium', 34, 40], ['Social/Index', 'Montserrat', 'ExtraBold', 150, 135],
     ['Tech/Code', 'JetBrains Mono', 'Regular', 14, 22],
   ].map(([name, fam, style, size, line, tracking]) => ({ name, family: fam, style, size, line, ...(tracking ? { tracking } : {}) })),
@@ -566,10 +583,20 @@ const logo = {
     'adel': { status: 'secondary — kept, not retired', word: 'Adel', font: 'Montserrat 800', 'word-size': '0.72 × mark height', gap: 10, tracking: '-0.03em', source: 'site/src/components/AdelLogo.astro' },
     'love-tech': { status: 'master brand expression', words: 'I ❤ Tech', font: 'Montserrat 800', tracking: '-0.04em', gap: '0.21em', heart: '0.76em, brand/heart/love-tech-heart.svg, fill heart/fill (Signature Blue light · blue/300 dark)', source: 'site/src/components/LoveTech.astro' },
   },
-  'app-icon': { tile: 'Signature Blue (recommended) or Graphite — ruling open', mark: 'White', radius: '27/120 of tile', gradient: 'retired (atc-appicon-gradient.svg → archive)' },
+  'app-icon': { tile: 'Signature Blue — DEFAULT', 'tile-secondary': 'Graphite — secondary dark variant', mark: 'White', radius: '27/120 of tile', gradient: 'NONE. The Edition 1 Impact-gradient icon is retired (atc-appicon-gradient.svg → archive).' },
 };
 const heart = { master: 'brand/heart/love-tech-heart.svg', path: HEART_PATH, viewBox: '0 0 24 24', fill: { light: 'heart/fill → brand.signature-blue', dark: 'heart/fill → blue.300' }, note: 'scripts/build-og-adel.mjs still carries a second heart path; consolidate to this master (§5.5 of the audit).' };
-const signature = { status: 'RESERVED — empty', asset: null, 'site-slot': 'site.config.ts photography.signature', 'skill-slot': '.claude/skills/video-ad-editor/assets/signature.png', rule: 'No handwritten signature is created, simulated or set in a handwriting font. The slot stays empty until Adel supplies a real scanned signature (SVG or transparent PNG).' };
+const signature = {
+  status: 'RESERVED — empty', asset: null,
+  'site-slot': 'site.config.ts photography.signature',
+  'skill-slot': '.claude/skills/video-ad-editor/assets/signature.png',
+  rule: 'No handwritten signature is created, simulated, traced or set in a handwriting font. The slot stays empty until Adel supplies a real scanned signature (SVG or transparent PNG).',
+  'video-end-card': {
+    status: 'OPTIONAL VARIANT — never mandatory branding',
+    rule: 'When the real scan exists, the video end card gains a signature variant that a job may choose. It is never applied automatically and never becomes a required element on every video. The default end card carries the mark or lockup, not the signature.',
+    'applies-to': 'every canvas profile; the signature follows the profile brand zone and stays micro scale',
+  },
+};
 
 /* ---------------------------------------------------------------------------
    7 · Rules the video skill enforces (not just documents)
