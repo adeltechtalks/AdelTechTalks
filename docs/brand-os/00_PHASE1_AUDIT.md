@@ -314,3 +314,13 @@ docs/brand-os/               this audit, then the approved rulings, then per-for
 4. Repo `brand/`: token export script reading `src/styles/tokens`; consolidate logo files; single heart path; holding-page font fix.
 5. Show every change as a before/after in the PR before touching Canva or Adobe.
 6. Only then: Canva kit rebuild → template masters (04–07) → video-format kits → the `video-ad-editor` skill (Phase 3).
+
+---
+
+## Addendum — 2026-09-14, Phase 2A (facts above that are now stale)
+
+- **§1, §4, §5.1, §6.3, §7 and §8 — the video skill now exists.** `.claude/skills/video-ad-editor/` was installed on this branch in commit `722a810` (PR #23) at **VERSION 3.1.0**, with `SKILL.md`, `BRAND_SYSTEM.md`, `formats/` (five format contracts), `scripts/`, `templates/` and an empty `assets/` folder. "Create the skill" in §6.5 and §8 is therefore "integrate the skill with the export layer". Its bootstrap typography (Alexandria / Inter) and safe zones (150 / 300 / 180) were placeholders and are superseded — see `01_PHASE2A_DECISIONS.md` §5–6.
+- **§6.3 — `BRAND_SYSTEM.md` ownership is resolved.** It is generated from `brand/tokens/adel-v2.1.json` by `brand/scripts/build-tokens.mjs`; the bootstrap JSON is marked superseded.
+- **§3.1 — the Figma file changed between the audit and Phase 2A.** At the start of 2A it held nine pages (`00 — Brand System` plus eight mostly empty website-oriented scaffolds), one variable collection (`AdelTechTalks / Brand Colors`, nine flat colour variables, one mode) and eight text styles (English body set in Montserrat, display sizes off the audited scale). Phase 2A renamed the pages to the approved taxonomy, rebuilt the variables into six collections and retuned the styles. See `02_PHASE2A_FIGMA_PLAN.md` (intent) and `03_PHASE2A_REPORT.md` (result).
+- **§7 — all nine decisions are answered** in `01_PHASE2A_DECISIONS.md`.
+- **Phase 2A is FINAL APPROVED** (2026-09-14) and is now the locked AdelTechTalks Brand OS foundation. The proposed structure in §6 of this audit is superseded by what was actually built: see `03_PHASE2A_REPORT.md` for the inventory, `04_ADAPTIVE_FOLD_FIRST.md` for the adaptive canvas system and `05_PHASE2A_REFINEMENT.md` for the final decisions.

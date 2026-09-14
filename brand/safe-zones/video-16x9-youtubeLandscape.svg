@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+<title>Standard YouTube Landscape 16:9 — 1920×1080, margin 72, safe top 0 / bottom 120, 8 cols / 24 gutter — DEVICE VALIDATION REQUIRED</title>
+<rect width="1920" height="1080" fill="none"/>
+<rect x="0" y="960" width="1920" height="120" fill="#1746A2" fill-opacity="0.18"/>
+<rect x="72" y="72" width="1776" height="936" fill="none" stroke="#2563EB" stroke-width="2" stroke-dasharray="12 8"/>
+<rect x="72.00" y="0" width="201.00" height="960" fill="#2563EB" fill-opacity="0.06"/><rect x="297.00" y="0" width="201.00" height="960" fill="#2563EB" fill-opacity="0.06"/><rect x="522.00" y="0" width="201.00" height="960" fill="#2563EB" fill-opacity="0.06"/><rect x="747.00" y="0" width="201.00" height="960" fill="#2563EB" fill-opacity="0.06"/><rect x="972.00" y="0" width="201.00" height="960" fill="#2563EB" fill-opacity="0.06"/><rect x="1197.00" y="0" width="201.00" height="960" fill="#2563EB" fill-opacity="0.06"/><rect x="1422.00" y="0" width="201.00" height="960" fill="#2563EB" fill-opacity="0.06"/><rect x="1647.00" y="0" width="201.00" height="960" fill="#2563EB" fill-opacity="0.06"/>
+</svg>

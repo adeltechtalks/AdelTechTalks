@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1440" width="1920" height="1440">
+<title>Fold Landscape 4:3 — 1920×1440, margin 96, safe top 0 / bottom 120, 8 cols / 32 gutter — DEVICE VALIDATION REQUIRED</title>
+<rect width="1920" height="1440" fill="none"/>
+<rect x="0" y="1320" width="1920" height="120" fill="#1746A2" fill-opacity="0.18"/>
+<rect x="96" y="96" width="1728" height="1248" fill="none" stroke="#2563EB" stroke-width="2" stroke-dasharray="12 8"/>
+<rect x="96.00" y="0" width="188.00" height="1320" fill="#2563EB" fill-opacity="0.06"/><rect x="316.00" y="0" width="188.00" height="1320" fill="#2563EB" fill-opacity="0.06"/><rect x="536.00" y="0" width="188.00" height="1320" fill="#2563EB" fill-opacity="0.06"/><rect x="756.00" y="0" width="188.00" height="1320" fill="#2563EB" fill-opacity="0.06"/><rect x="976.00" y="0" width="188.00" height="1320" fill="#2563EB" fill-opacity="0.06"/><rect x="1196.00" y="0" width="188.00" height="1320" fill="#2563EB" fill-opacity="0.06"/><rect x="1416.00" y="0" width="188.00" height="1320" fill="#2563EB" fill-opacity="0.06"/><rect x="1636.00" y="0" width="188.00" height="1320" fill="#2563EB" fill-opacity="0.06"/>
+</svg>

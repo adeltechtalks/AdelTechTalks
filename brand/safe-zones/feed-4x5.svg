@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350" width="1080" height="1350">
+<title>Feed 4:5 — safe zones (margin 72, reserve top 96, bottom 168, 6 cols / 24 gutter)</title>
+<rect width="1080" height="1350" fill="none"/>
+<rect x="0" y="0" width="1080" height="96" fill="#1746A2" fill-opacity="0.18"/>
+<rect x="0" y="1182" width="1080" height="168" fill="#1746A2" fill-opacity="0.18"/>
+<rect x="72" y="72" width="936" height="1206" fill="none" stroke="#2563EB" stroke-width="2" stroke-dasharray="12 8"/>
+<rect x="72.00" y="96" width="136.00" height="1086" fill="#2563EB" fill-opacity="0.06"/><rect x="232.00" y="96" width="136.00" height="1086" fill="#2563EB" fill-opacity="0.06"/><rect x="392.00" y="96" width="136.00" height="1086" fill="#2563EB" fill-opacity="0.06"/><rect x="552.00" y="96" width="136.00" height="1086" fill="#2563EB" fill-opacity="0.06"/><rect x="712.00" y="96" width="136.00" height="1086" fill="#2563EB" fill-opacity="0.06"/><rect x="872.00" y="96" width="136.00" height="1086" fill="#2563EB" fill-opacity="0.06"/>
+</svg>
