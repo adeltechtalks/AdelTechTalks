@@ -1,5 +1,7 @@
 # Liquid Glass Corner Watermark
 
+> **✅ FINAL APPROVED** as part of the locked Phase 2B system (2026-09-14). Frozen; not reopened without a genuine implementation blocker.
+
 **Status: APPROVED Brand OS rule**, added 2026-09-14 after Phase 2A was locked. It changes **no approved Phase 2A value** — every fill, stroke, radius and spacing below is an existing token, and the export regenerates clean (`node brand/scripts/build-tokens.mjs --check`).
 **Machine-readable source:** `brand/tokens/adel-v2.1.json` → `watermark`, plus `rules.watermark`.
 **Figma:** component set `Watermark / A-Mark` and the `Watermark · placement & scale` spec frame on `04 — Core Components`; a `Show watermark` boolean on all ten archetypes on `05 — Static Ultra Carousel`.

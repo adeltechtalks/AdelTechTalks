@@ -1,5 +1,11 @@
 # Phase 2B — Execution report
 
+> ## ✅ STATUS: FINAL APPROVED
+>
+> Locked by Adel on 2026-09-14. Phase 2B is frozen: Core Components · Static Ultra Carousel · the Liquid Glass corner watermark · the Thumbnail System · the cross-channel cover architecture · the Canva reference findings · the feed-native thumbnail rules · the desk-wizard real-photo test · the Fold-First recomposition architecture.
+>
+> **Not to be reopened unless a genuine implementation blocker appears.** The one open item is a media dependency, not a design decision: there is no foldable/device photography in the repository, so Fold-First directions A and C remain composition-approved and media-blocked.
+
 **Scope built:** Figma `04 — Core Components` and `05 — Static Ultra Carousel`, plus one real production test carousel.
 **Foundation:** Phase 2A, FINAL APPROVED at `b2ce270`. Not reopened or reinterpreted — with one exception, a genuine implementation defect found and corrected (§10.1), reported rather than absorbed.
 **Reserved, untouched:** `06 — Motion Carousel`, `07 — Video System`, `08 — Social / Channel`.
