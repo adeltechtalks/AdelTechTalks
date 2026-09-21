@@ -2,7 +2,7 @@
 
 **Status:** rendered · 2026-09-21
 **Source:** `content/motion-carousel/2026-09-insta360-luna-ultra-update/` (Remotion project + `carousel-plan.json`)
-**Format:** 6 independent clips · 1080 × 1920 · 30 fps · 6–7 s each · muted · plus `carousel-preview.mp4` for review only
+**Format:** 6 independent clips · 1080 × 1920 · 30 fps · 6–7 s each · sound design on the motion beats (no voice, no background track by default) · plus `carousel-preview.mp4` for review only
 **Engine:** `.claude/skills/video-ad-editor` Motion Carousel format (`formats/motion-carousel.json`), rendered with the headless Chrome shell that ships with Playwright.
 
 ## Series anatomy (shared by all six)
@@ -15,7 +15,7 @@
 | Headline | Readex Pro Bold 64 (54 when long) for Arabic-led lines; Montserrat ExtraBold 60 for standalone English feature names; mixed lines rendered in an RTL paragraph |
 | Sub | Readex Pro 34/51 Slate `text/secondary` |
 | Signature | Graphite A-mark + `@AdelTechTalks` Readex Pro Medium 26 in Slate, bottom-left at y 1436 |
-| Motion | 0.45 s eased reveals, slow push-ins/pans on stills, one masked transition per two-beat slide, UI callouts (white `Elevation/2` pills with Deep Blue text, Ice pills, mint tracking brackets, rec pill, shutter flash), no whooshes |
+| Motion | 0.45 s eased reveals, slow push-ins/pans on stills, one masked transition per two-beat slide, UI callouts (white `Elevation/2` pills with Deep Blue text, Ice pills, mint tracking brackets, rec pill, shutter flash); sound: one synthesised effect per beat (air on the card, pop on a pill, thud on a headline, whoosh on a masked reveal, riser + chime on the counters, lock chirp, shutter click), peaks at −10 dBFS, nothing continuous |
 
 ## Slides
 | # | Scene | Visual | Copy |

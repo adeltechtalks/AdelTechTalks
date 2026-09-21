@@ -1,0 +1,62 @@
+{
+  "note": "Sound design for the Luna Ultra motion carousel. Times in seconds from the start of each clip; every event sits on a motion beat from Carousel.tsx (30 fps). No background track by default — drop bg-audio.mp3 next to mix.py to add one, it is ducked under the effects.",
+  "names": {
+    "01": "01_Hook",
+    "02": "02_15x_Zoom",
+    "03": "03_Stage_Mode",
+    "04": "04_Active_Zoom_Tracking",
+    "05": "05_Live_Frame",
+    "06": "06_Pro_Audio_CTA",
+    "preview": "Full_Stitched_Preview"
+  },
+  "slides": [
+    {"id": "01", "duration": 6, "events": [
+      {"t": 0.00, "sfx": "air",    "gain": 0.9,  "why": "card lands"},
+      {"t": 0.40, "sfx": "pop",    "gain": 0.5,  "pan": 0.5, "why": "UPDATING FIRMWARE pill"},
+      {"t": 0.47, "sfx": "thud",   "gain": 0.8,  "why": "headline lands"},
+      {"t": 2.33, "sfx": "whoosh", "gain": 1.0,  "why": "circle reveal to the install sheet"},
+      {"t": 3.47, "sfx": "pop",    "gain": 0.5,  "pan": -0.5, "why": "INSTALL NEW FIRMWARE pill"}
+    ]},
+    {"id": "02", "duration": 6, "events": [
+      {"t": 0.00, "sfx": "air",    "gain": 0.9},
+      {"t": 0.33, "sfx": "thud",   "gain": 0.8,  "why": "headline lands"},
+      {"t": 1.13, "sfx": "riser",  "gain": 0.8,  "dur": 2.8, "why": "pan 1× → 15× with the counter"},
+      {"t": 3.93, "sfx": "chime",  "gain": 0.9,  "why": "15× reached, counter glows"}
+    ]},
+    {"id": "03", "duration": 7, "events": [
+      {"t": 0.00, "sfx": "air",    "gain": 0.9},
+      {"t": 0.33, "sfx": "thud",   "gain": 0.8,  "why": "headline lands"},
+      {"t": 0.60, "sfx": "pulse",  "gain": 0.7,  "why": "first ring around Stage Mode"},
+      {"t": 0.73, "sfx": "pop",    "gain": 0.5,  "why": "Stage Mode pill"},
+      {"t": 1.47, "sfx": "pulse",  "gain": 0.6,  "why": "second ring"},
+      {"t": 2.80, "sfx": "whoosh", "gain": 1.0,  "why": "circle mask to the stage shot"},
+      {"t": 3.07, "sfx": "thud",   "gain": 0.7,  "why": "AI-Enhanced headline lands"},
+      {"t": 3.80, "sfx": "pop",    "gain": 0.5,  "pan": -0.5, "why": "AI-Enhanced pill"}
+    ]},
+    {"id": "04", "duration": 6, "events": [
+      {"t": 0.00, "sfx": "air",    "gain": 0.9},
+      {"t": 0.33, "sfx": "thud",   "gain": 0.8,  "why": "headline lands"},
+      {"t": 0.50, "sfx": "lock",   "gain": 0.9,  "why": "tracking box locks on"},
+      {"t": 1.33, "sfx": "riser",  "gain": 0.5,  "dur": 3.6, "why": "push-in 1× → 6×"},
+      {"t": 4.93, "sfx": "chime",  "gain": 0.8,  "pan": 0.4, "why": "6× reached"}
+    ]},
+    {"id": "05", "duration": 6, "events": [
+      {"t": 0.00, "sfx": "air",    "gain": 0.9},
+      {"t": 0.33, "sfx": "thud",   "gain": 0.8,  "why": "headline lands"},
+      {"t": 0.40, "sfx": "pop",    "gain": 0.45, "pan": -0.5, "why": "REC pill"},
+      {"t": 1.47, "sfx": "shutter","gain": 1.0,  "why": "snapshot flash"},
+      {"t": 1.93, "sfx": "whoosh", "gain": 0.6,  "dur": 0.4, "pan": 0.4, "why": "photo card lifts off"},
+      {"t": 2.33, "sfx": "pop",    "gain": 0.5,  "pan": 0.4, "why": "Photo saved pill"}
+    ]},
+    {"id": "06", "duration": 7, "events": [
+      {"t": 0.00, "sfx": "air",    "gain": 0.9},
+      {"t": 0.33, "sfx": "thud",   "gain": 0.8,  "why": "headline lands"},
+      {"t": 0.40, "sfx": "pop",    "gain": 0.5,  "pan": -0.5, "why": "Stage Audio pill"},
+      {"t": 1.67, "sfx": "whoosh", "gain": 0.8,  "why": "pan to Ambient Audio 360"},
+      {"t": 2.00, "sfx": "pop",    "gain": 0.5,  "pan": 0.5, "why": "Ambient Audio 360 pill"},
+      {"t": 4.33, "sfx": "whoosh", "gain": 1.0,  "why": "wipe to the real camera"},
+      {"t": 4.60, "sfx": "thud",   "gain": 0.8,  "why": "CTA headline lands"},
+      {"t": 5.33, "sfx": "chime",  "gain": 0.9,  "why": "I ❤ Tech lockup"}
+    ]}
+  ]
+}
