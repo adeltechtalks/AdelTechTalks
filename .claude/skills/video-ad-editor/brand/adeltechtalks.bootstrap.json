@@ -1,0 +1,40 @@
+{
+  "brand": "AdelTechTalks",
+  "version": "bootstrap-2026-09",
+  "status": "sync-with-figma-before-lock",
+  "source_of_truth": "Figma brand library",
+  "known_core_colors": {
+    "signature_blue": "#2563EB",
+    "ice": "#DCEBFF",
+    "deep_blue": "#1746A2"
+  },
+  "typography": {
+    "arabic_primary": "Alexandria",
+    "latin_primary": "Inter",
+    "status": "proposed-defaults-until-figma-sync"
+  },
+  "identity": {
+    "handle": "@AdelTechTalks",
+    "signature_asset": "assets/signature.png",
+    "logo_asset": "assets/logo.png"
+  },
+  "video": {
+    "canvas": {"width": 1080, "height": 1920, "fps": 30},
+    "safe_zones": {
+      "top": 150,
+      "bottom": 300,
+      "right": 180,
+      "right_y_start": 1100,
+      "right_y_end": 1750
+    },
+    "asmr": {
+      "music": false,
+      "captions": false,
+      "natural_audio_priority": true,
+      "transitions": ["cut", "match_cut"],
+      "speed_ramps": "subtle-only",
+      "text_density": "minimal",
+      "logo_scale": "micro"
+    }
+  }
+}

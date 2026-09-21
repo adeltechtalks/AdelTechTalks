@@ -1,0 +1,89 @@
+{
+  "title": "AdelTechTalks — Insta360 Luna Ultra Update Motion Carousel",
+  "target": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "brand": {
+    "bg": "#FAFAF8",
+    "raised": "#FFFFFF",
+    "ink": "#171A1F",
+    "ice": "#DCEBFF",
+    "muted": "#667085",
+    "accent": "#2563EB",
+    "deep": "#1746A2",
+    "mint": "#2DD4A8",
+    "font_ar": "Readex Pro",
+    "font_latin": "Montserrat",
+    "font_mono": "JetBrains Mono",
+    "handle": "@AdelTechTalks",
+    "mark": "assets/adel-a-mark.svg",
+    "update_tag": "جديد في التحديث",
+    "theme": "light",
+    "mint_text": "#17A97F",
+    "line": "#E6E8EC"
+  },
+  "slides": [
+    {
+      "id": "01",
+      "scene": "hook",
+      "duration": 6,
+      "media": "media/real-hero-camera.jpg",
+      "media_note": "Adel's real Luna Ultra: wide firmware-update shot → close-up of the 'Updating firmware' screen",
+      "eyebrow": "Insta360 Luna Ultra",
+      "headline": "وصلها Update جديد 👀",
+      "sub": "ودي أهم الحاجات الجديدة في التحديث",
+      "media_b": "media/real-01b-installing.jpg"
+    },
+    {
+      "id": "02",
+      "scene": "zoom",
+      "duration": 6,
+      "media": "media/official-02-telephoto-15x.jpg",
+      "headline": "15× HighRes Zoom",
+      "sub": "تقريب أقوى لحد 15× — من ضمن الحاجات الجديدة في التحديث"
+    },
+    {
+      "id": "03",
+      "scene": "stage",
+      "duration": 7,
+      "media": "media/official-04-stage-mode.jpg",
+      "media_b": "media/official-05-ai-stage.jpg",
+      "headline": "Stage Mode جديد 🎤",
+      "sub": "متظبط للحفلات والعروض",
+      "headline_b": "AI-Enhanced Stage Footage",
+      "sub_b": "عشان يلقط اللحظات أوضح"
+    },
+    {
+      "id": "04",
+      "scene": "tracking",
+      "duration": 6,
+      "media": "media/official-06-tracking.jpg",
+      "headline": "Active Zoom Tracking",
+      "sub": "يمسك الهدف ويتابعه بسهولة"
+    },
+    {
+      "id": "05",
+      "scene": "snapshot",
+      "duration": 6,
+      "media": "media/official-07-live-frame.jpg",
+      "headline": "Live Frame Snapshots",
+      "sub": "صوّر فيديو وخد Photo في نفس اللحظة 📸"
+    },
+    {
+      "id": "06",
+      "scene": "audio_cta",
+      "duration": 7,
+      "media": "media/official-08-audio.jpg",
+      "media_note": "closing: Adel's real Luna Ultra close-up (firmware install on the phone beside it)",
+      "headline": "Pro Audio Modes",
+      "sub": "صوت أوضح حسب السيناريو",
+      "mode_a": "Stage Audio",
+      "mode_b": "Ambient Audio 360",
+      "headline_b": "أي Feature شدّتك أكتر؟ 👀",
+      "sub_b": "ولو عايزين أجرّب أول Feature أول ما تظهر عندي… قولولي",
+      "media_b": "media/real-hero-camera.jpg"
+    }
+  ]
+}
