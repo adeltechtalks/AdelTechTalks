@@ -26,7 +26,7 @@
       "id": "01",
       "scene": "hook",
       "duration": 6,
-      "media": "media/real-01-camera.jpg",
+      "media": "media/real-hero-camera.jpg",
       "media_note": "Adel's real Luna Ultra: wide firmware-update shot → close-up of the 'Updating firmware' screen",
       "eyebrow": "Insta360 Luna Ultra",
       "headline": "وصلها Update جديد 👀",
@@ -80,7 +80,7 @@
       "mode_b": "Ambient Audio 360",
       "headline_b": "أي Feature شدّتك أكتر؟ 👀",
       "sub_b": "ولو عايزين أجرّب أول Feature أول ما تظهر عندي… قولولي",
-      "media_b": "media/real-06-camera.jpg"
+      "media_b": "media/real-hero-camera.jpg"
     }
   ]
 }

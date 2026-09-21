@@ -20,16 +20,16 @@
 ## Slides
 | # | Scene | Visual | Copy |
 |---|---|---|---|
-| 01 | hook | Adel's real Luna Ultra in front of the phone showing "Firmware downloading" → circular reveal into the camera screen "Updating firmware" beside the phone's "Install new firmware" sheet | Insta360 Luna Ultra · وصلها Update جديد 👀 · ودي أهم الحاجات الجديدة في التحديث |
+| 01 | hook | hero close-up of Adel's real Luna Ultra, screen reading "Updating firmware 11%" → circular reveal into the camera screen "Updating firmware" beside the phone's "Install new firmware" sheet | Insta360 Luna Ultra · وصلها Update جديد 👀 · ودي أهم الحاجات الجديدة في التحديث |
 | 02 | zoom | official 1×/15× split; pan from 1× to 15× while a mono counter ticks 1×→15× | 15× HighRes Zoom · تقريب أقوى لحد 15× — من ضمن الحاجات الجديدة في التحديث |
 | 03 | stage | Stage Mode selector with pulsing ring → circular mask reveal of the AI stage shot | Stage Mode جديد 🎤 / متظبط للحفلات والعروض → AI-Enhanced Stage Footage / عشان يلقط اللحظات أوضح |
 | 04 | tracking | official Active Zoom Tracking shot; glow locks onto the official green box, push-in while a mono counter ticks 1×→6× | Active Zoom Tracking · يمسك الهدف ويتابعه بسهولة |
 | 05 | snapshot | camera-in-hand shot, REC pill, shutter flash, the live preview lifts off as a saved photo | Live Frame Snapshots · صوّر فيديو وخد Photo في نفس اللحظة 📸 |
-| 06 | audio_cta | official Pro Audio Modes split: hold on Stage Audio, pan to Ambient Audio 360 (pills with mini equalisers), settle on the split → wipe to Adel's real camera close-up with the I ❤ Tech lockup | Pro Audio Modes / صوت أوضح حسب السيناريو → أي Feature شدّتك أكتر؟ 👀 / ولو عايزين أجرّب أول Feature أول ما تظهر عندي… قولولي |
+| 06 | audio_cta | official Pro Audio Modes split: hold on Stage Audio, pan to Ambient Audio 360 (pills with mini equalisers), settle on the split → wipe back to the same hero close-up of Adel's real camera with the I ❤ Tech lockup | Pro Audio Modes / صوت أوضح حسب السيناريو → أي Feature شدّتك أكتر؟ 👀 / ولو عايزين أجرّب أول Feature أول ما تظهر عندي… قولولي |
 
 ## Content rules applied
 - No claim of personal testing: every feature is introduced as part of the official update.
 - Feature names in English; Arabic explanation first; Western digits.
 
 ## Real-camera anchors
-Slides 1 and 6 use Adel's own photos of the Luna Ultra during the firmware install (wide "Firmware downloading" shot, the install sheet mid-update, camera close-up), so the series opens and closes on the real unit.
+Slides 1 and 6 use Adel's own photos of the Luna Ultra during the firmware install (the hero close-up with "Updating firmware 11%" on the screen, and the phone's "Install new firmware" sheet mid-update), so the series opens and closes on the real unit.

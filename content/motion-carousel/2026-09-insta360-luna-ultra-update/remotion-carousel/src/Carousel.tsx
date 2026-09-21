@@ -96,14 +96,14 @@ const Hook: React.FC<{s: any}> = ({s}) => {
   const pillB = ip(f, T + 34, T + 48);
   return <>
     <Card>
-      <Photo src={s.media} iw={1932} ih={2576} crop={{x: 0, y: 486, w: 1932, h: 1648}} zoom={zoomA} anchor={{x: 485, y: 1370}}/>
+      <Photo src={s.media} iw={1932} ih={2576} crop={{x: 0, y: 166, w: 1932, h: 1648}} zoom={zoomA} anchor={{x: 984, y: 1380}}/>
       <Grad strength={0.5}/>
-      <div style={{position: 'absolute', right: 32, top: 32, opacity: pillA}}><Pill tone="glass" size={20} style={{fontFamily: B.font_mono, fontWeight: 500, padding: '6px 12px'}}><span style={{width: 10, height: 10, borderRadius: 5, background: B.mint, boxShadow: `0 0 12px ${B.mint}`}}/>FIRMWARE DOWNLOADING</Pill></div>
-      <div style={{position: 'absolute', inset: 0, clipPath: `circle(${r}px at 235px 430px)`}}>
+      <div style={{position: 'absolute', right: 32, top: 32, opacity: pillA}}><Pill tone="glass" size={20} style={{fontFamily: B.font_mono, fontWeight: 500, padding: '6px 12px'}}><span style={{width: 10, height: 10, borderRadius: 5, background: B.mint, boxShadow: `0 0 12px ${B.mint}`}}/>UPDATING FIRMWARE · 11%</Pill></div>
+      <div style={{position: 'absolute', inset: 0, clipPath: `circle(${r}px at 477px 588px)`}}>
         <Photo src={s.media_b} iw={1932} ih={2576} crop={{x: 60, y: 780, w: 1500, h: 1300}} zoom={zoomB}/>
         <Grad strength={0.45}/>
         <div style={{position: 'absolute', left: 32, bottom: 32, opacity: pillB, transform: `translateY(${(1 - pillB) * 10}px)`}}>
-          <Pill tone="glass" size={22} style={{fontFamily: B.font_mono, fontWeight: 500}}><span style={{width: 10, height: 10, borderRadius: 5, background: B.accent, boxShadow: `0 0 12px ${B.accent}`, opacity: 0.55 + 0.45 * Math.abs(Math.sin(f / 7))}}/>UPDATING FIRMWARE</Pill>
+          <Pill tone="glass" size={22} style={{fontFamily: B.font_mono, fontWeight: 500}}><span style={{width: 10, height: 10, borderRadius: 5, background: B.accent, boxShadow: `0 0 12px ${B.accent}`, opacity: 0.55 + 0.45 * Math.abs(Math.sin(f / 7))}}/>INSTALL NEW FIRMWARE</Pill>
         </div>
       </div>
     </Card>
@@ -245,7 +245,7 @@ const AudioCta: React.FC<{s: any}> = ({s}) => {
       <div style={{position: 'absolute', left: 32, top: 32, opacity: ip(f, 10, 24) * (f < 100 ? onLeft : 1)}}><Pill tone="blue" size={22} style={{fontFamily: B.font_latin, fontWeight: 700}}>Stage Audio<Eq f={f} color={B.ice} kind="stage"/></Pill></div>
       <div style={{position: 'absolute', right: 32, top: 32, opacity: onRight}}><Pill tone="glass" size={22} style={{fontFamily: B.font_latin, fontWeight: 700}}>Ambient Audio 360<Eq f={f} color={B.ice} kind="ambient"/></Pill></div>
       <div style={{position: 'absolute', inset: 0, clipPath: `inset(${(1 - wipe) * 100}% 0 0 0)`}}>
-        <Photo src={s.media_b} iw={1932} ih={2576} crop={{x: 0, y: 250, w: 1932, h: 1450}} zoom={ip(f, T, 210, 1.0, 1.08, Easing.linear)}/>
+        <Photo src={s.media_b} iw={1932} ih={2576} crop={{x: 0, y: 166, w: 1932, h: 1648}} zoom={ip(f, T, 210, 1.0, 1.08, Easing.linear)} anchor={{x: 984, y: 1380}}/>
         <Grad strength={0.7}/>
         <div style={{position: 'absolute', left: 32, bottom: 32, display: 'flex', alignItems: 'center', gap: 12, direction: 'ltr', opacity: ip(f, T + 30, T + 44)}}>
           <span style={{fontFamily: B.font_latin, fontWeight: 800, fontSize: 40, color: '#fff', letterSpacing: -1}}>I</span><Heart size={38}/><span style={{fontFamily: B.font_latin, fontWeight: 800, fontSize: 40, color: '#fff', letterSpacing: -1}}>Tech</span>

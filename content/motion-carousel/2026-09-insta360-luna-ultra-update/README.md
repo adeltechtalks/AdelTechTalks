@@ -11,9 +11,8 @@ Six independent 9:16 clips (1080 × 1920, 30 fps, 6–7 s each) plus a stitched 
 - `exports/slides/01.mp4 … 06.mp4` — the deliverables. `exports/carousel-preview.mp4` — review only.
 
 ## Real-camera media (Adel's own shots)
-- `media/real-01-camera.jpg` — wide: Luna Ultra sharp in front, the phone soft behind it showing "Firmware downloading" (slide 1 opening).
+- `media/real-hero-camera.jpg` — hero: close-up of the Luna Ultra with its screen reading "Updating firmware 11%", the phone soft at the edge (slide 1 opening and the slide 6 closing bookend).
 - `media/real-01b-installing.jpg` — the camera screen "Updating firmware 14%" beside the phone's "Install new firmware" sheet at 65% (slide 1 reveal).
-- `media/real-06-camera.jpg` — close-up of the camera with the firmware notes on the phone (slide 6 closing).
 Swap any of them by replacing the file; adjust the `crop` values in `Hook` / `AudioCta` if the framing changes.
 
 ## Render
