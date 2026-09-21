@@ -37,7 +37,7 @@
 | 03 | التفاصيل | إيه اللي اتغيّر؟ | cards: المعلومات بقت Side‑Aligned · مساحات أكبر وأنضف · الـFollow بقى أوضح · اختصارات زي TikTok Studio بقت في الواجهة |
 | 04 | الإحساس | هو أنا فتحت Instagram؟ 😅 | الـProfile الجديد بيدي مساحة أكبر للهوية والمعلومات… ومش بس الفيديوهات. · chips: الجديد في TikTok · بروفايل سوشيال تقليدي |
 | 05 | بالنسبة للـCreators | وده يهم الـCreators ليه؟ | صورتك بقت أهم · الـBio بقى له حضور أكبر · أول فيديوهات في الـGrid بقت جزء أقوى من أول Impression · closing: يعني شكل البروفايل نفسه محتاج اهتمام أكتر. |
-| 06 | رأيك يهمني | الجديد ولا القديم؟ 👀 | أنا لسه بحاول أتعود عليه 😅 · choices: الجديد ✅ / القديم ❤️ · footer: قولّي رأيك في الكومنتات 👇 · I ❤ Tech lockup |
+| 06 | رأيك يهمني | الجديد ولا القديم؟ 👀 | أنا لسه بحاول أتعود عليه 😅 · choices: الجديد ❤️ / القديم 🖤 · footer: قولّي رأيك في الكومنتات 👇 · I ❤ Tech lockup |
 
 RTL rules applied: "TikTok" is always written in Latin; the cover headline starts with it, so the text is prefixed with an invisible right-to-left mark (U+200F) to keep the paragraph RTL. Every other text box starts with an Arabic word; Latin product names are inline
 islands; `؟` + emoji and `Side‑Aligned` use non-breaking joins (U+00A0 / U+2011) so a line never
@@ -49,7 +49,7 @@ thumbnail size.
 Frame `FB · single image — TikTok Profile Redesign · 1080×1350` (node `149:246`) in the same section,
 to the right of slide 06. One composition for a Facebook photo post: eyebrow, the cover headline in
 `Social/Title`, the sub line in `Social/Body`, the phone crop (left) beside the four change cards
-(right), an Ice-tinted poll panel (الجديد ✅ / القديم ❤️) and the signature strip. Same margins, type
+(right), an Ice-tinted poll panel (الجديد ❤️ / القديم 🖤) and the signature strip. Same margins, type
 roles and crop treatment as the carousel; 4:5 shows at full height in the mobile feed.
 
 ## Editing
