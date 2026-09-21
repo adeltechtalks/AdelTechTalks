@@ -96,10 +96,10 @@ const Hook: React.FC<{s: any}> = ({s}) => {
   const pillB = ip(f, T + 34, T + 48);
   return <>
     <Card>
-      <Photo src={s.media} iw={1932} ih={2576} crop={{x: 0, y: 60, w: 1760, h: 1500}} zoom={zoomA} anchor={{x: 880, y: 810}}/>
+      <Photo src={s.media} iw={1932} ih={2576} crop={{x: 0, y: 486, w: 1932, h: 1648}} zoom={zoomA} anchor={{x: 485, y: 1370}}/>
       <Grad strength={0.5}/>
-      <div style={{position: 'absolute', right: 32, top: 32, opacity: pillA}}><Pill tone="glass" size={20} style={{fontFamily: B.font_mono, fontWeight: 500, padding: '6px 12px'}}><span style={{width: 10, height: 10, borderRadius: 5, background: B.mint, boxShadow: `0 0 12px ${B.mint}`}}/>NEW FIRMWARE FOUND</Pill></div>
-      <div style={{position: 'absolute', inset: 0, clipPath: `circle(${r}px at 154px 359px)`}}>
+      <div style={{position: 'absolute', right: 32, top: 32, opacity: pillA}}><Pill tone="glass" size={20} style={{fontFamily: B.font_mono, fontWeight: 500, padding: '6px 12px'}}><span style={{width: 10, height: 10, borderRadius: 5, background: B.mint, boxShadow: `0 0 12px ${B.mint}`}}/>FIRMWARE DOWNLOADING</Pill></div>
+      <div style={{position: 'absolute', inset: 0, clipPath: `circle(${r}px at 235px 430px)`}}>
         <Photo src={s.media_b} iw={1932} ih={2576} crop={{x: 60, y: 780, w: 1500, h: 1300}} zoom={zoomB}/>
         <Grad strength={0.45}/>
         <div style={{position: 'absolute', left: 32, bottom: 32, opacity: pillB, transform: `translateY(${(1 - pillB) * 10}px)`}}>
