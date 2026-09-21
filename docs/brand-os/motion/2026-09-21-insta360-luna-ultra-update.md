@@ -20,7 +20,7 @@
 ## Slides
 | # | Scene | Visual | Copy |
 |---|---|---|---|
-| 01 | hook | Adel's real Luna Ultra beside the phone showing "New firmware found" → circular reveal into the close-up of the camera screen "Updating firmware 11%" | Insta360 Luna Ultra · وصلها Update جديد 👀 · ودي أهم الحاجات الجديدة في التحديث |
+| 01 | hook | Adel's real Luna Ultra beside the phone showing "New firmware found" → circular reveal into the camera screen "Updating firmware" beside the phone's "Install new firmware" sheet | Insta360 Luna Ultra · وصلها Update جديد 👀 · ودي أهم الحاجات الجديدة في التحديث |
 | 02 | zoom | official 1×/15× split; pan from 1× to 15× while a mono counter ticks 1×→15× | 15× HighRes Zoom · تقريب أقوى لحد 15× — من ضمن الحاجات الجديدة في التحديث |
 | 03 | stage | Stage Mode selector with pulsing ring → circular mask reveal of the AI stage shot | Stage Mode جديد 🎤 / متظبط للحفلات والعروض → AI-Enhanced Stage Footage / عشان يلقط اللحظات أوضح |
 | 04 | tracking | official Active Zoom Tracking shot; glow locks onto the official green box, push-in while a mono counter ticks 1×→6× | Active Zoom Tracking · يمسك الهدف ويتابعه بسهولة |
@@ -32,4 +32,4 @@
 - Feature names in English; Arabic explanation first; Western digits.
 
 ## Real-camera anchors
-Slides 1 and 6 use Adel's own photos of the Luna Ultra during the firmware install (wide shot, screen close-up, camera close-up), so the series opens and closes on the real unit.
+Slides 1 and 6 use Adel's own photos of the Luna Ultra during the firmware install (wide "New firmware found" shot, the install sheet mid-update, camera close-up), so the series opens and closes on the real unit.

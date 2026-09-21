@@ -100,7 +100,7 @@ const Hook: React.FC<{s: any}> = ({s}) => {
       <Grad strength={0.5}/>
       <div style={{position: 'absolute', right: 32, top: 32, opacity: pillA}}><Pill tone="glass" size={20} style={{fontFamily: B.font_mono, fontWeight: 500, padding: '6px 12px'}}><span style={{width: 10, height: 10, borderRadius: 5, background: B.mint, boxShadow: `0 0 12px ${B.mint}`}}/>NEW FIRMWARE FOUND</Pill></div>
       <div style={{position: 'absolute', inset: 0, clipPath: `circle(${r}px at 154px 359px)`}}>
-        <Photo src={s.media_b} iw={1932} ih={2576} crop={{x: 555, y: 956, w: 900, h: 780}} zoom={zoomB}/>
+        <Photo src={s.media_b} iw={1932} ih={2576} crop={{x: 60, y: 780, w: 1500, h: 1300}} zoom={zoomB}/>
         <Grad strength={0.45}/>
         <div style={{position: 'absolute', left: 32, bottom: 32, opacity: pillB, transform: `translateY(${(1 - pillB) * 10}px)`}}>
           <Pill tone="glass" size={22} style={{fontFamily: B.font_mono, fontWeight: 500}}><span style={{width: 10, height: 10, borderRadius: 5, background: B.accent, boxShadow: `0 0 12px ${B.accent}`, opacity: 0.55 + 0.45 * Math.abs(Math.sin(f / 7))}}/>UPDATING FIRMWARE</Pill>
