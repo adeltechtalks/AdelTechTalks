@@ -89,17 +89,17 @@ const Grad: React.FC<{strength?: number}> = ({strength = 0.7}) => <div style={{p
 const Hook: React.FC<{s: any}> = ({s}) => {
   const f = useCurrentFrame();
   const T = 70;
-  const zoomA = ip(f, 0, T + 20, 1.0, 1.07, Easing.linear);
+  const zoomA = ip(f, 0, T + 20, 1.0, 1.045, Easing.linear);
   const r = ip(f, T, T + 30, 0, 1300, EIO);
   const zoomB = interpolate(f, [T, T + 40, 180], [1.14, 1.0, 1.04], {...clamp, easing: Easing.linear});
   const pillA = ip(f, 12, 26) * (1 - ip(f, T - 4, T + 8));
   const pillB = ip(f, T + 34, T + 48);
   return <>
     <Card>
-      <Photo src={s.media} iw={1932} ih={2576} crop={{x: 0, y: 330, w: 1640, h: 1400}} zoom={zoomA}/>
+      <Photo src={s.media} iw={1932} ih={2576} crop={{x: 0, y: 60, w: 1760, h: 1500}} zoom={zoomA} anchor={{x: 880, y: 810}}/>
       <Grad strength={0.5}/>
-      <div style={{position: 'absolute', left: 32, top: 32, opacity: pillA}}><Pill tone="glass" size={20} style={{fontFamily: B.font_mono, fontWeight: 500, padding: '6px 12px'}}><span style={{width: 10, height: 10, borderRadius: 5, background: B.mint, boxShadow: `0 0 12px ${B.mint}`}}/>LUNA ULTRA · FIRMWARE</Pill></div>
-      <div style={{position: 'absolute', inset: 0, clipPath: `circle(${r}px at 157px 440px)`}}>
+      <div style={{position: 'absolute', right: 32, top: 32, opacity: pillA}}><Pill tone="glass" size={20} style={{fontFamily: B.font_mono, fontWeight: 500, padding: '6px 12px'}}><span style={{width: 10, height: 10, borderRadius: 5, background: B.mint, boxShadow: `0 0 12px ${B.mint}`}}/>NEW FIRMWARE FOUND</Pill></div>
+      <div style={{position: 'absolute', inset: 0, clipPath: `circle(${r}px at 154px 359px)`}}>
         <Photo src={s.media_b} iw={1932} ih={2576} crop={{x: 555, y: 956, w: 900, h: 780}} zoom={zoomB}/>
         <Grad strength={0.45}/>
         <div style={{position: 'absolute', left: 32, bottom: 32, opacity: pillB, transform: `translateY(${(1 - pillB) * 10}px)`}}>
