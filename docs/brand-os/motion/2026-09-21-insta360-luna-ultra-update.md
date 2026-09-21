@@ -8,14 +8,14 @@
 ## Series anatomy (shared by all six)
 | Element | Value |
 |---|---|
-| Canvas | Graphite-black `#0E1013`, faint Signature Blue radial glow; 9:16 reserves respected (nothing above y 260 or below y 1500, text right edge 828 beside the action-button column) |
+| Canvas | AdelTechTalks light theme: Warm White `surface/canvas` `#FAFAF8`, faint Signature Blue radial glow; 9:16 reserves respected (nothing above y 260 or below y 1500, text right edge 828 beside the action-button column) |
 | Index | `01 / 06` JetBrains Mono 26, top-left |
-| Eyebrow | pill top-right: `جديد في التحديث` with a Mint dot on feature slides; `Insta360 Luna Ultra` / `AdelTechTalks` in Montserrat on the bookends |
-| Media card | 936 × 800 at (72, 340), radius 32, 1 px white/8 % border, deep shadow, gradient into the canvas |
+| Eyebrow | pill top-right: `جديد في التحديث` in an Ice pill with Deep Blue text and a Mint dot on feature slides; `Insta360 Luna Ultra` / `AdelTechTalks` in Montserrat on a white pill on the bookends |
+| Media card | 936 × 800 at (72, 340), radius 32, white `surface/raised`, 1 px Soft Gray hairline, `Elevation/3` graphite shadow; photos keep a soft graphite gradient at the foot for the in-card callouts |
 | Headline | Readex Pro Bold 64 (54 when long) for Arabic-led lines; Montserrat ExtraBold 60 for standalone English feature names; mixed lines rendered in an RTL paragraph |
-| Sub | Readex Pro 34/51 Ice Blue |
-| Signature | white A-mark + `@AdelTechTalks` Readex Pro Medium 26, bottom-left at y 1436 |
-| Motion | 0.45 s eased reveals, slow push-ins/pans on stills, one masked transition per two-beat slide, UI callouts (glass pills, mint tracking brackets, rec pill, shutter flash), no whooshes |
+| Sub | Readex Pro 34/51 Slate `text/secondary` |
+| Signature | Graphite A-mark + `@AdelTechTalks` Readex Pro Medium 26 in Slate, bottom-left at y 1436 |
+| Motion | 0.45 s eased reveals, slow push-ins/pans on stills, one masked transition per two-beat slide, UI callouts (white `Elevation/2` pills with Deep Blue text, Ice pills, mint tracking brackets, rec pill, shutter flash), no whooshes |
 
 ## Slides
 | # | Scene | Visual | Copy |

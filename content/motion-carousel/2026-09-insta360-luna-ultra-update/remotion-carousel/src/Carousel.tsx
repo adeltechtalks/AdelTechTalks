@@ -44,10 +44,10 @@ const Index: React.FC<{n: number}> = ({n}) => (
   </Reveal>
 );
 const Pill: React.FC<{children: React.ReactNode; style?: React.CSSProperties; tone?: 'blue' | 'glass' | 'mint' | 'white'; size?: number}> = ({children, style, tone = 'blue', size = 24}) => {
-  const bg = tone === 'blue' ? 'rgba(37,99,235,.22)' : tone === 'mint' ? 'rgba(45,212,168,.16)' : tone === 'white' ? 'rgba(255,255,255,.92)' : 'rgba(14,16,19,.55)';
-  const bd = tone === 'blue' ? 'rgba(96,150,255,.55)' : tone === 'mint' ? 'rgba(45,212,168,.55)' : tone === 'white' ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.18)';
-  const fg = tone === 'white' ? B.bg : tone === 'mint' ? B.mint : B.ice;
-  return <div style={{display: 'inline-flex', alignItems: 'center', gap: 10, padding: `${size * 0.42}px ${size * 0.8}px`, borderRadius: 999, background: bg, border: `1.5px solid ${bd}`, color: fg, fontSize: size, lineHeight: 1.2, fontFamily: B.font_ar, fontWeight: 500, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', whiteSpace: 'nowrap', ...style}}>{children}</div>;
+  const bg = tone === 'blue' ? B.ice : tone === 'mint' ? 'rgba(255,255,255,.92)' : tone === 'white' ? '#FFFFFF' : 'rgba(255,255,255,.88)';
+  const bd = tone === 'blue' ? 'rgba(37,99,235,.28)' : tone === 'mint' ? 'rgba(45,212,168,.6)' : B.line;
+  const fg = tone === 'white' ? B.ink : tone === 'mint' ? B.mint_text : B.deep;
+  return <div style={{display: 'inline-flex', alignItems: 'center', gap: 10, padding: `${size * 0.42}px ${size * 0.8}px`, borderRadius: 999, background: bg, border: `1.5px solid ${bd}`, color: fg, fontSize: size, lineHeight: 1.2, fontFamily: B.font_ar, fontWeight: 500, boxShadow: '0 4px 12px rgba(23,26,31,.08)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', whiteSpace: 'nowrap', ...style}}>{children}</div>;
 };
 const Eyebrow: React.FC<{text: string; latin?: boolean}> = ({text, latin}) => (
   <Reveal from={6} dy={-14} style={{position: 'absolute', right: 72, top: 270}}>
@@ -58,7 +58,7 @@ const Eyebrow: React.FC<{text: string; latin?: boolean}> = ({text, latin}) => (
 );
 const Signature: React.FC = () => (
   <Reveal from={10} dy={0} style={{position: 'absolute', left: 72, top: 1436, display: 'flex', alignItems: 'center', gap: 14, direction: 'ltr'}}>
-    <AMark size={32} color="#FFFFFF"/><span style={{fontFamily: B.font_ar, fontWeight: 500, fontSize: 26, color: B.muted}}>{B.handle}</span>
+    <AMark size={32} color={B.ink}/><span style={{fontFamily: B.font_ar, fontWeight: 500, fontSize: 26, color: B.muted}}>{B.handle}</span>
   </Reveal>
 );
 const isLatin = (s: string) => /^[A-Za-z0-9]/.test(s.trim());
@@ -67,12 +67,12 @@ const TextBlock: React.FC<{headline: string; sub?: string; from?: number; out?: 
   const latin = isLatin(headline);
   return <div style={{position: 'absolute', left: 72, width: 756, bottom: 1920 - 1406, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'flex-end', textAlign: 'right'}}>
     <Reveal from={from} out={out} style={{direction: hasArabic(headline) ? 'rtl' : 'ltr', fontFamily: latin ? B.font_latin : B.font_ar, fontWeight: latin ? 800 : 700, fontSize: latin ? 60 : (headline.length > 20 ? 54 : 64), lineHeight: 1.22, color: B.ink, letterSpacing: latin ? -0.5 : 0}}>{headline}</Reveal>
-    {sub && <Reveal from={from + 8} out={out !== undefined ? out + 3 : undefined} style={{direction: 'rtl', marginTop: 14, fontFamily: B.font_ar, fontWeight: 400, fontSize: 34, lineHeight: 1.5, color: B.ice, opacity: 0.92}}>{sub}</Reveal>}
+    {sub && <Reveal from={from + 8} out={out !== undefined ? out + 3 : undefined} style={{direction: 'rtl', marginTop: 14, fontFamily: B.font_ar, fontWeight: 400, fontSize: 34, lineHeight: 1.5, color: B.muted, opacity: 1}}>{sub}</Reveal>}
   </div>;
 };
 const Card: React.FC<{children: React.ReactNode; bg?: string}> = ({children, bg}) => {
   const f = useCurrentFrame(); const o = ip(f, 0, 14); const s = ip(f, 0, 22, 0.965, 1);
-  return <div style={{position: 'absolute', left: CX, top: CY, width: CW, height: CH, borderRadius: 32, overflow: 'hidden', background: bg || B.raised, border: '1px solid rgba(255,255,255,.08)', boxShadow: '0 30px 80px rgba(0,0,0,.55)', opacity: o, transform: `scale(${s})`}}>{children}</div>;
+  return <div style={{position: 'absolute', left: CX, top: CY, width: CW, height: CH, borderRadius: 32, overflow: 'hidden', background: bg || B.raised, border: `1px solid ${B.line}`, boxShadow: '0 12px 32px rgba(23,26,31,.10), 0 30px 80px rgba(23,26,31,.10)', opacity: o, transform: `scale(${s})`}}>{children}</div>;
 };
 /* cover-fit photo with an editable crop region, extra zoom and a pinned anchor point */
 type Crop = {x: number; y: number; w: number; h: number};
@@ -83,7 +83,7 @@ const Photo: React.FC<{src: string; iw: number; ih: number; crop: Crop; zoom?: n
   const left = px - ax * s + tx, top = py - ay * s + ty;
   return <Img src={staticFile(src)} style={{position: 'absolute', left, top, width: iw * s, height: ih * s, ...style}}/>;
 };
-const Grad: React.FC<{strength?: number}> = ({strength = 0.7}) => <div style={{position: 'absolute', inset: 0, background: `linear-gradient(180deg, rgba(14,16,19,0) 55%, rgba(14,16,19,${strength}) 100%)`}}/>;
+const Grad: React.FC<{strength?: number}> = ({strength = 0.7}) => <div style={{position: 'absolute', inset: 0, background: `linear-gradient(180deg, rgba(23,26,31,0) 55%, rgba(23,26,31,${strength}) 100%)`}}/>;
 
 /* ---------- scene 1 · hook / update found (real camera, real firmware screen) ---------- */
 const Hook: React.FC<{s: any}> = ({s}) => {
@@ -126,7 +126,7 @@ const Zoom: React.FC<{s: any}> = ({s}) => {
       <Photo src={s.media} iw={1320} ih={1675} crop={{x: 0, y: 545, w: 1320, h: 1130}} zoom={zoom} anchor={{x: ax, y: 545 + 565}}/>
       <Grad strength={0.5}/>
       <div style={{position: 'absolute', left: 32, top: 32}}>
-        <Pill tone="glass" size={30} style={{fontFamily: B.font_mono, fontWeight: 500, letterSpacing: 1, boxShadow: glow ? `0 0 ${34 * glow}px rgba(37,99,235,${0.9 * glow})` : 'none', borderColor: glow ? `rgba(96,150,255,${0.3 + 0.6 * glow})` : undefined}}>{label}</Pill>
+        <Pill tone="glass" size={30} style={{fontFamily: B.font_mono, fontWeight: 500, letterSpacing: 1, boxShadow: glow ? `0 0 ${34 * glow}px rgba(37,99,235,${0.9 * glow})` : 'none', borderColor: glow ? `rgba(37,99,235,${0.3 + 0.6 * glow})` : undefined}}>{label}</Pill>
       </div>
       <div style={{position: 'absolute', right: 32, top: 40, opacity: ip(f, 20, 34) * (1 - ip(f, 100, 112))}}><Pill tone="glass" size={22}>HighRes Zoom</Pill></div>
     </Card>
@@ -148,7 +148,7 @@ const Stage: React.FC<{s: any}> = ({s}) => {
     <Card>
       <Photo src={s.media} iw={1320} ih={1665} crop={{x: 0, y: 600, w: 1320, h: 1065}} zoom={zoomA}/>
       <Grad strength={0.45}/>
-      {[0, 1].map((k) => { const q = pulse(k); return q < 0 ? null : <div key={k} style={{position: 'absolute', left: cx - 118, top: cy - 118, width: 236, height: 236, borderRadius: 118, border: `3px solid ${B.ice}`, opacity: (1 - q) * 0.8, transform: `scale(${1 + q * 0.45})`}}/>; })}
+      {[0, 1].map((k) => { const q = pulse(k); return q < 0 ? null : <div key={k} style={{position: 'absolute', left: cx - 118, top: cy - 118, width: 236, height: 236, borderRadius: 118, border: '3px solid rgba(255,255,255,.9)', opacity: (1 - q) * 0.8, transform: `scale(${1 + q * 0.45})`}}/>; })}
       <div style={{position: 'absolute', left: cx - 160, top: cy - 200, width: 320, display: 'flex', justifyContent: 'center', opacity: ip(f, 22, 36) * (1 - ip(f, T - 6, T + 6)), transform: `translateY(${(1 - ip(f, 22, 36)) * 12}px)`}}>
         <Pill tone="white" size={24} style={{fontFamily: B.font_latin, fontWeight: 700}}>Stage Mode</Pill>
       </div>
@@ -242,8 +242,8 @@ const AudioCta: React.FC<{s: any}> = ({s}) => {
     <Card>
       <Photo src={s.media} iw={1320} ih={1651} crop={crop} zoom={zoom} anchor={anchor}/>
       <Grad strength={0.35}/>
-      <div style={{position: 'absolute', left: 32, top: 32, opacity: ip(f, 10, 24) * (f < 100 ? onLeft : 1)}}><Pill tone="blue" size={22} style={{fontFamily: B.font_latin, fontWeight: 700}}>Stage Audio<Eq f={f} color={B.ice} kind="stage"/></Pill></div>
-      <div style={{position: 'absolute', right: 32, top: 32, opacity: onRight}}><Pill tone="glass" size={22} style={{fontFamily: B.font_latin, fontWeight: 700}}>Ambient Audio 360<Eq f={f} color={B.ice} kind="ambient"/></Pill></div>
+      <div style={{position: 'absolute', left: 32, top: 32, opacity: ip(f, 10, 24) * (f < 100 ? onLeft : 1)}}><Pill tone="blue" size={22} style={{fontFamily: B.font_latin, fontWeight: 700}}>Stage Audio<Eq f={f} color={B.accent} kind="stage"/></Pill></div>
+      <div style={{position: 'absolute', right: 32, top: 32, opacity: onRight}}><Pill tone="glass" size={22} style={{fontFamily: B.font_latin, fontWeight: 700}}>Ambient Audio 360<Eq f={f} color={B.accent} kind="ambient"/></Pill></div>
       <div style={{position: 'absolute', inset: 0, clipPath: `inset(${(1 - wipe) * 100}% 0 0 0)`}}>
         <Photo src={s.media_b} iw={1932} ih={2576} crop={{x: 0, y: 166, w: 1932, h: 1648}} zoom={ip(f, T, 210, 1.0, 1.08, Easing.linear)} anchor={{x: 984, y: 1380}}/>
         <Grad strength={0.7}/>
@@ -265,7 +265,7 @@ export const SlideCard: React.FC<{slideIndex: number}> = ({slideIndex}) => {
   const s = P.slides[slideIndex]; const Scene = SCENES[s.scene] || Hook;
   return <AbsoluteFill style={{background: B.bg, overflow: 'hidden', color: B.ink}}>
     <Fonts/>
-    <div style={{position: 'absolute', inset: 0, background: 'radial-gradient(60% 40% at 50% 28%, rgba(37,99,235,.10), transparent 70%)'}}/>
+    <div style={{position: 'absolute', inset: 0, background: 'radial-gradient(60% 40% at 50% 28%, rgba(37,99,235,.06), transparent 70%)'}}/>
     <Scene s={s}/>
     <Index n={slideIndex + 1}/>
     <Signature/>
