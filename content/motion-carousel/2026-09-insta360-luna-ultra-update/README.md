@@ -10,13 +10,11 @@ Six independent 9:16 clips (1080 × 1920, 30 fps, 6–7 s each) plus a stitched 
 - `remotion-carousel/public/fonts/` — self-hosted Readex Pro, Montserrat, JetBrains Mono (brand faces).
 - `exports/slides/01.mp4 … 06.mp4` — the deliverables. `exports/carousel-preview.mp4` — review only.
 
-## The two real-camera slots (not yet filled)
-No connected source (Drive, Canva, Lightroom) held a photo or clip of Adel's Luna Ultra or its firmware
-screen, so `media/real-01-camera.jpg` (slide 1) and `media/real-06-camera.jpg` (slide 6) currently hold
-the official cover render as a placeholder. To make the series personal:
-1. Drop the real photo(s) over those two files (any size; the scene crops with `crop` in `Carousel.tsx`).
-2. Adjust the `crop` values in the `Hook` and `AudioCta` scenes if the framing needs it.
-3. `bash render.sh`.
+## Real-camera media (Adel's own shots)
+- `media/real-01-camera.jpg` — wide: Luna Ultra mid-update beside the phone showing "Install new firmware" (slide 1 opening).
+- `media/real-01b-firmware.jpg` — close-up of the camera screen "Updating firmware 11%" (slide 1 reveal).
+- `media/real-06-camera.jpg` — close-up of the camera with the firmware notes on the phone (slide 6 closing).
+Swap any of them by replacing the file; adjust the `crop` values in `Hook` / `AudioCta` if the framing changes.
 
 ## Render
 ```

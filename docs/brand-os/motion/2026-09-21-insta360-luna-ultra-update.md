@@ -20,17 +20,16 @@
 ## Slides
 | # | Scene | Visual | Copy |
 |---|---|---|---|
-| 01 | hook | REAL-camera slot (placeholder: official cover render) + firmware "Update available → installed" UI card | Insta360 Luna Ultra · وصلها Update جديد 👀 · ودي أهم الحاجات الجديدة في التحديث |
+| 01 | hook | Adel's real Luna Ultra mid-update beside the phone ("Install new firmware") → circular reveal into the close-up of the camera screen "Updating firmware 11%" | Insta360 Luna Ultra · وصلها Update جديد 👀 · ودي أهم الحاجات الجديدة في التحديث |
 | 02 | zoom | official 1×/15× split; pan from 1× to 15× while a mono counter ticks 1×→15× | 15× HighRes Zoom · تقريب أقوى لحد 15× — من ضمن الحاجات الجديدة في التحديث |
 | 03 | stage | Stage Mode selector with pulsing ring → circular mask reveal of the AI stage shot | Stage Mode جديد 🎤 / متظبط للحفلات والعروض → AI-Enhanced Stage Footage / عشان يلقط اللحظات أوضح |
-| 04 | tracking | stage shot, mint tracking brackets lock on the singer, zoom 1×→6× | Active Zoom Tracking · يمسك الهدف ويتابعه بسهولة |
+| 04 | tracking | official Active Zoom Tracking shot; glow locks onto the official green box, push-in while a mono counter ticks 1×→6× | Active Zoom Tracking · يمسك الهدف ويتابعه بسهولة |
 | 05 | snapshot | camera-in-hand shot, REC pill, shutter flash, the live preview lifts off as a saved photo | Live Frame Snapshots · صوّر فيديو وخد Photo في نفس اللحظة 📸 |
-| 06 | audio_cta | two animated waveform mode cards (Stage Audio / Ambient Audio 360) → wipe to the REAL-camera slot with the I ❤ Tech lockup | Pro Audio Modes / صوت أوضح حسب السيناريو → أي Feature شدّتك أكتر؟ 👀 / ولو عايزين أجرّب أول Feature أول ما تظهر عندي… قولولي |
+| 06 | audio_cta | official Pro Audio Modes split: hold on Stage Audio, pan to Ambient Audio 360 (pills with mini equalisers), settle on the split → wipe to Adel's real camera close-up with the I ❤ Tech lockup | Pro Audio Modes / صوت أوضح حسب السيناريو → أي Feature شدّتك أكتر؟ 👀 / ولو عايزين أجرّب أول Feature أول ما تظهر عندي… قولولي |
 
 ## Content rules applied
 - No claim of personal testing: every feature is introduced as part of the official update.
 - Feature names in English; Arabic explanation first; Western digits.
-- The Active Zoom Tracking and Pro Audio Modes slides had no official visual attached, so they use UI-style motion graphics over the official stage shot / brand graphite rather than a fabricated product screenshot.
 
-## Open item
-The two REAL-camera slots (`media/real-01-camera.jpg`, `media/real-06-camera.jpg`) hold the official cover render until Adel's own Luna Ultra photo / firmware shot is dropped in and `render.sh` is re-run. No connected source (Drive, Canva, Lightroom) held one on 2026-09-21.
+## Real-camera anchors
+Slides 1 and 6 use Adel's own photos of the Luna Ultra during the firmware install (wide shot, screen close-up, camera close-up), so the series opens and closes on the real unit.

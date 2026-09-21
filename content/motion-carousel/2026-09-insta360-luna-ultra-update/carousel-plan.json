@@ -27,10 +27,11 @@
       "scene": "hook",
       "duration": 6,
       "media": "media/real-01-camera.jpg",
-      "media_note": "REAL SLOT — replace with Adel's wide/close-up camera or firmware shot (currently the official cover render as placeholder)",
+      "media_note": "Adel's real Luna Ultra: wide firmware-update shot → close-up of the 'Updating firmware' screen",
       "eyebrow": "Insta360 Luna Ultra",
       "headline": "وصلها Update جديد 👀",
-      "sub": "ودي أهم الحاجات الجديدة في التحديث"
+      "sub": "ودي أهم الحاجات الجديدة في التحديث",
+      "media_b": "media/real-01b-firmware.jpg"
     },
     {
       "id": "02",
@@ -55,7 +56,7 @@
       "id": "04",
       "scene": "tracking",
       "duration": 6,
-      "media": "media/official-05-ai-stage.jpg",
+      "media": "media/official-06-tracking.jpg",
       "headline": "Active Zoom Tracking",
       "sub": "يمسك الهدف ويتابعه بسهولة"
     },
@@ -71,14 +72,15 @@
       "id": "06",
       "scene": "audio_cta",
       "duration": 7,
-      "media": "media/real-06-camera.jpg",
-      "media_note": "REAL SLOT — replace with Adel's camera photo for the closing (currently the official cover render as placeholder)",
+      "media": "media/official-08-audio.jpg",
+      "media_note": "closing: Adel's real Luna Ultra close-up (firmware install on the phone beside it)",
       "headline": "Pro Audio Modes",
       "sub": "صوت أوضح حسب السيناريو",
       "mode_a": "Stage Audio",
       "mode_b": "Ambient Audio 360",
       "headline_b": "أي Feature شدّتك أكتر؟ 👀",
-      "sub_b": "ولو عايزين أجرّب أول Feature أول ما تظهر عندي… قولولي"
+      "sub_b": "ولو عايزين أجرّب أول Feature أول ما تظهر عندي… قولولي",
+      "media_b": "media/real-06-camera.jpg"
     }
   ]
 }

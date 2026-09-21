@@ -85,30 +85,25 @@ const Photo: React.FC<{src: string; iw: number; ih: number; crop: Crop; zoom?: n
 };
 const Grad: React.FC<{strength?: number}> = ({strength = 0.7}) => <div style={{position: 'absolute', inset: 0, background: `linear-gradient(180deg, rgba(14,16,19,0) 55%, rgba(14,16,19,${strength}) 100%)`}}/>;
 
-/* ---------- scene 1 · hook / update found ---------- */
+/* ---------- scene 1 · hook / update found (real camera, real firmware screen) ---------- */
 const Hook: React.FC<{s: any}> = ({s}) => {
-  const f = useCurrentFrame(); const {fps} = useVideoConfig();
-  const zoom = ip(f, 0, 180, 1.0, 1.1, Easing.linear);
-  const cardIn = spring({frame: f - 34, fps, config: {damping: 18, stiffness: 120}});
-  const prog = ip(f, 52, 124, 0, 1, EIO); const done = f > 128;
-  const dotIn = spring({frame: f - 128, fps, config: {damping: 12, stiffness: 200}});
+  const f = useCurrentFrame();
+  const T = 70;
+  const zoomA = ip(f, 0, T + 20, 1.0, 1.07, Easing.linear);
+  const r = ip(f, T, T + 30, 0, 1300, EIO);
+  const zoomB = interpolate(f, [T, T + 40, 180], [1.14, 1.0, 1.04], {...clamp, easing: Easing.linear});
+  const pillA = ip(f, 12, 26) * (1 - ip(f, T - 4, T + 8));
+  const pillB = ip(f, T + 34, T + 48);
   return <>
     <Card>
-      <Photo src={s.media} iw={1320} ih={1679} crop={{x: 250, y: 620, w: 820, h: 620}} zoom={zoom}/>
-      <Grad strength={0.55}/>
-      <div style={{position: 'absolute', left: 32, bottom: 32, width: 560, padding: '22px 26px', borderRadius: 22, background: 'rgba(14,16,19,.62)', border: '1px solid rgba(255,255,255,.16)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', opacity: cardIn, transform: `translateY(${(1 - cardIn) * 40}px)`, direction: 'ltr'}}>
-        <div style={{display: 'flex', alignItems: 'center', gap: 16}}>
-          <div style={{width: 48, height: 48, borderRadius: 24, background: done ? B.mint : B.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'none'}}>
-            {done ? <svg viewBox="0 0 24 24" width={26} height={26} style={{transform: `scale(${dotIn})`}}><path d="M5 12.5l4.2 4.2L19 7.5" fill="none" stroke={B.bg} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  : <svg viewBox="0 0 24 24" width={26} height={26}><path d="M12 4v12M6 10l6 6 6-6" fill="none" stroke="#fff" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round"/></svg>}
-          </div>
-          <div>
-            <div style={{fontFamily: B.font_latin, fontWeight: 700, fontSize: 26, color: '#fff'}}>{done ? 'Update installed' : 'Update available'}</div>
-            <div style={{fontFamily: B.font_ar, fontWeight: 400, fontSize: 21, color: B.muted, marginTop: 2}}>Insta360 Luna Ultra · Firmware</div>
-          </div>
-        </div>
-        <div style={{marginTop: 18, height: 8, borderRadius: 4, background: 'rgba(255,255,255,.12)', overflow: 'hidden'}}>
-          <div style={{width: `${prog * 100}%`, height: '100%', background: done ? B.mint : B.accent, borderRadius: 4}}/>
+      <Photo src={s.media} iw={1932} ih={2576} crop={{x: 0, y: 330, w: 1640, h: 1400}} zoom={zoomA}/>
+      <Grad strength={0.5}/>
+      <div style={{position: 'absolute', left: 32, top: 32, opacity: pillA}}><Pill tone="glass" size={20} style={{fontFamily: B.font_mono, fontWeight: 500, padding: '6px 12px'}}><span style={{width: 10, height: 10, borderRadius: 5, background: B.mint, boxShadow: `0 0 12px ${B.mint}`}}/>LUNA ULTRA · FIRMWARE</Pill></div>
+      <div style={{position: 'absolute', inset: 0, clipPath: `circle(${r}px at 157px 440px)`}}>
+        <Photo src={s.media_b} iw={1932} ih={2576} crop={{x: 555, y: 956, w: 900, h: 780}} zoom={zoomB}/>
+        <Grad strength={0.45}/>
+        <div style={{position: 'absolute', left: 32, bottom: 32, opacity: pillB, transform: `translateY(${(1 - pillB) * 10}px)`}}>
+          <Pill tone="glass" size={22} style={{fontFamily: B.font_mono, fontWeight: 500}}><span style={{width: 10, height: 10, borderRadius: 5, background: B.accent, boxShadow: `0 0 12px ${B.accent}`, opacity: 0.55 + 0.45 * Math.abs(Math.sin(f / 7))}}/>UPDATING FIRMWARE</Pill>
         </div>
       </div>
     </Card>
@@ -169,26 +164,26 @@ const Stage: React.FC<{s: any}> = ({s}) => {
   </>;
 };
 
-/* ---------- scene 4 · active zoom tracking ---------- */
+/* ---------- scene 4 · active zoom tracking (official visual) ---------- */
 const Tracking: React.FC<{s: any}> = ({s}) => {
   const f = useCurrentFrame(); const {fps} = useVideoConfig();
-  const k = ip(f, 42, 150, 1, 1.5, EIO);                     // visual zoom
-  const lock = spring({frame: f - 12, fps, config: {damping: 16, stiffness: 110}});
-  const bw = 220 * k, bh = 400 * k; const bx = 468, by = 360;
-  const boxScale = interpolate(lock, [0, 1], [1.7, 1]);
-  const zv = interpolate(k, [1, 1.5], [1, 6]); const label = `${zv < 1.05 ? '1' : zv > 5.9 ? '6' : zv.toFixed(1)}×`;
-  const corner = (rot: number, x: number, y: number) => <div key={rot} style={{position: 'absolute', left: x, top: y, width: 34, height: 34, borderLeft: `4px solid ${B.mint}`, borderTop: `4px solid ${B.mint}`, borderRadius: '6px 0 0 0', transform: `rotate(${rot}deg)`, transformOrigin: '50% 50%'}}/>;
+  const k = ip(f, 40, 150, 1, 1.35, EIO);
+  const zv = interpolate(k, [1, 1.35], [1, 6]); const label = `${zv < 1.05 ? '1' : zv > 5.9 ? '6' : zv.toFixed(1)}×`;
+  const crop = {x: 40, y: 540, w: 980, h: 1100}; const box = {x: 648, y: 730, size: 236};   // the official green box, image px
+  const s0 = Math.max(CW / crop.w, CH / crop.h); const TY = 200;
+  const bx = (box.x - crop.x) * s0 + (CW - crop.w * s0) / 2, by = (box.y - crop.y) * s0 + (CH - crop.h * s0) / 2 + TY; const bs = box.size * s0 * k;
+  const lock = spring({frame: f - 10, fps, config: {damping: 15, stiffness: 110}});
+  const pulse = 0.5 + 0.5 * Math.sin(f / 9);
   return <>
     <Card>
-      <Photo src={s.media} iw={1320} ih={1651} crop={{x: 0, y: 130, w: 1320, h: 880}} zoom={k} anchor={{x: 660, y: 430}}/>
+      <Photo src={s.media} iw={1320} ih={1654} crop={crop} zoom={k} anchor={{x: box.x, y: box.y}} ty={TY}/>
       <Grad strength={0.5}/>
-      <div style={{position: 'absolute', left: bx - bw / 2, top: by - bh / 2, width: bw, height: bh, opacity: lock, transform: `scale(${boxScale})`, filter: `drop-shadow(0 0 10px rgba(45,212,168,.55))`}}>
-        {corner(0, -2, -2)}{corner(90, bw - 32, -2)}{corner(180, bw - 32, bh - 32)}{corner(270, -2, bh - 32)}
-        <div style={{position: 'absolute', left: bw / 2 - 5, top: bh / 2 - 5, width: 10, height: 10, borderRadius: 5, background: B.mint, opacity: 0.9}}/>
-        <div style={{position: 'absolute', left: 0, top: -54, display: 'flex', gap: 10, alignItems: 'center', direction: 'ltr'}}>
-          <Pill tone="mint" size={20} style={{fontFamily: B.font_mono, fontWeight: 500, padding: '6px 12px'}}><span style={{width: 8, height: 8, borderRadius: 4, background: B.mint, opacity: 0.55 + 0.45 * Math.abs(Math.sin(f / 6))}}/>TRACKING</Pill>
-          <Pill tone="glass" size={20} style={{fontFamily: B.font_mono, fontWeight: 500, padding: '6px 12px'}}>{label}</Pill>
-        </div>
+      <div style={{position: 'absolute', left: bx - bs / 2, top: by - bs / 2, width: bs, height: bs, borderRadius: bs * 0.16, boxShadow: `0 0 ${36 + 24 * pulse}px rgba(53,227,123,${0.35 + 0.35 * pulse})`, opacity: lock, transform: `scale(${interpolate(lock, [0, 1], [1.35, 1])})`}}/>
+      <div style={{position: 'absolute', left: bx - bs / 2, top: by - bs / 2 - 56, display: 'flex', gap: 10, opacity: lock, direction: 'ltr'}}>
+        <Pill tone="mint" size={20} style={{fontFamily: B.font_mono, fontWeight: 500, padding: '6px 12px'}}><span style={{width: 8, height: 8, borderRadius: 4, background: B.mint, opacity: 0.55 + 0.45 * pulse}}/>TRACKING</Pill>
+      </div>
+      <div style={{position: 'absolute', right: 32, top: 32, opacity: ip(f, 16, 30)}}>
+        <Pill tone="glass" size={34} style={{fontFamily: B.font_mono, fontWeight: 500, letterSpacing: 1, boxShadow: `0 0 ${30 * ip(f, 140, 156)}px rgba(37,99,235,${0.9 * ip(f, 140, 156)})`}}>{label}</Pill>
       </div>
     </Card>
     <Eyebrow text={B.update_tag}/>
@@ -228,35 +223,29 @@ const Snapshot: React.FC<{s: any}> = ({s}) => {
   </>;
 };
 
-/* ---------- scene 6 · pro audio modes → CTA ---------- */
-const Wave: React.FC<{n: number; f: number; kind: 'stage' | 'ambient'; color: string; h: number}> = ({n, f, kind, color, h}) => {
-  const bars = Array.from({length: n}, (_, i) => {
-    const c = Math.abs(i - (n - 1) / 2) / ((n - 1) / 2);
-    const a = kind === 'stage' ? Math.pow(Math.abs(Math.sin(f / 5.5 + i * 0.9)), 0.7) * (1 - c * 0.75) : (0.45 + 0.35 * Math.sin(f / 9 + i * 0.5) * Math.cos(f / 23 + i * 0.2)) * (1 - c * 0.3);
-    return Math.max(0.08, a);
-  });
-  return <div style={{display: 'flex', alignItems: 'center', gap: 6, height: h}}>{bars.map((a, i) => <div key={i} style={{width: 8, height: Math.max(6, a * h), borderRadius: 4, background: color, opacity: 0.5 + 0.5 * a}}/>)}</div>;
-};
+/* ---------- scene 6 · pro audio modes (official visual) → CTA on the real camera ---------- */
+const Eq: React.FC<{f: number; n?: number; color: string; kind: 'stage' | 'ambient'}> = ({f, n = 9, color, kind}) => (
+  <span style={{display: 'inline-flex', alignItems: 'center', gap: 3, height: 22, marginLeft: 4}}>
+    {Array.from({length: n}, (_, i) => { const a = kind === 'stage' ? Math.pow(Math.abs(Math.sin(f / 5 + i * 1.1)), 0.7) : 0.45 + 0.4 * Math.sin(f / 8 + i * 0.7); return <span key={i} style={{width: 4, height: Math.max(4, a * 22), borderRadius: 2, background: color}}/>; })}
+  </span>
+);
 const AudioCta: React.FC<{s: any}> = ({s}) => {
-  const f = useCurrentFrame(); const {fps} = useVideoConfig();
-  const T = 104;
+  const f = useCurrentFrame();
+  const T = 130;
+  const crop = {x: 0, y: 520, w: 1320, h: 1030};
+  const ax = interpolate(f, [0, 50, 95, 100], [330, 330, 990, 990], {...clamp, easing: EIO});
+  const zoom = interpolate(f, [0, 95, 125], [1.5, 1.5, 1.0], {...clamp, easing: EIO});
+  const anchor = f < 100 ? {x: ax, y: 1035} : undefined;   // after the pan, settle on the full split
   const wipe = ip(f, T, T + 26, 0, 1, EIO);
-  const panel = (title: string, sub: string, kind: 'stage' | 'ambient', i: number) => {
-    const inn = spring({frame: f - 10 - i * 8, fps, config: {damping: 16, stiffness: 100}});
-    return <div style={{position: 'absolute', left: 32 + i * 452, top: 32, width: 420, height: 736, borderRadius: 24, background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.1)', padding: 28, boxSizing: 'border-box', opacity: inn, transform: `translateY(${(1 - inn) * 30}px)`, direction: 'ltr'}}>
-      <div style={{fontFamily: B.font_mono, fontSize: 20, color: B.muted, letterSpacing: 1.5}}>MODE 0{i + 1}</div>
-      <div style={{fontFamily: B.font_latin, fontWeight: 700, fontSize: 30, color: '#fff', marginTop: 10, lineHeight: 1.15}}>{title}</div>
-      <div style={{fontFamily: B.font_ar, fontSize: 22, color: B.muted, marginTop: 8, direction: 'rtl', textAlign: 'left'}}>{sub}</div>
-      <div style={{position: 'absolute', left: 28, right: 28, bottom: 40}}><Wave n={26} f={f} kind={kind} color={i === 0 ? B.accent : B.ice} h={300}/></div>
-    </div>;
-  };
+  const onLeft = 1 - ip(f, 50, 70), onRight = ip(f, 60, 80);
   return <>
     <Card>
-      <div style={{position: 'absolute', inset: 0, background: `radial-gradient(70% 60% at 30% 20%, rgba(37,99,235,.22), transparent 70%), ${B.raised}`}}/>
-      {panel(s.mode_a, 'للمسرح والحفلات', 'stage', 0)}
-      {panel(s.mode_b, 'صوت محيطي 360°', 'ambient', 1)}
-      <div style={{position: 'absolute', inset: 0, clipPath: `inset(${(1 - wipe) * 100}% 0 0 0 round 0px)`}}>
-        <Photo src={s.media} iw={1320} ih={1679} crop={{x: 250, y: 620, w: 820, h: 620}} zoom={ip(f, T, 210, 1.04, 1.12, Easing.linear)}/>
+      <Photo src={s.media} iw={1320} ih={1651} crop={crop} zoom={zoom} anchor={anchor}/>
+      <Grad strength={0.35}/>
+      <div style={{position: 'absolute', left: 32, top: 32, opacity: ip(f, 10, 24) * (f < 100 ? onLeft : 1)}}><Pill tone="blue" size={22} style={{fontFamily: B.font_latin, fontWeight: 700}}>Stage Audio<Eq f={f} color={B.ice} kind="stage"/></Pill></div>
+      <div style={{position: 'absolute', right: 32, top: 32, opacity: onRight}}><Pill tone="glass" size={22} style={{fontFamily: B.font_latin, fontWeight: 700}}>Ambient Audio 360<Eq f={f} color={B.ice} kind="ambient"/></Pill></div>
+      <div style={{position: 'absolute', inset: 0, clipPath: `inset(${(1 - wipe) * 100}% 0 0 0)`}}>
+        <Photo src={s.media_b} iw={1932} ih={2576} crop={{x: 0, y: 250, w: 1932, h: 1450}} zoom={ip(f, T, 210, 1.0, 1.08, Easing.linear)}/>
         <Grad strength={0.7}/>
         <div style={{position: 'absolute', left: 32, bottom: 32, display: 'flex', alignItems: 'center', gap: 12, direction: 'ltr', opacity: ip(f, T + 30, T + 44)}}>
           <span style={{fontFamily: B.font_latin, fontWeight: 800, fontSize: 40, color: '#fff', letterSpacing: -1}}>I</span><Heart size={38}/><span style={{fontFamily: B.font_latin, fontWeight: 800, fontSize: 40, color: '#fff', letterSpacing: -1}}>Tech</span>
