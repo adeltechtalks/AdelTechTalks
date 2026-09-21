@@ -32,14 +32,14 @@
 
 | # | Eyebrow | Headline | Copy |
 |---|---|---|---|
-| 01 | تحديث جديد في TikTok | تيك توك غيّر شكل البروفايل 👀 | وأول حاجة جات في بالي… Instagram؟ 😅 |
+| 01 | تحديث جديد في TikTok | TikTok غيّر شكل البروفايل 👀 | وأول حاجة جات في بالي… Instagram؟ 😅 |
 | 02 | التغيير | البروفايل اتغيّر فعلًا | الصورة والـBio والمعلومات بقوا ناحية الجنب بدل الشكل التقليدي اللي متعودين عليه. · callouts: الصورة · الأرقام · الـBio والمعلومات |
 | 03 | التفاصيل | إيه اللي اتغيّر؟ | cards: المعلومات بقت Side‑Aligned · مساحات أكبر وأنضف · الـFollow بقى أوضح · اختصارات زي TikTok Studio بقت في الواجهة |
 | 04 | الإحساس | هو أنا فتحت Instagram؟ 😅 | الـProfile الجديد بيدي مساحة أكبر للهوية والمعلومات… ومش بس الفيديوهات. · chips: الجديد في TikTok · بروفايل سوشيال تقليدي |
 | 05 | بالنسبة للـCreators | وده يهم الـCreators ليه؟ | صورتك بقت أهم · الـBio بقى له حضور أكبر · أول فيديوهات في الـGrid بقت جزء أقوى من أول Impression · closing: يعني شكل البروفايل نفسه محتاج اهتمام أكتر. |
-| 06 | رأيك يهمني | الجديد ولا القديم؟ 👀 | أنا لسه بحاول أتعود عليه 😅 · choices: الجديد ✅ / القديم ❤️ · footer: قولّي رأيك 👇 · I ❤ Tech lockup |
+| 06 | رأيك يهمني | الجديد ولا القديم؟ 👀 | أنا لسه بحاول أتعود عليه 😅 · choices: الجديد ✅ / القديم ❤️ · footer: قولّي رأيك في الكومنتات 👇 · I ❤ Tech lockup |
 
-RTL rules applied: every text box starts with an Arabic word; Latin product names are inline
+RTL rules applied: "TikTok" is always written in Latin; the cover headline starts with it, so the text is prefixed with an invisible right-to-left mark (U+200F) to keep the paragraph RTL. Every other text box starts with an Arabic word; Latin product names are inline
 islands; `؟` + emoji and `Side‑Aligned` use non-breaking joins (U+00A0 / U+2011) so a line never
 ends on a lone emoji or a split hyphenated word. Rendering verified at 1080 × 1350 and at grid
 thumbnail size.
