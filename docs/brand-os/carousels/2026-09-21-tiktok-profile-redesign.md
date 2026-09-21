@@ -44,6 +44,14 @@ islands; `؟` + emoji and `Side‑Aligned` use non-breaking joins (U+00A0 / U+20
 ends on a lone emoji or a split hyphenated word. Rendering verified at 1080 × 1350 and at grid
 thumbnail size.
 
+## Facebook · single-image version
+
+Frame `FB · single image — TikTok Profile Redesign · 1080×1350` (node `149:246`) in the same section,
+to the right of slide 06. One composition for a Facebook photo post: eyebrow, the cover headline in
+`Social/Title`, the sub line in `Social/Body`, the phone crop (left) beside the four change cards
+(right), an Ice-tinted poll panel (الجديد ✅ / القديم ❤️) and the signature strip. Same margins, type
+roles and crop treatment as the carousel; 4:5 shows at full height in the mobile feed.
+
 ## Editing
 
 - Re-crop any screenshot by moving the inner `image · TikTok profile screenshot` rectangle; swap the
