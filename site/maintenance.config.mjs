@@ -35,3 +35,11 @@ export const KEEP_PATHS = [
   'logo/favicon-32.png',
   'logo/apple-touch-icon.png',
 ];
+
+/* Short links that keep working while the site is a holding page. Each one is
+   a 302 from the maintenance Worker, checked before the redirect to `/`, so a
+   link printed in a bio or said in a video always lands somewhere real.
+   Keep the list short and the destinations public. */
+export const SHORT_LINKS = {
+  '/skills': 'https://github.com/adeltechtalks/AdelTechTalks-Claude',
+};
