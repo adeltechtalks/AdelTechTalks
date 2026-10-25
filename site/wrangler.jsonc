@@ -22,6 +22,25 @@
     "binding": "ASSETS",
     "directory": "dist"
   },
+  // ---- runtime secrets -----------------------------------------------------
+  // NAMES ONLY. No value is ever written here — this file is in source control.
+  //
+  // Why this exists: a secret set under Workers Builds -> Variables and secrets
+  // is BUILD-TIME only. It is not attached to the Worker at runtime, and the
+  // deploy succeeds anyway. Production ran for a period with the service-role
+  // key present in the dashboard and absent from the running version, which the
+  // runtime diagnostic caught as:
+  //
+  //   localsRuntimeEnvKeys:["ASSETS"] cloudflareWorkersEnvKeys:["ASSETS"]
+  //
+  // Declaring the name here makes the requirement explicit and machine-checked
+  // rather than tribal knowledge. The VALUE is provisioned separately through
+  // Cloudflare's runtime-secret mechanism (`wrangler secret put`, or Settings ->
+  // Variables and Secrets on the Worker itself, NOT the Builds tab).
+  "secrets": {
+    "required": ["SUPABASE_SERVICE_ROLE_KEY"]
+  },
+
   "observability": {
     "enabled": true
   }
